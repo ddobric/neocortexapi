@@ -537,34 +537,34 @@ namespace NeoCortexApi
         /// <param name="random"></param>
         /// <param name="cells"></param>
         /// <returns></returns>
-        public static Cell[] GetLeastUsedCells(IList<Cell> cells, int numCells, Random random)
-        {
-            List<Cell> leastUsedCells = new List<Cell>();
-            int minNumSegments = Integer.MaxValue;
+        //public static Cell[] GetLeastUsedCells(IList<Cell> cells, int numCells, Random random)
+        //{
+        //    List<Cell> leastUsedCells = new List<Cell>();
+        //    int minNumSegments = Integer.MaxValue;
 
-            foreach (var cell in cells)
-            {
-                //DD
-                //int numSegments = cell.GetSegments(c).Count;
-                int numSegments = cell.DistalDendrites.Count;
-                //int numSegments = cell.Segments.Count;
+        //    foreach (var cell in cells)
+        //    {
+        //        //DD
+        //        //int numSegments = cell.GetSegments(c).Count;
+        //        int numSegments = cell.DistalDendrites.Count;
+        //        //int numSegments = cell.Segments.Count;
 
-                if (numSegments < minNumSegments)
-                {
-                    minNumSegments = numSegments;
-                    leastUsedCells.Clear();
-                }
+        //        if (numSegments < minNumSegments)
+        //        {
+        //            minNumSegments = numSegments;
+        //            leastUsedCells.Clear();
+        //        }
 
-                if (numSegments == minNumSegments)
-                {
-                    leastUsedCells.Add(cell);
-                }
-            }
+        //        if (numSegments == minNumSegments)
+        //        {
+        //            leastUsedCells.Add(cell);
+        //        }
+        //    }
 
-            int index = random.Next(leastUsedCells.Count);
-            leastUsedCells.Sort();
-            return leastUsedCells[index];
-        }
+        //    int index = random.Next(leastUsedCells.Count);
+        //    leastUsedCells.Sort();
+        //    return leastUsedCells[index];
+        //}
 
 
         /// <summary>
