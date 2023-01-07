@@ -502,9 +502,7 @@ namespace NeoCortexApi
                 //
                 // permanence = new BigDecimal(permanence).setScale(1, RoundingMode.HALF_UP).doubleValue(); 
 
-                double EPSILON = 0.00001;
-
-                if (permanence < EPSILON)
+                if (permanence < HtmConfig.EPSILON)
                 {
                     synapsesToDestroy.Add(presynapticCellSynapse);
                 }
