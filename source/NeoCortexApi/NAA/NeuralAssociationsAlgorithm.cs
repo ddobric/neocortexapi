@@ -36,7 +36,7 @@ namespace NeoCortexApi
         {
             get
             {
-                return getSegments(cfg.ActivationThreshold, int.MaxValue);
+                return GetSegments(cfg.ActivationThreshold, int.MaxValue);
             }
         }
 
@@ -47,7 +47,7 @@ namespace NeoCortexApi
         {
             get
             {
-                return getSegments(cfg.MinThreshold, cfg.ActivationThreshold);
+                return GetSegments(cfg.MinThreshold, cfg.ActivationThreshold);
             }
         }
 
@@ -58,11 +58,11 @@ namespace NeoCortexApi
         {
             get
             {
-                return getSegments(0, cfg.MinThreshold);
+                return GetSegments(0, cfg.MinThreshold);
             }
         }
 
-        protected List<ApicalDendrite> getSegments(int thresholdMin, int thresholdMax)
+        protected List<ApicalDendrite> GetSegments(int thresholdMin, int thresholdMax)
         {
 
             List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
@@ -96,14 +96,14 @@ namespace NeoCortexApi
         {
             foreach (var area in associatedAreas)
             {
-                ComputeCycle cycle = ActivateCells(area, inp, learn: learn);
+                ComputeCycle cycle = ActivateCells(area, learn: learn);
             }
 
 
             return null;
         }
 
-        protected virtual ComputeCycle ActivateCells(CorticalArea associatedArea, ComputeCycleInput inp, bool learn)
+        protected virtual ComputeCycle ActivateCells(CorticalArea associatedArea, bool learn)
         {
             ComputeCycle newComputeCycle = new ComputeCycle
             {
@@ -119,7 +119,8 @@ namespace NeoCortexApi
             // foreach (var actCell in contextualActiveCells)
             {
                 {
-                    List<Cell> cellsOwnersOfActSegs = AdaptActiveSegments(ActiveApicalSegments.ToArray(), area.ActiveCells, inp.WinnerCells,
+                    List<Cell> cellsOwnersOfActSegs = AdaptActiveSegments(ActiveApicalSegments.ToArray(), 
+                        area.ActiveCells, inp.WinnerCells,
                             permanenceIncrement, permanenceDecrement, learn);
 
                     foreach (var item in cellsOwnersOfActSegs)

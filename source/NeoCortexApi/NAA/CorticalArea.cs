@@ -58,10 +58,10 @@ namespace NeoCortexApi
             }
         }
 
-        public TSeg GetSegmentFromIndex<TSeg>(int segIndx) where TSeg : Segment
-        {
-            return (TSeg)_segmentMap[segIndx];
-        }
+        //public TSeg GetSegmentFromIndex<TSeg>(int segIndx) where TSeg : Segment
+        //{
+        //    return (TSeg)_segmentMap[segIndx];
+        //}
 
     }
 }
