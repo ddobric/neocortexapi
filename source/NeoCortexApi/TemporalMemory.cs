@@ -466,7 +466,14 @@ namespace NeoCortexApi
                     //
                     // Even if the segment is active, new synapses can be added that connect previously active cells with the segment.
                     int numActive = this.LastActivity.PotentialSynapses[segment.SegmentIndex];
-                    int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
+                    int numActive = segment.Synapses.Count;
+                    //if (numActive != segment.Synapses.Count)
+                    //{
+                    //    throw new System.Exception("Why??");
+                    //}
+
+                    // it can be simplified with this code.
+                    //int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 
                     if (nGrowDesired > 0)
                     {
@@ -767,7 +774,7 @@ namespace NeoCortexApi
                 //
                 // permanence = new BigDecimal(permanence).setScale(1, RoundingMode.HALF_UP).doubleValue(); 
 
-                if (permanence < EPSILON)
+                if (permanence < HtmConfig.EPSILON)
                 {
                     synapsesToDestroy.Add(synapse);
                 }

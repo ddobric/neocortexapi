@@ -44,7 +44,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Permanence threshold value to declare synapse as connected.
         /// </summary>
-        private double SynapsePermConnected { get; set; }
+        protected double SynapsePermConnected { get; set; }
 
         /// <summary>
         /// Number of input cells. Used by proximal dendrite segment by Spatial Pooler.
