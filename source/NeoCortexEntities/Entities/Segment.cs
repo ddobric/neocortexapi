@@ -58,7 +58,7 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                return this.Synapses.Count(s=>s.Permanence >= this.SynapsePermConnected);
+                return this.Synapses.Count(s => s.Permanence >= this.SynapsePermConnected);
             }
         }
 
@@ -84,6 +84,13 @@ namespace NeoCortexApi.Entities
             this.Synapses = new List<Synapse>();
             this.SegmentIndex = index;
             this.m_LastUsedIteration = lastUsedIteration;
+        }
+
+        public void KillSynapse(Synapse synapse, Segment segment)
+        {
+            synapse.SourceCell.ReceptorSynapses.Remove(synapse);
+
+            segment.Synapses.Remove(synapse);
         }
 
         /// <summary>

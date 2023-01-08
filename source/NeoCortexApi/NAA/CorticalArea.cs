@@ -23,7 +23,7 @@ namespace NeoCortexApi
         /// <summary>
         /// Get the list of active cells from indicies.
         /// </summary>
-        public ICollection<Cell> ActiveCells
+        public List<Cell> ActiveCells
         {
             get
             {
@@ -33,8 +33,22 @@ namespace NeoCortexApi
             }
         }
 
+        /// <summary>
+        /// Get the list of active cells from indicies.
+        /// </summary>
+        public ICollection<Cell> WinnerCells
+        {
+            get
+            {
+                var actCells = Cells.Where(c => WinnerCellsIndicies.Contains(c.Index));
 
-        public long[] ActiveCellsIndicies { get; set; }
+                return actCells.ToList();
+            }
+        }
+
+        public List<long> ActiveCellsIndicies { get; set; } = new List<long>();
+
+        public List<long> WinnerCellsIndicies { get; set; } = new List<long>();
 
 
         public CorticalArea(string name, int numCells)
