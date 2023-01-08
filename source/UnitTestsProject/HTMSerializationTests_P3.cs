@@ -19,7 +19,7 @@ namespace UnitTestsProject
     public class HTMSerializationTests_P3
     {
         /// <summary>
-        /// TODO: ALL TEST MUST BE WELL COMMENTED
+        /// Test the serialization of Column
         /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
@@ -31,7 +31,15 @@ namespace UnitTestsProject
         {
             HtmSerializer serializer = new HtmSerializer();
 
-            Column column = new Column(numCells, colIndx, synapsePermConnected, numInputs);
+            HtmConfig config = new HtmConfig(new int[] { 5 }, new int[] { 5 }) {CellsPerColumn = numCells, SynPermConnected = synapsePermConnected, NumInputs = numInputs };
+
+            Synapse synapse = QuickSetupSynapse();
+
+            Column column = new Column(config.CellsPerColumn, colIndx, config.SynPermConnected, config.NumInputs);
+
+            column.CreatePotentialPool(config, new int[] { 1, 2, 3 }, -1);
+
+            column.SetPermanences(config, new double[] {1.0, 3.0, 7.0});            
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
@@ -430,6 +438,64 @@ namespace UnitTestsProject
             }
         }
 
+
+        #region Helper
+        private HtmConfig QuickSetupHtmConfig()
+        {
+            var htmConfig = new HtmConfig(new int[] { 5 }, new int[] { 5 })
+            {
+            // Temporal Memory parameters
+            CellsPerColumn = 32,
+            ActivationThreshold = 10,
+            LearningRadius = 10,
+            MinThreshold = 9,
+            MaxNewSynapseCount = 20,
+            MaxSynapsesPerSegment = 225,
+            MaxSegmentsPerCell = 225,
+            InitialPermanence = 0.21,
+            ConnectedPermanence = 0.5,
+            PermanenceIncrement = 0.10,
+            PermanenceDecrement = 0.10,
+            PredictedSegmentDecrement = 0.1,
+
+            // Spatial Pooler parameters
+
+            PotentialRadius = 15,
+            PotentialPct = 0.75,
+            GlobalInhibition = true,
+            LocalAreaDensity = -1.0,
+            NumActiveColumnsPerInhArea = 0.02 * 2048,
+            StimulusThreshold = 5.0,
+            SynPermInactiveDec = 0.008,
+            SynPermActiveInc = 0.05,
+            SynPermConnected = 0.1,
+            SynPermBelowStimulusInc = 0.01,
+            SynPermTrimThreshold = 0.05,
+            MinPctOverlapDutyCycles = 0.001,
+            MinPctActiveDutyCycles = 0.001,
+            DutyCyclePeriod = 1000,
+            MaxBoost = 10.0,
+            WrapAround = true,
+            Random = new ThreadSafeRandom(42),
+        };
+
+            return htmConfig;
+        } 
+
+        private Synapse QuickSetupSynapse()
+        {
+            Cell cell = new Cell(parentColumnIndx: 1, colSeq: 20, numCellsPerColumn: 16, new CellActivity());
+            Cell presynapticCell = new Cell(parentColumnIndx: 8, colSeq: 36, numCellsPerColumn: 46, new CellActivity());
+
+            DistalDendrite dd = new DistalDendrite(parentCell: cell, flatIdx: 10, lastUsedIteration: 20, ordinal: 10, synapsePermConnected: 15, numInputs: 100);
+            cell.DistalDendrites.Add(dd);
+
+            Synapse synapse = new Synapse(presynapticCell: cell, distalSegmentIndex: dd.SegmentIndex, synapseIndex: 23, permanence: 1.0);
+            presynapticCell.ReceptorSynapses.Add(synapse);
+
+            return synapse;
+        }
+        #endregion
 
     }
 }
