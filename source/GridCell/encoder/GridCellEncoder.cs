@@ -79,7 +79,7 @@ namespace GridCell.encoder
             // receptive field center.
             // Convert the units of location to hex grid with angle 0, scale 1, offset 0.
             var displacement = location - offsets_;
-            var radius = np.empty(size);
+            
 
             for (var i = 0; i < partitions.Count; i++) {
                 var start = partitions[i][0];
@@ -94,6 +94,14 @@ namespace GridCell.encoder
                 rr[1][1] = r[1].Item2;
 
                 displacement[$"{start}:{stop}"] = rr.dot(displacement[$"{start}:{stop}"].T).T;
+            }
+
+
+            var radius = np.empty(size);
+            for (var i = 0; i < periods.Length; i++) {
+                var start = partitions[i][0];
+                var stop = partitions[i][1];
+
                 radius[$"{start}:{stop}"] = periods[i] / 2;
             }
 
@@ -103,8 +111,8 @@ namespace GridCell.encoder
             for (var i = 0; i < size; i++)
             {
                 var grid = new HexagonalGrid(HexagonalGridType.PointyEven, (float)radius[i].GetValue<Double>());
-                var x = (float) displacement[i][0].GetValue<Double>();
-                var y = (float) displacement[i][1].GetValue<Double>();
+                var x = displacement[i][0].GetValue<Double>();
+                var y = displacement[i][1].GetValue<Double>();
                 //var offset = new HexagonalLib.Coordinates.Offset((int)x, (int)y);
 
                 var nearest = grid.ToPoint2(grid.ToCubic(x, y));

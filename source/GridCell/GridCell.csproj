@@ -8,9 +8,12 @@
 	<ItemGroup>
 		<None Remove="NumSharp" />
 		<None Remove="ScottPlot" />
-		<None Remove="js\" />
 		<None Remove="Numpy" />
 		<None Remove="encoder\" />
+		<None Remove="hexagonal\" />
+		<None Remove="hexagonal\coordinates\" />
+		<None Remove="GridCellModelTwistedTorous\" />
+		<None Remove="GridCellModelTwistedTorous\AlternateImplementation\" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="NumSharp" Version="0.30.0" />
@@ -20,10 +23,12 @@
 		<ProjectReference Include="..\NeoCortexUtils\NeoCortexUtils.csproj" />
 		<ProjectReference Include="..\NeoCortexEntities\NeoCortexEntities.csproj" />
 		<ProjectReference Include="..\NeoCortexApi\NeoCortexApi.csproj" />
-		<ProjectReference Include="..\HexagonalLib\HexagonalLib.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="js\" />
 	  <Folder Include="encoder\" />
+	  <Folder Include="hexagonal\" />
+	  <Folder Include="hexagonal\coordinates\" />
+	  <Folder Include="GridCellModelTwistedTorous\" />
+	  <Folder Include="GridCellModelTwistedTorous\AlternateImplementation\" />
 	</ItemGroup>
 </Project>

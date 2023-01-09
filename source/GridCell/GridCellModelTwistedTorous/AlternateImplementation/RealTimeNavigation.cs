@@ -34,6 +34,9 @@ namespace GridCell.js
                 posx, posy
             };
 
+            posx += (directionX + new Random().NextDouble() * 2 - 2);
+            posy += (directionY + new Random().NextDouble() * 2 - 2);
+
             if (posx < 2)
             {
                 directionX = 2;
@@ -54,11 +57,22 @@ namespace GridCell.js
                 directionY = -2;
             }
 
-            posx += (directionX + new Random().NextDouble() * 2 - 2);
-            posy += (directionY + new Random().NextDouble() * 2 - 2);
+            speedvect = new double[] {
+                posx - prevPos[0], posy - prevPos[0]
+            };
+        }
+
+        public void MoveTo(double x, double y)
+        {
+            prevPos = new double[] {
+                posx, posy
+            };
+
+            posx = x;
+            posy = y;
 
             speedvect = new double[] {
-                posx - prevPos[0], posx - prevPos[0]
+                posx - prevPos[0], posy - prevPos[1]
             };
         }
     }
