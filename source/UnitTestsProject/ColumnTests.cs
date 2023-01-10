@@ -20,8 +20,18 @@ namespace UnitTestsProject
         [TestMethod]
         public void CompareColumn()
         {
-            HtmConfig config = new HtmConfig(new int[] { 5 }, new int[] { 5 }) { NumInputs = 1 };
-            HtmConfig config2 = new HtmConfig(new int[] { 5 }, new int[] { 5 }) { NumInputs = 2 };
+            
+            // Two set of configuration parameters with different values.
+            HtmConfig config = new HtmConfig(inputDims: new int[] { 5 }, columnDims: new int[] { 5 })
+            {
+                NumInputs = 1
+            };
+
+            HtmConfig config2 = new HtmConfig(inputDims: new int[] { 5 }, columnDims: new int[] { 5 })
+            {
+                NumInputs = 2
+            };
+
 
             //Test with different column index
             Column column1 = new Column(config.CellsPerColumn, 1, config.SynPermConnected, config.NumInputs);
@@ -64,7 +74,6 @@ namespace UnitTestsProject
 
             //column7 and column9 are NOT same by value (different config)
             Assert.IsFalse(column7.Equals(column9));
-
 
         }
     }

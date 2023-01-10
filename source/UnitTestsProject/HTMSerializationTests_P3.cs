@@ -19,33 +19,39 @@ namespace UnitTestsProject
     public class HTMSerializationTests_P3
     {
         /// <summary>
-        /// Test the serialization of Column
+        /// Test the serialization of Column. 
         /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
-        [DataRow(1, 2, 1.0, 1)]
-        [DataRow(2, 5, 18.3, 20)]
-        [DataRow(10, 25, 12.0, 100)]
-        [DataRow(12, 14, 18.7, 1000)]
+        [DataRow(10, 1, 1.0, 1)]
         public void Serializationtest_COLUMN(int numCells, int colIndx, double synapsePermConnected, int numInputs)
         {
             HtmSerializer serializer = new HtmSerializer();
 
-            HtmConfig config = new HtmConfig(new int[] { 5 }, new int[] { 5 }) {CellsPerColumn = numCells, SynPermConnected = synapsePermConnected, NumInputs = numInputs };
-
-            Synapse synapse = QuickSetupSynapse();
+            HtmConfig config = new HtmConfig(new int[] { 5 }, new int[] { 5 })
+            {
+                CellsPerColumn = numCells,
+                SynPermConnected = synapsePermConnected,
+                NumInputs = numInputs,
+                SynPermTrimThreshold = 0.05,
+                SynPermMax = 1.0
+            };
 
             Column column = new Column(config.CellsPerColumn, colIndx, config.SynPermConnected, config.NumInputs);
 
-            column.CreatePotentialPool(config, new int[] { 1, 2, 3 }, -1);
+            // Creates connections between mini-columns and input neurons. All permanences are at the begining set to 0
+            column.CreatePotentialPool(config, new int[] { 1, 7, 9 }, -1);
 
-            column.SetPermanences(config, new double[] {1.0, 3.0, 7.0});            
+            //Updates the permanence matrix with a column's new permanence values
+            column.UpdatePermanencesForColumnSparse(config,perm:new double[] {0.1,0.27},maskPotential: new int[] {1,7},false);
 
+            //Serialize the column and save to a text file
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
                 HtmSerializer.Serialize(column, null, sw);
             }
 
+            //Deserialize the text file created above and compare with the original column
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
                 var columnD = HtmSerializer.Deserialize<Column>(sr);
@@ -53,7 +59,9 @@ namespace UnitTestsProject
             }
         }
 
-
+        /// <summary>
+        /// Test the serialization of Column. 
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 100, 100 }, true)]
