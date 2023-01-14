@@ -33,18 +33,18 @@ namespace NeoCortexApi
             }
         }
 
-        /// <summary>
-        /// Get the list of active cells from indicies.
-        /// </summary>
-        public ICollection<Cell> WinnerCells
-        {
-            get
-            {
-                var actCells = Cells.Where(c => WinnerCellsIndicies.Contains(c.Index));
+        ///// <summary>
+        ///// Get the list of active cells from indicies.
+        ///// </summary>
+        //public ICollection<Cell> WinnerCells
+        //{
+        //    get
+        //    {
+        //        var actCells = Cells.Where(c => WinnerCellsIndicies.Contains(c.Index));
 
-                return actCells.ToList();
-            }
-        }
+        //        return actCells.ToList();
+        //    }
+        //}
 
         public List<long> ActiveCellsIndicies { get; set; } = new List<long>();
 

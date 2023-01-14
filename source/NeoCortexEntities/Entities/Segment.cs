@@ -86,11 +86,11 @@ namespace NeoCortexApi.Entities
             this.m_LastUsedIteration = lastUsedIteration;
         }
 
-        public void KillSynapse(Synapse synapse, Segment segment)
+        public void KillSynapse(Synapse synapse)
         {
             synapse.SourceCell.ReceptorSynapses.Remove(synapse);
 
-            segment.Synapses.Remove(synapse);
+            this.Synapses.Remove(synapse);
         }
 
         /// <summary>
