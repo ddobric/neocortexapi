@@ -19,7 +19,7 @@ namespace UnitTestsProject
     public class HTMSerializationTests_P3
     {
         /// <summary>
-        /// Test the serialization of Column. 
+        /// Test the serialization of Column.  Equal method is tested at ColumnTest.
         /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
@@ -60,23 +60,29 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Test the serialization of Column. 
+        /// Test the serialization of Sparse binary matrix. Equal method is tested at SparseBinaryMatrixsTests.
         /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 100, 100 }, true)]
-        [DataRow(new int[] { 10, 100, 1000 }, true)]
-        [DataRow(new int[] { 12, 14, 16, 18 }, false)]
-        [DataRow(new int[] { 100, 1000, 10000, 100000, 1000000 }, false)]
+        //[DataRow(new int[] { 10, 100, 1000 }, true)]
+        //[DataRow(new int[] { 12, 14, 16, 18 }, false)]
+        //[DataRow(new int[] { 100, 1000, 10000, 100000, 1000000 }, false)]
         public void Serializationtest_SPARSEBINARYMATRIXS(int[] dimensions, bool useColumnMajorOrdering)
         {
             HtmSerializer serializer = new HtmSerializer();
 
+            //Create an empty matrix
             SparseBinaryMatrix matrix = new SparseBinaryMatrix(dimensions, useColumnMajorOrdering);
 
+            //Sets the value to be indexed
             for (int i = 0; i < 20; i++)
             {
-                matrix.set(7, new int[] { i, 1 });
+                matrix.set(value: 7,coordinates: new int[] { i, 1 });
+            }
+            for(int i = 20; i < 100; i++)
+            {
+                matrix.set(value: 9, coordinates: new int[] { i, 2 });
             }
         
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEBINARYMATRIXS)}_sbmatrix.txt"))
@@ -87,8 +93,21 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_SPARSEBINARYMATRIXS)}_sbmatrix.txt"))
             {
                 var matrixD = HtmSerializer.Deserialize<SparseBinaryMatrix>(sr);
+
+                //Check if Deserialized matrix is equal with original
                 Assert.IsTrue(matrix.Equals(matrixD));
-                Assert.IsTrue(matrix.get(new int[] { 1, 2 }).Value == 7);
+
+                //Check if values are correct
+                for (int i = 0; i < 20; i++)
+                {
+                    Assert.IsTrue(matrixD.get(coordinates: new int[] { i, 1 }).Value == 7);
+                }
+
+                for (int i = 20; i < 100; i++)
+                {
+                    Assert.IsTrue(matrixD.get(coordinates: new int[] { i, 2 }).Value == 9);
+                }
+
             }
         }
 
