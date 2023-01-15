@@ -15,67 +15,68 @@ namespace NeoCortexApi
     {
         protected ConcurrentDictionary<int, Segment> _segmentMap = new ConcurrentDictionary<int, Segment>();
 
-        public Cell[] Cells { get; set; }
+        /// <summary>
+        /// Number of cells in the area.
+        /// </summary>
+        private int _numCells;
 
+        /// <summary>
+        /// Map of active cells and their indexes in the virtual sparse array.
+        /// </summary>
+        private ConcurrentDictionary<long, Cell> Cells { get; set; } = new ConcurrentDictionary<long, Cell>();
+
+        /// <summary>
+        /// The name of the area.
+        /// </summary>
         public string Name { get; private set; }
-
 
         /// <summary>
         /// Get the list of active cells from indicies.
         /// </summary>
-        public List<Cell> ActiveCells
+        public ICollection<Cell> ActiveCells
         {
             get
             {
-                var actCells = Cells.Where(c=> ActiveCellsIndicies.Contains(c.Index));
+                var actCells = Cells.Values;
 
-                return actCells.ToList();
+                return actCells;
             }
         }
 
-        ///// <summary>
-        ///// Get the list of active cells from indicies.
-        ///// </summary>
-        //public ICollection<Cell> WinnerCells
-        //{
-        //    get
-        //    {
-        //        var actCells = Cells.Where(c => WinnerCellsIndicies.Contains(c.Index));
+        public long[] ActiveCellsIndicies
+        {
+            get
+            {
+                return Cells.Keys.ToArray();
+            }
+            set
+            {
+                Cells = new ConcurrentDictionary<long, Cell>();
 
-        //        return actCells.ToList();
-        //    }
-        //}
+                int indx = 0;
 
-        public List<long> ActiveCellsIndicies { get; set; } = new List<long>();
+                foreach (var item in value)
+                {
+                    Cells.TryAdd(item, new Cell(0, indx++, _numCells, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell));
+                }
+            }
+        } 
 
-        public List<long> WinnerCellsIndicies { get; set; } = new List<long>();
 
 
         public CorticalArea(string name, int numCells)
         {
             this.Name = name;
 
-            Cells = new Cell[numCells];
-        }
+            this._numCells = numCells;
 
+            Cells = new ConcurrentDictionary<long, Cell>();
+        }
 
         public override string ToString()
         {
-            return $"{Name} - Cells: {this.Cells.Length}";
+            return $"{Name} - Cells: {_numCells} - Active Cells : {Cells.Count}";
         }
-
-        public Segment[] AllDistalDendrites
-        {
-            get
-            {
-                return Cells.SelectMany(c => c.DistalDendrites).ToArray();
-            }
-        }
-
-        //public TSeg GetSegmentFromIndex<TSeg>(int segIndx) where TSeg : Segment
-        //{
-        //    return (TSeg)_segmentMap[segIndx];
-        //}
-
+              
     }
 }

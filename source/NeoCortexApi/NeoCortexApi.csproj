@@ -54,7 +54,6 @@
     <Compile Remove="DistributedCompute\HtmSparseIntDictionary.cs" />
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="HtmSerializer2.cs" />
-    <Compile Remove="NAA\TMAlgorithm.cs" />
     <Compile Remove="Network\NearestClassifier.cs" />
   </ItemGroup>
 
@@ -69,7 +68,6 @@
     <None Include="DistributedCompute\HtmSparseIntDictionary.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="HtmSerializer2.cs" />
-    <None Include="NAA\TMAlgorithm.cs" />
     <None Include="NeoCortexApi\NeoCortexAPI.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

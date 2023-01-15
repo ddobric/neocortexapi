@@ -69,7 +69,7 @@ namespace NeoCortexApi.Entities
         /// Constructs a new <see cref="Cell"/> object
         /// </summary>
         /// <param name="parentColumnIndx"></param>
-        /// <param name="colSeq">the index of this <see cref="Cell"/> within its column</param>
+        /// <param name="colSeq">The index of this <see cref="Cell"/> within its column.</param>
         /// <param name="numCellsPerColumn"></param>
         /// <param name="cellId"></param>
         /// <param name="cellActivity"></param>

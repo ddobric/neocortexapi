@@ -502,7 +502,7 @@ namespace NeoCortexApi
         /// <param name="random"></param>
         /// <param name="cells"></param>
         /// <returns></returns>
-        public static Cell GetLeastUsedCell(IList<Cell> cells, Random random)
+        public static Cell GetLeastUsedCell(ICollection<Cell> cells, Random random)
         {
             List<Cell> leastUsedCells = new List<Cell>();
             int minNumSegments = Integer.MaxValue;
@@ -560,6 +560,27 @@ namespace NeoCortexApi
                     }
                 }
             }
+            return maxSeg;
+        }
+
+
+        /// <summary>
+        /// <summary>
+        /// Gets the segment with maximal potential from all segments in the last cycle. 
+        /// Segment's potential is measured by number of potential synapses.
+        /// </summary>
+        /// <param name="matchingSegments"></param>
+        /// <returns>The segment with mot synapses.</returns>
+        public static Segment GetSegmentWithHighesPotential(IList<Segment> matchingSegments)
+        {
+            Segment maxSeg = matchingSegments[0];
+
+            for (int i = 1; i < matchingSegments.Count; i++)
+            {
+                if (matchingSegments[i].Synapses.Count > maxSeg.Synapses.Count)
+                    maxSeg = matchingSegments[i];
+            }
+
             return maxSeg;
         }
     }
