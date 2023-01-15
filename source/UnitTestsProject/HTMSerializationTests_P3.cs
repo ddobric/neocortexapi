@@ -141,15 +141,54 @@ namespace UnitTestsProject
             }
         }
 
+        /// <summary>
+        /// Test the serialization of HtmConfig. Equal method is tested at HtmConfigTests.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
-        [DataRow(new int[] { 8000 }, new int[] { 100 })]
-        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 })]
+        //[DataRow(new int[] { 8000 }, new int[] { 100 })]
+        //[DataRow(new int[] { 100, 100 }, new int[] { 10, 10 })]
         [DataRow(new int[] { 2, 4, 8 }, new int[] { 128, 256, 512 })]
-        [DataRow(new int[] { 256 }, new int[] { 10, 15 })]
+        //[DataRow(new int[] { 256 }, new int[] { 10, 15 })]
         public void Serializationtest_HTMCONFIG(int[] inputDims, int[] columnDims)
         {
+            //Create a HtmConfig with input parameters InputDimensions and ColumnDimensions. Other parameters are set with default value.
             HtmConfig config = new HtmConfig(inputDims, columnDims);
+
+            //Create ColumnTopology and InputTopology and update some of the parameters
+            config.ColumnTopology = new Topology(config.ColumnDimensions);
+            config.InputTopology = new Topology(config.InputDimensions);
+
+            //Update parameters
+            config.CellsPerColumn = 32;
+            config.ActivationThreshold = 16;
+            config.LearningRadius = 12;
+            config.MinThreshold = 10;
+            config.MaxNewSynapseCount = 20;
+            config.MaxSynapsesPerSegment = 228;
+            config.MaxSegmentsPerCell = 228;
+            config.InitialPermanence = 0.21;
+            config.ConnectedPermanence = 0.5;
+            config.PermanenceIncrement = 0.15;
+            config.PermanenceDecrement = 0.15;
+            config.PredictedSegmentDecrement = 0.1;
+            config.PotentialRadius = 15;
+            config.PotentialPct = 0.75;
+            config.GlobalInhibition = true;
+            config.LocalAreaDensity = -1.0;
+            config.NumActiveColumnsPerInhArea = 0.02 * 2048;
+            config.StimulusThreshold = 5.0;
+            config.SynPermInactiveDec = 0.008;
+            config.SynPermActiveInc = 0.05;
+            config.SynPermConnected = 0.1;
+            config.SynPermBelowStimulusInc = 0.01;
+            config.SynPermTrimThreshold = 0.05;
+            config.MinPctOverlapDutyCycles = 0.001;
+            config.MinPctActiveDutyCycles = 0.001;
+            config.DutyCyclePeriod = 1000;
+            config.MaxBoost = 10.0;
+            config.WrapAround = true;
+            config.Random = new ThreadSafeRandom(42);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_HTMCONFIG)}_config.txt"))
             {

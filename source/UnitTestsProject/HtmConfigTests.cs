@@ -13,6 +13,9 @@ namespace UnitTestsProject
     [TestClass]
     public class HtmConfigTests
     {
+        /// <summary>
+        /// Tests equal method of HtmConfig.
+        /// </summary>
         [TestMethod]
         public void CompareHtmConfigs()
         {
