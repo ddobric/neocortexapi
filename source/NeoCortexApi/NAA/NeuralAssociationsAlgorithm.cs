@@ -246,7 +246,8 @@ namespace NeoCortexApi
             {
                 Segment maxPotentialSeg = HtmCompute.GetSegmentWithHighesPotential(MatchingApicalSegments.ToArray());
 
-                var bestSeg = maxPotentialSeg.ParentCell;
+                if (maxPotentialSeg == null)
+                    return;
 
                 if (learn)
                 {
