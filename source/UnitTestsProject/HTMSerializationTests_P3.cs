@@ -111,6 +111,7 @@ namespace UnitTestsProject
             }
         }
 
+        //TODO: Need to test more
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 }, 12, 14, 16, 1, 2, 2, 2.0, 100)]
@@ -122,6 +123,7 @@ namespace UnitTestsProject
         {
             HtmConfig config = new HtmConfig(inputDims, columnDims);
 
+            //Create connections from config
             Connections connections = new Connections(config);
 
             Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
@@ -201,6 +203,10 @@ namespace UnitTestsProject
             }
         }
 
+
+        /// <summary>
+        /// Test the serialization of DistalDendrite. Equal method is tested at DistalDendriteTests.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(1, 2, 4, 1, 2, 2, 2.0, 100)]
@@ -209,6 +215,7 @@ namespace UnitTestsProject
         [DataRow(100, 200, 400, 10, 20, 20, 20.0, 1000)]
         public void Serializationtest_DISTALDENDRITE(int parentColumnIndx, int colSeq, int numCellsPerColumn, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
         {
+            //Create a DistalDendrite with a parent cell.
             Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
             DistalDendrite distalDendrite = new DistalDendrite(cell, flatIdx, lastUsedIteration, ordinal, synapsePermConnected, numInputs);
 
@@ -250,7 +257,9 @@ namespace UnitTestsProject
             }
         }
 
-
+        /// <summary>
+        /// Test the serialization of HtmModuleTopology. Equal method is tested at HtmModuleTopologyTests.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 1, 2, 4 }, true)]
