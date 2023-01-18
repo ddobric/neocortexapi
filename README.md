@@ -5,9 +5,9 @@
 
 The sample MultiSequenceLearning demonstrates how multiple sequences can be learned and illustrates how prediction works by using the experimental class Predictor. After sequences are learned, the predictor can be used to guess the next element by presenting a list of elements. Your task is to design and implement a sample demonstrating how anomaly detection can be implemented by using neocortexapi. For example, the learned sequence is 32, 37, 41, 38, 52, .., 12, 71. When the prediction is started, the sample provides a part of the sequence starting anywhere, like 41,38 etc.Sequences are read and learned from files containing learning and predicting sequences. No user interaction is allowed. Instead, the predictor predicts the next value when some value from predicting file is presented. The next appearing value is compared with the last predicted value. If presenting value and matching value are the same (including defined tolerance) there is no anomaly in the input sequence. If values mismatch, the anomaly is detected.
 
-Project members:
-Sourav Paul Sumit
-Anurag De
+Project members: 
+Sourav Paul Sumit;
+Anurag De.
 
 # Introduction
 This repository is the open source implementation of the Hierarchical Temporal Memory in C#/.NET Core. This repository contains set of libraries around **NeoCortext** API .NET Core library. **NeoCortex** API focuses implementation of _Hierarchical Temporal Memory Cortical Learning Algorithm_. Current version is first implementation of this algorithm on .NET platform. It includes the **Spatial Pooler**, **Temporal Pooler**, various encoders and **CorticalNetwork**  algorithms. Implementation of this library aligns to existing Python and JAVA implementation of HTM. Due similarities between JAVA and C#, current API of SpatialPooler in C# is very similar to JAVA API. However the implementation of future versions will include some API changes to API style, which is additionally more aligned to C# community.
