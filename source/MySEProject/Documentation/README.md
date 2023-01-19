@@ -10,6 +10,6 @@ Tasks to be done by each team member  -->
                                         To learn how sequence learning and prediction works.
                                         Play around with the ML.NET library and get familiar.
 
-Added new method for testing sequence.
+Added new method for testing sequence : RunMultiSequenceLearningExperiment()
                                         
                                          
