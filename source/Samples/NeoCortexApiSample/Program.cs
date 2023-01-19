@@ -1,5 +1,6 @@
 ﻿using NeoCortexApi;
 using NeoCortexApi.Encoders;
+using Org.BouncyCastle.Crypto.Engines;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,7 +30,8 @@ namespace NeoCortexApiSample
             //experiment.Run();
 
             RunMultiSimpleSequenceLearningExperiment();
-           //RunMultiSequenceLearningExperiment();
+            //RunMultiSequenceLearningExperiment();
+            //RunPredictionMultiSequenceExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -85,12 +87,17 @@ namespace NeoCortexApiSample
             PredictNextElement(predictor, list3);
         }
 
-
+        /// <summary>
+        /* This is the method which will contain the implementation by our team for the Project*/
+        /// </summary>
         private static void RunPredictionMultiSequenceExperiment()
         {
-            Dictionary<string, List<int>> sequences = new Dictionary<string, List<int>>();
-            sequences.Add("Seq1", new List<int>(new int[] { 3,5,6,7,9,8 }));
-            sequences.Add("Seq2", new List<int>(new int[] { 12,45,23,67,89 }));
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
+            sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
+
+            MultiSequenceLearning newExperiment = new MultiSequenceLearning();
+            var predictor = newExperiment.Run(sequences);
         }
 
 
