@@ -1,0 +1,27 @@
+Software Engineering (WinterSem) 2022/2023 Project..
+
+Project Title: ML22/23-15	Approve Prediction of Multisequence Learning..
+
+Team Name: Team_Matrix
+
+Team Members: 
+
+1.Faiz Mohammed Khan
+              
+2.Shiva Kumar Biru
+             
+3.Mohan Sai Ram Sarnala
+
+Tasks to be done by each team member..
+                                        
+*To analyze existing code in MultisequenceLearning.cs & the method 
+
+*RunMultiSequenceLearningExperiment.
+                                        
+*To learn how sequence learning and prediction works.
+                                        
+*Play around with the ML.NET library and get familiar.
+
+*Each member has to involve in the preparing paper.
+                                        
+                                         
