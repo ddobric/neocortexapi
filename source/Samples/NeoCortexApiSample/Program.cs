@@ -98,6 +98,9 @@ namespace NeoCortexApiSample
 
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
+            Dictionary<string, List<string>> sequences2 = new Dictionary<string, List<string>>();
+            sequences2.Add("Seq3", new List<string>(new string[] { "A", "C", "Z", "P", "L", "I" }));
+            //var predictor = newExperiment.Run(sequences2);
         }
 
 
