@@ -9,5 +9,7 @@ Tasks to be done by each team member  -->
                                         To analyze existing code in MultisequenceLearning.cs & the method RunMultiSequenceLearningExperiment.
                                         To learn how sequence learning and prediction works.
                                         Play around with the ML.NET library and get familiar.
+
+Added new method for testing sequence.
                                         
                                          
