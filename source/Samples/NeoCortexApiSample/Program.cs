@@ -28,8 +28,8 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-           // RunMultiSimpleSequenceLearningExperiment();
-           RunMultiSequenceLearningExperiment();
+            RunMultiSimpleSequenceLearningExperiment();
+           //RunMultiSequenceLearningExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -84,6 +84,15 @@ namespace NeoCortexApiSample
             predictor.Reset();
             PredictNextElement(predictor, list3);
         }
+
+
+        private static void RunPredictionMultiSequenceExperiment()
+        {
+            Dictionary<string, List<int>> sequences = new Dictionary<string, List<int>>();
+            sequences.Add("Seq1", new List<int>(new int[] { 3,5,6,7,9,8 }));
+            sequences.Add("Seq2", new List<int>(new int[] { 12,45,23,67,89 }));
+        }
+
 
         private static void PredictNextElement(Predictor predictor, double[] list)
         {
