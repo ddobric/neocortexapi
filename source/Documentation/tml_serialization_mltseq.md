@@ -40,7 +40,7 @@
 
 2. Train the model with the first inputValues set.
     - Set a name for the file where we are gonna save the first trained model( Model1.txt).
-    - Set a name for file used to trace values in the first trained model( Model1trace.tx).
+    - Set a name for file used to save SpatialPooler results of the first trained model( Model1trace.tx).
     - Create a new instance of class CortexLayer for the first model (model1).
     - Call TryLoad method of the class HtmSerializer. This method will check out if the filename already exists, and defines default values for CortexLayer model. Otherwise, it will load the existing file with the Load method.
     - In case the file doest not exist, it will train the model. 
@@ -62,7 +62,7 @@
             obj = Load<T>(fileName);
             return true;
         }
- ---------------------------------------------------------------------------
+ --------------------------------------------------------------------------------------
 
  --------------------------------------------------------------------------------------
          public static void Save(string fileName, object obj)
@@ -73,7 +73,7 @@
         }
 ------------------------------------------------------------------------------------
 
- ---------------------------------------------------------------------------
+------------------------------------------------------------------------------------
         var model1Name = "Model1.txt";
         var model1Trace = "Model1trace.txt";
         CortexLayer<object, object> model1;
@@ -89,9 +89,39 @@
 
         // Trace the persistence value of every column.
         sp1.TraceColumnPermenances(model1Trace);
+------------------------------------------------------------------------------------
+
+3. Train the model with the second inputValues set.
+    - Set the name of the file to save the second trained model( Model2.txt).
+    - Set the name of the file to save the SpatialPooler results( Model2trace.txt).
+    - Create new instance of class CortexLayer( model2).
+    - Try to load the file model2Name to see if it does exist. If the file is not found or overwrite mode is on (true), load the first trained model to the second model(Deserialization).
+    - Train the second model with the new input sequences( testValues). The other input parameters for the train method are the maxCycle (1000), and the SpatialPooler results from the last training("sp").
+    - Save the second trained model in the file model2Name( Serialization).
+    - sp2 will then be assigned the SpatialPooler results from the second training.
+    - the SpatialPooler persistence value of every column then stored in the file model2Trace.
+
+------------------------------------------------------------------------------
+        public static CortexLayer<object, object> Train(this CortexLayer<object, object> model, List<double> inputs, int maxCycle, string spName)
 ------------------------------------------------------------------------------
 
+------------------------------------------------------------------------------
+        // Recreate the model from the persisted state and train it with the second set.
+        var model2Name = "Model2.txt";
+        var model2Trace = "Model2trace.txt";
+        CortexLayer<object, object> model2;
+        if (HtmSerializer.TryLoad(model2Name, out model2) == false || overwrite)
+        {
+            model2 = HtmSerializer.Load<CortexLayer<object, object>>(model1Name);
+            model2.Train(testValues, 1000, "sp");
 
+            HtmSerializer.Save(model2Name, model2);
+        }
+        var sp2 = (SpatialPooler)model2.HtmModules["sp"];
+
+        // Trace the persistence value of every column.
+        sp2.TraceColumnPermenances(model2Trace);
+------------------------------------------------------------------------------
 
 
 
