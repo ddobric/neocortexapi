@@ -36,10 +36,42 @@
 
 
 2. Train the model with the first inputValues set.
-
     - Set a name for the file where we are gonna save the first trained model( Model1.txt).
     - Set a name for file used to trace values in the first trained model( Model1trace.tx).
-    - Create a new instance of class CortexLayer for the first model. 
+    - Create a new instance of class CortexLayer for the first model (model1).
+    - Call TryLoad method of the class HtmSerializer. This method will check out if the filename already exists, and defines default values for CortexLayer model. Otherwise, it will load the existing file with the Load method.
+ -------------------------------------------------------------------------
+        public static bool TryLoad<T>(string fileName, out T obj)
+        {
+            if (!File.Exists(fileName))
+            {
+                obj = default(T);
+                return false;
+            }
+
+            obj = Load<T>(fileName);
+            return true;
+        }
+ ---------------------------------------------------------------------------
+    - In case the file doest not exist, it will train the model. 
+    - New instance of SpatialPatternLearning is then created( experiment).
+    - The Train method is called to train the model for SpatialpatternLearning. The input parameter max( Max_Val) is defined for the encoder, and inputValues is the list of integer values that is used for the first training.
+    - The SpatialPooler results will be stored in "sp" using cortexLayer.GetResults("sp") method. 
+ ----------------------------------------------------------------------------------
+                    // This is a general way to get the SpatialPooler result from the layer.
+                    var activeColumns = cortexLayer.GetResult("sp") as int[];
+ --------------------------------------------------------------------------------------
+    - After the first traing, the trained model will be save in the file model1Name using StreamWritter
+ --------------------------------------------------------------------------------------
+         public static void Save(string fileName, object obj)
+        {
+            Reset();
+            using StreamWriter sw = new StreamWriter(fileName);
+            Serialize(obj, null, sw);
+        }
+------------------------------------------------------------------------------------
+    - sp1 will then be assigned the SpatialPooler results from the last training.
+    - the SpatialPooler persistence value of every column then stored in the file model1Trace.
  ---------------------------------------------------------------------------
         var model1Name = "Model1.txt";
         var model1Trace = "Model1trace.txt";
