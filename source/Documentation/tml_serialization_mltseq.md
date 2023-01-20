@@ -1,6 +1,12 @@
 1. Prepare input values for the HTM system by randomly choose from the sequence of integer.
 	- List<double> values is created. Since the max value is set to 20, the list values will contain a sequence of integer values from 0 to 19 [0,1,2,...,19]
 	- Add method is used to add the new object to the end of the list. Hence, the size of the list is then increased by 1. 
+    - seed is a random number used to calculate a starting value for the pseudo-random number sequence.
+	- random is new instance of the Random class, which is initialized with a specified seed value(42).
+	- List<double> inputValues is then created, it contains random numbers which are selected from the List values. The size of the List inputValues is half of the size of the List values.
+    - Retrieve objects from the List values that do not exist in the list inputValues to create another list testValues. Hence, we have two different random input sequences.
+	- These two random input sequences will be in turn used to train the HTM model. 
+
 --------------------------------------------------------------------------
 	List<double> values = new List<double>();
         int max = 20;
@@ -9,9 +15,7 @@
             values.Add(i);
         }
 --------------------------------------------------------------------------
-	- seed is a random number used to calculate a starting value for the pseudo-random number sequence.
-	- random is new instance of the Random class, which is initialized with a specified seed value(42).
-	- List<double> inputValues is then created, it contains random numbers which are selected from the List values. The size of the List inputValues is half of the size of the List values.
+
 --------------------------------------------------------------------------
 	int seed = 42;
         var random = new Random(seed);
@@ -28,8 +32,7 @@
             inputValues.Add(values[index]); // When it's a new object, it'll be added to the list inputValues.
         }
 ----------------------------------------------------------------------------
-	- Retrieve objects from the List values that do not exist in the list inputValues to create another list testValues. Hence, we have two different random input sequences.
-	- These two random input sequences will be in turn used to train the HTM model. 
+
 ----------------------------------------------------------------------------  
 	List<double> testValues = values.Except(inputValues).ToList();
 ----------------------------------------------------------------------------
@@ -40,6 +43,13 @@
     - Set a name for file used to trace values in the first trained model( Model1trace.tx).
     - Create a new instance of class CortexLayer for the first model (model1).
     - Call TryLoad method of the class HtmSerializer. This method will check out if the filename already exists, and defines default values for CortexLayer model. Otherwise, it will load the existing file with the Load method.
+    - In case the file doest not exist, it will train the model. 
+    - New instance of SpatialPatternLearning is then created( experiment).
+    - The Train method is called to train the model for SpatialpatternLearning. The input parameter max( Max_Val) is defined for the encoder, and inputValues is the list of integer values that is used for the first training.
+    - The SpatialPooler results will be stored in "sp".
+    - After the first traing, the trained model will be save in the file model1Name using StreamWritter.
+    - sp1 will then be assigned the SpatialPooler results from the last training.
+    - the SpatialPooler persistence value of every column then stored in the file model1Trace.
  -------------------------------------------------------------------------
         public static bool TryLoad<T>(string fileName, out T obj)
         {
@@ -53,15 +63,7 @@
             return true;
         }
  ---------------------------------------------------------------------------
-    - In case the file doest not exist, it will train the model. 
-    - New instance of SpatialPatternLearning is then created( experiment).
-    - The Train method is called to train the model for SpatialpatternLearning. The input parameter max( Max_Val) is defined for the encoder, and inputValues is the list of integer values that is used for the first training.
-    - The SpatialPooler results will be stored in "sp" using cortexLayer.GetResults("sp") method. 
- ----------------------------------------------------------------------------------
-                    // This is a general way to get the SpatialPooler result from the layer.
-                    var activeColumns = cortexLayer.GetResult("sp") as int[];
- --------------------------------------------------------------------------------------
-    - After the first traing, the trained model will be save in the file model1Name using StreamWritter
+
  --------------------------------------------------------------------------------------
          public static void Save(string fileName, object obj)
         {
@@ -70,8 +72,7 @@
             Serialize(obj, null, sw);
         }
 ------------------------------------------------------------------------------------
-    - sp1 will then be assigned the SpatialPooler results from the last training.
-    - the SpatialPooler persistence value of every column then stored in the file model1Trace.
+
  ---------------------------------------------------------------------------
         var model1Name = "Model1.txt";
         var model1Trace = "Model1trace.txt";
