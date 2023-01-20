@@ -36,9 +36,27 @@
 
 
 2. Train the model with the first inputValues set.
- 
 
+    - Set a name for the file where we are gonna save the first trained model( Model1.txt).
+    - Set a name for file used to trace values in the first trained model( Model1trace.tx).
+    - Create a new instance of class CortexLayer for the first model. 
+ ---------------------------------------------------------------------------
+        var model1Name = "Model1.txt";
+        var model1Trace = "Model1trace.txt";
+        CortexLayer<object, object> model1;
+        if (HtmSerializer.TryLoad(model1Name, out model1) == false)
+        {
+            var experiment = new SpatialPatternLearning();
+            model1 = experiment.Train(max, inputValues);
 
+            // persist the state of the model.
+            HtmSerializer.Save(model1Name, model1);
+        }
+        var sp1 = (SpatialPooler)model1.HtmModules["sp"];
+
+        // Trace the persistence value of every column.
+        sp1.TraceColumnPermenances(model1Trace);
+------------------------------------------------------------------------------
 
 
 
