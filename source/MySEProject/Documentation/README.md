@@ -11,5 +11,7 @@ Tasks to be done by each team member  -->
                                         Play around with the ML.NET library and get familiar.
 
 Added new method for testing sequence : RunMultiSequenceLearningExperiment()
+
+21.01.23: Analyzed the Run() method and RunExperiment() method in MultisequenceLearning.cs file. Next step would be test them with string sequences.
                                         
                                          
