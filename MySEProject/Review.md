@@ -1,0 +1,1 @@
+- Review Python and lear to programming MAUI App
