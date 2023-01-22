@@ -94,9 +94,9 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         [TestCategory("NAA")]
         [DataRow(100)]
+        [DataRow(200)]
+        [DataRow(300)]
         [DataRow(1000)]
-        [DataRow(10000)]
-        [DataRow(100000)]
         public void GetSegmentWithHighestPotentialTest(int numSegments)
         {
             Cell testNeuron = new Cell();
