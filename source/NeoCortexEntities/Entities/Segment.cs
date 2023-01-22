@@ -155,7 +155,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Seg: {this.SegmentIndex}";
+            return $"\tseg {this.SegmentIndex} Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}";
         }
     }
 }

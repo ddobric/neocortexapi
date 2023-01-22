@@ -19,14 +19,14 @@ namespace NeoCortexApi
     public class NeuralAssociationAlgorithm
     {
         /// <summary>
-        /// Every area has its own cycle results. Cellst that are acrive from the point of view of area1 might be different than 
+        /// Every _area has its own cycle results. Cellst that are acrive from the point of view of area1 might be different than 
         /// from the point of view of area2.
         /// </summary>
         //private Dictionary<string, ComputeCycle> _cycleResults;
 
         private int _iteration;
 
-        private CorticalArea area;
+        private CorticalArea _area;
 
         private HtmConfig _cfg;
 
@@ -72,38 +72,38 @@ namespace NeoCortexApi
 
 
         ///// <summary>
-        ///// Gets active segments of active cells in the computing (this) area.
+        ///// Gets active segments of active cells in the computing (this) _area.
         ///// </summary>
         //public List<ApicalDendrite> ActiveApicalSegmentsOfActiveCells
         //{
         //    get
         //    {
-        //        var indiciesOfActCells = this.area.ActiveCells.Select(c => c.Index);
+        //        var indiciesOfActCells = this._area.ActiveCells.Select(c => c.Index);
         //        return ActiveApicalSegments.Where(s => indiciesOfActCells.Contains(s.ParentCell.Index)).ToList();
         //    }
         //}
 
 
         ///// <summary>
-        ///// Gets active segments of matching cells in the computing (this) area.
+        ///// Gets active segments of matching cells in the computing (this) _area.
         ///// </summary>
         //public List<ApicalDendrite> MatchingApicalSegmentsOfActiveCells
         //{
         //    get
         //    {
-        //        var indiciesOfActCells = this.area.ActiveCells.Select(c => c.Index);
+        //        var indiciesOfActCells = this._area.ActiveCells.Select(c => c.Index);
         //        return MatchingApicalSegments.Where(s => indiciesOfActCells.Contains(s.ParentCell.Index)).ToList();
         //    }
         //}
 
         ///// <summary>
-        ///// Gets incative segments of active cells in the computing (this) area.
+        ///// Gets incative segments of active cells in the computing (this) _area.
         ///// </summary>
         //public List<ApicalDendrite> InactiveApicalSegmentsOfActiveCells
         //{
         //    get
         //    {
-        //        var indiciesOfActCells = this.area.ActiveCells.Select(c => c.Index);
+        //        var indiciesOfActCells = this._area.ActiveCells.Select(c => c.Index);
         //        return InactiveApicalSegments.Where(s => indiciesOfActCells.Contains(s.ParentCell.Index)).ToList();
         //    }
         //}
@@ -113,7 +113,7 @@ namespace NeoCortexApi
         {
             List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
 
-            foreach (var cell in this.area.ActiveCells)
+            foreach (var cell in this._area.ActiveCells)
             {
                 foreach (var seg in cell.ApicalDendrites)
                 {
@@ -128,7 +128,7 @@ namespace NeoCortexApi
         public NeuralAssociationAlgorithm(HtmConfig cfg, CorticalArea area, Random random = null)
         {
             this._cfg = cfg;
-            this.area = area;
+            this._area = area;
             if (random == null)
             {
                 this._rnd = new Random();
@@ -146,8 +146,8 @@ namespace NeoCortexApi
         {
             foreach (var area in associatedAreas)
             {
-                //if (!_cycleResults.ContainsKey(area.Name))
-                //    _cycleResults.Add(area.Name, new ComputeCycle());
+                //if (!_cycleResults.ContainsKey(_area.Name))
+                //    _cycleResults.Add(_area.Name, new ComputeCycle());
 
                 ActivateCells(area, learn: learn);
 
@@ -274,8 +274,8 @@ namespace NeoCortexApi
         /// <remarks>PHD ref: Algorithm 12 - Line 19-26.</remarks>
         private void AdaptIncativeSegments(CorticalArea associatedArea, bool learn, double permanenceIncrement, double permanenceDecrement)
         {
-            // Lookup the cell with the lowest number of synapses in the area.
-            var leastUsedPotentialCell = HtmCompute.GetLeastUsedCell(this.area.ActiveCells, _rnd);
+            // Lookup the cell with the lowest number of synapses in the _area.
+            var leastUsedPotentialCell = HtmCompute.GetLeastUsedCell(this._area.ActiveCells, _rnd);
 
             //foreach (var inactiveSeg in InactiveApicalSegmentsOfActiveCells)
             {
@@ -289,9 +289,9 @@ namespace NeoCortexApi
                         Segment newSegment;
 
                         //
-                        // We will create distal segments if associating cells are from the same area.
-                        // For all cells out of this area apical segments will be created.
-                        if (leastUsedPotentialCell.ParentAreaName == associatedArea.ActiveCells.First().ParentAreaName)
+                        // We will create distal segments if associating cells are from the same _area.
+                        // For all cells out of this _area apical segments will be created.
+                        if (this._area.Name == associatedArea.Name)
                             newSegment = CreateDistalSegment(leastUsedPotentialCell);
                         else
                             newSegment = CreateApicalSegment(leastUsedPotentialCell);
@@ -304,11 +304,11 @@ namespace NeoCortexApi
 
 
 
-        //protected BurstingResult BurstArea(CorticalArea area, List<Segment> matchingSegments,
+        //protected BurstingResult BurstArea(CorticalArea _area, List<Segment> matchingSegments,
         // ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
         //     Random random, bool learn)
         //{
-        //    IList<Cell> cells = area.Cells;
+        //    IList<Cell> cells = _area.Cells;
         //    Cell leastUsedOrMaxPotentialCell = null;
 
         //    //
@@ -323,7 +323,7 @@ namespace NeoCortexApi
         //    {
         //        // Debug.Write($"B.({matchingSegments.Count})");
 
-        //        Segment maxPotentialSeg = HtmCompute.GetSegmentwithHighesPotential(matchingSegments, prevActiveCells, this.LastActivity.PotentialSynapses);
+        //        Segment maxPotentialSeg = HtmCompute.GetSegmentWithHighesPotential(matchingSegments, prevActiveCells, this.LastActivity.PotentialSynapses);
 
         //        leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
 
@@ -624,6 +624,26 @@ namespace NeoCortexApi
 
                 return synapse;
             }
-        }       
+        }
+
+        /// <summary>
+        /// Gets the trace of the _area in the current cycle.
+        /// </summary>
+        /// <returns></returns>
+        public string TraceState()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"Iteration {_iteration}");
+
+            foreach (var cell in this._area.ActiveCells)
+            {
+                sb.Append(cell.TraceCell());
+
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
     }
 }

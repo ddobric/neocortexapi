@@ -8,7 +8,7 @@ using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Net.Http.Headers;
 using Naa = NeoCortexApi.NeuralAssociationAlgorithm;
-
+using System.Diagnostics;
 
 namespace UnitTestsProject
 {
@@ -146,6 +146,7 @@ namespace UnitTestsProject
             for (int i = 0; i < 100; i++)
             {
                 naa.Compute(areaX, true);
+                Debug.WriteLine(naa.TraceState());
             }
         }
     }
