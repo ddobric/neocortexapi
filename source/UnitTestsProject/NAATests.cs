@@ -32,6 +32,8 @@ namespace UnitTestsProject
                 MinPctActiveDutyCycles = 0.1,
                 DutyCyclePeriod = 10,
                 MaxBoost = 10,
+                ActivationThreshold = 10,
+                MinThreshold= 6,
                 RandomGenSeed = 42,
                 Random = new ThreadSafeRandom(42),
             };
