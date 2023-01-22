@@ -44,18 +44,41 @@ namespace NeoCortexApi
         {
             get
             {
-                return GetSegmentsOfActiveCells(_cfg.ActivationThreshold, int.MaxValue);
+                List<ApicalDendrite> actSegs = new List<ApicalDendrite>();
+
+                foreach (var cell in this._area.ActiveCells)
+                {
+                    foreach (var seg in cell.ApicalDendrites)
+                    {
+                        if (seg.NumConnectedSynapses >= _cfg.ActivationThreshold)
+                            actSegs.Add(seg);
+                    }
+                }
+
+                return actSegs;
             }
         }
 
         /// <summary>
-        /// Get matching segments.
+        /// Get matching segments.Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
+        /// more connected synapses than _cfg.MinThreshold.
         /// </summary>
         protected List<ApicalDendrite> MatchingApicalSegments
         {
             get
             {
-                return GetSegmentsOfActiveCells(_cfg.MinThreshold, _cfg.ActivationThreshold);
+                List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
+
+                foreach (var cell in this._area.ActiveCells)
+                {
+                    foreach (var seg in cell.ApicalDendrites)
+                    {
+                        if (seg.Synapses.Count >= _cfg.MinThreshold && seg.NumConnectedSynapses < _cfg.ActivationThreshold)
+                            matchSegs.Add(seg);
+                    }
+                }
+
+                return matchSegs;
             }
         }
 
@@ -66,64 +89,21 @@ namespace NeoCortexApi
         {
             get
             {
-                return GetSegmentsOfActiveCells(0, _cfg.MinThreshold);
-            }
-        }
+                List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
 
-
-        ///// <summary>
-        ///// Gets active segments of active cells in the computing (this) _area.
-        ///// </summary>
-        //public List<ApicalDendrite> ActiveApicalSegmentsOfActiveCells
-        //{
-        //    get
-        //    {
-        //        var indiciesOfActCells = this._area.ActiveCells.Select(c => c.Index);
-        //        return ActiveApicalSegments.Where(s => indiciesOfActCells.Contains(s.ParentCell.Index)).ToList();
-        //    }
-        //}
-
-
-        ///// <summary>
-        ///// Gets active segments of matching cells in the computing (this) _area.
-        ///// </summary>
-        //public List<ApicalDendrite> MatchingApicalSegmentsOfActiveCells
-        //{
-        //    get
-        //    {
-        //        var indiciesOfActCells = this._area.ActiveCells.Select(c => c.Index);
-        //        return MatchingApicalSegments.Where(s => indiciesOfActCells.Contains(s.ParentCell.Index)).ToList();
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Gets incative segments of active cells in the computing (this) _area.
-        ///// </summary>
-        //public List<ApicalDendrite> InactiveApicalSegmentsOfActiveCells
-        //{
-        //    get
-        //    {
-        //        var indiciesOfActCells = this._area.ActiveCells.Select(c => c.Index);
-        //        return InactiveApicalSegments.Where(s => indiciesOfActCells.Contains(s.ParentCell.Index)).ToList();
-        //    }
-        //}
-
-
-        private List<ApicalDendrite> GetSegmentsOfActiveCells(int thresholdMin, int thresholdMax)
-        {
-            List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
-
-            foreach (var cell in this._area.ActiveCells)
-            {
-                foreach (var seg in cell.ApicalDendrites)
+                foreach (var cell in this._area.ActiveCells)
                 {
-                    if (seg.NumConnectedSynapses >= thresholdMin && seg.NumConnectedSynapses < thresholdMax)
-                        matchSegs.Add(seg);
+                    foreach (var seg in cell.ApicalDendrites)
+                    {
+                        if (seg.Synapses.Count < _cfg.MinThreshold && seg.NumConnectedSynapses < _cfg.ActivationThreshold)
+                            matchSegs.Add(seg);
+                    }
                 }
-            }
 
-            return matchSegs;
+                return matchSegs;
+            }
         }
+
 
         public NeuralAssociationAlgorithm(HtmConfig cfg, CorticalArea area, Random random = null)
         {
