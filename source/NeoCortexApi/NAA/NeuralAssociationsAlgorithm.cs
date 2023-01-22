@@ -323,7 +323,7 @@ namespace NeoCortexApi
         //    {
         //        // Debug.Write($"B.({matchingSegments.Count})");
 
-        //        Segment maxPotentialSeg = HtmCompute.GetSegmentWithHighesPotential(matchingSegments, prevActiveCells, this.LastActivity.PotentialSynapses);
+        //        Segment maxPotentialSeg = HtmCompute.GetSegmentWithHighestPotential(matchingSegments, prevActiveCells, this.LastActivity.PotentialSynapses);
 
         //        leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
 
