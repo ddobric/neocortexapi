@@ -95,6 +95,7 @@ namespace NeoCortexApiSample
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
             sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
+            sequences.Add("Seq3", new List<double>(new double[] { 5, 15, 25, 35, 45 }));
 
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
