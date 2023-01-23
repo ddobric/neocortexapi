@@ -3,6 +3,7 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using NeoCortexApiPersistenceSample;
+using System.Diagnostics;
 
 Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(SpatialPatternLearning)}");
 
@@ -28,6 +29,7 @@ bool overwrite = true;
             {
                 index = random.Next(0, max);
             }
+
             inputValues.Add(values[index]);
         }
 

@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -51,6 +53,17 @@ namespace NeoCortexApi.Entities
         public int NumInputs { get; set; }
 
         /// <summary>
+        /// Gets the number of connected (active) synapses.These are synapses with premanence value greather than <see cref="HtmConfig.SynapsePermConnected"/>.
+        /// </summary>
+        public int NumConnectedSynapses
+        {
+            get
+            {
+                return this.Synapses.Count(s => s.Permanence >= this.SynapsePermConnected);
+            }
+        }
+
+        /// <summary>
         /// Default constructor used by serialization.
         /// </summary>
         protected Segment()
@@ -58,7 +71,6 @@ namespace NeoCortexApi.Entities
             this.Synapses = new List<Synapse>();
         }
 
- 
 
         /// <summary>
         /// Creates the proximal dentrite segment with specified index.
@@ -73,6 +85,13 @@ namespace NeoCortexApi.Entities
             this.Synapses = new List<Synapse>();
             this.SegmentIndex = index;
             this.m_LastUsedIteration = lastUsedIteration;
+        }
+
+        public void KillSynapse(Synapse synapse)
+        {
+            synapse.SourceCell.ReceptorSynapses.Remove(synapse);
+
+            this.Synapses.Remove(synapse);
         }
 
         /// <summary>
@@ -137,8 +156,21 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Seg: {this.SegmentIndex}";
+            StringBuilder sbPerms = new StringBuilder();
+
+            foreach (var syn in Synapses)
+            {
+                sbPerms.Append($" {syn.Permanence}");
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"\tseg {this.SegmentIndex} Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}, [Permanences: {sbPerms}]");
+                     
+            return sb.ToString();
+
+
         }
+
     }
 }
 

@@ -296,7 +296,7 @@ namespace NeoCortexApiSample
             }
 
             Debug.WriteLine("------------ END ------------");
-
+           
             return new Predictor(layer1, mem, cls);
         }
 

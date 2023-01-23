@@ -24,6 +24,12 @@ namespace NeoCortexApi.Entities
             this.m_Ordinal = ordinal;
         }
 
+        public ApicalDendrite(Cell parentCell, int index, double synapsePermConnected) : base(index, 0, synapsePermConnected, -1)
+        {
+            this.ParentCell = parentCell;
+            this.m_Ordinal = index;
+        }
+
 
         /// <summary>
         /// Compares by index.

@@ -68,9 +68,6 @@ namespace UnitTestsProject
             return new DistributedMemory()
             {
                 ColumnDictionary = new ActorSbDistributedDictionaryBase<Column>(cfg, UnitTestHelpers.GetLogger()),
-
-                //ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
-                //PoolDictionary = new HtmSparseIntDictionary<Pool>(cfg),
             };
         }
 
@@ -82,9 +79,6 @@ namespace UnitTestsProject
                 //PoolDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Pool>(1),
             };
         }
-
-
-
 
         /// <summary>
         /// Creates appropriate instance of SpatialPooler.
@@ -114,24 +108,29 @@ namespace UnitTestsProject
                 sp.Init(mem);
         }
 
-        ///// <summary>
-        ///// Creates pooler instance.
-        ///// </summary>
-        ///// <param name="poolerMode"></param>
-        ///// <returns></returns>
-        //public static SpatialPooler CreatePooler(PoolerMode poolerMode)
-        //{
-        //    SpatialPooler sp;
+        public static long[] CreateRandomSdr(long numCells, double sparsity)
+        {
+            Random rnd = new Random();
 
-        //    if (poolerMode == PoolerMode.Multinode)
-        //        sp = new SpatialPoolerParallel();
-        //    else if (poolerMode == PoolerMode.Multicore)
-        //        sp = new SpatialPoolerMT();
-        //    else
-        //        sp = new SpatialPooler();
+            var cells = new List<long>();
 
-        //    return sp;
-        //}
+            int numActCells = (int)(numCells * sparsity);
+
+            int actual = 0;
+
+            while (actual < numActCells)
+            {
+                long index = rnd.NextInt64(0, numCells-1);
+
+                if (cells.Contains(index) == false)
+                {
+                    cells.Add(index);
+                    actual++;
+                }
+            }
+
+            return cells.ToArray();
+        }
     }
 
 

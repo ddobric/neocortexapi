@@ -16,6 +16,8 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class HtmConfig : ISerializable
     {
+        public static readonly double EPSILON = 0.00001;
+
         /// <summary>
         /// Default constructor with the default set of parameters.
         /// </summary>
@@ -121,6 +123,13 @@ namespace NeoCortexApi.Entities
         /// a "connected synapse", meaning it can contribute to the cell's firing.
         /// </summary>
         public double SynPermConnected { get => synPermConnected; set { synPermConnected = value; SynPermBelowStimulusInc = value / 10.0; } }
+
+        /// <summary>
+        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
+        /// Synapses that exceeds this value are used in computation of active segments.
+        /// </summary>
+        [Obsolete("Use SynPermConnected instead.")]
+        public double ConnectedPermanence { get; set; } = 0.5;
 
         /// <summary>
         /// Specifies whether neighborhoods wider than the borders wrap around to the other side.
@@ -341,12 +350,6 @@ namespace NeoCortexApi.Entities
         /// Initial permanence of a new synapse
         /// </summary>
         public double InitialPermanence { get; set; } = 0.21;
-
-        /// <summary>
-        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
-        /// Synapses that exceeds this value are used in computation of active segments.
-        /// </summary>
-        public double ConnectedPermanence { get; set; } = 0.5;
 
         //public bool Learn { get; set; } = true;
         #endregion

@@ -751,7 +751,7 @@ namespace NeoCortexApi
             // In that case the density is calculated from inhibition radius.
             if (density <= 0)
             {
-                // inhibition area can be higher than num of all columns, if 
+                // inhibition _area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
                 inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.ColumnDimensions.Length);

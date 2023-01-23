@@ -47,8 +47,7 @@ namespace NeoCortexApi.Entities
         public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, lastUsedIteration, synapsePermConnected, numInputs)
         {
             this.ParentCell = parentCell;
-            this.m_Ordinal = ordinal;
-   
+            this.m_Ordinal = ordinal;   
         }
 
 

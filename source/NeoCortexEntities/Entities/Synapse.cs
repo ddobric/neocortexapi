@@ -106,10 +106,10 @@ namespace NeoCortexApi.Entities
         /// Called by <see cref="Connections.DestroySynapse(Synapse, Segment)"/> to assign a reused Synapse to another presynaptic Cell
         /// </summary>
         /// <param name="cell">the new presynaptic cell</param>
-        public void SetPresynapticCell(Cell cell)
-        {
-            this.SourceCell = cell;
-        }
+        //public void SetPresynapticCell(Cell cell)
+        //{
+        //    this.SourceCell = cell;
+        //}
 
         /// <summary>
         /// Returns the containing <see cref="Cell"/>

@@ -59,6 +59,7 @@ namespace HtmClassifierUnitTest
 
             var tokens = res.First().PredictedInput.Split('_');
             var tokens2 = res.First().PredictedInput.Split('-');
+            Debug.WriteLine($"->{tokens2[tokens.Length - 1]}");
             var predictValue = Convert.ToInt32(tokens2[tokens.Length - 1]);
             Assert.IsTrue(predictValue > 0);
         }

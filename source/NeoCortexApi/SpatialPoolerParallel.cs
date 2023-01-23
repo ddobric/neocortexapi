@@ -64,7 +64,7 @@ namespace NeoCortexApi
 
             //
             // Fill the sparse matrix with column objects
-            //var numCells = c.getCellsPerColumn();
+            //var _numCells = c.getCellsPerColumn();
 
             // var partitions = mem.GetPartitions();
 
@@ -72,7 +72,7 @@ namespace NeoCortexApi
             List<KeyPair> colList = new List<KeyPair>();
             for (int i = 0; i < numColumns; i++)
             {
-                //colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.getSynPermConnected(), c.NumInputs) });
+                //colList.Add(new KeyPair() { Key = i, Value = new Column(_numCells, i, c.getSynPermConnected(), c.NumInputs) });
                 colList.Add(new KeyPair() { Key = i, Value = c.HtmConfig });
             }
 
