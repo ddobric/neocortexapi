@@ -37,6 +37,7 @@ namespace NeoCortexApi
         /// </summary>
         public SegmentActivity LastActivity { get; set; }
 
+
         /// <summary>
         /// Get active segments.
         /// </summary>
@@ -233,7 +234,7 @@ namespace NeoCortexApi
                 {
                     AdaptSegment(maxPotentialSeg, associatingCells, permanenceIncrement, permanenceDecrement);
 
-                    int nGrowDesired = this._cfg.MaxNewSynapseCount - this.LastActivity.PotentialSynapses[maxPotentialSeg.SegmentIndex];
+                    int nGrowDesired = this._cfg.MaxNewSynapseCount - maxPotentialSeg.Synapses.Count;
 
                     if (nGrowDesired > 0)
                     {
@@ -386,7 +387,7 @@ namespace NeoCortexApi
                 KillSegment<ApicalDendrite>(lruSegment as ApicalDendrite, segmentParentCell.ApicalDendrites);
             }
 
-            int index = segmentParentCell.DistalDendrites.Count;
+            int index = segmentParentCell.ApicalDendrites.Count;
             ApicalDendrite segment = new ApicalDendrite(segmentParentCell, index, _iteration, index, this._cfg.SynPermConnected, -1 /* For proximal segments only.*/);
             segmentParentCell.ApicalDendrites.Add(segment);
 
@@ -606,6 +607,7 @@ namespace NeoCortexApi
             }
         }
 
+
         /// <summary>
         /// Gets the trace of the _area in the current cycle.
         /// </summary>
@@ -616,11 +618,11 @@ namespace NeoCortexApi
 
             sb.AppendLine($"Iteration {_iteration}");
 
+            sb.AppendLine($"Active Apical Segments: {ActiveApicalSegments.Count}, Matching Apical Segments: {MatchingApicalSegments.Count}, Inactive Apical Segments: {InactiveApicalSegments.Count}");
+
             foreach (var cell in this._area.ActiveCells)
             {
                 sb.Append(cell.TraceCell());
-
-                sb.AppendLine();
             }
 
             return sb.ToString();
