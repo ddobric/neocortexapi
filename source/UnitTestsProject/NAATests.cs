@@ -27,7 +27,8 @@ namespace UnitTestsProject
                 StimulusThreshold = 0.0,
                 SynPermInactiveDec = 0.01,
                 SynPermActiveInc = 0.1,
-                SynPermConnected = 0.1,
+                SynPermConnected = 0.5,
+                ConnectedPermanence = 0.5,
                 MinPctOverlapDutyCycles = 0.1,
                 MinPctActiveDutyCycles = 0.1,
                 DutyCyclePeriod = 10,
@@ -36,6 +37,8 @@ namespace UnitTestsProject
                 MinThreshold= 6,
                 RandomGenSeed = 42,
                 Random = new ThreadSafeRandom(42),
+                
+               
             };
 
             return htmConfig;

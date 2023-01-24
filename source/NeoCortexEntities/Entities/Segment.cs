@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -155,8 +156,21 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"\tseg {this.SegmentIndex} Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}";
+            StringBuilder sbPerms = new StringBuilder();
+
+            foreach (var syn in Synapses)
+            {
+                sbPerms.Append($" {syn.Permanence}");
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"\tseg {this.SegmentIndex} Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}, [Permanences: {sbPerms}]");
+                     
+            return sb.ToString();
+
+
         }
+
     }
 }
 
