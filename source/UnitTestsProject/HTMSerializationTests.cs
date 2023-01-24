@@ -20,7 +20,7 @@ namespace UnitTestsProject
             HtmSerializer htm = new HtmSerializer();
 
             using (StreamWriter sw = new StreamWriter("ser.txt"))
-            {
+            {             
                 htm.SerializeBegin("UnitTest", sw);
 
                 htm.SerializeValue(15, sw);

@@ -16,7 +16,7 @@ namespace NeoCortexApi
         protected ConcurrentDictionary<int, Segment> _segmentMap = new ConcurrentDictionary<int, Segment>();
 
         /// <summary>
-        /// Number of cells in the area.
+        /// Number of cells in the _area.
         /// </summary>
         private int _numCells;
 
@@ -26,7 +26,7 @@ namespace NeoCortexApi
         private ConcurrentDictionary<long, Cell> Cells { get; set; } = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
-        /// The name of the area.
+        /// The name of the _area.
         /// </summary>
         public string Name { get; private set; }
 
