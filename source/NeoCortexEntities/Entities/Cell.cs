@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -22,12 +23,6 @@ namespace NeoCortexApi.Entities
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-
-        /// <summary>
-        /// The mini-column or cortical column, which owns this cell.
-        /// Used by <see cref="nameof(NeuralAssociationsAlgorithm)." />
-        /// </summary>
-        public string ParentAreaName { get; set; }
 
         /// <summary>
         /// Optional. The mini-column, which owns this cell.
@@ -146,6 +141,26 @@ namespace NeoCortexApi.Entities
             return $"Cell: Indx={this.Index}, [{this.ParentColumnIndex}]";
         }
 
+
+        /// <summary>
+        /// Trace dendrites and synapses.
+        /// </summary>
+        /// <returns></returns>
+        public string TraceCell()
+        {
+            StringBuilder sb  = new StringBuilder();
+
+            sb.Append($"Cell {this.Index} ");
+
+            sb.AppendLine($"\tApical Segments {this.ApicalDendrites.Count}");
+
+            foreach (var seg in this.ApicalDendrites)
+            {
+                sb.AppendLine(seg.ToString());
+            }
+
+            return sb.ToString();
+        }
 
         /// <summary>
         /// Compares two cells.
