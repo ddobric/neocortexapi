@@ -264,17 +264,17 @@ namespace NeoCortexApi.Encoders
                 ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(minbin, maxbin + 1), 1);
             }
 
-            // Added guard against immense string concatenation
-            //if (LOGGER.isTraceEnabled())
-            //{
-            //    LOGGER.trace("");
-            //    LOGGER.trace("input: " + input);
-            //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
-            //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
-            //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
-            //    LOGGER.trace("output: " + Arrays.toString(output));
-            //    LOGGER.trace("input desc: " + decode(output, ""));
-            //}
+          // Added guard against immense string concatenation
+          //if (LOGGER.isTraceEnabled())
+          //{
+          //    LOGGER.trace("");
+          //    LOGGER.trace("input: " + input);
+          //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
+          //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
+          //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
+          //    LOGGER.trace("output: " + Arrays.toString(output));
+          //    LOGGER.trace("input desc: " + decode(output, ""));
+          //}
 
             // Output 1-D array of same length resulted in parameter N    
             return output;
