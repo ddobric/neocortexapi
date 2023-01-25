@@ -8,7 +8,7 @@ using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Net.Http.Headers;
 using Naa = NeoCortexApi.NeuralAssociationAlgorithm;
-
+using System.Diagnostics;
 
 namespace UnitTestsProject
 {
@@ -27,13 +27,18 @@ namespace UnitTestsProject
                 StimulusThreshold = 0.0,
                 SynPermInactiveDec = 0.01,
                 SynPermActiveInc = 0.1,
-                SynPermConnected = 0.1,
+                SynPermConnected = 0.5,
+                ConnectedPermanence = 0.5,
                 MinPctOverlapDutyCycles = 0.1,
                 MinPctActiveDutyCycles = 0.1,
                 DutyCyclePeriod = 10,
                 MaxBoost = 10,
+                ActivationThreshold = 10,
+                MinThreshold= 6,
                 RandomGenSeed = 42,
                 Random = new ThreadSafeRandom(42),
+                
+               
             };
 
             return htmConfig;
@@ -94,9 +99,9 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         [TestCategory("NAA")]
         [DataRow(100)]
+        [DataRow(200)]
+        [DataRow(300)]
         [DataRow(1000)]
-        [DataRow(10000)]
-        [DataRow(100000)]
         public void GetSegmentWithHighestPotentialTest(int numSegments)
         {
             Cell testNeuron = new Cell();
@@ -146,6 +151,7 @@ namespace UnitTestsProject
             for (int i = 0; i < 100; i++)
             {
                 naa.Compute(areaX, true);
+                Debug.WriteLine(naa.TraceState());
             }
         }
     }
