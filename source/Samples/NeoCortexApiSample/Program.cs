@@ -4,6 +4,7 @@ using Org.BouncyCastle.Crypto.Engines;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
 
@@ -61,7 +62,7 @@ namespace NeoCortexApiSample
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
             sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //
@@ -73,7 +74,7 @@ namespace NeoCortexApiSample
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
-            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
+            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
@@ -96,7 +97,21 @@ namespace NeoCortexApiSample
             sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
             sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
             sequences.Add("Seq3", new List<double>(new double[] { 5, 15, 25, 35, 45 }));
+            using (var reader = new StreamReader(@"C:\test.csv"))
+            {
+                List<double> listA = new List<double>();
+                List<double> listB = new List<double>();
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
 
+                    listA.Add(Convert.ToDouble(values[0]));
+                    listB.Add(Convert.ToDouble(values[1]));
+                }
+                sequences.Add("Seq4", listA);
+            }
+            
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
             Dictionary<string, List<string>> sequences2 = new Dictionary<string, List<string>>();
