@@ -296,6 +296,41 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns>The <see cref="List{T}"/></returns>
+        /// 
+
+        public override int GetBucketValues(object inputData)
+        {
+            int bucketVal = 0;
+            if(Object.ReferenceEquals(input) && Double.IsNaN(input))
+            {
+                input = SENTINEL_VALUE_FOR_MISSING_DATA;
+            }
+            if (input == double.NaN)
+            {
+                return 0;
+            }
+            var minbin = GetFirstOnBit(input)[0];
+            // For periodic encoders, the bucket index is the index of the center bit
+            if(Periodic)
+            {
+                bucketVal = minbin + HalfWidth;
+                if(bucketVal < 0)
+                {
+                    bucketVal += N;
+                }
+                else
+                {
+           /// for non-periodic encoders, the bucket index is the index of the left bit
+                    bucketVal = minbin;
+                }
+                return bucketVal;
+            }
+
+        }
+
+
+
+
         public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
@@ -306,5 +341,7 @@ namespace NeoCortexApi.Encoders
         //    var excludeMembers = new List<string> { nameof(ScalarEncoder.Properties) };
         //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         //}
+
+
     }
 }
