@@ -300,7 +300,7 @@ namespace NeoCortexApi.Encoders
 
         public override int GetBucketValues(object inputData)
         {
-            int bucketVal = 0;
+            int bucketIdx = 0;
             if(Object.ReferenceEquals(input) && Double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
@@ -314,16 +314,16 @@ namespace NeoCortexApi.Encoders
             if(Periodic)
             {
                 bucketVal = minbin + HalfWidth;
-                if(bucketVal < 0)
+                if(bucketIdx < 0)
                 {
-                    bucketVal += N;
+                    bucketIdx += N;
                 }
                 else
                 {
-           /// for non-periodic encoders, the bucket index is the index of the left bit
-                    bucketVal = minbin;
+                    /// for non-periodic encoders, the bucket index is the index of the left bit
+                    bucketIdx = minbin;
                 }
-                return bucketVal;
+                return bucketIdx;
             }
 
         }
