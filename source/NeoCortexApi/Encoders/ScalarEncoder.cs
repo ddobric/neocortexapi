@@ -32,6 +32,7 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public ScalarEncoder()
         {
+
         }
 
         /// <summary>
@@ -100,6 +101,8 @@ namespace NeoCortexApi.Encoders
                         "Number of bits in the SDR (%d) must be greater than 2, and recommended >= 21 (use forced=True to override)");
                 }
             }
+            // Initialized bucketValues to null.
+            this.bucketValues = null;
         }
 
 
@@ -158,6 +161,9 @@ namespace NeoCortexApi.Encoders
                 double nFloat = w * (Range / Radius) + 2 * Padding;
                 N = (int)(nFloat);
             }
+           
+            
+            
         }
 
         protected int? GetFirstOnBit(double input)

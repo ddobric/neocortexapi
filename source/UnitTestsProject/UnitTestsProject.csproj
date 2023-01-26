@@ -43,6 +43,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="..\NeoCortexApi\Encoders\ScalarEncoder.cs" Link="ScalarEncoder.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 	
 		<PackageReference Include="ImageBinarizer" Version="1.5.6" />
 		<PackageReference Include="IronXL.Excel" Version="2020.12.2" />
