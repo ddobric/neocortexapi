@@ -391,7 +391,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [DataRow("TestDigit\\digit1_binary_32bit.txt")]
-        public List<int> ReadCsvFileTest(String sourcePath)
+        public void ReadCsvFileTest(String sourcePath)
         {
             string fileContent = File.ReadAllText(sourcePath);
             string[] integerStrings = fileContent.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -405,7 +405,7 @@ namespace UnitTestsProject
                     intList.Add(int.Parse(sub[j].ToString()));
                 }
             }
-            return intList;
+
         }
 
 
