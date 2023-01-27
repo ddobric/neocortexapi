@@ -1,10 +1,12 @@
 ﻿using NeoCortexApi;
 using NeoCortexApi.Encoders;
+using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
+using NeoCortexApi.Entities;
 
 namespace NeoCortexApiSample
 {
@@ -29,7 +31,35 @@ namespace NeoCortexApiSample
             //experiment.Run();
 
            // RunMultiSimpleSequenceLearningExperiment();
-           RunMultiSequenceLearningExperiment();
+           //RunMultiSequenceLearningExperiment();
+
+        }
+
+        private static void RunMultiSequenceLearningSerialization()
+        {
+            // Prepare MultiSequence inputs for training
+
+            // Generate input for the first training 
+            Dictionary<string, List<double>> sequences1 = new Dictionary<string, List<double>>();
+
+            sequences1.Add("S1", new List<double>(new double[] { 2.0, 5.0, 3.0, 6.0, 9.0, 10.0, 8.0, }));
+            sequences1.Add("S2", new List<double>(new double[] { 3.0, 4.0, 6.0, 12.0, 17.0, 19.0, 16.0 }));
+
+            //Generate input for the second training
+            Dictionary<string, List<double>> sequences2 = new Dictionary<string, List<double>>();
+
+            sequences2.Add("S1", new List<double>(new double[] { 2.0, 5.0, 4.0, 6.0, 12.0, 8.0, 7.0, }));
+            sequences2.Add("S2", new List<double>(new double[] { 3.0, 11.0, 6.0, 13.0, 9.0, 10.0, 11.0 }));
+
+            //Train the first set
+            var model1Name = "Model1.txt";
+            var model1Trace = "Model1trace.txt";
+            CortexLayer<object, object> model1;
+            if (HtmSerializer.TryLoad(model1Name, out model1) == false)
+            {
+                MultiSequenceLearning experiment = new MultiSequenceLearning();
+                model1 = experiment.Train(sequences1); // Need to implement MultiSequenceLearning.Train() method? 
+            }
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
