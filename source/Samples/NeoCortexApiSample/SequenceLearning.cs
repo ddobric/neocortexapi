@@ -21,9 +21,13 @@ namespace NeoCortexApiSample
         {
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(SequenceLearning)}");
 
+            // We will use 100 bits to represent an input vector (pattern).
             int inputBits = 100;
+            // We will build a slice of the cortex with the given number of mini-columns
             int numColumns = 1024;
 
+            //
+            // Set of the configuration parameters used in the experiment.
             HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
                 Random = new ThreadSafeRandom(42),
@@ -52,7 +56,8 @@ namespace NeoCortexApiSample
         };
 
             double max = 20;
-
+            //
+            // This dictionary defines a set of typical encoder parameters.
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 15},
@@ -65,6 +70,7 @@ namespace NeoCortexApiSample
                 { "MaxVal", max}
             };
 
+            // Created an instance of class ScalarEncoder with the defined settings.
             EncoderBase encoder = new ScalarEncoder(settings);
 
             // not stable with 2048 cols 25 cells per column and 0.02 * numColumns synapses on segment.
@@ -309,6 +315,7 @@ namespace NeoCortexApiSample
 
             return key;
         }
+
 
     }
 }
