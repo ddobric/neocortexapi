@@ -2,6 +2,7 @@
 using NeoCortexApi.Encoders;
 using Org.BouncyCastle.Crypto.Engines;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,9 +31,9 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            RunMultiSimpleSequenceLearningExperiment();
+            //RunMultiSimpleSequenceLearningExperiment();
             //RunMultiSequenceLearningExperiment();
-            //RunPredictionMultiSequenceExperiment();
+            RunPredictionMultiSequenceExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -94,10 +95,10 @@ namespace NeoCortexApiSample
         private static void RunPredictionMultiSequenceExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
+            /*sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
             sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
-            sequences.Add("Seq3", new List<double>(new double[] { 5, 15, 25, 35, 45 }));
-            using (var reader = new StreamReader(@"C:\test.csv"))
+            sequences.Add("Seq3", new List<double>(new double[] { 5, 15, 25, 35, 45 }));*/
+            using (var reader = new StreamReader(@"C:\Users\Faiz\Desktop\test.txt"))
             {
                 List<double> listA = new List<double>();
                 List<double> listB = new List<double>();
@@ -110,13 +111,15 @@ namespace NeoCortexApiSample
                     listB.Add(Convert.ToDouble(values[1]));
                 }
                 sequences.Add("Seq4", listA);
+                sequences.Add("Seq5", listB);
             }
             
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
-            Dictionary<string, List<string>> sequences2 = new Dictionary<string, List<string>>();
-            sequences2.Add("Seq3", new List<string>(new string[] { "A", "C", "Z", "P", "L", "I" }));
             //var predictor = newExperiment.Run(sequences2);
+            var list = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
+            predictor.Reset();
+            PredictNextElement(predictor, list);
         }
 
 
