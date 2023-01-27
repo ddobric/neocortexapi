@@ -230,21 +230,23 @@ namespace UnitTestsProject
             }
         }
 
-
+        /// <summary>
+        /// Test the serialization of DistributedMemory. Equal method is tested at DistributedMemoryTests.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
-        [DataRow(1, 1, 1.0, 1)]
-        [DataRow(2, 5, 8.3, 2)]
-        [DataRow(10, 25, 10.0, 100)]
-        [DataRow(12, 14, 8.7, 1000)]
-        public void Serializationtest_DISTRIBUTEDMEMORY(int numCells, int colIndx, double synapsePermConnected, int numInputs)
+        public void Serializationtest_DISTRIBUTEDMEMORY()
         {
-            Column column = new Column(numCells, colIndx, synapsePermConnected, numInputs);
+            Column column1 = new Column(numCells: 1, colIndx: 1, synapsePermConnected: 1.0, numInputs: 1);
+            Column column2 = new Column(numCells: 15, colIndx: 2, synapsePermConnected: 1.0, numInputs: 3);
+            Column column3 = new Column(numCells: 12, colIndx: 3, synapsePermConnected: 1.0, numInputs: 5);
 
             DistributedMemory distributedMemory = new DistributedMemory();
 
-            distributedMemory.ColumnDictionary = new InMemoryDistributedDictionary<int, Column>(1);
-            distributedMemory.ColumnDictionary.Add(1, column);
+            distributedMemory.ColumnDictionary = new InMemoryDistributedDictionary<int, Column>(3);
+            distributedMemory.ColumnDictionary.Add(1, column1);
+            distributedMemory.ColumnDictionary.Add(2, column2);
+            distributedMemory.ColumnDictionary.Add(3, column3);
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_DISTRIBUTEDMEMORY)}_dm.txt"))
             {
@@ -253,7 +255,16 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_DISTRIBUTEDMEMORY)}_dm.txt"))
             {
                 DistributedMemory distributedMemoryD = HtmSerializer.Deserialize<DistributedMemory>(sr);
+
+                //Check if Deserialized DistributedMemory is equal with original
                 Assert.IsTrue(distributedMemory.Equals(distributedMemoryD));
+
+                //Check column count in both DistributedMemory
+                Assert.IsTrue(distributedMemory.ColumnDictionary.Count.Equals(3));
+                Assert.IsTrue(distributedMemoryD.ColumnDictionary.Count.Equals(3));
+
+                //Check if all columns are the same
+                Assert.IsTrue(distributedMemory.ColumnDictionary.ElementsEqual(distributedMemoryD.ColumnDictionary));
             }
         }
 
