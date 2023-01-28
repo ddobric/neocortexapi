@@ -30,9 +30,9 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-           // RunMultiSimpleSequenceLearningExperiment();
-           //RunMultiSequenceLearningExperiment();
-
+            // RunMultiSimpleSequenceLearningExperiment();
+            //RunMultiSequenceLearningExperiment();
+            RunMultiSequenceLearningSerialization();
         }
 
         private static void RunMultiSequenceLearningSerialization()
@@ -57,8 +57,8 @@ namespace NeoCortexApiSample
             CortexLayer<object, object> model1;
             if (HtmSerializer.TryLoad(model1Name, out model1) == false)
             {
-                MultiSequenceLearning experiment = new MultiSequenceLearning();
-                model1 = experiment.Train(sequences1); // Need to implement MultiSequenceLearning.Train() method? 
+                MultisequenceSerialization experiment = new MultisequenceSerialization();
+                model1 = experiment.Train(sequences1);
             }
         }
 
