@@ -51,6 +51,22 @@ namespace UnitTestsProject
             return htmConfig;
         }
 
+        [TestMethod]
+        public void TestBurstUnpredictedColumns()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0 };
+            var burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4 });
+
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
+        }
 
     }
 }
