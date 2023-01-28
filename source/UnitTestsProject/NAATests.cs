@@ -134,7 +134,7 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("NAA")]
-        public void CreateAreaTest2()
+        public void AssociateAreasTest()
         {
             var cfg = GetHtmConfig(100, 1024);
 

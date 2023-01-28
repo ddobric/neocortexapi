@@ -39,7 +39,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Get active segments.
+        /// Get active inactiveSegments.
         /// </summary>
         protected List<ApicalDendrite> ActiveApicalSegments
         {
@@ -61,7 +61,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Get matching segments.Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
+        /// Get matching inactiveSegments.Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
         /// more connected synapses than _cfg.MinThreshold.
         /// </summary>
         protected List<ApicalDendrite> MatchingApicalSegments
@@ -84,7 +84,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Get segments that are neither matching nor active.
+        /// Get inactiveSegments that are neither matching nor active.
         /// </summary>
         protected List<ApicalDendrite> InactiveApicalSegments
         {
@@ -161,21 +161,21 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// TM activated segments on the column in the previous cycle. This method locates such segments and 
-        /// adapts them and return owner cells of active segments.
+        /// TM activated inactiveSegments on the column in the previous cycle. This method locates such inactiveSegments and 
+        /// adapts them and return owner cells of active inactiveSegments.
         /// </summary>
         /// <param name="conn"></param>
-        /// <param name="activeSegments">Active segments as calculated (activated) in the previous step.</param>
+        /// <param name="activeSegments">Active inactiveSegments as calculated (activated) in the previous step.</param>
         /// <param name="matchingSegments"></param>
         /// <param name="associatingCells">Cells active in the current cycle.</param>
         /// <param name="prevWinnerCells"></param>
         /// <param name="permanenceIncrement"></param>
         /// <param name="permanenceDecrement"></param>
         /// <param name="learn"></param>
-        /// <returns>Cells which owns active column segments as calculated in the previous step.</returns>
+        /// <returns>Cells which owns active column inactiveSegments as calculated in the previous step.</returns>
         protected void AdaptActiveSegments(ICollection<Cell> associatingCells, bool learn, double permanenceIncrement, double permanenceDecrement)
         {
-            // List of cells that owns active segments. These cells will be activated in this cycle.
+            // List of cells that owns active inactiveSegments. These cells will be activated in this cycle.
             // In previous cycle they are depolarized.
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
 
@@ -211,19 +211,19 @@ namespace NeoCortexApi
 
         private void AdaptMatchingSegments(ICollection<Cell> associatingCells, bool learn, double permanenceIncrement, double permanenceDecrement)
         {
-            // List of cells that owns active segments. These cells will be activated in this cycle.
+            // List of cells that owns active inactiveSegments. These cells will be activated in this cycle.
             // In previous cycle they are depolarized.
             List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
 
             //
-            // Matching segments result from number of potential synapses. These are segments with number of potential
+            // Matching inactiveSegments result from number of potential synapses. These are inactiveSegments with number of potential
             // synapses permanence higher than some minimum threshold value.
             // Potential synapses are synapses from presynaptc cells connected to the active cell.
             // In other words, synapse permanence between presynaptic cell and the active cell defines a statistical prediction that active cell will become the active in the next cycle.
-            // Bursting will create new segments if there are no matching segments until some matching segments appear. 
+            // Bursting will create new inactiveSegments if there are no matching inactiveSegments until some matching inactiveSegments appear. 
             // Once that happen, segment adoption will start.
-            // If some matching segments exist, bursting will grab the segment with most potential synapses and adapt it.
-           // foreach (var matchSeg in MatchingApicalSegmentsOfActiveCells)
+            // If some matching inactiveSegments exist, bursting will grab the segment with most potential synapses and adapt it.
+            // foreach (var matchSeg in MatchingApicalSegmentsOfActiveCells)
             {
                 Segment maxPotentialSeg = HtmCompute.GetSegmentWithHighesPotential(MatchingApicalSegments.ToArray());
 
@@ -258,7 +258,9 @@ namespace NeoCortexApi
             // Lookup the cell with the lowest number of synapses in the _area.
             var leastUsedPotentialCell = HtmCompute.GetLeastUsedCell(this._area.ActiveCells, _rnd);
 
-            //foreach (var inactiveSeg in InactiveApicalSegmentsOfActiveCells)
+            Segment[] inactiveSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : InactiveApicalSegments.ToArray();
+
+            foreach (var inactiveSeg in inactiveSegments)
             {
                 if (learn)
                 {
@@ -270,8 +272,8 @@ namespace NeoCortexApi
                         Segment newSegment;
 
                         //
-                        // We will create distal segments if associating cells are from the same _area.
-                        // For all cells out of this _area apical segments will be created.
+                        // We will create distal inactiveSegments if associating cells are from the same _area.
+                        // For all cells out of this _area apical inactiveSegments will be created.
                         if (this._area.Name == associatedArea.Name)
                             newSegment = CreateDistalSegment(leastUsedPotentialCell);
                         else
@@ -283,7 +285,10 @@ namespace NeoCortexApi
             }
         }
 
-
+        private static bool DistalOrApical(CorticalArea area1, CorticalArea area2)
+        {
+            return area1.Name == area2.Name;
+        }
 
         //protected BurstingResult BurstArea(CorticalArea _area, List<Segment> matchingSegments,
         // ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
@@ -293,13 +298,13 @@ namespace NeoCortexApi
         //    Cell leastUsedOrMaxPotentialCell = null;
 
         //    //
-        //    // Matching segments result from number of potential synapses. These are segments with number of potential
+        //    // Matching inactiveSegments result from number of potential synapses. These are inactiveSegments with number of potential
         //    // synapses permanence higher than some minimum threshold value.
         //    // Potential synapses are synapses from presynaptc cells connected to the active cell.
         //    // In other words, synapse permanence between presynaptic cell and the active cell defines a statistical prediction that active cell will become the active in the next cycle.
-        //    // Bursting will create new segments if there are no matching segments until some matching segments appear. 
+        //    // Bursting will create new inactiveSegments if there are no matching inactiveSegments until some matching inactiveSegments appear. 
         //    // Once that happen, segment adoption will start.
-        //    // If some matching segments exist, bursting will grab the segment with most potential synapses and adapt it.
+        //    // If some matching inactiveSegments exist, bursting will grab the segment with most potential synapses and adapt it.
         //    if (matchingSegments != null && matchingSegments.Count > 0)
         //    {
         //        // Debug.Write($"B.({matchingSegments.Count})");
@@ -379,8 +384,8 @@ namespace NeoCortexApi
         public ApicalDendrite CreateApicalSegment(Cell segmentParentCell)
         {
             //
-            // If there are more segments than maximal allowed number of segments per cell,
-            // least used segments will be destroyed.
+            // If there are more inactiveSegments than maximal allowed number of inactiveSegments per cell,
+            // least used inactiveSegments will be destroyed.
             while (segmentParentCell.ApicalDendrites.Count >= this._cfg.MaxSegmentsPerCell)
             {
                 var lruSegment = GetLeastRecentlyUsedSegment(segmentParentCell.ApicalDendrites.ToArray());
@@ -388,7 +393,7 @@ namespace NeoCortexApi
             }
 
             int index = segmentParentCell.ApicalDendrites.Count;
-            ApicalDendrite segment = new ApicalDendrite(segmentParentCell, index, _iteration, index, this._cfg.SynPermConnected, -1 /* For proximal segments only.*/);
+            ApicalDendrite segment = new ApicalDendrite(segmentParentCell, index, _iteration, index, this._cfg.SynPermConnected, -1 /* For proximal inactiveSegments only.*/);
             segmentParentCell.ApicalDendrites.Add(segment);
 
             return segment;
@@ -397,8 +402,8 @@ namespace NeoCortexApi
         public DistalDendrite CreateDistalSegment(Cell segmentParentCell)
         {
             //
-            // If there are more segments than maximal allowed number of segments per cell,
-            // least used segments will be destroyed.
+            // If there are more inactiveSegments than maximal allowed number of inactiveSegments per cell,
+            // least used inactiveSegments will be destroyed.
             while (segmentParentCell.DistalDendrites.Count >= this._cfg.MaxSegmentsPerCell)
             {
                 var lruSegment = GetLeastRecentlyUsedSegment(segmentParentCell.DistalDendrites.ToArray());
@@ -406,7 +411,7 @@ namespace NeoCortexApi
             }
 
             int index = segmentParentCell.DistalDendrites.Count;
-            DistalDendrite segment = new DistalDendrite(segmentParentCell, index, _iteration, index, this._cfg.SynPermConnected, -1 /* For proximal segments only.*/);
+            DistalDendrite segment = new DistalDendrite(segmentParentCell, index, _iteration, index, this._cfg.SynPermConnected, -1 /* For proximal inactiveSegments only.*/);
             segmentParentCell.DistalDendrites.Add(segment);
 
             return segment;
