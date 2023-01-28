@@ -52,7 +52,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void TestBurstUnpredictedColumns()
+        public void TestBurstUnpredictedColumns1()
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
@@ -65,7 +65,7 @@ namespace UnitTestsProject
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
-            Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
+            Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
         }
 
     }
