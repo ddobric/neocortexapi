@@ -91,6 +91,7 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+        [TestCategory("Prod")]
         [TestCategory("NAA")]
         [DataRow(100)]
         [DataRow(1000)]
