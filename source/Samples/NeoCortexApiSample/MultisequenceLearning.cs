@@ -91,14 +91,20 @@ namespace NeoCortexApiSample
 
             int maxMatchCnt = 0;
 
+            // Create htm memory.
             var mem = new Connections(cfg);
 
+            // The model is first unstable. 
             bool isInStableState = false;
 
+            // Create new instance of class HtmClassifier.
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
+            // Get the number of unique inputs in the sequences dictionary.
             var numUniqueInputs = GetNumberOfInputs(sequences);
 
+            // Create new instance of class CortexLayer.
+            // Algorithm will be performed inside of that layer.
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
             TemporalMemory tm = new TemporalMemory();
@@ -120,9 +126,12 @@ namespace NeoCortexApiSample
                 //tm.Reset(mem);
             }, numOfCyclesToWaitOnChange: 50);
 
-
+            // It creates the instance of Spatial Pooler Multithreaded Homeostatic Plasticity controller version.
             SpatialPoolerMT sp = new SpatialPoolerMT(hpc);
+
+            // Initializes the Spatial Pooler Algorithm.
             sp.Init(mem);
+            // Initializes the Temporal Memory Algorithm.
             tm.Init(mem);
 
             // Please note that we do not add here TM in the layer.
@@ -130,6 +139,7 @@ namespace NeoCortexApiSample
             // In this stage we want that SP get boosted and see all elements before we start learning with TM.
             // All would also work fine with TM in layer, but it would work much slower.
             // So, to improve the speed of experiment, we first ommit the TM and then after the newborn-stage we add it to the layer.
+            // First the Encoder and Spatial Pooler Instances are added to the CortexLayer. 
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
 
@@ -207,8 +217,11 @@ namespace NeoCortexApiSample
                     {
                         Debug.WriteLine($"-------------- {input} ---------------");
 
+                        // Learn the input pattern.
+                        // Output lyrOut is the output of the last module in the layer.
                         var lyrOut = layer1.Compute(input, true) as ComputeCycle;
 
+                        // This is a general way to get the SpatialPooler result from the layer.
                         var activeColumns = layer1.GetResult("sp") as int[];
 
                         previousInputs.Add(input.ToString());
