@@ -255,32 +255,35 @@ namespace NeoCortexApi
         /// <remarks>PHD ref: Algorithm 12 - Line 19-26.</remarks>
         private void AdaptIncativeSegments(CorticalArea associatedArea, bool learn, double permanenceIncrement, double permanenceDecrement)
         {
+            if (learn == false)
+                return;
+
             // Lookup the cell with the lowest number of synapses in the _area.
-            var leastUsedPotentialCell = HtmCompute.GetLeastUsedCell(this._area.ActiveCells, _rnd);
+            //var leastUsedPotentialCell = HtmCompute.GetLeastUsedCell(this._area.ActiveCells, _rnd);
 
             Segment[] inactiveSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : InactiveApicalSegments.ToArray();
 
+            //
+            // New segments are created on every cell owner of the inactive segment.
+            // In a case of HTM-TM, new segment is created only at the leastUsedPotentialCell of the active mini-column.
             foreach (var inactiveSeg in inactiveSegments)
             {
-                if (learn)
+                // This is why we substract number of winner cells from the MaxNewSynapseCount.
+                int nGrowExact = Math.Min(this._cfg.MaxNewSynapseCount, associatedArea.ActiveCells.Count);
+
+                if (nGrowExact > 0)
                 {
-                    // This is why we substract number of winner cells from the MaxNewSynapseCount.
-                    int nGrowExact = Math.Min(this._cfg.MaxNewSynapseCount, associatedArea.ActiveCells.Count);
+                    Segment newSegment;
 
-                    if (nGrowExact > 0)
-                    {
-                        Segment newSegment;
+                    //
+                    // We will create distal inactiveSegments if associating cells are from the same _area.
+                    // For all cells out of this _area apical inactiveSegments will be created.
+                    if (this._area.Name == associatedArea.Name)
+                        newSegment = CreateDistalSegment(inactiveSeg.ParentCell);
+                    else
+                        newSegment = CreateApicalSegment(inactiveSeg.ParentCell);
 
-                        //
-                        // We will create distal inactiveSegments if associating cells are from the same _area.
-                        // For all cells out of this _area apical inactiveSegments will be created.
-                        if (this._area.Name == associatedArea.Name)
-                            newSegment = CreateDistalSegment(leastUsedPotentialCell);
-                        else
-                            newSegment = CreateApicalSegment(leastUsedPotentialCell);
-
-                        GrowSynapses(associatedArea.ActiveCells, newSegment, this._cfg.InitialPermanence, nGrowExact, this._cfg.MaxSynapsesPerSegment, _rnd);
-                    }
+                    GrowSynapses(associatedArea.ActiveCells, newSegment, this._cfg.InitialPermanence, nGrowExact, this._cfg.MaxSynapsesPerSegment, _rnd);
                 }
             }
         }
@@ -289,67 +292,6 @@ namespace NeoCortexApi
         {
             return area1.Name == area2.Name;
         }
-
-        //protected BurstingResult BurstArea(CorticalArea _area, List<Segment> matchingSegments,
-        // ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
-        //     Random random, bool learn)
-        //{
-        //    IList<Cell> cells = _area.Cells;
-        //    Cell leastUsedOrMaxPotentialCell = null;
-
-        //    //
-        //    // Matching inactiveSegments result from number of potential synapses. These are inactiveSegments with number of potential
-        //    // synapses permanence higher than some minimum threshold value.
-        //    // Potential synapses are synapses from presynaptc cells connected to the active cell.
-        //    // In other words, synapse permanence between presynaptic cell and the active cell defines a statistical prediction that active cell will become the active in the next cycle.
-        //    // Bursting will create new inactiveSegments if there are no matching inactiveSegments until some matching inactiveSegments appear. 
-        //    // Once that happen, segment adoption will start.
-        //    // If some matching inactiveSegments exist, bursting will grab the segment with most potential synapses and adapt it.
-        //    if (matchingSegments != null && matchingSegments.Count > 0)
-        //    {
-        //        // Debug.Write($"B.({matchingSegments.Count})");
-
-        //        Segment maxPotentialSeg = HtmCompute.GetSegmentWithHighestPotential(matchingSegments, prevActiveCells, this.LastActivity.PotentialSynapses);
-
-        //        leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
-
-        //        if (learn)
-        //        {
-        //            AdaptSegment(maxPotentialSeg, prevActiveCells, permanenceIncrement, permanenceDecrement);
-
-        //            int nGrowDesired = this._cfg.MaxNewSynapseCount - this.LastActivity.PotentialSynapses[maxPotentialSeg.SegmentIndex];
-
-        //            if (nGrowDesired > 0)
-        //            {
-        //                GrowSynapses(prevWinnerCells, maxPotentialSeg, this._cfg.InitialPermanence, nGrowDesired, this._cfg.MaxSynapsesPerSegment, random);
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // Debug.Write("B.0");
-
-        //        leastUsedOrMaxPotentialCell = HtmCompute.GetLeastUsedCell(cells, random);
-        //        if (learn)
-        //        {
-        //            // This can be optimized. Right now, we assume that every winner cell has a single synaptic connection to the segment.
-        //            // This is why we substract number of cells from the MaxNewSynapseCount.
-        //            int nGrowExact = Math.Min(this._cfg.MaxNewSynapseCount, prevWinnerCells.Count);
-        //            if (nGrowExact > 0)
-        //            {
-        //                Segment newSegment;
-        //                if (leastUsedOrMaxPotentialCell.ParentAreaName == prevWinnerCells.First().ParentAreaName)
-        //                    newSegment = CreateDistalSegment(leastUsedOrMaxPotentialCell);
-        //                else
-        //                    newSegment = CreateDistalSegment(leastUsedOrMaxPotentialCell);//apical
-
-        //                GrowSynapses(prevWinnerCells, newSegment, this._cfg.InitialPermanence, nGrowExact, this._cfg.MaxSynapsesPerSegment, random);
-        //            }
-        //        }
-        //    }
-
-        //    return new BurstingResult(cells, leastUsedOrMaxPotentialCell);
-        //}
 
 
         /// <summary>
