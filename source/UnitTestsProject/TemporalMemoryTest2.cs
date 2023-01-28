@@ -31,6 +31,26 @@ namespace UnitTestsProject
             return retVal;
         }
 
+        private HtmConfig GetDefaultTMParameters()
+        {
+            HtmConfig htmConfig = new HtmConfig(new int[] { 32 }, new int[] { 32 })
+            {
+                CellsPerColumn = 5,
+                ActivationThreshold = 3,
+                InitialPermanence = 0.21,
+                ConnectedPermanence = 0.5,
+                MinThreshold = 2,
+                MaxNewSynapseCount = 3,
+                PermanenceIncrement = 0.10,
+                PermanenceDecrement = 0.10,
+                PredictedSegmentDecrement = 0,
+                Random = new ThreadSafeRandom(42),
+                RandomGenSeed = 42
+            };
+
+            return htmConfig;
+        }
+
 
     }
 }

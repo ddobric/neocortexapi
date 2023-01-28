@@ -14,7 +14,7 @@ namespace NeoCortexApi
     /// </summary>
     public class TemporalMemoryParallel : TemporalMemory
     {
-        /// <summary>
+        ///  <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="conn"></param>
