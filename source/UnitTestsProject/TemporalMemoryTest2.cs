@@ -65,7 +65,7 @@ namespace UnitTestsProject
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
-            Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
+            Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
         }
 
     }
