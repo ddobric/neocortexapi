@@ -43,6 +43,8 @@ internal class Program
         // Train the first set.
         var model1Name = "Model1.txt";
         var model1Trace = "Model1trace.txt";
+        //
+        // Create new instance for Cortex Layer.
         CortexLayer<object, object> model1;
         if (HtmSerializer.TryLoad(model1Name, out model1) == false)
         {
@@ -61,6 +63,8 @@ internal class Program
         // Recreate the model from the persisted state and train it with the second set.
         var model2Name = "Model2.txt";
         var model2Trace = "Model2trace.txt";
+        //
+        // Create new instance for Cortex Layer.
         CortexLayer<object, object> model2;
         if (HtmSerializer.TryLoad(model2Name, out model2) == false || overwrite)
         {

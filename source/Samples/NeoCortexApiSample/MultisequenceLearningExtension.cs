@@ -1,37 +1,34 @@
-﻿using NeoCortexApi;
-using NeoCortexApi.Classifiers;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
+﻿using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-using Org.BouncyCastle.Asn1.Tsp;
+using NeoCortexApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
-
+using NeoCortexApi.Classifiers;
+using NeoCortexApi.Encoders;
 
 namespace NeoCortexApiSample
 {
-    /// <summary>
-    /// Implements an experiment that demonstrates how to learn sequences.
-    /// </summary>
-    public class MultiSequenceLearning
+    public static class MultisequenceLearningExtension
     {
-        /// <summary>
-        /// Runs the learning of sequences.
-        /// </summary>
-        /// <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
-        public Predictor Run(Dictionary<string, List<double>> sequences)
+        public static CortexLayer<Object, Object> Train(CortexLayer<object, object> model, Dictionary<string, List<double>> sequences, string spName)
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var encoder = (EncoderBase)model.HtmModules["encoder"];
+
+            var spatialPooler = (SpatialPooler)model.HtmModules[spName];
+            bool isInStableState = false;
+
+            var tm= (TemporalMemory)model.HtmModules["tm"];
 
             // We will use 100 bits to represent an input vector( pattern).
             int inputBits = 100;
             // We will build a slice of the cortex with the given number of mini-columns.
             int numColumns = 1024;
 
-            //
             // This is a set of confiruration parameters used in the experiment.
             HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
@@ -60,138 +57,35 @@ namespace NeoCortexApiSample
                 PredictedSegmentDecrement = 0.1
             };
 
-            double max = 20;
-
-            //
-            // This dictionary defines a set of typical encoder parameters.
-            Dictionary<string, object> settings = new Dictionary<string, object>()
-            {
-                { "W", 15},
-                { "N", inputBits},
-                { "Radius", -1.0},
-                { "MinVal", 0.0},
-                { "Periodic", false},
-                { "Name", "scalar"},
-                { "ClipInput", false},
-                { "MaxVal", max}
-            };
-
-            // Create new instance of class ScalarEncoder with the pre-defined setting values. 
-            EncoderBase encoder = new ScalarEncoder(settings);
-
-            // Run the experiment with the inputBits, configuration, encoder and input sequences. 
-            return RunExperiment(inputBits, cfg, encoder, sequences);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences)
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            int maxMatchCnt = 0;
-
             // Create htm memory.
             var mem = new Connections(cfg);
 
-            // The model is first unstable. 
-            bool isInStableState = false;
-
-            // Create new instance of class HtmClassifier.
+            // Create new instance of Htm Classifier. 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
-            // Get the number of unique inputs in the sequences dictionary.
-            var numUniqueInputs = GetNumberOfInputs(sequences);
-
-            // Create new instance of class CortexLayer.
-            // Algorithm will be performed inside of that layer.
-            CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
-
-            TemporalMemory tm = new TemporalMemory();
-
-            // For more information see following paper: https://www.scitepress.org/Papers/2021/103142/103142.pdf
-            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(mem, numUniqueInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
+            spatialPooler.SetOnStableStatusChanged(((isStable, numPatterns, actColAvg, seenInputs) =>
             {
-                if (isStable)
-                    // Event should be fired when entering the stable state.
-                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+
+                // Event should only be fired when entering the stable state.
+                // Ideal SP should never enter unstable state after stable state.
+                if (isStable == false)
+                {
+                    Debug.WriteLine($"INSTABLE STATE");
+                    // This should usually not happen.
+                    isInStableState = false;
+                }
                 else
-                    // Ideal SP should never enter unstable state after stable state.
-                    Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                {
+                    Debug.WriteLine($"STABLE STATE");
+                    // Here you can perform any action if required.
+                    isInStableState = true;
+                }
+            }));
 
-                // We are not learning in instable state.
-                isInStableState = isStable;
-
-                // Clear active and predictive cells.
-                //tm.Reset(mem);
-            }, numOfCyclesToWaitOnChange: 50);
-
-            // It creates the instance of Spatial Pooler Multithreaded Homeostatic Plasticity controller version.
-            SpatialPoolerMT sp = new SpatialPoolerMT(hpc);
-
-            // Initializes the Spatial Pooler Algorithm.
-            sp.Init(mem);
-            // Initializes the Temporal Memory Algorithm.
-            tm.Init(mem);
-
-            // Please note that we do not add here TM in the layer.
-            // This is omitted for practical reasons, because we first eneter the newborn-stage of the algorithm
-            // In this stage we want that SP get boosted and see all elements before we start learning with TM.
-            // All would also work fine with TM in layer, but it would work much slower.
-            // So, to improve the speed of experiment, we first ommit the TM and then after the newborn-stage we add it to the layer.
-            // First the Encoder and Spatial Pooler Instances are added to the CortexLayer. 
-            layer1.HtmModules.Add("encoder", encoder);
-            layer1.HtmModules.Add("sp", sp);
-
-            //double[] inputs = inputValues.ToArray();
-            int[] prevActiveCols = new int[0];
-            
+            int maxCycles = 3500;
             int cycle = 0;
             int matches = 0;
 
-            var lastPredictedValues = new List<string>(new string[] { "0"});
-            
-            int maxCycles = 3500;
-
-            //
-            // Training SP to get stable. New-born stage.
-            //
-
-            for (int i = 0; i < maxCycles && isInStableState == false; i++)
-            {
-                matches = 0;
-
-                cycle++;
-
-                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
-
-                foreach (var inputs in sequences)
-                {
-                    foreach (var input in inputs.Value)
-                    {
-                        Debug.WriteLine($" -- {inputs.Key} - {input} --");
-                    
-                        var lyrOut = layer1.Compute(input, true);
-
-                        if (isInStableState)
-                            break;
-                    }
-
-                    if (isInStableState)
-                        break;
-                }
-            }
-
-            // Clear all learned patterns in the classifier.
-            cls.ClearState();
-
-            // We activate here the Temporal Memory algorithm.
-            layer1.HtmModules.Add("tm", tm);
-
-            //
-            // Loop over all sequences.
             foreach (var sequenceKeyPair in sequences)
             {
                 Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
@@ -202,8 +96,6 @@ namespace NeoCortexApiSample
 
                 previousInputs.Add("-1.0");
 
-                // Set on true if the system has learned the sequence with a maximum acurracy.
-                bool isLearningCompleted = false;
 
                 //
                 // Now training with SP+TM. SP is pretrained on the given input pattern set.
@@ -224,10 +116,10 @@ namespace NeoCortexApiSample
 
                         // Learn the input pattern.
                         // Output lyrOut is the output of the last module in the layer.
-                        var lyrOut = layer1.Compute(input, true) as ComputeCycle;
+                        var lyrOut = model.Compute(input, true) as ComputeCycle;
 
                         // This is a general way to get the SpatialPooler result from the layer.
-                        var activeColumns = layer1.GetResult("sp") as int[];
+                        var activeColumns = model.GetResult("sp") as int[];
 
                         previousInputs.Add(input.ToString());
                         if (previousInputs.Count > (maxPrevInputs + 1))
@@ -254,6 +146,7 @@ namespace NeoCortexApiSample
                             actCells = lyrOut.WinnerCells;
                         }
 
+
                         cls.Learn(key, actCells.ToArray());
 
                         Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
@@ -262,6 +155,7 @@ namespace NeoCortexApiSample
                         //
                         // If the list of predicted values from the previous step contains the currently presenting value,
                         // we have a match.
+                        var lastPredictedValues = new List<string>(new string[] { "0" });
                         if (lastPredictedValues.Contains(key))
                         {
                             matches++;
@@ -280,12 +174,12 @@ namespace NeoCortexApiSample
                                 Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
                             }
 
-                            lastPredictedValues = predictedInputValues.Select(v=>v.PredictedInput).ToList();
+                            lastPredictedValues = predictedInputValues.Select(v => v.PredictedInput).ToList();
                         }
                         else
                         {
                             Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                            lastPredictedValues = new List<string> ();
+                            lastPredictedValues = new List<string>();
                         }
                     }
 
@@ -295,6 +189,8 @@ namespace NeoCortexApiSample
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
 
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
+
+                    int maxMatchCnt = 0;
 
                     if (accuracy >= maxPossibleAccuraccy)
                     {
@@ -307,7 +203,6 @@ namespace NeoCortexApiSample
                         {
                             sw.Stop();
                             Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
-                            isLearningCompleted = true;
                             break;
                         }
                     }
@@ -320,45 +215,13 @@ namespace NeoCortexApiSample
                     // This resets the learned state, so the first element starts allways from the beginning.
                     tm.Reset(mem);
                 }
-
-                if (isLearningCompleted == false)
-                    throw new Exception($"The system didn't learn with expected acurracy!");
             }
 
             Debug.WriteLine("------------ END ------------");
-           
-            return new Predictor(layer1, mem, cls);
+
+            return model;
         }
 
-      
-        /// <summary>
-        /// Gets the number of all unique inputs.
-        /// </summary>
-        /// <param name="sequences">Alle sequences.</param>
-        /// <returns></returns>
-        private int GetNumberOfInputs(Dictionary<string, List<double>> sequences)
-        {
-            int num = 0;
-
-            foreach (var inputs in sequences)
-            {
-                //num += inputs.Value.Distinct().Count();
-                num += inputs.Value.Count;
-            }
-
-            return num;
-        }
-
-
-        /// <summary>
-        /// Constracts the unique key of the element of an sequece. This key is used as input for HtmClassifier.
-        /// It makes sure that alle elements that belong to the same sequence are prefixed with the sequence.
-        /// The prediction code can then extract the sequence prefix to the predicted element.
-        /// </summary>
-        /// <param name="prevInputs"></param>
-        /// <param name="input"></param>
-        /// <param name="sequence"></param>
-        /// <returns></returns>
         private static string GetKey(List<string> prevInputs, double input, string sequence)
         {
             string key = String.Empty;
@@ -370,7 +233,6 @@ namespace NeoCortexApiSample
 
                 key += (prevInputs[i]);
             }
-
             return $"{sequence}_{key}";
         }
     }

@@ -7,15 +7,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 
 namespace NeoCortexApiSample
 {
-    public class MultisequenceSerialization
+    public class MultisequenceLearningSerialization
     {
         public CortexLayer<object, object> Train(Dictionary<string, List<double>> sequences)
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultisequenceSerialization)}");
+            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultisequenceLearningSerialization)}");
 
             // We will use 100 bits to represent an input vector( pattern).
             int inputBits = 100;
@@ -308,7 +309,7 @@ namespace NeoCortexApiSample
 
             return layer1;
         }
-
+            
 
         /// <summary>
         /// Gets the number of all unique inputs.
