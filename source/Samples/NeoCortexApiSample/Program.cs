@@ -52,14 +52,21 @@ namespace NeoCortexApiSample
             sequences2.Add("S2", new List<double>(new double[] { 3.0, 11.0, 6.0, 13.0, 9.0, 10.0, 11.0 }));
 
             //Train the first set
-            var model1Name = "Model1.txt";
-            var model1Trace = "Model1trace.txt";
+            var model1Name = "Model2.txt";
+            var model1Trace = "Model2trace.txt";
             CortexLayer<object, object> model1;
             if (HtmSerializer.TryLoad(model1Name, out model1) == false)
             {
                 MultisequenceSerialization experiment = new MultisequenceSerialization();
-                model1 = experiment.Train(sequences1);
+                model1 = experiment.Train(sequences2);
+
+                // Persist the state of the model.
+                HtmSerializer.Save(model1Name, model1);
             }
+            var sp1 = (SpatialPooler)model1.HtmModules["sp"];
+
+            // Trace the persistence value of every columns.
+            sp1.TraceColumnPermenances(model1Trace);
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
