@@ -149,7 +149,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Cell: Indx={this.Index}, [{this.ParentColumnIndex}]";
+            return $"Parent={this.ParentColumnIndex} - Index={this.Index}";
         }
 
 

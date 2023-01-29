@@ -120,10 +120,41 @@ namespace UnitTestsProject
 
             Naa naa = new Naa(cfg, areaY);
 
-            for (int i = 0; i < 100; i++)
+            Debug.WriteLine(naa.TraceState());
+
+            //
+            // We train the same association between X and Y 10 times.
+            for (int i = 0; i < 10; i++)
             {
                 naa.Compute(areaX, true);
                 Debug.WriteLine(naa.TraceState());
+            }
+
+            // The Y area of NAA must not have any Inactive segment for the current set of active cells.
+            Assert.IsTrue(naa.InactiveApicalSegments.Count == 0);
+
+            // The Y area of NAA must not have any cell without segment for the current set of active cells.
+            Assert.IsTrue(naa.ActiveCellsWithoutApicalSegments.Count == 0);
+
+            // The Y area of NAA must not have any matching segment for the current set of active cells.
+            Assert.IsTrue(naa.MatchingApicalSegments.Count == 0);
+
+            // The Y area of NAA must not have 2 active segments for the current set of active cells.
+            Assert.IsTrue(naa.ActiveApicalSegments.Count == 2);
+
+            foreach (var activeCell in areaY.ActiveCells)
+            {
+                // NAA between two different areas use only ApicalSegments.
+                Assert.IsTrue(activeCell.DistalDendrites.Count == 0);
+
+                foreach (var seg in activeCell.ApicalDendrites)
+                {
+                    foreach (var syn in seg.Synapses)
+                    {
+                        // All synapses are fully trained to maximum.
+                        Assert.IsTrue(syn.Permanence==1.0);
+                    }
+                }
             }
         }
     }

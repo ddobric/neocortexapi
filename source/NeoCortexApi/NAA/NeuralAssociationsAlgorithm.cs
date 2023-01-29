@@ -41,7 +41,7 @@ namespace NeoCortexApi
         /// <summary>
         /// Get Active Apical Segments of currentlly active cells in the area.
         /// </summary>
-        protected List<ApicalDendrite> ActiveApicalSegments
+        public List<ApicalDendrite> ActiveApicalSegments
         {
             get
             {
@@ -65,7 +65,7 @@ namespace NeoCortexApi
         /// Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
         /// more connected synapses than _cfg.MinThreshold.
         /// </summary>
-        protected List<ApicalDendrite> MatchingApicalSegments
+        public List<ApicalDendrite> MatchingApicalSegments
         {
             get
             {
@@ -88,7 +88,7 @@ namespace NeoCortexApi
         /// <summary>
         /// Get all currently active cells that have no apical segments.
         /// </summary>
-        protected List<Cell> ActiveCellsWithoutApicalSegments
+        public List<Cell> ActiveCellsWithoutApicalSegments
         {
             get
             {
@@ -107,7 +107,7 @@ namespace NeoCortexApi
         /// <summary>
         /// Get Inactive Apical Segments of currentlly active cells in the area.
         /// </summary>
-        protected List<ApicalDendrite> InactiveApicalSegments
+        public List<ApicalDendrite> InactiveApicalSegments
         {
             get
             {
@@ -196,7 +196,7 @@ namespace NeoCortexApi
             if (learn == false)
                 return;
 
-            Segment[] activeSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : MatchingApicalSegments.ToArray();
+            Segment[] activeSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : ActiveApicalSegments.ToArray();
 
             foreach (Segment segment in activeSegments)
             {
@@ -282,9 +282,17 @@ namespace NeoCortexApi
                 CreateSegmentAtCell(associatedArea, inactiveSeg.ParentCell, numSynapses);
             }
 
+            //
+            // Create new segments at cells without apical segments.
             foreach (var cell in ActiveCellsWithoutApicalSegments)
             {
+                // If MaxSegmentsPerCell < associatedArea.ActiveCells.Count then not all active cells will connect 
+                // to this area. This is a lost of information. For this reason
+                // MaxSegmentsPerCell>associatedArea.ActiveCells.Count should be satisfied.
+                int numSynapses = Math.Min(this._cfg.MaxNewSynapseCount, Math.Min(this._cfg.MaxSynapsesPerSegment, associatedArea.ActiveCells.Count));
 
+                // Creates the segment with synapses from associating active cells to this cell.
+                CreateSegmentAtCell(associatedArea, cell, numSynapses);
             }
         }
 
@@ -586,7 +594,7 @@ namespace NeoCortexApi
 
             sb.AppendLine($"Iteration {_iteration}");
 
-            sb.AppendLine($"Active Apical Segments: {ActiveApicalSegments.Count}, Matching Apical Segments: {MatchingApicalSegments.Count}, Inactive Apical Segments: {InactiveApicalSegments.Count}");
+            sb.AppendLine($"Active Apical Segments: {ActiveApicalSegments.Count}, Matching Apical Segments: {MatchingApicalSegments.Count}, Inactive Apical Segments: {InactiveApicalSegments.Count}, Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}");
 
             foreach (var cell in this._area.ActiveCells)
             {
