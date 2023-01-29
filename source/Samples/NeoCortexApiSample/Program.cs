@@ -94,6 +94,17 @@ namespace NeoCortexApiSample
         /// </summary>
         private static void RunPredictionMultiSequenceExperiment()
         {
+<<<<<<< HEAD
+            Dictionary<string, List<double>> sequencess = new Dictionary<string, List<double>>();
+           // sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
+            //sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
+            string filePath = @"/Users/shivakumarbiru/Desktop/seq.txt";
+            //List<List<int>> sequencess = new List<List<int>>();
+
+            using (var reader = new StreamReader(filePath))
+            {
+               
+=======
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             /*sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
             sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
@@ -102,10 +113,20 @@ namespace NeoCortexApiSample
             {
                 List<double> listA = new List<double>();
                 List<double> listB = new List<double>();
+>>>>>>> origin/Team_Matrix
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(',');
+<<<<<<< HEAD
+                    Console.WriteLine(line);
+                    var sequence = new List<double>();
+                    
+                }
+            }
+
+=======
+>>>>>>> origin/Team_Matrix
 
                     listA.Add(Convert.ToDouble(values[0]));
                     listB.Add(Convert.ToDouble(values[1]));
@@ -115,7 +136,13 @@ namespace NeoCortexApiSample
             }
             
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
+<<<<<<< HEAD
+            var predictor = newExperiment.Run(sequencess);
+            Dictionary<string, List<string>> sequences2 = new Dictionary<string, List<string>>();
+            sequences2.Add("Seq3", new List<string>(new string[] { "A", "C", "Z", "P", "L", "I" }));
+=======
             var predictor = newExperiment.Run(sequences);
+>>>>>>> origin/Team_Matrix
             //var predictor = newExperiment.Run(sequences2);
             var list = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
             predictor.Reset();
