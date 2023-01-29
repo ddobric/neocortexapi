@@ -302,7 +302,7 @@ namespace NeoCortexApi.Encoders
         public override int GetBucketIndices(object inputData)
         {
             int bucketIdx = 0; 
-            if((typeof(input) == float)  && (Double.IsNaN(input))
+            if((typeof(input) == Double)  && Double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
             }
@@ -328,11 +328,15 @@ namespace NeoCortexApi.Encoders
                 }
                 return bucketIdx;
             }
+        }
 
-            public override int encodeIntoArray(double input, double output,double learn=true)
-
+        public override int encodeIntoArray(double input, double output,double learn=true)
+        {
 
         }
+        
+
+    }
 
 
 
