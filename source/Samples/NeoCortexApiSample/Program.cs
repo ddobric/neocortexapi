@@ -32,8 +32,8 @@ namespace NeoCortexApiSample
             //experiment.Run();
 
             //RunMultiSimpleSequenceLearningExperiment();
-            //RunMultiSequenceLearningExperiment();
-            RunPredictionMultiSequenceExperiment();
+            RunMultiSequenceLearningExperiment();
+            //RunPredictionMultiSequenceExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -106,7 +106,7 @@ namespace NeoCortexApiSample
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(',');
-
+                    Console.WriteLine(values[0]);
                     listA.Add(Convert.ToDouble(values[0]));
                     listB.Add(Convert.ToDouble(values[1]));
                 }
