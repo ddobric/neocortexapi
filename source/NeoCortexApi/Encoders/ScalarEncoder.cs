@@ -372,6 +372,7 @@ namespace NeoCortexApi.Encoders
         //    var excludeMembers = new List<string> { nameof(ScalarEncoder.Properties) };
         //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         //}
+        //   
 
 
     }
