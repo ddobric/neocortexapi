@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Xml;
 
 namespace NeoCortexApi.Encoders
 {
@@ -298,22 +299,24 @@ namespace NeoCortexApi.Encoders
         /// <returns>The <see cref="List{T}"/></returns>
         /// 
 
-        public override int GetBucketValues(object inputData)
+        public override int GetBucketIndices(object inputData)
         {
-            int bucketIdx = 0;
-            if(Object.ReferenceEquals(input) && Double.IsNaN(input))
+            int bucketIdx = 0; 
+            if((typeof(input) == float)  && (Double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
             }
-            if (input == double.NaN)
+            if (input == SENTINEL_VALUE_FOR_MISSING_DATA)
             {
                 return 0;
             }
+
+
             var minbin = GetFirstOnBit(input)[0];
             // For periodic encoders, the bucket index is the index of the center bit
             if(Periodic)
             {
-                bucketVal = minbin + HalfWidth;
+                bucketIdx = minbin + HalfWidth;
                 if(bucketIdx < 0)
                 {
                     bucketIdx += N;
@@ -325,6 +328,9 @@ namespace NeoCortexApi.Encoders
                 }
                 return bucketIdx;
             }
+
+            public override int encodeIntoArray(double input, double output,double learn=true)
+
 
         }
 
