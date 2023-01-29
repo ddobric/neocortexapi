@@ -15,48 +15,20 @@ namespace UnitTestsProject
     [TestClass]
     public class NAATests
     {
-        private HtmConfig GetHtmConfig(int inpBits, int columns)
-        {
-            var htmConfig = new HtmConfig(new int[] { inpBits }, new int[] { columns })
-            {
-                PotentialRadius = 5,
-                PotentialPct = 0.5,
-                GlobalInhibition = false,
-                LocalAreaDensity = -1.0,
-                NumActiveColumnsPerInhArea = 3.0,
-                StimulusThreshold = 0.0,
-                SynPermInactiveDec = 0.01,
-                SynPermActiveInc = 0.1,
-                SynPermConnected = 0.5,
-                ConnectedPermanence = 0.5,
-                MinPctOverlapDutyCycles = 0.1,
-                MinPctActiveDutyCycles = 0.1,
-                DutyCyclePeriod = 10,
-                MaxBoost = 10,
-                ActivationThreshold = 10,
-                MinThreshold= 6,
-                RandomGenSeed = 42,
-                Random = new ThreadSafeRandom(42),
-                
-               
-            };
-
-            return htmConfig;
-        }
+      
 
         [TestMethod]
         [TestCategory("Prod")]
         [TestCategory("NAA")]
         public void CreateAreaTest()
         {
-            var cfg = GetHtmConfig(100, 1024);
+            var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
 
             MinicolumnArea caX = new MinicolumnArea("X", cfg);
 
             Assert.IsTrue(1024 == caX.Columns.Count);
 
             Assert.IsTrue(caX.AllCells.Count == 1024 * cfg.CellsPerColumn);
-
         }
 
 
@@ -86,7 +58,7 @@ namespace UnitTestsProject
         [DataRow(1024, 100, 0.2)]
         public void InitActiveCellsTest(int numCellsInArea, int numSdrCells, double sparsity)
         {
-            CorticalArea areaY = new CorticalArea("Y", numCellsInArea);
+            CorticalArea areaY = new CorticalArea(1, "Y", numCellsInArea);
 
             areaY.ActiveCellsIndicies = UnitTestHelpers.CreateRandomSdr(numSdrCells, sparsity);
 
@@ -136,11 +108,11 @@ namespace UnitTestsProject
         [TestCategory("NAA")]
         public void AssociateAreasTest()
         {
-            var cfg = GetHtmConfig(100, 1024);
+            var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
 
-            CorticalArea areaX = new CorticalArea("X", 1024);
+            CorticalArea areaX = new CorticalArea(1,"X", 1024);
 
-            CorticalArea areaY = new CorticalArea("Y", 100);
+            CorticalArea areaY = new CorticalArea(2, "Y", 100);
 
             areaX.ActiveCellsIndicies = UnitTestHelpers.CreateRandomSdr(1024, 0.02);
 
