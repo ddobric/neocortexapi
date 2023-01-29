@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using Naa = NeoCortexApi.NeuralAssociationAlgorithm;
 using System.Diagnostics;
 
+
 namespace UnitTestsProject
 {
     /// <summary>
@@ -18,22 +19,34 @@ namespace UnitTestsProject
     [TestClass]
     public class CellTests
     {
-
         [TestMethod]
         [TestCategory("Prod")]
-        [TestCategory("NAA")]
-        public void CreateAreaTest()
+        public void CellCompareTest()
         {
             var cfg = UnitTestHelpers.GetHtmConfig(100, 1024); 
 
-            Cell cell1 = new Cell(-1, 0);
+            List<Cell> cellsArea1= new List<Cell>();
 
-            MinicolumnArea caX = new MinicolumnArea("X", cfg);
+            List<Cell> cellsArea2 = new List<Cell>();
 
-            Assert.IsTrue(1024 == caX.Columns.Count);
+            for (int i = 0; i < 100; i++)
+            {
+                cellsArea1.Add(new Cell(1, i));
+                cellsArea2.Add(new Cell(2, i));
+            }
 
-            Assert.IsTrue(caX.AllCells.Count == 1024 * cfg.CellsPerColumn);
+            for (int i = 0; i < cellsArea1.Count; i++)
+            {
+                // Same cells must be equal.
+                Assert.IsTrue(cellsArea1[i] == cellsArea1[i]);
 
+                for (int j = 0; j < cellsArea2.Count; j++)
+                {
+                    Assert.IsTrue(cellsArea2[j] == cellsArea2[j]);
+
+                    Assert.IsTrue(cellsArea1[i] != cellsArea2[j]);
+                }
+            }
         }
 
     }
