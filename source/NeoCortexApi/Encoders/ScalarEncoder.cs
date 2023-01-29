@@ -338,7 +338,7 @@ namespace NeoCortexApi.Encoders
                 {
                     throw new ArgumentException("Expected a scalar input but got input of type", type(input)");
                 }
-            if type(input) is float and Double.IsNaN(input)
+            if type(input) is float and Double.IsNaN(input) 
                 {
                      input = SENTINEL_VALUE_FOR_MISSING_DATA
                       ///  # Get the bucket index to use
