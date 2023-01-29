@@ -107,7 +107,7 @@ namespace NeoCortexApi.Encoders
         }
 
 
-        protected void InitEncoder(int w, double minVal, double maxVal, int n, double radius, double resolution)
+        public void InitEncoder(int w, double minVal, double maxVal, int n, double radius, double resolution)
         {
             if (n != 0)
             {
@@ -304,11 +304,12 @@ namespace NeoCortexApi.Encoders
         /// <typeparam name="T"></typeparam>
         /// <returns>The <see cref="List{T}"/></returns>
         /// 
+        int bucketIdx;
 
         public override int GetBucketIndices(object inputData)
         {
-            int bucketIdx = 0; 
-            if((typeof(input) == float)  && (Double.IsNaN(input))
+             
+            if((typeof(input) == Double)  && Double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
             }
@@ -334,11 +335,29 @@ namespace NeoCortexApi.Encoders
                 }
                 return bucketIdx;
             }
-
-            public override int encodeIntoArray(double input, double output,double learn=true)
-
-
         }
+
+        public override int encodeIntoArray(double input, double output,double learn=true)
+        {
+           
+            if input is not None and not is instance(input, object Number)
+                {
+                    throw new ArgumentException("Expected a scalar input but got input of type", type(input)");
+                }
+            if type(input) is float and Double.IsNaN(input)
+                {
+                     input = SENTINEL_VALUE_FOR_MISSING_DATA
+                      ///  # Get the bucket index to use
+                     bucketIdx = GetFirstOnBit(input)[0];
+          
+            if (bucketIdx = 0)
+            {
+                output[0:n] = 0;
+            }
+        }
+        
+
+    }
 
 
 
