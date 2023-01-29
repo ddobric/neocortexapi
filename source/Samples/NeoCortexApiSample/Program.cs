@@ -4,6 +4,7 @@ using Org.BouncyCastle.Crypto.Engines;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
 
@@ -29,9 +30,9 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            RunMultiSimpleSequenceLearningExperiment();
+            //RunMultiSimpleSequenceLearningExperiment();
             //RunMultiSequenceLearningExperiment();
-            //RunPredictionMultiSequenceExperiment();
+            RunPredictionMultiSequenceExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -92,12 +93,28 @@ namespace NeoCortexApiSample
         /// </summary>
         private static void RunPredictionMultiSequenceExperiment()
         {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
-            sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
+            Dictionary<string, List<double>> sequencess = new Dictionary<string, List<double>>();
+           // sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
+            //sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
+            string filePath = @"/Users/shivakumarbiru/Desktop/seq.txt";
+            //List<List<int>> sequencess = new List<List<int>>();
+
+            using (var reader = new StreamReader(filePath))
+            {
+               
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    Console.WriteLine(line);
+                    var sequence = new List<double>();
+                    
+                }
+            }
+
 
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
-            var predictor = newExperiment.Run(sequences);
+            var predictor = newExperiment.Run(sequencess);
             Dictionary<string, List<string>> sequences2 = new Dictionary<string, List<string>>();
             sequences2.Add("Seq3", new List<string>(new string[] { "A", "C", "Z", "P", "L", "I" }));
             //var predictor = newExperiment.Run(sequences2);
