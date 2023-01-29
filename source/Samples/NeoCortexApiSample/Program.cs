@@ -2,6 +2,7 @@
 using NeoCortexApi.Encoders;
 using Org.BouncyCastle.Crypto.Engines;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -62,7 +63,7 @@ namespace NeoCortexApiSample
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
             sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //
@@ -74,7 +75,7 @@ namespace NeoCortexApiSample
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
-            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
+            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
@@ -93,6 +94,7 @@ namespace NeoCortexApiSample
         /// </summary>
         private static void RunPredictionMultiSequenceExperiment()
         {
+<<<<<<< HEAD
             Dictionary<string, List<double>> sequencess = new Dictionary<string, List<double>>();
            // sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
             //sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
@@ -102,22 +104,49 @@ namespace NeoCortexApiSample
             using (var reader = new StreamReader(filePath))
             {
                
+=======
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            /*sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
+            sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
+            sequences.Add("Seq3", new List<double>(new double[] { 5, 15, 25, 35, 45 }));*/
+            using (var reader = new StreamReader(@"C:\Users\Faiz\Desktop\test.txt"))
+            {
+                List<double> listA = new List<double>();
+                List<double> listB = new List<double>();
+>>>>>>> origin/Team_Matrix
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(',');
+<<<<<<< HEAD
                     Console.WriteLine(line);
                     var sequence = new List<double>();
                     
                 }
             }
 
+=======
+>>>>>>> origin/Team_Matrix
 
+                    listA.Add(Convert.ToDouble(values[0]));
+                    listB.Add(Convert.ToDouble(values[1]));
+                }
+                sequences.Add("Seq4", listA);
+                sequences.Add("Seq5", listB);
+            }
+            
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
+<<<<<<< HEAD
             var predictor = newExperiment.Run(sequencess);
             Dictionary<string, List<string>> sequences2 = new Dictionary<string, List<string>>();
             sequences2.Add("Seq3", new List<string>(new string[] { "A", "C", "Z", "P", "L", "I" }));
+=======
+            var predictor = newExperiment.Run(sequences);
+>>>>>>> origin/Team_Matrix
             //var predictor = newExperiment.Run(sequences2);
+            var list = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
+            predictor.Reset();
+            PredictNextElement(predictor, list);
         }
 
 

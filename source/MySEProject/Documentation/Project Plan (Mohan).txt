@@ -23,5 +23,10 @@ Tasks to be done by each team member..
 *Play around with the ML.NET library and get familiar.
 
 *Each member has to involve in the preparing paper.
+
+
+21-01-2023
+
+*Analyzed Run () and RunExperiment() method in multisequencelearning.cs class
                                         
                                          
