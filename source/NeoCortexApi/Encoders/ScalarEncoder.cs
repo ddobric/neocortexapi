@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Xml;
 
 namespace NeoCortexApi.Encoders
 {
@@ -270,17 +271,17 @@ namespace NeoCortexApi.Encoders
                 ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(minbin, maxbin + 1), 1);
             }
 
-            // Added guard against immense string concatenation
-            //if (LOGGER.isTraceEnabled())
-            //{
-            //    LOGGER.trace("");
-            //    LOGGER.trace("input: " + input);
-            //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
-            //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
-            //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
-            //    LOGGER.trace("output: " + Arrays.toString(output));
-            //    LOGGER.trace("input desc: " + decode(output, ""));
-            //}
+          // Added guard against immense string concatenation
+          //if (LOGGER.isTraceEnabled())
+          //{
+          //    LOGGER.trace("");
+          //    LOGGER.trace("input: " + input);
+          //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
+          //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
+          //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
+          //    LOGGER.trace("output: " + Arrays.toString(output));
+          //    LOGGER.trace("input desc: " + decode(output, ""));
+          //}
 
             // Output 1-D array of same length resulted in parameter N    
             return output;
@@ -302,6 +303,46 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns>The <see cref="List{T}"/></returns>
+        /// 
+
+        public override int GetBucketIndices(object inputData)
+        {
+            int bucketIdx = 0; 
+            if((typeof(input) == float)  && (Double.IsNaN(input))
+            {
+                input = SENTINEL_VALUE_FOR_MISSING_DATA;
+            }
+            if (input == SENTINEL_VALUE_FOR_MISSING_DATA)
+            {
+                return 0;
+            }
+
+
+            var minbin = GetFirstOnBit(input)[0];
+            // For periodic encoders, the bucket index is the index of the center bit
+            if(Periodic)
+            {
+                bucketIdx = minbin + HalfWidth;
+                if(bucketIdx < 0)
+                {
+                    bucketIdx += N;
+                }
+                else
+                {
+                    /// for non-periodic encoders, the bucket index is the index of the left bit
+                    bucketIdx = minbin;
+                }
+                return bucketIdx;
+            }
+
+            public override int encodeIntoArray(double input, double output,double learn=true)
+
+
+        }
+
+
+
+
         public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
@@ -312,5 +353,7 @@ namespace NeoCortexApi.Encoders
         //    var excludeMembers = new List<string> { nameof(ScalarEncoder.Properties) };
         //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         //}
+
+
     }
 }
