@@ -337,27 +337,28 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-        public override int encodeIntoArray(double input, double output,double learn=true)
+        public override int encodeIntoArray(int input, double output)
         {
-           
-            if input is not None and not is instance(input, object Number)
-                {
-                    throw new ArgumentException("Expected a scalar input but got input of type", type(input)");
-                }
-            if type(input) is float and Double.IsNaN(input)
-                {
-                     input = SENTINEL_VALUE_FOR_MISSING_DATA
-                      ///  # Get the bucket index to use
-                     bucketIdx = GetFirstOnBit(input)[0];
-          
-            if (bucketIdx = 0)
-            {
-                output[0:n] = 0;
-            }
-        }
-        
 
-    }
+            if (input != 0)
+            {
+                throw new ArgumentException("Expected a scalar input but got input of type", input);
+            }
+            if ((float)input != double.IsNaN(input))
+            {
+                input = SENTINEL_VALUE_FOR_MISSING_DATA;
+                return (int)input;
+            } 
+            ///  # Get the bucket index to use
+            bucketIdx = (int)GetFirstOnBit(input);
+
+            if (bucketIdx == 0)
+            {
+                return (int)output;
+            }
+
+
+        }
 
 
 
@@ -372,7 +373,6 @@ namespace NeoCortexApi.Encoders
         //    var excludeMembers = new List<string> { nameof(ScalarEncoder.Properties) };
         //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         //}
-        //   
 
 
     }
