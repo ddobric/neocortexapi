@@ -8,7 +8,7 @@ namespace NeoCortexApi.Classifiers
     public class KNeighborsClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
         private int _nNeighbors;
-        private List<Double[]> _model;
+        private Double[][] _model;
 
         KNeighborsClassifier(int nNeighbors = 5)
         {
@@ -19,10 +19,13 @@ namespace NeoCortexApi.Classifiers
 
         double Distance(double[] comparable, double[] dataItem)
         {
-            return Math.Sqrt(Math.Pow(comparable[0] - dataItem[1], 2) - Math.Pow(comparable[1] - dataItem[1], 2));
-        }
+            double acc = 0;
 
-        int CompareTo()
+            for (int i = 0; i < comparable.Length; i++)
+                acc += Math.Pow(comparable[i] - dataItem[i], 2);
+
+            return Math.Sqrt(acc);
+        }
 
         void GetPredictedInputValue(double[] dataItem)
         {
@@ -31,13 +34,23 @@ namespace NeoCortexApi.Classifiers
             }
         }
 
-        void Learn(double[,] x, double[] tags)
+        void Learn(object x, double[] tags)
         {
-            if (x.Length != tags.Length)
+            var X = x as Double[][];
+            Debug.Assert(X != null);
+            int dataStructureLength = X[0].Length;
+            
+            if (X.Length != tags.Length)
                 throw new System.Exception("length of x and y are not same");
 
-            for (int i = 0; i < x.Length; i++)
-                _model.Add(new Double[] { x[i, 0], x[i, 1], tags[i] });
+            List<Double> coordinates = new List<double>();
+            for (int i = 0; i < X.Length; i++)
+            {
+                for (int j = 0; j < dataStructureLength; j++)
+                    coordinates.Add(X[i][j]);
+                
+                _model[i] = new Double[] { coordinates[0], tags[i] };
+            }
         }
     }
 }
