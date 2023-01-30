@@ -97,11 +97,11 @@ namespace NeoCortexApiSample
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
-            string filePath = @"../../MySEProject/trainingSequences.txt";
+            string sequencePath = @"../../MySEProject/trainingSequences.txt";
             //D:\Software Project\neocortexapi_Team_Matrix\source\MySEProject\SequenceLearningTestFile.txt
             // List<List<double>> sequencess = new List<List<double>>();
 
-            using (var reader = new StreamReader(filePath))
+            using (var reader = new StreamReader(sequencePath))
             {
                 int count = 1;
                 while (!reader.EndOfStream)
@@ -125,6 +125,23 @@ namespace NeoCortexApiSample
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
             //var predictor = newExperiment.Run(sequences2);
+
+            string testDataPath = @"../../MySEProject/testingData.txt";
+            using (var reader = new StreamReader(testDataPath))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    Console.WriteLine(line);
+                    var testList = new List<double>();
+                    foreach (var value in values)
+                    {
+                        testList.Add(Convert.ToDouble(value));
+                    }
+
+                }
+            }
             var list = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
             predictor.Reset();
             PredictNextElement(predictor, list);
