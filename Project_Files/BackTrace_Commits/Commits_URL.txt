@@ -1,0 +1,2 @@
+Commits_1: https://github.com/UniversityOfAppliedSciencesFrankfurt/LearningApi/compare/master...ayan1948:LearningApi:master
+Commits_2: https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/compare/master...Team_KNN

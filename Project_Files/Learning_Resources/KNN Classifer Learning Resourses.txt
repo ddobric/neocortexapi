@@ -1,0 +1,13 @@
+WebLinks
+https://www.ibm.com/topics/knn
+https://www.javatpoint.com/k-nearest-neighbor-algorithm-for-machine-learning
+https://www.tutorialspoint.com/machine_learning_with_python/machine_learning_with_python_knn_algorithm_finding_nearest_neighbors.htm
+https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
+https://serokell.io/blog/knn-algorithm-in-ml
+https://www.datacamp.com/tutorial/k-nearest-neighbor-classification-scikit-learn
+https://www.tutorialspoint.com/scikit_learn/scikit_learn_kneighbors_classifier.htm
+
+
+Videos
+https://www.youtube.com/watch?v=HVXime0nQeI
+https://www.youtube.com/watch?v=UqYde-LULfs
