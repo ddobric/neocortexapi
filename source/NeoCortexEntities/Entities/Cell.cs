@@ -57,7 +57,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell()
         {
-
+            this.ParentColumnIndex = -1;
         }
 
         /// <summary>
@@ -73,11 +73,22 @@ namespace NeoCortexApi.Entities
             this.ParentColumnIndex = parentColumnIndx;
 
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
-
-            //this.CellId = cellId;
         }
 
-      
+
+        /// <summary>
+        /// Creates the cell
+        /// </summary>
+        /// <param name="parentIndex">The index of the area that owns the cell. This can be a mini-column or a <see cref="CorticalArea"/></param>
+        /// <param name="index">The index of the cell inside the given area.</param>
+        public Cell(int parentIndex, int index)
+        {
+            this.ParentColumnIndex = parentIndex;
+
+            this.Index = index;
+        }
+
+
         /// <summary>
         /// Gets the hashcode of the cell.
         /// </summary>
@@ -89,7 +100,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + ParentColumnIndex;
             result = prime * result + Index;
 
-            return result;        
+            return result;
         }
 
         /// <summary>
@@ -138,7 +149,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Cell: Indx={this.Index}, [{this.ParentColumnIndex}]";
+            return $"Parent={this.ParentColumnIndex} - Index={this.Index}";
         }
 
 
@@ -148,7 +159,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public string TraceCell()
         {
-            StringBuilder sb  = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
             sb.Append($"Cell {this.Index} ");
 
@@ -261,8 +272,8 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var ignoreMembers = new List<string> 
-            { 
+            var ignoreMembers = new List<string>
+            {
                 nameof(Cell.ReceptorSynapses),
                 nameof(m_Hashcode)
             };

@@ -26,6 +26,11 @@ namespace NeoCortexApi
         private ConcurrentDictionary<long, Cell> Cells { get; set; } = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
+        /// The index of the area.
+        /// </summary>
+        public int Index { get; set; }
+
+        /// <summary>
         /// The name of the _area.
         /// </summary>
         public string Name { get; private set; }
@@ -54,17 +59,17 @@ namespace NeoCortexApi
                 Cells = new ConcurrentDictionary<long, Cell>();
 
                 int indx = 0;
-
+              
                 foreach (var item in value)
                 {
-                    Cells.TryAdd(item, new Cell(0, indx++, _numCells, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell));
+                    Cells.TryAdd(item, new Cell(-1, indx++));
                 }
             }
         } 
 
 
 
-        public CorticalArea(string name, int numCells)
+        public CorticalArea(int index, string name, int numCells)
         {
             this.Name = name;
 
