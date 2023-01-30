@@ -374,10 +374,11 @@ namespace NeoCortexApi.Encoders
             if (bucketIdx == 0)
             {
                 return (int)output;
-            }
+            
 
 
->>>>>>> a9789846d4c9688c1f83affbb4264f2d4d1ed6d9
+
+
         }
 
 
