@@ -265,17 +265,17 @@ namespace NeoCortexApi.Encoders
                 ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(minbin, maxbin + 1), 1);
             }
 
-          // Added guard against immense string concatenation
-          //if (LOGGER.isTraceEnabled())
-          //{
-          //    LOGGER.trace("");
-          //    LOGGER.trace("input: " + input);
-          //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
-          //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
-          //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
-          //    LOGGER.trace("output: " + Arrays.toString(output));
-          //    LOGGER.trace("input desc: " + decode(output, ""));
-          //}
+            // Added guard against immense string concatenation
+            //if (LOGGER.isTraceEnabled())
+            //{
+            //    LOGGER.trace("");
+            //    LOGGER.trace("input: " + input);
+            //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
+            //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
+            //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
+            //    LOGGER.trace("output: " + Arrays.toString(output));
+            //    LOGGER.trace("input desc: " + decode(output, ""));
+            //}
 
             // Output 1-D array of same length resulted in parameter N    
             return output;
@@ -302,8 +302,8 @@ namespace NeoCortexApi.Encoders
 
         public override int GetBucketIndices(object inputData)
         {
-             
-            if((typeof(input) == Double)  && Double.IsNaN(input))
+
+            if ((typeof(input) == Double) && Double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
             }
@@ -315,10 +315,10 @@ namespace NeoCortexApi.Encoders
 
             var minbin = GetFirstOnBit(input)[0];
             // For periodic encoders, the bucket index is the index of the center bit
-            if(Periodic)
+            if (Periodic)
             {
                 bucketIdx = minbin + HalfWidth;
-                if(bucketIdx < 0)
+                if (bucketIdx < 0)
                 {
                     bucketIdx += N;
                 }
@@ -331,27 +331,24 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-        public override int encodeIntoArray(double input, double output,double learn=true)
+        public override int encodeIntoArray(double input, double output)
         {
-           
+
             if input is not None and not is instance(input, object Number)
                 {
                     throw new ArgumentException("Expected a scalar input but got input of type", type(input)");
                 }
-            if type(input) is float and Double.IsNaN(input) 
-                {
-                     input = SENTINEL_VALUE_FOR_MISSING_DATA
-                      ///  # Get the bucket index to use
-                     bucketIdx = GetFirstOnBit(input)[0];
-          
-            if (bucketIdx = 0)
-            {
-                output[0:n] = 0;
-            }
-        }
-        
 
-    }
+            if (bucketIdx = 0)
+                    {
+                        output = 0;
+                    }
+            if input is float and Double.IsNaN(input)
+                {
+                input = 0;
+                bucketIdx = GetFirstOnBit(input)[0];
+                 }
+        }
 
 
 
