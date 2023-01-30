@@ -98,22 +98,45 @@ namespace NeoCortexApiSample
             /*sequences.Add("Seq1", new List<double>(new double[] { 3,5,6,7,9,8 }));
             sequences.Add("Seq2", new List<double>(new double[] { 12,45,23,67,89 }));
             sequences.Add("Seq3", new List<double>(new double[] { 5, 15, 25, 35, 45 }));*/
-            using (var reader = new StreamReader(@"C:\Users\Faiz\Desktop\test.txt"))
+            //using (var reader = new StreamReader(@"C:\Users\Faiz\Desktop\test.txt"))
+            //{
+            //    List<double> listA = new List<double>();
+            //    List<double> listB = new List<double>();
+            //    while (!reader.EndOfStream)
+            //    {
+            //        var line = reader.ReadLine();
+            //        var values = line.Split(',');
+            //        Console.WriteLine(values[0]);
+            //        listA.Add(Convert.ToDouble(values[0]));
+            //        listB.Add(Convert.ToDouble(values[1]));
+            //    }
+            //    sequences.Add("Seq4", listA);
+            //    sequences.Add("Seq5", listB);
+            //}
+
+            string filePath = "sequence.txt";
+           // List<List<double>> sequencess = new List<List<double>>();
+
+            using (var reader = new StreamReader(filePath))
             {
-                List<double> listA = new List<double>();
-                List<double> listB = new List<double>();
+                int count = 1;
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(',');
-                    Console.WriteLine(values[0]);
-                    listA.Add(Convert.ToDouble(values[0]));
-                    listB.Add(Convert.ToDouble(values[1]));
+                    var sequence = new List<double>();
+                    foreach (var value in values)
+                    {
+                        sequence.Add(Convert.ToDouble(value));
+                    }
+                    string seqName = "seq" + count;
+                    sequences.Add(seqName, sequence);
+                    count++;
+
                 }
-                sequences.Add("Seq4", listA);
-                sequences.Add("Seq5", listB);
             }
-            
+
+
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
             //var predictor = newExperiment.Run(sequences2);
