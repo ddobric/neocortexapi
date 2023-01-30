@@ -16,8 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{7D17894D-95EC-4D16-B6C5-4A6CBBE07E2F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexArrayLib", "NeoCortexArrayLib\NeoCortexArrayLib.csproj", "{A7F4E797-E60F-470E-96F6-B9ECD3A67451}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexEntities", "NeoCortexEntities\NeoCortexEntities.csproj", "{F2693439-77AF-420C-B42F-9FD5BBEC5482}"
@@ -44,6 +42,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmImageEncoder", "ImageEncoder\HtmImageEncoder.csproj", "{60C4DA9F-1D93-4556-A793-02240E08ADA4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApiPersistenceSample", "Samples\NeoCortexApiPersistenceSample\NeoCortexApiPersistenceSample.csproj", "{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{9475B9AE-7942-4398-BAA1-4074C030B294}"
+	ProjectSection(SolutionItems) = preProject
+		nuget\DotNetActors.1.0.3.nupkg = nuget\DotNetActors.1.0.3.nupkg
+		nuget\NeuralNet.MLPerceptron.1.2.2.nupkg = nuget\NeuralNet.MLPerceptron.1.2.2.nupkg
+		nuget\NeuralNetworks.Core.1.2.1.nupkg = nuget\NeuralNetworks.Core.1.2.1.nupkg
+		nuget\readme.md = nuget\readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
