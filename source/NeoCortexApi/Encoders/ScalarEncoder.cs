@@ -366,6 +366,7 @@ namespace NeoCortexApi.Encoders
         public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
+
         }
 
         //public static object Deserialize<T>(StreamReader sr, string name)
