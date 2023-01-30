@@ -33,6 +33,7 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public ScalarEncoder()
         {
+
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace NeoCortexApi.Encoders
             // each case here.
             InitEncoder(W, MinVal, MaxVal, N, Radius, Resolution);
 
-            //nInternal represents the output area excluding the possible padding on each side
+            //nInternal represents the output _area excluding the possible padding on each side
             NInternal = N - 2 * Padding;
 
             if (Name == null)
@@ -101,6 +102,8 @@ namespace NeoCortexApi.Encoders
                         "Number of bits in the SDR (%d) must be greater than 2, and recommended >= 21 (use forced=True to override)");
                 }
             }
+            // Initialized bucketValues to null.
+            this.bucketValues = null;
         }
 
 
@@ -159,6 +162,9 @@ namespace NeoCortexApi.Encoders
                 double nFloat = w * (Range / Radius) + 2 * Padding;
                 N = (int)(nFloat);
             }
+           
+            
+            
         }
 
         protected int? GetFirstOnBit(double input)
@@ -331,6 +337,7 @@ namespace NeoCortexApi.Encoders
             }
         }
 
+<<<<<<< HEAD
         public override int encodeIntoArray(double input, double output)
         {
 
@@ -348,6 +355,29 @@ namespace NeoCortexApi.Encoders
                 input = 0;
                 bucketIdx = GetFirstOnBit(input)[0];
                  }
+=======
+        public override int encodeIntoArray(int input, double output)
+        {
+
+            if (input != 0)
+            {
+                throw new ArgumentException("Expected a scalar input but got input of type", input);
+            }
+            if ((float)input != double.IsNaN(input))
+            {
+                input = SENTINEL_VALUE_FOR_MISSING_DATA;
+                return (int)input;
+            } 
+            ///  # Get the bucket index to use
+            bucketIdx = (int)GetFirstOnBit(input);
+
+            if (bucketIdx == 0)
+            {
+                return (int)output;
+            }
+
+
+>>>>>>> a9789846d4c9688c1f83affbb4264f2d4d1ed6d9
         }
 
 
@@ -356,6 +386,7 @@ namespace NeoCortexApi.Encoders
         public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
+
         }
 
         //public static object Deserialize<T>(StreamReader sr, string name)
