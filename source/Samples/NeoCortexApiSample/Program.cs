@@ -92,16 +92,19 @@ namespace NeoCortexApiSample
 
         /// <summary>
         /* This is the method which will contain the implementation by our team for the Project*/
+        /* Here the sequences are stored in the file and taking sequences from the file*/
         /// </summary>
         private static void RunPredictionMultiSequenceExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-
-            string sequencePath = @"../../MySEProject/trainingSequences.txt";
+            string path = "..//" + System.IO.Directory.GetCurrent‌​Directory();
+            Console.WriteLine(path);
+            string test = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), "..//..//..//..//..//MySEProject/trainingSequences.txt"));
+            ///Users/shivakumarbiru/Desktop/Project SE/neocortexapi_Team_Matrix/source/MySEProject/trainingSequences.txt
             //D:\Software Project\neocortexapi_Team_Matrix\source\MySEProject\SequenceLearningTestFile.txt
             // List<List<double>> sequencess = new List<List<double>>();
 
-            using (var reader = new StreamReader(sequencePath))
+            using (var reader = new StreamReader(test))
             {
                 int count = 1;
                 while (!reader.EndOfStream)
