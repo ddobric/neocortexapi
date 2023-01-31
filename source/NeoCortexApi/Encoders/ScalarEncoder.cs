@@ -303,7 +303,7 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns>The <see cref="List{T}"/></returns>
-        /// 
+        ///  Vinay
         int bucketIdx;
 
         public override int GetBucketIndices(object inputData)

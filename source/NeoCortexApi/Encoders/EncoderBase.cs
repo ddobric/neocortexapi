@@ -12,6 +12,7 @@ namespace NeoCortexApi.Encoders
     /// <summary>
     /// Base class for all encoders.
     /// </summary> 
+    /// 
     public abstract class EncoderBase : IHtmModule, ISerializable
     {
         /// <summary>
