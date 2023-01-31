@@ -15,48 +15,20 @@ namespace UnitTestsProject
     [TestClass]
     public class NAATests
     {
-        private HtmConfig GetHtmConfig(int inpBits, int columns)
-        {
-            var htmConfig = new HtmConfig(new int[] { inpBits }, new int[] { columns })
-            {
-                PotentialRadius = 5,
-                PotentialPct = 0.5,
-                GlobalInhibition = false,
-                LocalAreaDensity = -1.0,
-                NumActiveColumnsPerInhArea = 3.0,
-                StimulusThreshold = 0.0,
-                SynPermInactiveDec = 0.01,
-                SynPermActiveInc = 0.1,
-                SynPermConnected = 0.5,
-                ConnectedPermanence = 0.5,
-                MinPctOverlapDutyCycles = 0.1,
-                MinPctActiveDutyCycles = 0.1,
-                DutyCyclePeriod = 10,
-                MaxBoost = 10,
-                ActivationThreshold = 10,
-                MinThreshold= 6,
-                RandomGenSeed = 42,
-                Random = new ThreadSafeRandom(42),
-                
-               
-            };
-
-            return htmConfig;
-        }
+      
 
         [TestMethod]
         [TestCategory("Prod")]
         [TestCategory("NAA")]
         public void CreateAreaTest()
         {
-            var cfg = GetHtmConfig(100, 1024);
+            var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
 
             MinicolumnArea caX = new MinicolumnArea("X", cfg);
 
             Assert.IsTrue(1024 == caX.Columns.Count);
 
             Assert.IsTrue(caX.AllCells.Count == 1024 * cfg.CellsPerColumn);
-
         }
 
 
@@ -86,7 +58,7 @@ namespace UnitTestsProject
         [DataRow(1024, 100, 0.2)]
         public void InitActiveCellsTest(int numCellsInArea, int numSdrCells, double sparsity)
         {
-            CorticalArea areaY = new CorticalArea("Y", numCellsInArea);
+            CorticalArea areaY = new CorticalArea(1, "Y", numCellsInArea);
 
             areaY.ActiveCellsIndicies = UnitTestHelpers.CreateRandomSdr(numSdrCells, sparsity);
 
@@ -134,13 +106,13 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("NAA")]
-        public void CreateAreaTest2()
+        public void AssociateAreasTest()
         {
-            var cfg = GetHtmConfig(100, 1024);
+            var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
 
-            CorticalArea areaX = new CorticalArea("X", 1024);
+            CorticalArea areaX = new CorticalArea(1,"X", 1024);
 
-            CorticalArea areaY = new CorticalArea("Y", 100);
+            CorticalArea areaY = new CorticalArea(2, "Y", 100);
 
             areaX.ActiveCellsIndicies = UnitTestHelpers.CreateRandomSdr(1024, 0.02);
 
@@ -148,10 +120,41 @@ namespace UnitTestsProject
 
             Naa naa = new Naa(cfg, areaY);
 
-            for (int i = 0; i < 100; i++)
+            Debug.WriteLine(naa.TraceState());
+
+            //
+            // We train the same association between X and Y 10 times.
+            for (int i = 0; i < 10; i++)
             {
                 naa.Compute(areaX, true);
                 Debug.WriteLine(naa.TraceState());
+            }
+
+            // The Y area of NAA must not have any Inactive segment for the current set of active cells.
+            Assert.IsTrue(naa.InactiveApicalSegments.Count == 0);
+
+            // The Y area of NAA must not have any cell without segment for the current set of active cells.
+            Assert.IsTrue(naa.ActiveCellsWithoutApicalSegments.Count == 0);
+
+            // The Y area of NAA must not have any matching segment for the current set of active cells.
+            Assert.IsTrue(naa.MatchingApicalSegments.Count == 0);
+
+            // The Y area of NAA must not have 2 active segments for the current set of active cells.
+            Assert.IsTrue(naa.ActiveApicalSegments.Count == 2);
+
+            foreach (var activeCell in areaY.ActiveCells)
+            {
+                // NAA between two different areas use only ApicalSegments.
+                Assert.IsTrue(activeCell.DistalDendrites.Count == 0);
+
+                foreach (var seg in activeCell.ApicalDendrites)
+                {
+                    foreach (var syn in seg.Synapses)
+                    {
+                        // All synapses are fully trained to maximum.
+                        Assert.IsTrue(syn.Permanence==1.0);
+                    }
+                }
             }
         }
     }
