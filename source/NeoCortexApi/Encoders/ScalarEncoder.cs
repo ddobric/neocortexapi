@@ -355,7 +355,6 @@ namespace NeoCortexApi.Encoders
                 input = 0;
                 bucketIdx = GetFirstOnBit(input)[0];
                  }
-=======
         public override int encodeIntoArray(int input, double output)
         {
 
