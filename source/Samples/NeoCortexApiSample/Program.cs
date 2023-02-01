@@ -98,13 +98,13 @@ namespace NeoCortexApiSample
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             string path = "..//" + System.IO.Directory.GetCurrent‌​Directory();
-            Console.WriteLine(path);
+           // Console.WriteLine(path);
             string test = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), "..//..//..//..//..//MySEProject/trainingSequences.txt"));
             ///Users/shivakumarbiru/Desktop/Project SE/neocortexapi_Team_Matrix/source/MySEProject/trainingSequences.txt
             //D:\Software Project\neocortexapi_Team_Matrix\source\MySEProject\SequenceLearningTestFile.txt
             // List<List<double>> sequencess = new List<List<double>>();
 
-            using (var reader = new StreamReader(test))
+            using (StreamReader reader = new(test))
             {
                 int count = 1;
                 while (!reader.EndOfStream)
@@ -128,8 +128,16 @@ namespace NeoCortexApiSample
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
             //var predictor = newExperiment.Run(sequences2);
+            //string testDataPath = @"../../MySEProject/testingData.txt";
 
-            string testDataPath = @"../../MySEProject/testingData.txt";
+            // taking Sequence from the file named "testDataPath"
+            // path for the file
+
+            string paths = "..//" + System.IO.Directory.GetCurrent‌​Directory();
+            //Console.WriteLine(paths);
+            string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), "..//..//..//..//..//MySEProject/testingData.txt"));
+
+            ///Users/shivakumarbiru/Desktop/Project SE/neocortexapi_Team_Matrix/source/MySEProject/testingData.txt
             using (var reader = new StreamReader(testDataPath))
             {
                 while (!reader.EndOfStream)
