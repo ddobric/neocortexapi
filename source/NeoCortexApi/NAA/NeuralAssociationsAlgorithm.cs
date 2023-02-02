@@ -609,9 +609,8 @@ namespace NeoCortexApi
             {
                 Synapse synapse = null;
 
-                segment.Synapses.Add(synapse = new Synapse(presynapticCell,
-                    segment.Synapses.Count,
-                    segment.SegmentIndex, segment.ParentCell.Index, this._area.Name,
+                segment.Synapses.Add(synapse = new Synapse(presynapticCell, synapseIndex: segment.Synapses.Count,
+                    segmentIndex: segment.SegmentIndex, segmentCellIndex: segment.ParentCell.Index, this._area.Name,
                     permanence));
 
                 presynapticCell.ReceptorSynapses.Add(synapse);

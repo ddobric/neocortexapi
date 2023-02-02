@@ -171,7 +171,7 @@ namespace NeoCortexApi.Entities
                 srcCell = $"[SrcCell: {SourceCell.ToString()}]";
             }
 
-            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence}[ segIndx: {SegmentIndex}], {srcCell}";
+            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence}[ segIndx: {this.SegmentAreaName}/{this.SegmentParentCellIndex}/{SegmentIndex}], {srcCell}";
         }
 
 
@@ -184,6 +184,8 @@ namespace NeoCortexApi.Entities
             int prime = 31;
             int result = 1;
             result = prime * result + InputIndex;
+            result = prime * result + SegmentAreaName.GetHashCode();
+            result = prime * result + SegmentParentCellIndex;
             result = prime * result + this.SegmentIndex;
             result = prime * result + ((SourceCell == null) ? 0 : SourceCell.GetHashCode());
             result = prime * result + SynapseIndex;
@@ -220,6 +222,13 @@ namespace NeoCortexApi.Entities
                 return false;
             if (Permanence != other.Permanence)
                 return false;
+
+            if (SegmentAreaName != other.SegmentAreaName)
+                return false;
+
+            if (SegmentIndex != other.SegmentIndex)
+                return false;
+
             return true;
         }
 
