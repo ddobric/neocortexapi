@@ -130,7 +130,7 @@ namespace NeoCortexApiSample
             // taking Sequence from the file named "testDataPath"
             // path for the file
 
-            string tpaths = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
+            string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
             //Console.WriteLine(paths);
             string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
 
