@@ -19,7 +19,7 @@ namespace UnitTestsProject
     public class HTMSerializationTests_P3
     {
         /// <summary>
-        /// Test the serialization of Column.  Equal method is tested at ColumnTest.
+        /// Test the serialization of Column. Equal method is tested at ColumnTest.
         /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
@@ -333,6 +333,9 @@ namespace UnitTestsProject
         }
 
 
+        /// <summary>
+        /// Test the serialization of Synapse. Equal method is tested at SynapseTests.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_SYNAPSE()
