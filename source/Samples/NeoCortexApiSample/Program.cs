@@ -97,14 +97,13 @@ namespace NeoCortexApiSample
         private static void RunPredictionMultiSequenceExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            string path = "..//" + System.IO.Directory.GetCurrent‌​Directory();
-           // Console.WriteLine(path);
-            string test = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), "..//..//..//..//..//MySEProject/trainingSequences.txt"));
-            ///Users/shivakumarbiru/Desktop/Project SE/neocortexapi_Team_Matrix/source/MySEProject/trainingSequences.txt
-            //D:\Software Project\neocortexapi_Team_Matrix\source\MySEProject\SequenceLearningTestFile.txt
-            // List<List<double>> sequencess = new List<List<double>>();
+            //string path = ".//.//" + System.IO.Directory.GetCurrent‌​Directory();
+            string seqPath = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
+            // Console.WriteLine(path);
+            string sequencePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), seqPath));
+            Console.WriteLine(sequencePath);
 
-            using (StreamReader reader = new(test))
+            using (StreamReader reader = new(sequencePath))
             {
                 int count = 1;
                 while (!reader.EndOfStream)
@@ -127,17 +126,14 @@ namespace NeoCortexApiSample
 
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
-            //var predictor = newExperiment.Run(sequences2);
-            //string testDataPath = @"../../MySEProject/testingData.txt";
 
             // taking Sequence from the file named "testDataPath"
             // path for the file
 
-            string paths = "..//" + System.IO.Directory.GetCurrent‌​Directory();
+            string tpaths = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
             //Console.WriteLine(paths);
-            string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), "..//..//..//..//..//MySEProject/testingData.txt"));
+            string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
 
-            ///Users/shivakumarbiru/Desktop/Project SE/neocortexapi_Team_Matrix/source/MySEProject/testingData.txt
             using (var reader = new StreamReader(testDataPath))
             {
                 while (!reader.EndOfStream)
