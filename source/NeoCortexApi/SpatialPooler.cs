@@ -31,7 +31,7 @@ namespace NeoCortexApi
     /// Spatial Pooler algorithm. Single-threaded version.
     /// Original version by David Ray, migrated from HTM JAVA. Over time, more and more code has been changed.
     /// </summary>
-    public class SpatialPooler : IHtmAlgorithm<int[], int[]>, ISerializable
+    public class SpatialPooler : IHtmAlgorithm<int[], int[]>/*, ISerializable*/
     {
         /// <summary>
         /// The instance of the <see cref="HomeostaticPlasticityController"/>.
@@ -147,6 +147,11 @@ namespace NeoCortexApi
             ArrayUtils.FillArray(conn.BoostFactors, 1);
         }
 
+        public void TraceColumnPermenances(string fileName)
+        {
+            this.connections.TraceColumnPermanences(fileName);
+        }
+            
 
         /// <summary>
         /// Implements single threaded initialization of SP.
@@ -211,7 +216,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Performs SPatialPooler compute algorithm.
+        /// Performs SpatialPooler compute algorithm.
         /// </summary>
         /// <param name="input">Input vector</param>
         /// <param name="learn">Learn or Predict.</param>
@@ -308,6 +313,11 @@ namespace NeoCortexApi
                 this.m_HomeoPlastAct.Compute(inputVector, activeArray);
 
             //Debug.WriteLine($"SP-OUT: {Helpers.StringifyVector(activeColumns.OrderBy(c=>c).ToArray())}");
+        }
+
+        public void SetOnStableStatusChanged(Action<bool, int, double, int> onStable)
+        {
+            this.m_HomeoPlastAct.OnStabilityStatusChanged = onStable;
         }
 
         /// <summary>
@@ -523,7 +533,7 @@ namespace NeoCortexApi
         /// calculations are averaged over all dimensions of inputs and columns. This value is meaningless if global inhibition is enabled.
         /// </summary>
         /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
-        /// <param name="avgCollected"></param>
+        /// <param name="avgCollected">Number of connected synapses.</param>
         public void UpdateInhibitionRadius(Connections c, List<double> avgCollected = null)
         {
             if (c.HtmConfig.GlobalInhibition)
@@ -557,7 +567,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <returns>Average ratio numOfCols/numOfInputs across all dimensions.</returns>
-        public virtual double CalcAvgColumnsPerInput(Connections c)
+        internal virtual double CalcAvgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
             int[] colDim = new int[c.HtmConfig.ColumnDimensions.Length];
@@ -744,7 +754,7 @@ namespace NeoCortexApi
             // In that case the density is calculated from inhibition radius.
             if (density <= 0)
             {
-                // inhibition area can be higher than num of all columns, if 
+                // inhibition _area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
                 inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.ColumnDimensions.Length);
@@ -1340,7 +1350,7 @@ namespace NeoCortexApi
 
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(SpatialPooler), writer);
 
@@ -1363,7 +1373,7 @@ namespace NeoCortexApi
         {
             SpatialPooler sp = new SpatialPooler();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -1386,7 +1396,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -1427,17 +1437,17 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            HtmSerializer2.SerializeObject(obj, name, sw);
+            HtmSerializer.SerializeObject(obj, name, sw);
         }
 
         public static object Deserialize<T>(StreamReader sr, string propName)
         {
-            var obj = HtmSerializer2.DeserializeObject<T>(sr, propName);
+            var obj = HtmSerializer.DeserializeObject<T>(sr, propName);
 
             var sp = obj as SpatialPooler;
             if (sp == null)
                 return obj;
-            sp.m_HomeoPlastAct.SetConnections(sp.connections);
+            //sp.m_HomeoPlastAct.SetConnections(sp.connections);
             return sp;
         }
     }

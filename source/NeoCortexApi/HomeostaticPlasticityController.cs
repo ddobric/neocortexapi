@@ -20,8 +20,8 @@ namespace NeoCortexApi
     /// </summary>
     /// <remarks>
     /// The research related to this component can be found here:
-    /// https://www.researchgate.net/publication/358996456_On_the_Importance_of_the_Newborn_Stage_When_Learning_Patterns_with_the_Spatial_Pooler
-    /// Published 2022 in Springer Nature Computer Sciences.
+    /// https://rdcu.be/cIcoc published 2022 in Springer Nature Computer Sciences.
+    /// The first part of this research can be found here: https://pdfs.semanticscholar.org/be3e/97813b6cbcbdbba591e84b610fced628eb22.pdf
     /// </remarks>
     public class HomeostaticPlasticityController : ISerializable
     {
@@ -278,7 +278,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        internal static string GetHash(int[] input)
+        public static string GetHash(int[] input)
         {
             List<byte> buff = new List<byte>();
 
@@ -456,7 +456,7 @@ namespace NeoCortexApi
                 return false;
             else if (m_RequiredNumOfStableCycles != obj.m_RequiredNumOfStableCycles)
                 return false;
-            else if (!m_NumOfStableCyclesForInput.SequenceEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.SequenceEqual(m_NumOfActiveColsForInput) && !m_InOutMap.SequenceEqual(m_InOutMap))
+            else if (!m_NumOfStableCyclesForInput.ElementsEqual(obj.m_NumOfStableCyclesForInput) && !m_NumOfActiveColsForInput.ElementsEqual(m_NumOfActiveColsForInput) && !m_InOutMap.ElementsEqual(m_InOutMap))
                 return false;
             else if (m_IsStable != obj.m_IsStable)
                 return false;
@@ -468,7 +468,7 @@ namespace NeoCortexApi
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(HomeostaticPlasticityController), writer);
 
@@ -495,7 +495,7 @@ namespace NeoCortexApi
         {
             HomeostaticPlasticityController ctrl = new HomeostaticPlasticityController();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -514,7 +514,7 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -583,15 +583,14 @@ namespace NeoCortexApi
             {
                 nameof(m_OnStabilityStatusChanged),
                 nameof(OnStabilityStatusChanged),
-                nameof(m_HtmMemory),
                 nameof(m_InOutMap)
             };
 
             if (obj is HomeostaticPlasticityController controller)
             {
-                HtmSerializer2.SerializeObject(obj, name, sw, excludeEntries);
+                HtmSerializer.SerializeObject(obj, name, sw, excludeEntries);
                 var convertInOutMap = controller.m_InOutMap.ToDictionary(kv => kv.Key, kv => new KeyValuePair<int, int[]>(kv.Value.Length, ArrayUtils.IndexesWithNonZeros(kv.Value)));
-                HtmSerializer2.Serialize(convertInOutMap, "convertInOutMap", sw);
+                HtmSerializer.Serialize(convertInOutMap, "convertInOutMap", sw);
             }
 
 
@@ -601,13 +600,13 @@ namespace NeoCortexApi
         {
             var excludeEntries = new List<string> { "convertInOutMap" };
 
-            var controller = HtmSerializer2.DeserializeObject<T>(sr, name, excludeEntries, (obj, propName) =>
+            var controller = HtmSerializer.DeserializeObject<T>(sr, name, excludeEntries, (obj, propName) =>
             {
                 if (obj is HomeostaticPlasticityController hpc)
                 {
                     if (propName == "convertInOutMap")
                     {
-                        var convertInOutMap = HtmSerializer2.Deserialize<Dictionary<string, KeyValuePair<int, int[]>>>(sr, propName);
+                        var convertInOutMap = HtmSerializer.Deserialize<Dictionary<string, KeyValuePair<int, int[]>>>(sr, propName);
 
                         Dictionary<string, int[]> inOutMap = new Dictionary<string, int[]>();
                         foreach (var map in convertInOutMap)

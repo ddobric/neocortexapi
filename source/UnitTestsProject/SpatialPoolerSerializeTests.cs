@@ -217,7 +217,7 @@ namespace UnitTestsProject
 
             var x = new { DistalSegments = distalSegments };
 
-            HtmSerializer ser = new HtmSerializer();
+            HtmSerializerOld ser = new HtmSerializerOld();
             ser.Serialize(x, "distalsegment.json");
         }
 

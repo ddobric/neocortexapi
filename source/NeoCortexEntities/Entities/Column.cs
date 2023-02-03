@@ -90,7 +90,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns the <see cref="Cell"/> with the least number of <see cref="DistalDendrite"/>s.
+        /// Returns the <see cref="Cell"/> with the least number of <see cref="Segment"/>s.
         /// </summary>
         /// <param name="c">the connections state of the temporal memory</param>
         /// <param name="random"></param>
@@ -439,7 +439,7 @@ namespace NeoCortexApi.Entities
         }
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Column), writer);
 
@@ -468,7 +468,7 @@ namespace NeoCortexApi.Entities
         {
             Column column = new Column();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
 
             while (!sr.EndOfStream)
@@ -500,7 +500,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -536,13 +536,13 @@ namespace NeoCortexApi.Entities
                     nameof(Column.Cells),
                     nameof(Column.m_Hashcode)
                 };
-                HtmSerializer2.SerializeObject(column, name, sw, ignoreMembers);
+                HtmSerializer.SerializeObject(column, name, sw, ignoreMembers);
             }
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<Column>(sr, name);
+            return HtmSerializer.DeserializeObject<Column>(sr, name);
         }
     }
 }

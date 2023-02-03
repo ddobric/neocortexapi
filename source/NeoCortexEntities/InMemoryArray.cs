@@ -270,7 +270,7 @@ namespace NeoCortexApi.Entities
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(InMemoryArray), writer);
 
@@ -284,7 +284,7 @@ namespace NeoCortexApi.Entities
         {
             InMemoryArray array = new InMemoryArray();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -299,7 +299,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -330,17 +330,17 @@ namespace NeoCortexApi.Entities
             var ignoreMembers = new List<string> 
             { 
                 "Item",
-                nameof(Dimensions),
-                nameof(IDistributedArray.Count),
-                nameof(Rank)
+                //nameof(Dimensions),
+                //nameof(IDistributedArray.Count),
+                //nameof(Rank)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
+            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var ignoreMembers = new List<string> { "Item" };
-            return HtmSerializer2.DeserializeObject<T>(sr, name, ignoreMembers);
+            var ignoreMembers = new List<string> { /*"Item"*/ };
+            return HtmSerializer.DeserializeObject<T>(sr, name, ignoreMembers);
         }
         #endregion
     }

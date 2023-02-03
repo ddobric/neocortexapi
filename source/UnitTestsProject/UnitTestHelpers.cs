@@ -61,6 +61,33 @@ namespace UnitTestsProject
             }
         }
 
+
+        internal static HtmConfig GetHtmConfig(int inpBits, int columns)
+        {
+            var htmConfig = new HtmConfig(new int[] { inpBits }, new int[] { columns })
+            {
+                PotentialRadius = 5,
+                PotentialPct = 0.5,
+                GlobalInhibition = false,
+                LocalAreaDensity = -1.0,
+                NumActiveColumnsPerInhArea = 3.0,
+                StimulusThreshold = 0.0,
+                SynPermInactiveDec = 0.01,
+                SynPermActiveInc = 0.1,
+                SynPermConnected = 0.5,
+                ConnectedPermanence = 0.5,
+                MinPctOverlapDutyCycles = 0.1,
+                MinPctActiveDutyCycles = 0.1,
+                DutyCyclePeriod = 10,
+                MaxBoost = 10,
+                ActivationThreshold = 10,
+                MinThreshold = 6,
+                RandomGenSeed = 42,
+                Random = new ThreadSafeRandom(42),
+            };
+
+            return htmConfig;
+        }
         public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
         {
             var cfg = UnitTestHelpers.DefaultSbConfig;
@@ -68,9 +95,6 @@ namespace UnitTestsProject
             return new DistributedMemory()
             {
                 ColumnDictionary = new ActorSbDistributedDictionaryBase<Column>(cfg, UnitTestHelpers.GetLogger()),
-
-                //ColumnDictionary = new HtmSparseIntDictionary<Column>(cfg),
-                //PoolDictionary = new HtmSparseIntDictionary<Pool>(cfg),
             };
         }
 
@@ -82,9 +106,6 @@ namespace UnitTestsProject
                 //PoolDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Pool>(1),
             };
         }
-
-
-
 
         /// <summary>
         /// Creates appropriate instance of SpatialPooler.
@@ -114,24 +135,29 @@ namespace UnitTestsProject
                 sp.Init(mem);
         }
 
-        ///// <summary>
-        ///// Creates pooler instance.
-        ///// </summary>
-        ///// <param name="poolerMode"></param>
-        ///// <returns></returns>
-        //public static SpatialPooler CreatePooler(PoolerMode poolerMode)
-        //{
-        //    SpatialPooler sp;
+        public static long[] CreateRandomSdr(long numCells, double sparsity)
+        {
+            Random rnd = new Random();
 
-        //    if (poolerMode == PoolerMode.Multinode)
-        //        sp = new SpatialPoolerParallel();
-        //    else if (poolerMode == PoolerMode.Multicore)
-        //        sp = new SpatialPoolerMT();
-        //    else
-        //        sp = new SpatialPooler();
+            var cells = new List<long>();
 
-        //    return sp;
-        //}
+            int numActCells = (int)(numCells * sparsity);
+
+            int actual = 0;
+
+            while (actual < numActCells)
+            {
+                long index = rnd.NextInt64(0, numCells-1);
+
+                if (cells.Contains(index) == false)
+                {
+                    cells.Add(index);
+                    actual++;
+                }
+            }
+
+            return cells.ToArray();
+        }
     }
 
 

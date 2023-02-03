@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -13,6 +14,10 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class Cell : IEquatable<Cell>, IComparable<Cell>, ISerializable
     {
+        /// <summary>
+        /// If the cell has a meaning like a Grand-Mather cell, the meaning value is set.
+        /// </summary>
+        public string Label { get; set; }
 
         /// <summary>
         /// Index of the cell.
@@ -20,13 +25,8 @@ namespace NeoCortexApi.Entities
         public int Index { get; set; }
 
         /// <summary>
-        /// The identifier of the cell.
-        /// </summary>
-        //public int CellId { get; private set; }
-
-
-        /// <summary>
-        /// The column, which owns this cell.
+        /// Optional. The mini-column, which owns this cell.
+        /// A cell can be owned by area explicitely if mini-columns are not used.
         /// </summary>
         public int ParentColumnIndex { get; set; }
 
@@ -57,14 +57,14 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell()
         {
-
+            this.ParentColumnIndex = -1;
         }
 
         /// <summary>
         /// Constructs a new <see cref="Cell"/> object
         /// </summary>
         /// <param name="parentColumnIndx"></param>
-        /// <param name="colSeq">the index of this <see cref="Cell"/> within its column</param>
+        /// <param name="colSeq">The index of this <see cref="Cell"/> within its column.</param>
         /// <param name="numCellsPerColumn"></param>
         /// <param name="cellId"></param>
         /// <param name="cellActivity"></param>
@@ -73,9 +73,21 @@ namespace NeoCortexApi.Entities
             this.ParentColumnIndex = parentColumnIndx;
 
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
-
-            //this.CellId = cellId;
         }
+
+
+        /// <summary>
+        /// Creates the cell
+        /// </summary>
+        /// <param name="parentIndex">The index of the area that owns the cell. This can be a mini-column or a <see cref="CorticalArea"/></param>
+        /// <param name="index">The index of the cell inside the given area.</param>
+        public Cell(int parentIndex, int index)
+        {
+            this.ParentColumnIndex = parentIndex;
+
+            this.Index = index;
+        }
+
 
         /// <summary>
         /// Gets the hashcode of the cell.
@@ -87,16 +99,8 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + ParentColumnIndex;
             result = prime * result + Index;
+
             return result;
-            //if (m_Hashcode == 0)
-            //{
-            //    int prime = 31;
-            //    int result = 1;
-            //    result = prime * result + ParentColumnIndex;
-            //    result = prime * result + Index;
-            //    return result;
-            //}
-            //return m_Hashcode;
         }
 
         /// <summary>
@@ -145,9 +149,29 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Cell: Indx={this.Index}, [{this.ParentColumnIndex}]";
+            return $"Parent={this.ParentColumnIndex} - Index={this.Index}";
         }
 
+
+        /// <summary>
+        /// Trace dendrites and synapses.
+        /// </summary>
+        /// <returns></returns>
+        public string TraceCell()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append($"Cell {this.Index} ");
+
+            sb.AppendLine($"\tApical Segments {this.ApicalDendrites.Count}");
+
+            foreach (var seg in this.ApicalDendrites)
+            {
+                sb.AppendLine(seg.ToString());
+            }
+
+            return sb.ToString();
+        }
 
         /// <summary>
         /// Compares two cells.
@@ -172,7 +196,7 @@ namespace NeoCortexApi.Entities
         /// <param name="writer"></param>
         public void SerializeT(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Cell), writer);
 
@@ -187,24 +211,22 @@ namespace NeoCortexApi.Entities
                 ser.SerializeValue(this.ReceptorSynapses, writer);
 
             ser.SerializeEnd(nameof(Cell), writer);
-
-
         }
 
         public static Cell Deserialize(StreamReader sr)
         {
             Cell cell = new Cell();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)) || data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer2.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer2.ParameterDelimiter))
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Cell)) || data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer.ParameterDelimiter))
                 {
                     continue;
                 }
-                else if (data == ser.ReadBegin(nameof(DistalDendrite)))
+                else if (data == ser.ReadBegin(nameof(Segment)))
                 {
                     //cell.DistalDendrites.Add(DistalDendrite.Deserialize(sr));
                 }
@@ -218,7 +240,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -250,24 +272,24 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var ignoreMembers = new List<string> 
-            { 
+            var ignoreMembers = new List<string>
+            {
                 nameof(Cell.ReceptorSynapses),
                 nameof(m_Hashcode)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);
-            var cell = obj as Cell;
-            if (cell != null)
-            {
-                var synapses = cell.ReceptorSynapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
-                HtmSerializer2.Serialize(synapses, nameof(Cell.ReceptorSynapses), sw);
-            }
+            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);
+            //var cell = obj as Cell;
+            //if (cell != null)
+            //{
+            //    var synapses = cell.ReceptorSynapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
+            //    HtmSerializer2.Serialize(synapses, nameof(Cell.ReceptorSynapses), sw);
+            //}
         }
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             if (typeof(T) != typeof(Cell))
                 return null;
-            var cell = HtmSerializer2.DeserializeObject<Cell>(sr, name);
+            var cell = HtmSerializer.DeserializeObject<Cell>(sr, name);
 
             //foreach (var distalDentrite in cell.DistalDendrites)
             //{

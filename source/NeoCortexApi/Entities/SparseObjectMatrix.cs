@@ -15,7 +15,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// @author David Ray, Damir Dobric
     /// </remarks>
-    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T>, ISerializable where T : class
+    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T>/*, ISerializable*/ where T : class
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
@@ -260,7 +260,7 @@ namespace NeoCortexApi.Entities
 
         public override void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(SparseObjectMatrix<T>), writer);
 
@@ -280,7 +280,7 @@ namespace NeoCortexApi.Entities
         {
             SparseObjectMatrix<T> sparse = new SparseObjectMatrix<T>();
 
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -303,7 +303,7 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     for (int i = 0; i < str.Length; i++)
                     {
                         switch (i)
@@ -326,7 +326,7 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            HtmSerializer2.SerializeObject(obj, name, sw);
+            HtmSerializer.SerializeObject(obj, name, sw);
 
             //var matrixColumns = obj as SparseObjectMatrix<Column>;
             //if (matrixColumns != null)
@@ -361,7 +361,7 @@ namespace NeoCortexApi.Entities
             {
                 //"synapsesList"
             };
-            var matrix = HtmSerializer2.DeserializeObject<SparseObjectMatrix<T>>(sr, name, ignoreMembers, (m, propName) =>
+            var matrix = HtmSerializer.DeserializeObject<SparseObjectMatrix<T>>(sr, name, ignoreMembers, (m, propName) =>
             {
                 //var matrixColumns = m as SparseObjectMatrix<Column>;
                 //if (matrixColumns == null)

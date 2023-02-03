@@ -13,9 +13,8 @@ namespace NeoCortexApi
     /// <summary>
     /// Implementation of Temporal Memory algorithm.
     /// </summary>
-    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>, ISerializable//: IComputeDecorator
+    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>/*, ISerializable*///: IComputeDecorator
     {
-        private static readonly double EPSILON = 0.00001;
 
         /// <summary>
         /// Stores each cycle's most recent activity
@@ -234,7 +233,7 @@ namespace NeoCortexApi
 
                         List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                             activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
-                                permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
+                                permanenceIncrement, permanenceDecrement, learn);
 
                         foreach (var item in cellsOwnersOfActSegs)
                         {
@@ -420,7 +419,7 @@ namespace NeoCortexApi
         /// <returns>Cells which own active column segments as calculated in the previous step.</returns>
         protected List<Cell> ActivatePredictedColumn(Connections conn, List<DistalDendrite> columnActiveSegments,
             List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells,
-                double permanenceIncrement, double permanenceDecrement, bool learn, IList<Synapse> activeSynapses)
+                double permanenceIncrement, double permanenceDecrement, bool learn)
         {
             // List of cells that owns active segments. These cells will be activated in this cycle.
             // In previous cycle they are depolarized.
@@ -467,6 +466,14 @@ namespace NeoCortexApi
                     //
                     // Even if the segment is active, new synapses can be added that connect previously active cells with the segment.
                     int numActive = this.LastActivity.PotentialSynapses[segment.SegmentIndex];
+
+                    // it can be simplified with this code.
+                    //int numActive = segment.Synapses.Count;
+                    //if (numActive != segment.Synapses.Count)
+                    //{
+                    //    throw new System.Exception("Why??");
+                    //}
+
                     int nGrowDesired = conn.HtmConfig.MaxNewSynapseCount - numActive;
 
                     if (nGrowDesired > 0)
@@ -537,7 +544,7 @@ namespace NeoCortexApi
             {
                 // Debug.Write($"B.({matchingSegments.Count})");
 
-                DistalDendrite maxPotentialSeg = GetSegmentwithHighesPotential(matchingSegments, prevActiveCells);
+                DistalDendrite maxPotentialSeg = GetSegmentWithHighestPotential(matchingSegments, prevActiveCells);
 
                 leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
 
@@ -582,7 +589,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="matchingSegments"></param>
         /// <returns></returns>
-        private DistalDendrite GetSegmentwithHighesPotential(List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells)
+        private DistalDendrite GetSegmentWithHighestPotential(List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells)
         {
             DistalDendrite maxSeg = matchingSegments[0];
 
@@ -668,31 +675,28 @@ namespace NeoCortexApi
                     leastUsedCells.Add(cell);
                 }
             }
+
             random = new Random();
             int i = random.Next(leastUsedCells.Count);
             return leastUsedCells[i];
         }
 
         /// <summary>
-        /// Creates nDesiredNewSynapes synapses on the segment passed in if possible, choosing random cells from the previous winner cells that are
-        /// not already on the segment.
+        /// Creates requiredNewSynapses synapses on the segment, choosing random cells from the previous winner cells that are
+        /// not already synaptically connected to the segment.
         /// </summary>
         /// <param name="conn">Connections instance for the <see cref="TemporalMemory"/></param>
         /// <param name="prevWinnerCells">Winner cells in `t-1`</param>
         /// <param name="segment">Segment to grow synapses on. </param>
         /// <param name="initialPermanence">Initial permanence of a new synapse.</param>
-        /// <param name="nDesiredNewSynapses">Desired number of synapses to grow</param>
+        /// <param name="requiredNewSynapses">Desired number of synapses to grow</param>
         /// <param name="random"><see cref="TemporalMemory"/> object used to generate random numbers</param>
-        /// <remarks>
-        /// <b>Notes:</b> The process of writing the last value into the index in the array that was most recently changed is to ensure the same results that 
-        /// we get in the c++ implementation using iter_swap with vectors.
-        /// </remarks>
         public void GrowSynapses(Connections conn, ICollection<Cell> prevWinnerCells, DistalDendrite segment,
-            double initialPermanence, int nDesiredNewSynapses, Random random)
+            double initialPermanence, int requiredNewSynapses, Random random)
         {
             random = new Random();
-            List<Cell> removingCandidates = new List<Cell>(prevWinnerCells);
-            removingCandidates = removingCandidates.OrderBy(c => c).ToList();
+            List<Cell> winnersWithoutSynapticConnecctionToSegment = new List<Cell>(prevWinnerCells);
+            winnersWithoutSynapticConnecctionToSegment = winnersWithoutSynapticConnecctionToSegment.OrderBy(c => c).ToList();
 
             //
             // Enumarates all synapses in a segment and remove winner-cells from
@@ -702,27 +706,32 @@ namespace NeoCortexApi
             // This should be investigated.
             foreach (Synapse synapse in segment.Synapses)
             {
+                // Gets the cell that connects to the segment and forms this synapse.
                 Cell presynapticCell = synapse.GetPresynapticCell();
-                int index = removingCandidates.IndexOf(presynapticCell);
+
+                // Lookup that cell in the list of currentlly active=winner cells.
+                int index = winnersWithoutSynapticConnecctionToSegment.IndexOf(presynapticCell);
                 if (index != -1)
                 {
-                    removingCandidates.RemoveAt(index); ;
+                    // If the cell already has a synaptic connection, the we do not need to create the synapse again.
+                    // We anly want here currentlly active cells. which do not form synaptic conenctions to the segment.
+                    winnersWithoutSynapticConnecctionToSegment.RemoveAt(index); ;
                 }
             }
 
-            int candidatesLength = removingCandidates.Count;
+            int candidatesLength = winnersWithoutSynapticConnecctionToSegment.Count;
 
             // We take here eather wanted growing number of desired synapes or num of candidates
             // if too many growing synapses requested.
-            int numMissingSynapses = nDesiredNewSynapses < candidatesLength ? nDesiredNewSynapses : candidatesLength;
+            int numMissingSynapses = requiredNewSynapses < candidatesLength ? requiredNewSynapses : candidatesLength;
 
             //
             // Finally we randomly create new synapses. 
             for (int i = 0; i < numMissingSynapses; i++)
             {
-                int rndIndex = random.Next(removingCandidates.Count);
-                conn.CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence);
-                removingCandidates.RemoveAt(rndIndex);
+                int rndIndex = random.Next(winnersWithoutSynapticConnecctionToSegment.Count);
+                conn.CreateSynapse(segment, winnersWithoutSynapticConnecctionToSegment[rndIndex], initialPermanence);
+                winnersWithoutSynapticConnecctionToSegment.RemoveAt(rndIndex);
             }
         }
 
@@ -743,13 +752,13 @@ namespace NeoCortexApi
             // Destroying a synapse modifies the set that we're iterating through.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
-            foreach (Synapse presynapticCellSynapse in segment.Synapses)
+            foreach (Synapse synapse in segment.Synapses)
             {
-                double permanence = presynapticCellSynapse.Permanence;
+                double permanence = synapse.Permanence;
 
                 //
                 // If synapse's presynaptic cell was active in the previous cycle then streng it.
-                if (prevActiveCells.Contains(presynapticCellSynapse.GetPresynapticCell()))
+                if (prevActiveCells.Contains(synapse.GetPresynapticCell()))
                 {
                     permanence += permanenceIncrement;
                 }
@@ -767,13 +776,13 @@ namespace NeoCortexApi
                 //
                 // permanence = new BigDecimal(permanence).setScale(1, RoundingMode.HALF_UP).doubleValue(); 
 
-                if (permanence < EPSILON)
+                if (permanence < HtmConfig.EPSILON)
                 {
-                    synapsesToDestroy.Add(presynapticCellSynapse);
+                    synapsesToDestroy.Add(synapse);
                 }
                 else
                 {
-                    presynapticCellSynapse.Permanence = permanence;
+                    synapse.Permanence = permanence;
                 }
             }
 
@@ -891,12 +900,12 @@ namespace NeoCortexApi
             {
                 //nameof(TemporalMemory.connections)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers);  
+            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);  
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            return HtmSerializer2.DeserializeObject<T>(sr, name);
+            return HtmSerializer.DeserializeObject<T>(sr, name);
         }
     }
 }

@@ -96,7 +96,7 @@ namespace NeoCortexApi
 
                     List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                         activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
-                            permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
+                            permanenceIncrement, permanenceDecrement, learn);
 
                     ComputeCycle colCycle = new ComputeCycle();
                     cycles[tuple.Key.Index] = colCycle;

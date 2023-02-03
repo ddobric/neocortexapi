@@ -1,61 +1,87 @@
-﻿using NeoCortexApi.Entities;
+﻿using NeoCortexApi.DataMappers;
+using NeoCortexApi.Entities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi
 {
+    /// <summary>
+    /// Cortical column that consists of cells. It does not contain mini-columns.
+    /// </summary>
     public class CorticalArea
     {
-        public List<Column> Columns { get; set; } = new List<Column>();
+        protected ConcurrentDictionary<int, Segment> _segmentMap = new ConcurrentDictionary<int, Segment>();
 
+        /// <summary>
+        /// Number of cells in the _area.
+        /// </summary>
+        private int _numCells;
+
+        /// <summary>
+        /// Map of active cells and their indexes in the virtual sparse array.
+        /// </summary>
+        private ConcurrentDictionary<long, Cell> Cells { get; set; } = new ConcurrentDictionary<long, Cell>();
+
+        /// <summary>
+        /// The index of the area.
+        /// </summary>
+        //public int Index { get; set; }
+
+        /// <summary>
+        /// The name of the _area. It must be unique in the application.
+        /// </summary>
         public string Name { get; private set; }
 
-        public CorticalArea(string name, HtmConfig config)
+        /// <summary>
+        /// Get the list of active cells from indicies.
+        /// </summary>
+        public ICollection<Cell> ActiveCells
+        {
+            get
+            {
+                var actCells = Cells.Values;
+
+                return actCells;
+            }
+        }
+
+        public long[] ActiveCellsIndicies
+        {
+            get
+            {
+                return Cells.Keys.ToArray();
+            }
+            set
+            {
+                Cells = new ConcurrentDictionary<long, Cell>();
+
+                int indx = 0;
+              
+                foreach (var item in value)
+                {
+                    Cells.TryAdd(item, new Cell(-1, indx++));
+                }
+            }
+        } 
+
+
+
+        public CorticalArea(int index, string name, int numCells)
         {
             this.Name = name;
-            Init(config);
+
+            this._numCells = numCells;
+
+            Cells = new ConcurrentDictionary<long, Cell>();
         }
 
         public override string ToString()
         {
-            return $"{Name} - Cols: {this.Columns.Count}";
+            return $"{Name} - Cells: {_numCells} - Active Cells : {Cells.Count}";
         }
-
-        private void Init(HtmConfig config)
-        {
-            int numColumns = 1;
-
-            foreach (var item in config.ColumnDimensions)
-            {
-                numColumns *= item;
-            }
-
-            Cell[] cells = new Cell[numColumns * config.CellsPerColumn];
-
-            for (int i = 0; i < numColumns; i++)
-            {
-                Column column = new Column(config.CellsPerColumn, i, config.SynPermConnected, config.NumInputs);
-
-                Columns.Add(column);
-            }
-        }
-
-        public List<Cell> AllCells
-        {
-            get
-            {
-                return this.Columns.SelectMany(c => c.Cells).ToList();             
-            }
-        }
-
-        public DistalDendrite[] AllDistalDendrites
-        {
-            get
-            {
-                return AllCells.SelectMany(c => c.DistalDendrites).ToArray();
-            }
-        }
+              
     }
 }

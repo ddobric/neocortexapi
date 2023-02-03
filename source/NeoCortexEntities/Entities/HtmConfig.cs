@@ -16,6 +16,8 @@ namespace NeoCortexApi.Entities
     /// </summary>
     public class HtmConfig : ISerializable
     {
+        public static readonly double EPSILON = 0.00001;
+
         /// <summary>
         /// Default constructor with the default set of parameters.
         /// </summary>
@@ -121,6 +123,13 @@ namespace NeoCortexApi.Entities
         /// a "connected synapse", meaning it can contribute to the cell's firing.
         /// </summary>
         public double SynPermConnected { get => synPermConnected; set { synPermConnected = value; SynPermBelowStimulusInc = value / 10.0; } }
+
+        /// <summary>
+        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
+        /// Synapses that exceeds this value are used in computation of active segments.
+        /// </summary>
+        [Obsolete("Use SynPermConnected instead.")]
+        public double ConnectedPermanence { get; set; } = 0.5;
 
         /// <summary>
         /// Specifies whether neighborhoods wider than the borders wrap around to the other side.
@@ -341,12 +350,6 @@ namespace NeoCortexApi.Entities
         /// Initial permanence of a new synapse
         /// </summary>
         public double InitialPermanence { get; set; } = 0.21;
-
-        /// <summary>
-        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
-        /// Synapses that exceeds this value are used in computation of active segments.
-        /// </summary>
-        public double ConnectedPermanence { get; set; } = 0.5;
 
         //public bool Learn { get; set; } = true;
         #endregion
@@ -606,7 +609,7 @@ namespace NeoCortexApi.Entities
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
@@ -701,7 +704,7 @@ namespace NeoCortexApi.Entities
         public static HtmConfig Deserialize(StreamReader sr)
         {
             HtmConfig htmConfig = new HtmConfig();
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             while (sr.Peek() >= 0)
             {
@@ -726,10 +729,10 @@ namespace NeoCortexApi.Entities
                 }
                 else
                 {
-                    int count = data.Count(ch => ch == HtmSerializer2.ParameterDelimiter);
+                    int count = data.Count(ch => ch == HtmSerializer.ParameterDelimiter);
                     if (count == 20)
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -840,7 +843,7 @@ namespace NeoCortexApi.Entities
                     }
                     else
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -1005,12 +1008,12 @@ namespace NeoCortexApi.Entities
                 nameof(HtmConfig.synPermActiveInc),
                 nameof(HtmConfig.synPermConnected)
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, excludeMembers);
+            HtmSerializer.SerializeObject(obj, name, sw, excludeMembers);
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var htmConfig = HtmSerializer2.DeserializeObject<HtmConfig>(sr, name);
+            var htmConfig = HtmSerializer.DeserializeObject<HtmConfig>(sr, name);
             return htmConfig;
         }
         #endregion

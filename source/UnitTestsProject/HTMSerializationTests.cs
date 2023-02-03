@@ -17,10 +17,10 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeValueTest()
         {
-            HtmSerializer2 htm = new HtmSerializer2();
+            HtmSerializer htm = new HtmSerializer();
 
             using (StreamWriter sw = new StreamWriter("ser.txt"))
-            {
+            {             
                 htm.SerializeBegin("UnitTest", sw);
 
                 htm.SerializeValue(15, sw);
@@ -51,7 +51,7 @@ namespace UnitTestsProject
                     }
                     else
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -95,7 +95,7 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeArrayDouble()
         {
-            HtmSerializer2 htm = new HtmSerializer2();
+            HtmSerializer htm = new HtmSerializer();
             Double[] vs = new Double[10];
             Double[] vs1 = new Double[10];
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeArrayDouble)}.txt"))
@@ -127,7 +127,7 @@ namespace UnitTestsProject
                     }
                     else
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -151,7 +151,7 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeArrayInt()
         {
-            HtmSerializer2 htm = new HtmSerializer2();
+            HtmSerializer htm = new HtmSerializer();
             int[] vs = new int[10];
             int[] vs1 = new int[10];
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeArrayInt)}.txt"))
@@ -183,7 +183,7 @@ namespace UnitTestsProject
                     }
                     else
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -208,7 +208,7 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeArrayCell()
         {
-            HtmSerializer2 htm = new HtmSerializer2();
+            HtmSerializer htm = new HtmSerializer();
             Cell[] cells = new Cell[2];
             Cell[] cells1;
             cells[0] = new Cell(12, 14, 16,  new CellActivity());
@@ -257,7 +257,7 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeDictionaryStringint()
         {
-            HtmSerializer2 htm = new HtmSerializer2();
+            HtmSerializer htm = new HtmSerializer();
             Dictionary<String, int> keyValues = new Dictionary<string, int>();
             keyValues.Add("Hello", 1);
             keyValues.Add("Welcome", 2);
@@ -288,7 +288,7 @@ namespace UnitTestsProject
                     }
                     else
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -312,7 +312,7 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeDictionaryIntint()
         {
-            HtmSerializer2 htm = new HtmSerializer2();
+            HtmSerializer htm = new HtmSerializer();
             Dictionary<int, int> keyValues = new Dictionary<int, int>();
             keyValues.Add(23, 1);
             keyValues.Add(24, 2);
@@ -343,7 +343,7 @@ namespace UnitTestsProject
                     }
                     else
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -367,7 +367,7 @@ namespace UnitTestsProject
         [TestCategory("Serialization")]
         public void SerializeDictionarystringintA()
         {
-            HtmSerializer2 htm = new HtmSerializer2();
+            HtmSerializer htm = new HtmSerializer();
             Dictionary<String, int[]> keyValues = new Dictionary<String, int[]>
             {
                 { "Hello", new int[] { 1, 2, 3 } },
@@ -400,7 +400,7 @@ namespace UnitTestsProject
                     }
                     else
                     {
-                        string[] str = data.Split(HtmSerializer2.ParameterDelimiter);
+                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                         for (int i = 0; i < str.Length; i++)
                         {
                             switch (i)
@@ -574,7 +574,7 @@ namespace UnitTestsProject
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeCellTest)}.txt"))
             {
-                HtmSerializer2 ser = new HtmSerializer2();
+                HtmSerializer ser = new HtmSerializer();
 
                 Cell cell1 = ser.DeserializeCell(sr);
 
@@ -614,7 +614,7 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDistalDendrite)}.txt"))
             {
 
-                HtmSerializer2 ser = new HtmSerializer2();
+                HtmSerializer ser = new HtmSerializer();
 
                 DistalDendrite distSegment1 = ser.DeserializeDistalDendrite(sr);
 
@@ -655,7 +655,7 @@ namespace UnitTestsProject
 
             using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeSynapseTest)}.txt"))
             {
-                HtmSerializer2 ser = new HtmSerializer2();
+                HtmSerializer ser = new HtmSerializer();
 
                 Synapse synapseT1 = ser.DeserializeSynapse(sr);
 
@@ -870,7 +870,7 @@ namespace UnitTestsProject
             {
                 matrixNew = SparseObjectMatrix<int[]>.Deserialize(sr);
 
-                HtmSerializer2.IsEqual(matrix, matrixNew);
+                HtmSerializer.IsEqual(matrix, matrixNew);
             }
         }
         #endregion
@@ -896,7 +896,7 @@ namespace UnitTestsProject
             {
                 newTest = InMemoryDistributedDictionary<int, int>.Deserialize(sr);
 
-                HtmSerializer2.IsEqual(numNodes, newTest);
+                HtmSerializer.IsEqual(numNodes, newTest);
             }
         }
 
@@ -922,7 +922,7 @@ namespace UnitTestsProject
             {
                 newBinary = SparseBinaryMatrix.Deserialize(sr);
 
-                HtmSerializer2.IsEqual(binaryMatrix, newBinary);
+                HtmSerializer.IsEqual(binaryMatrix, newBinary);
             }
         }
 

@@ -326,13 +326,13 @@ namespace NeoCortexApi.Encoders
                 nameof(EncoderBase.topDownMapping),
 
             };
-            HtmSerializer2.SerializeObject(obj, name, sw, ignoreMembers: excludeMembers);
+            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers: excludeMembers);
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             var excludeMembers = new List<string> { nameof(EncoderBase.Properties) };
-            return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
+            return HtmSerializer.DeserializeObject<T>(sr, name, excludeMembers);
         }
 
         public bool Equals(IHtmModule other)

@@ -21,17 +21,20 @@ namespace UnitTestsProject
     {
         public TestContext TestContext { get; set; }
 
+        private string fileName;
+
         [TestInitialize]
         public void TestInit()
         {
-            HtmSerializer2.Reset();
+            fileName = $"{TestContext.TestName}.txt";
+            HtmSerializer.Reset();
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void Test()
+        [TestCategory("prod")]
+        public void SerializationCellArrayTest()
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
+            HtmSerializer serializer = new HtmSerializer();
 
             Cell[] cells = new Cell[2];
             cells[0] = new Cell(12, 14, 16, new CellActivity());
@@ -42,31 +45,31 @@ namespace UnitTestsProject
             var distSeg2 = new DistalDendrite(cells[0], 44, 24, 34, 1.0, 100);
             cells[0].DistalDendrites.Add(distSeg2);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(cells, null, sw);
+                HtmSerializer.Serialize(cells, null, sw);
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
-                var c = HtmSerializer2.Deserialize<Cell[]>(sr);
+                var c = HtmSerializer.Deserialize<Cell[]>(sr);
 
-                Assert.IsTrue(cells.Where(c => c != null).TryIfSequenceEqual(c));
+                Assert.IsTrue(cells.Where(c => c != null).ElementsEqual(c));
             }
         }
 
         [TestMethod]
         public void Test1()
         {
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test1)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(new List<string> { "bla" }, null, sw);
+                HtmSerializer.Serialize(new List<string> { "bla" }, null, sw);
             }
 
         }
         [TestMethod]
-        [TestCategory("working")]
-        public void Test2()
+        [TestCategory("prod")]
+        public void SerializationDictionaryStringCellTest()
         {
             var dict = new Dictionary<string, Cell>();
 
@@ -83,17 +86,13 @@ namespace UnitTestsProject
             dict.Add("2", cell2);
 
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test2)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(dict, null, sw);
+                HtmSerializer.Serialize(dict, null, sw);
             }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test2)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test2)}_123.txt"))
-            {
-                var dict1 = HtmSerializer2.Deserialize<Dictionary<string, Cell>>(sr);
+                var dict1 = HtmSerializer.Deserialize<Dictionary<string, Cell>>(sr);
 
                 foreach (var key in dict.Keys)
                 {
@@ -105,11 +104,9 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void Test3()
+        [TestCategory("prod")]
+        public void SerializationDistalDendriteArrayTest()
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
-
             var cell1 = new Cell(12, 14, 16, new CellActivity());
             var cell2 = new Cell(1, 1, 1, new CellActivity());
 
@@ -122,39 +119,42 @@ namespace UnitTestsProject
             cell1.DistalDendrites.Add(dd[0]);
             cell2.DistalDendrites.Add(dd[1]);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
+            //using (StreamWriter sw = new StreamWriter(fileName))
+            //{
+            //    HtmSerializer2.Serialize(dd, null, sw);
+            //}
+            //using (StreamReader sr = new StreamReader(fileName))
+            //{
+            //    var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
+
+            //    for (int i = 0; i < dd.Length; i++)
+            //    {
+            //        Assert.IsTrue(dd[i].Equals(d[i]));
+            //    }
+            //}
+            HtmSerializer.Save(fileName, dd);
+
+            var d = HtmSerializer.Load<DistalDendrite[]>(fileName);
+            for (int i = 0; i < dd.Length; i++)
             {
-                HtmSerializer2.Serialize(dd, null, sw);
+                Assert.IsTrue(dd[i].Equals(d[i]));
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
-            {
-                var content = sr.ReadToEnd();
-            }
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
-            {
-                var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
-
-                for (int i = 0; i < dd.Length; i++)
-                {
-                    Assert.IsTrue(dd[i].Equals(d[i]));
-                }
-            }
         }
 
         [TestMethod]
         public void Test3_1()
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
+            HtmSerializer serializer = new HtmSerializer();
 
             DistalDendrite[] dd = new DistalDendrite[2];
             dd[0] = new DistalDendrite(null, 1, 2, 2, 1.0, 100);
 
             dd[1] = new DistalDendrite(null, 44, 24, 34, 1.0, 100);
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize1(dd, null, sw, new Dictionary<Type, Action<StreamWriter, string, object>>
+                HtmSerializer.Serialize1(dd, null, sw, new Dictionary<Type, Action<StreamWriter, string, object>>
                 {
                     {
                         typeof(DistalDendrite), (sw, name, obj) => DistalDendrite.Serialize1(sw, obj, null)
@@ -162,9 +162,9 @@ namespace UnitTestsProject
                 });
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
-                var d = HtmSerializer2.Deserialize<DistalDendrite[]>(sr);
+                var d = HtmSerializer.Deserialize<DistalDendrite[]>(sr);
 
                 for (int i = 0; i < dd.Length; i++)
                 {
@@ -174,10 +174,10 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void Test4()
+        //[TestCategory("prod")]
+        public void SerializationAbitraryTypeTest()
         {
-            HtmSerializer2 serializer = new HtmSerializer2();
+            HtmSerializer serializer = new HtmSerializer();
 
             Dictionary<string, Bla> dict = new Dictionary<string, Bla>
             {
@@ -185,15 +185,24 @@ namespace UnitTestsProject
                 {"2", new Bla{ Id = 21, Name = "real1", In = new List<Internal>{ new Internal{ Risk = 0.1f } } } },
             };
 
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(Test4)}_123.txt"))
+            using (StreamWriter sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(dict, null, sw);
+                HtmSerializer.Serialize(dict, null, sw);
             }
 
-            using (StreamReader sr = new StreamReader($"ser_{nameof(Test4)}_123.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
-                var d = HtmSerializer2.Deserialize<Dictionary<string, Bla>>(sr);
+                var d = HtmSerializer.Deserialize<Dictionary<string, Bla>>(sr);
             }
+        }
+
+        private abstract class Animal
+        {
+            public int Legs { get; set; }
+        }
+        private class Cat : Animal
+        {
+            public bool Fur { get; set; }
         }
 
         private class Bla
@@ -210,63 +219,63 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void DeserializationArrayTest()
+        [TestCategory("prod")]
+        public void SerializationIntegerArrayTest()
         {
             var array = new int[] { 45, 35 };
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(array, null, sw);
+                HtmSerializer.Serialize(array, null, sw);
             }
-            var reader = new StreamReader($"{TestContext.TestName}.txt");
+            var reader = new StreamReader(fileName);
 
             var content = reader.ReadToEnd();
 
-            reader = new StreamReader($"{TestContext.TestName}.txt");
+            reader = new StreamReader(fileName);
 
-            var res = HtmSerializer2.Deserialize<int[]>(reader);
+            var res = HtmSerializer.Deserialize<int[]>(reader);
 
             Assert.IsTrue(array.SequenceEqual(res));
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void DeserializeIEnumerableTest()
+        [TestCategory("prod")]
+        public void SerializationIntegerListTest()
         {
             var array = new List<int> { 45, 34 };
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(array, null, sw);
+                HtmSerializer.Serialize(array, null, sw);
             }
-            var reader = new StreamReader($"{TestContext.TestName}.txt");
+            var reader = new StreamReader(fileName);
 
-            var res = HtmSerializer2.Deserialize<List<int>>(reader);
+            var res = HtmSerializer.Deserialize<List<int>>(reader);
 
             Assert.IsTrue(array.SequenceEqual(res));
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void DeserializeIEnumerable1Test()
+        [TestCategory("prod")]
+        public void SerializationIntegerListToIntegerArrayTest()
         {
             var array = new List<int> { 45, 34 };
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(array, null, sw);
+                HtmSerializer.Serialize(array, null, sw);
             }
-            var reader = new StreamReader($"{TestContext.TestName}.txt");
+            var reader = new StreamReader(fileName);
 
-            var res = HtmSerializer2.Deserialize<int[]>(reader);
+            var res = HtmSerializer.Deserialize<int[]>(reader);
 
             Assert.IsTrue(array.SequenceEqual(res));
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void DeserializeHtmConfigTest()
+        [TestCategory("prod")]
+        public void SerializationHtmConfigTest()
         {
             int cellsPerColumnL4 = 20;
             int numColumnsL4 = 500;
@@ -298,21 +307,21 @@ namespace UnitTestsProject
                 PredictedSegmentDecrement = 0.1
             };
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(htmConfig_L2, null, sw);
+                HtmSerializer.Serialize(htmConfig_L2, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var htmConfig = HtmSerializer2.Deserialize<HtmConfig>(sr);
+                var htmConfig = HtmSerializer.Deserialize<HtmConfig>(sr);
 
                 Assert.IsTrue(htmConfig_L2.Equals(htmConfig));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void DeserializeConnectionsTest()
+        [TestCategory("prod")]
+        public void SerializationConnectionsTest()
         {
             int cellsPerColumnL4 = 20;
             int numColumnsL4 = 500;
@@ -346,24 +355,20 @@ namespace UnitTestsProject
 
             var mem = new Connections(htmConfig_L2);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer.Serialize(mem, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var connection = HtmSerializer2.Deserialize<Connections>(sr);
+                var connection = HtmSerializer.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connection));
             }
         }
 
         [TestMethod]
-        //[TestCategory("working")]
-        public void DeserializeHomeostaticPlasticityTest()
+        [TestCategory("prod")]
+        public void SerializationHomeostaticPlasticityControllerTest()
         {
             int cellsPerColumnL4 = 20;
             int numColumnsL4 = 500;
@@ -404,30 +409,25 @@ namespace UnitTestsProject
 
             }, numOfCyclesToWaitOnChange: 50);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(hpa_sp_L2, null, sw);
+                HtmSerializer.Serialize(hpa_sp_L2, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var hpa = HtmSerializer2.Deserialize<HomeostaticPlasticityController>(sr);
+                var hpa = HtmSerializer.Deserialize<HomeostaticPlasticityController>(sr);
 
                 hpa.OnStabilityStatusChanged = (isStable, numPatterns, actColAvg, seenInputs) =>
                 {
 
                 };
-                //Assert.IsTrue(hpa_sp_L2.Equals(hpa));
+                Assert.IsTrue(hpa_sp_L2.Equals(hpa));
             }
-
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void ConnectionInitSparseObjectMatrixTest()
+        [TestCategory("prod")]
+        public void SerializationSparseObjectMatrixInSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -435,24 +435,20 @@ namespace UnitTestsProject
             SpatialPooler sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem.Memory, null, sw);
+                HtmSerializer.Serialize(mem.Memory, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var memory = HtmSerializer2.Deserialize<SparseObjectMatrix<Column>>(sr);
+                var memory = HtmSerializer.Deserialize<SparseObjectMatrix<Column>>(sr);
                 Assert.IsTrue((mem.Memory as SparseObjectMatrix<Column>).Equals(memory));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void ConnectionInitHtmConfigTest()
+        //[TestCategory("prod")]
+        public void SerializationHtmConfigSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -460,25 +456,20 @@ namespace UnitTestsProject
             SpatialPooler sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
-                HtmSerializer2.Serialize(mem.HtmConfig, null, sw);
+                HtmSerializer.Serialize(mem.HtmConfig, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var htmConfig1 = HtmSerializer2.Deserialize<HtmConfig>(sr);
+                var htmConfig1 = HtmSerializer.Deserialize<HtmConfig>(sr);
                 Assert.IsTrue(mem.HtmConfig.Equals(htmConfig1));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void ConnectionInitSPTest()
+        [TestCategory("prod")]
+        public void SerializationConnectionsSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -486,24 +477,20 @@ namespace UnitTestsProject
             SpatialPooler sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer.Serialize(mem, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var connections = HtmSerializer2.Deserialize<Connections>(sr);
+                var connections = HtmSerializer.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connections));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void SPTest()
+        [TestCategory("prod")]
+        public void SerializationSpatialPoolerInitialzedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -515,26 +502,20 @@ namespace UnitTestsProject
             SpatialPooler sp = new SpatialPooler(hpa_sp_L2);
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
-                HtmSerializer2.Serialize(sp, null, sw);
+                HtmSerializer.Serialize(sp, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
-                var sp1 = HtmSerializer2.Deserialize<SpatialPooler>(sr);
+                var sp1 = HtmSerializer.Deserialize<SpatialPooler>(sr);
                 Assert.IsTrue(sp.Equals(sp1));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void SPMTTest()
+        [TestCategory("prod")]
+        public void SerializationSpatialPoolerMTInitialzedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -546,26 +527,20 @@ namespace UnitTestsProject
             SpatialPoolerMT sp = new SpatialPoolerMT(hpa_sp_L2);
             sp.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                //HtmSerializer2.Serialize(mem, null, sw);
-                HtmSerializer2.Serialize(sp, null, sw);
+                HtmSerializer.Serialize(sp, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                //var connection = HtmSerializer2.Deserialize<Connections>(sr);
-                var sp1 = HtmSerializer2.Deserialize<SpatialPoolerMT>(sr);
+                var sp1 = HtmSerializer.Deserialize<SpatialPoolerMT>(sr);
                 Assert.IsTrue(sp.Equals(sp1));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void ConnectionInitTMTest()
+        [TestCategory("prod")]
+        public void SerializationConnectionTemporalMemoryInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -573,24 +548,20 @@ namespace UnitTestsProject
             TemporalMemory tm = new TemporalMemory();
             tm.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(mem, null, sw);
+                HtmSerializer.Serialize(mem, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var connections = HtmSerializer2.Deserialize<Connections>(sr);
+                var connections = HtmSerializer.Deserialize<Connections>(sr);
                 Assert.IsTrue(mem.Equals(connections));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void TMTest()
+        [TestCategory("prod")]
+        public void SerializationTemporalMemoryInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
             Connections mem = new Connections(htmConfig);
@@ -598,24 +569,20 @@ namespace UnitTestsProject
             TemporalMemory tm = new TemporalMemory();
             tm.Init(mem);
 
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(tm, null, sw);
+                HtmSerializer.Serialize(tm, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var content = sr.ReadToEnd();
-            }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
-            {
-                var tm1 = HtmSerializer2.Deserialize<TemporalMemory>(sr);
+                var tm1 = HtmSerializer.Deserialize<TemporalMemory>(sr);
                 Assert.IsTrue(tm.Equals(tm1));
             }
         }
 
         [TestMethod]
-        [TestCategory("working")]
-        public void EncoderTest()
+        [TestCategory("prod")]
+        public void SerializationScalarEncoderTest()
         {
             int inputBits = 100;
             double max = 20;
@@ -632,24 +599,24 @@ namespace UnitTestsProject
             };
 
             ScalarEncoder encoder = new ScalarEncoder(settings);
-            using (var sw = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var sw = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(encoder, null, sw);
+                HtmSerializer.Serialize(encoder, null, sw);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 var content = sr.ReadToEnd();
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var scalarEncoder = HtmSerializer2.Deserialize<ScalarEncoder>(sr);
+                var scalarEncoder = HtmSerializer.Deserialize<ScalarEncoder>(sr);
                 Assert.IsTrue(encoder.Equals(scalarEncoder));
             }
         }
 
         [TestMethod]
-        //[TestCategory("working")]
-        public void CortexLayerTest()
+        [TestCategory("working-experiment")]
+        public void SerializationCortexLayerTest()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
@@ -913,13 +880,13 @@ namespace UnitTestsProject
 
             Debug.WriteLine("------------ END ------------");
 
-            using (var swrt = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var swrt = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(layer1, null, swrt);
+                HtmSerializer.Serialize(layer1, null, swrt);
             }
-            using (var sr = new StreamReader($"{TestContext.TestName}.txt"))
+            using (var sr = new StreamReader(fileName))
             {
-                var cortexLayer = HtmSerializer2.Deserialize<CortexLayer<object, object>>(sr);
+                var cortexLayer = HtmSerializer.Deserialize<CortexLayer<object, object>>(sr);
                 Assert.IsTrue(layer1.Equals(cortexLayer));
             }
         }
@@ -939,7 +906,125 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void ActiveColumnsTest()
+        public void SerializationKeyValuePairTest()
+        {
+            var kv = new KeyValuePair<int, Animal>(1, new Cat { Fur = true, Legs = 4 });
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                HtmSerializer.Serialize(kv, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                var kv1 = HtmSerializer.Deserialize<KeyValuePair<int, Animal>>(sr);
+            }
+        }
+
+        [TestMethod]
+        public void SerializationAbstractClassTest()
+        {
+            Animal a = new Cat { Fur = true, Legs = 4 };
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                HtmSerializer.Serialize((Animal)a, "bla", sw, typeof(Animal));
+            }
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                var kv1 = HtmSerializer.Deserialize<Cat>(sr);
+            }
+        }
+
+        [TestMethod]
+        public void SerializationMultiDimArrayTest()
+        {
+            Animal[,] cats = new Animal[1, 2];
+            cats[0, 0] = new Cat { Fur = false, Legs = 2 };
+            cats[0, 1] = new Cat { Fur = true, Legs = 3 };
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                HtmSerializer.Serialize(cats, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                var cats1 = HtmSerializer.Deserialize<Animal[,]>(sr);
+            }
+        }
+
+        [TestMethod]
+        public void SerializationPolymorphismListTest()
+        {
+            var cats = new List<Animal>()
+            {
+                new Cat { Fur = false, Legs = 2 },
+                new Cat { Fur = true, Legs = 3 },
+            };
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                HtmSerializer.Serialize(cats, null, sw);
+            }
+
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                var cats1 = HtmSerializer.Deserialize<List<Animal>>(sr);
+            }
+        }
+
+        [TestMethod]
+        public void IterateMultiDimArrayTest()
+        {
+            var array = new int[4, 5, 3];
+
+            var listIndexes = HtmSerializer.IterateMultiDimArray(array);
+        }
+
+        [TestMethod]
+        public void RandomTest()
+        {
+            var r = new Random();
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                HtmSerializer.Serialize(r, null, sw);
+            }
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                var r1 = HtmSerializer.Deserialize<Random>(sr);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("prod")]
+
+        public void SerializeConnectionsWithActiveSegmentTest()
+        {
+            int[] inputDims = { 3, 4, 5 };
+            int[] columnDims = { 35, 43, 52 };
+            HtmConfig cfg = new HtmConfig(inputDims, columnDims);
+
+            Connections connections = new Connections(cfg);
+
+            Cell cells = new Cell(12, 14, 16, new CellActivity());
+
+            var distSeg1 = new DistalDendrite(cells, 1, 2, 2, 1.0, 100);
+
+            var distSeg2 = new DistalDendrite(cells, 44, 24, 34, 1.0, 100);
+
+            connections.ActiveSegments.Add(distSeg1);
+
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeConnectionsWithActiveSegmentTest)}.txt"))
+            {
+                HtmSerializer.Serialize(connections, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeConnectionsWithActiveSegmentTest)}.txt"))
+            {
+                Connections connections1 = HtmSerializer.Deserialize<Connections>(sr);
+                Assert.IsTrue(connections.Equals(connections1));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("working-experiment")]
+        public void SerializationCortexLayerSpatialPoolerCompareOutputTest()
         {
             // Used as a boosting parameters
             // that ensure homeostatic plasticity effect.
@@ -1124,14 +1209,14 @@ namespace UnitTestsProject
                 }
             }
 
-            using (var swrt = new StreamWriter($"{TestContext.TestName}.txt"))
+            using (var swrt = new StreamWriter(fileName))
             {
-                HtmSerializer2.Serialize(cortexLayer, null, swrt);
+                HtmSerializer.Serialize(cortexLayer, null, swrt);
             }
 
-            using var sr = new StreamReader($"{TestContext.TestName}.txt");
+            using var sr = new StreamReader(fileName);
 
-            var cortexLayer1 = HtmSerializer2.Deserialize<CortexLayer<object, object>>(sr);
+            var cortexLayer1 = HtmSerializer.Deserialize<CortexLayer<object, object>>(sr);
             Assert.IsTrue(cortexLayer.Equals(cortexLayer1));
 
             var testInputs = inputValues.Except(inputTrainValues).ToList();
@@ -1149,7 +1234,412 @@ namespace UnitTestsProject
                 var result = (int[])cortexLayer1.Compute(input, false);
                 Assert.IsTrue(expectedResult.SequenceEqual(result));
             }
+            
+        }
+        [TestMethod]
+        [TestCategory("working-experiment")]
+        [DataRow(128, 50)]
+        [DataRow(256, 50)]
+        [DataRow(512, 50)]
+        public void SerializationCortexLayerSpatialPoolerFileSizeTest(int numColumns, int numIterations)
+        {
+            // Used as a boosting parameters
+            // that ensure homeostatic plasticity effect.
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 5.0;
 
+            // We will use 50 bits to represent an input vector (pattern).
+            int inputBits = 50;
+
+            // We will build a slice of the cortex with the given number of mini-columns
+            //int numColumns = 1024;
+
+            //
+            // This is a set of configuration parameters used in the experiment.
+            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
+            {
+                CellsPerColumn = 10,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 100,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+
+                GlobalInhibition = false,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = (int)(0.15 * inputBits),
+                LocalAreaDensity = -1,
+                ActivationThreshold = 10,
+
+                MaxSynapsesPerSegment = (int)(0.01 * numColumns),
+                Random = new ThreadSafeRandom(42),
+                StimulusThreshold = 10,
+            };
+
+            double max = 50;
+
+            //
+            // This dictionary defines a set of typical encoder parameters.
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            //
+            // We create here 100 random input values.
+            List<double> inputValues = new List<double>();
+
+            var rand = new Random();
+
+            for (int i = 0; i < (int)max; i++)
+            {
+                inputValues.Add((double)i);
+            }
+
+            List<double> inputTrainValues = new List<double>();
+
+            for (int i = 0; i < (int)(max * 0.2); i++)
+            {
+                var value = rand.Next(0, (int)max);
+                while (inputTrainValues.Contains(value))
+                {
+                    value = rand.Next(0, (int)max);
+                }
+
+                inputTrainValues.Add(value);
+            }
+
+            var outs = new List<int[]>();
+            foreach (var input in inputValues)
+            {
+                var output = encoder.Encode(input);
+                outs.Add(output);
+            }
+
+            for (int i = 0; i < numIterations; i++)
+            {
+
+
+                // Creates the htm memory.
+                var mem = new Connections(cfg);
+
+                bool isInStableState = false;
+
+                //
+                // HPC extends the default Spatial Pooler algorithm.
+                // The purpose of HPC is to set the SP in the new-born stage at the begining of the learning process.
+                // In this stage the boosting is very active, but the SP behaves instable. After this stage is over
+                // (defined by the second argument) the HPC is controlling the learning process of the SP.
+                // Once the SDR generated for every input gets stable, the HPC will fire event that notifies your code
+                // that SP is stable now.
+                HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 40,
+                    (isStable, numPatterns, actColAvg, seenInputs) =>
+                    {
+                        // Event should only be fired when entering the stable state.
+                        // Ideal SP should never enter unstable state after stable state.
+                        if (isStable == false)
+                        {
+                            Debug.WriteLine($"INSTABLE STATE");
+                            // This should usually not happen.
+                            isInStableState = false;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"STABLE STATE");
+                            // Here you can perform any action if required.
+                            isInStableState = true;
+                        }
+                    });
+
+                // It creates the instance of Spatial Pooler Multithreaded version.
+                SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
+
+                // Initializes the 
+                sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
+
+                // mem.TraceProximalDendritePotential(true);
+
+                // It creates the instance of the neo-cortex layer.
+                // Algorithm will be performed inside of that layer.
+                CortexLayer<object, object> cortexLayer = new CortexLayer<object, object>("L1");
+
+                // Add encoder as the very first module. This model is connected to the sensory input cells
+                // that receive the input. Encoder will receive the input and forward the encoded signal
+                // to the next module.
+                cortexLayer.HtmModules.Add("encoder", encoder);
+
+                // The next module in the layer is Spatial Pooler. This module will receive the output of the
+                // encoder.
+                cortexLayer.HtmModules.Add("sp", sp);
+
+                double[] inputs = inputTrainValues.ToArray();
+
+                // Will hold the SDR of every inputs.
+                Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
+
+                // Will hold the similarity of SDKk and SDRk-1 fro every input.
+                Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
+
+                //
+                // Initiaize start similarity to zero.
+                foreach (var input in inputs)
+                {
+                    prevSimilarity.Add(input, 0.0);
+                    prevActiveCols.Add(input, new int[0]);
+                }
+
+                // Learning process will take 1000 iterations (cycles)
+                int maxSPLearningCycles = 3500;
+
+                for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
+                {
+                    Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
+                    if (isInStableState)
+                        break;
+                    //
+                    // This trains the layer on input pattern.
+                    foreach (var input in inputs)
+                    {
+                        double similarity;
+
+                        // Learn the input pattern.
+                        // Output lyrOut is the output of the last module in the layer.
+                        // 
+                        var lyrOut = cortexLayer.Compute((object)input, true) as int[];
+
+                        // This is a general way to get the SpatialPooler result from the layer.
+                        var activeColumns = cortexLayer.GetResult("sp") as int[];
+
+                        var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+                        similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[input]);
+
+                        //Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
+
+                        prevActiveCols[input] = activeColumns;
+                        prevSimilarity[input] = similarity;
+                    }
+                }
+
+                using (var swrt = new StreamWriter(fileName))
+                {
+                    HtmSerializer.Serialize(cortexLayer, null, swrt);
+                }
+
+                FileInfo fileInfo = new FileInfo(fileName);
+                Console.WriteLine(fileInfo.Length);
+            }        
+        }
+        
+        [TestMethod]
+        [TestCategory("working-experiment")]
+        [DataRow(128, 50)]
+        [DataRow(256, 50)]
+        [DataRow(512, 50)]
+        public void SerializationCortexLayerSpatialPoolerDurationTest(int numColumns, int numIterations)
+        {
+            // Used as a boosting parameters
+            // that ensure homeostatic plasticity effect.
+            double minOctOverlapCycles = 1.0;
+            double maxBoost = 5.0;
+
+            // We will use 50 bits to represent an input vector (pattern).
+            int inputBits = 50;
+
+            // We will build a slice of the cortex with the given number of mini-columns
+            //int numColumns = 1024;
+
+            //
+            // This is a set of configuration parameters used in the experiment.
+            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
+            {
+                CellsPerColumn = 10,
+                MaxBoost = maxBoost,
+                DutyCyclePeriod = 100,
+                MinPctOverlapDutyCycles = minOctOverlapCycles,
+
+                GlobalInhibition = false,
+                NumActiveColumnsPerInhArea = 0.02 * numColumns,
+                PotentialRadius = (int)(0.15 * inputBits),
+                LocalAreaDensity = -1,
+                ActivationThreshold = 10,
+
+                MaxSynapsesPerSegment = (int)(0.01 * numColumns),
+                Random = new ThreadSafeRandom(42),
+                StimulusThreshold = 10,
+            };
+
+            double max = 50;
+
+            //
+            // This dictionary defines a set of typical encoder parameters.
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            //
+            // We create here 100 random input values.
+            List<double> inputValues = new List<double>();
+
+            var rand = new Random();
+
+            for (int i = 0; i < (int)max; i++)
+            {
+                inputValues.Add((double)i);
+            }
+
+            List<double> inputTrainValues = new List<double>();
+
+            for (int i = 0; i < (int)(max * 0.2); i++)
+            {
+                var value = rand.Next(0, (int)max);
+                while (inputTrainValues.Contains(value))
+                {
+                    value = rand.Next(0, (int)max);
+                }
+
+                inputTrainValues.Add(value);
+            }
+
+            var outs = new List<int[]>();
+            foreach (var input in inputValues)
+            {
+                var output = encoder.Encode(input);
+                outs.Add(output);
+            }
+
+            for (int i = 0; i < numIterations; i++)
+            {
+
+
+                // Creates the htm memory.
+                var mem = new Connections(cfg);
+
+                bool isInStableState = false;
+
+                //
+                // HPC extends the default Spatial Pooler algorithm.
+                // The purpose of HPC is to set the SP in the new-born stage at the begining of the learning process.
+                // In this stage the boosting is very active, but the SP behaves instable. After this stage is over
+                // (defined by the second argument) the HPC is controlling the learning process of the SP.
+                // Once the SDR generated for every input gets stable, the HPC will fire event that notifies your code
+                // that SP is stable now.
+                HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 40,
+                    (isStable, numPatterns, actColAvg, seenInputs) =>
+                    {
+                        // Event should only be fired when entering the stable state.
+                        // Ideal SP should never enter unstable state after stable state.
+                        if (isStable == false)
+                        {
+                            Debug.WriteLine($"INSTABLE STATE");
+                            // This should usually not happen.
+                            isInStableState = false;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"STABLE STATE");
+                            // Here you can perform any action if required.
+                            isInStableState = true;
+                        }
+                    });
+
+                // It creates the instance of Spatial Pooler Multithreaded version.
+                SpatialPoolerMT sp = new SpatialPoolerMT(hpa);
+
+                // Initializes the 
+                sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
+
+                // mem.TraceProximalDendritePotential(true);
+
+                // It creates the instance of the neo-cortex layer.
+                // Algorithm will be performed inside of that layer.
+                CortexLayer<object, object> cortexLayer = new CortexLayer<object, object>("L1");
+
+                // Add encoder as the very first module. This model is connected to the sensory input cells
+                // that receive the input. Encoder will receive the input and forward the encoded signal
+                // to the next module.
+                cortexLayer.HtmModules.Add("encoder", encoder);
+
+                // The next module in the layer is Spatial Pooler. This module will receive the output of the
+                // encoder.
+                cortexLayer.HtmModules.Add("sp", sp);
+
+                double[] inputs = inputTrainValues.ToArray();
+
+                // Will hold the SDR of every inputs.
+                Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
+
+                // Will hold the similarity of SDKk and SDRk-1 fro every input.
+                Dictionary<double, double> prevSimilarity = new Dictionary<double, double>();
+
+                //
+                // Initiaize start similarity to zero.
+                foreach (var input in inputs)
+                {
+                    prevSimilarity.Add(input, 0.0);
+                    prevActiveCols.Add(input, new int[0]);
+                }
+
+                // Learning process will take 1000 iterations (cycles)
+                int maxSPLearningCycles = 3500;
+
+                for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
+                {
+                    Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
+                    if (isInStableState)
+                        break;
+                    //
+                    // This trains the layer on input pattern.
+                    foreach (var input in inputs)
+                    {
+                        double similarity;
+
+                        // Learn the input pattern.
+                        // Output lyrOut is the output of the last module in the layer.
+                        // 
+                        var lyrOut = cortexLayer.Compute((object)input, true) as int[];
+
+                        // This is a general way to get the SpatialPooler result from the layer.
+                        var activeColumns = cortexLayer.GetResult("sp") as int[];
+
+                        var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+                        similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[input]);
+
+                        //Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
+
+                        prevActiveCols[input] = activeColumns;
+                        prevSimilarity[input] = similarity;
+                    }
+                }
+
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                using (var swrt = new StreamWriter(fileName))
+                {
+                    HtmSerializer.Serialize(cortexLayer, null, swrt);
+                }
+                stopwatch.Stop();
+                Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            }        
         }
 
 

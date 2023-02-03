@@ -313,7 +313,7 @@ namespace NeoCortexApi.Types
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer2 ser = new HtmSerializer2();
+            HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(LinkedHashSet<T>), writer);
 
@@ -325,14 +325,14 @@ namespace NeoCortexApi.Types
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            HtmSerializer2.Serialize(this.list, null, sw);
+            HtmSerializer.Serialize(this.list, null, sw);
         }
 
         public static object Deserialize<T1>(StreamReader sr, string name)
         {
             if (typeof(T1) != typeof(LinkedHashSet<T>))
                 return null;
-            var list = HtmSerializer2.Deserialize<List<T>>(sr, null);
+            var list = HtmSerializer.Deserialize<List<T>>(sr, null);
             return new LinkedHashSet<T>(list);
         }
         #endregion

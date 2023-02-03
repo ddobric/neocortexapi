@@ -1,10 +1,10 @@
-# Cortex
+# Workig with Layers
 
 The human cerebral cortex is divided into multiple layers, according to neuroscience. NeoCortexApi, a model based on biology, also introduces CortexLayer, which works as one layer of the cortex. The layer is made up of multiple IHtmModules that are implemented by Encoder, Spatial Pooler, and Temporal Memory. The addition of this component makes the code more presentable and opens up new possibilities for combining many layers together for more complicated applications. The layer combination is implemented using CortexRegion. When all cortical areas are combined, we have a CortexNetwork that resembles the whole cerebral cortex of the human brain.
 
 The Cortex Layers is a pipeline that combines all the components of HTM which are encoder, spatial pooler and temporal memory. All the components in the pipeline are chained together in the added sequence and run one after another. This provide an intuitive way to run the HTM algorithm. Also, it helps to separate the preparation region and execution region.
 
-The following code snippet illustrates the usage of `CortexNetwork`, `CortexRegion` and `CortexLayer`.
+The following code snippet illustrates the usage of `CortexNetwork` and `CortexLayer`.
 
 ```cs
 CortexNetwork net = new CortexNetwork("my cortex");
