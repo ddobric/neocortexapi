@@ -121,8 +121,6 @@ namespace NeoCortexApi.Entities
             this.SegmentAreaName = segmentAreaName;
 
             this.Permanence = permanence;
-
-
         }
 
 
