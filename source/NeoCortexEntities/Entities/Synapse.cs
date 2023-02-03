@@ -116,7 +116,7 @@ namespace NeoCortexApi.Entities
             this.SegmentIndex = segmentIndex;
             this.SynapseIndex = synapseIndex;
             this.InputIndex = presynapticCell.Index;
-            
+
             this.SegmentParentCellIndex = segmentCellIndex;
             this.SegmentAreaName = segmentAreaName;
 
@@ -139,7 +139,7 @@ namespace NeoCortexApi.Entities
             this.InputIndex = inputIndex;
         }
 
-      
+
         /// <summary>
         /// Called by <see cref="Connections.DestroySynapse(Synapse, Segment)"/> to assign a reused Synapse to another presynaptic Cell
         /// </summary>
@@ -158,7 +158,7 @@ namespace NeoCortexApi.Entities
             return SourceCell;
         }
 
-      
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -227,6 +227,9 @@ namespace NeoCortexApi.Entities
                 return false;
 
             if (SegmentIndex != other.SegmentIndex)
+                return false;
+
+            if (SegmentParentCellIndex != other.SegmentParentCellIndex)
                 return false;
 
             return true;
