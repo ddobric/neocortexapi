@@ -109,6 +109,8 @@ namespace UnitTestsProject
         public void AssociateAreasTest()
         {
             var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
+            
+            cfg.MaxNewSynapseCount = 5;
 
             CorticalArea areaX = new CorticalArea(1,"X", 1024);
 

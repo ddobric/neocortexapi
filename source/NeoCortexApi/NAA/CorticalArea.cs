@@ -28,10 +28,10 @@ namespace NeoCortexApi
         /// <summary>
         /// The index of the area.
         /// </summary>
-        public int Index { get; set; }
+        //public int Index { get; set; }
 
         /// <summary>
-        /// The name of the _area.
+        /// The name of the _area. It must be unique in the application.
         /// </summary>
         public string Name { get; private set; }
 
