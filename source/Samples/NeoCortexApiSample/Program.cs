@@ -147,13 +147,18 @@ namespace NeoCortexApiSample
                     testSequences.Add(testList);
                 }
             }
-            var list = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
-            predictor.Reset();
-            PredictNextElement(predictor, list);
+           // var list = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
+            for (int i = 0;i< testSequences.Count;i++)
+            {
+                predictor.Reset();
+                PredictNextElement(predictor, testSequences[i]);
+            }
+
+            
         }
 
 
-        private static void PredictNextElement(Predictor predictor, double[] list)
+        private static void PredictNextElement(Predictor predictor, List<double> list)
         {
             Debug.WriteLine("------------------------------");
 
