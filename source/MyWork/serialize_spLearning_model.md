@@ -1,20 +1,21 @@
 Spatial Pooler Learning Analysis
 
 I. Train method
+-------------------------------------------------------------------------------------------------------------------
 	1. The method output is CortexLayer instance, inputs are Maxval for the encoder and the input set for training. 
-
+    ---------------------------------------------------------------------------------------------------------------
 		public CortexLayer<object, object> Train(double max, List<double> inputValues)
-
+    ---------------------------------------------------------------------------------------------------------------
 	2. Create new instance of htm
-
+    ---------------------------------------------------------------------------------------------------------------
         // Pre-defined parameters for htm configuration
 		    double minOctOverlapCycles = 1.0;
             double maxBoost = 5.0;
 		    int inputBits = 200;
 		    int numColumns = 2048;
-
+    ---------------------------------------------------------------------------------------------------------------
         // htm configuration parameters
-
+    
 		    HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
                 CellsPerColumn = 10,
@@ -37,7 +38,7 @@ I. Train method
             var mem = new Connections(cfg);
 
     3. Create new instance of Encoder class
-        
+    ---------------------------------------------------------------------------------------------------------------       
         // Dictionary defines typical encoder parameters
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
@@ -51,7 +52,7 @@ I. Train method
                 { "ClipInput", false},
                 { "MaxVal", max}
             };
-
+    ---------------------------------------------------------------------------------------------------------------
         // Create new instance of ScalarEncoder
 
             EncoderBase encoder = new ScalarEncoder(settings);
@@ -62,11 +63,11 @@ I. Train method
         - HPC is to set the Spatial Pooler is in the new-born stage at the begining of the training. 
         - In this stage, the boosting is very active, but the SP behaves instable. After this stage, the hpc will control the learning process of the SP.
         - Once the SDR generated for every input gets stable, the HPC will fire event that notifies your program. 
-        
+     ---------------------------------------------------------------------------------------------------------------   
         // the Sp is first set to unstable 
             
             bool isInStableState = false;
-
+     ---------------------------------------------------------------------------------------------------------------
         // Create new instance of HomeostaticPlasticityController
             
             hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 40,
@@ -87,9 +88,9 @@ I. Train method
                         isInStableState = true;
                     }
                 });
-
+    
     5. Create instance of Spatial Pooler Multithread version
-        
+    ---------------------------------------------------------------------------------------------------------------    
         SpatialPooler sp = new SpatialPooler(hpa);
 
         // Initializes the SP instance 
@@ -97,7 +98,7 @@ I. Train method
         sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
      
      6. Create instance of NeoCortexLayer 
-        
+     ---------------------------------------------------------------------------------------------------------------  
         // All the algorithms will be performed within this layer
 
         CortexLayer<object, object> cortexLayer = new CortexLayer<object, object>("L1");
@@ -112,11 +113,11 @@ I. Train method
         cortexLayer.HtmModules.Add("sp", sp);
 
     7. Convert input values from list to array
-
+    ---------------------------------------------------------------------------------------------------------------
         double[] inputs = inputValues.ToArray();
 
     8. SDR inputs and SDR similarities
-        
+    ---------------------------------------------------------------------------------------------------------------   
         // Will hold the SDR of every inputs.
             Dictionary<double, int[]> prevActiveCols = new Dictionary<double, int[]>();
 
@@ -133,11 +134,11 @@ I. Train method
     9. Learning process
 
     -   At the end, the NeocortexLayer model is returned.
-
+    ---------------------------------------------------------------------------------------------------------------
         // Learning process will take 1000 iterations (cycles)
 
             int maxSPLearningCycles = 1000;
-
+    ---------------------------------------------------------------------------------------------------------------
         // SP learning cycles
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
