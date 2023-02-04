@@ -10,7 +10,7 @@ using System.Linq;
 namespace UnitTestsProject
 {
     [TestClass]
-    public class TemporalMemoryTest2
+    public class TemporalMemoryTest2_Md_Nabuat_Al_Jahid
     {
         private Parameters getDefaultParameters()
         {
