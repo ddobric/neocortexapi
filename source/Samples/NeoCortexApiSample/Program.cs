@@ -80,14 +80,14 @@ namespace NeoCortexApiSample
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
-            predictor.Reset();
+            /*predictor.Reset();
             PredictNextElement(predictor, list1);
 
             predictor.Reset();
             PredictNextElement(predictor, list2);
 
             predictor.Reset();
-            PredictNextElement(predictor, list3);
+            PredictNextElement(predictor, list3);*/
         }
 
         /// <summary>
@@ -97,9 +97,9 @@ namespace NeoCortexApiSample
         private static void RunPredictionMultiSequenceExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            /*Code for reading the learning sequences from .txt file. The file has n rows which have numbers seperated by commas.*/
             //string path = ".//.//" + System.IO.Directory.GetCurrent‌​Directory();
             string seqPath = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
-            // Console.WriteLine(path);
             string sequencePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), seqPath));
 
             using (StreamReader reader = new(sequencePath))
@@ -128,7 +128,6 @@ namespace NeoCortexApiSample
 
             // taking Sequence from the file named "testDataPath"
             // path for the file
-
             string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
             string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
             var testSequences = new List<List<double>>();
@@ -147,8 +146,7 @@ namespace NeoCortexApiSample
                     testSequences.Add(testList);
                 }
             }
-           // var list = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
-            for (int i = 0;i< testSequences.Count;i++)
+            for (int i = 0; i< testSequences.Count; i++)
             {
                 predictor.Reset();
                 PredictNextElement(predictor, testSequences[i]);
