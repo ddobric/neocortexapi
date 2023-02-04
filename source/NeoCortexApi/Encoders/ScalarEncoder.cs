@@ -386,15 +386,6 @@ namespace NeoCortexApi.Encoders
             }
 >>>>>>> Team_SpiralGanglions
 
-                    if (minbin < 0)
-                    {
-                        topbins = -minbin;
-                        output[n - topbins:n] = 1;
-                        minbin = 0
-
-                    }
-                }
-
 
 
 
