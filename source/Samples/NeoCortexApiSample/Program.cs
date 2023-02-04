@@ -131,7 +131,7 @@ namespace NeoCortexApiSample
 
             string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
             string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
-
+            var testSequences = new List<List<double>>();
             using (var reader = new StreamReader(testDataPath))
             {
                 while (!reader.EndOfStream)
@@ -144,7 +144,7 @@ namespace NeoCortexApiSample
                     {
                         testList.Add(Convert.ToDouble(value));
                     }
-
+                    testSequences.Add(testList);
                 }
             }
             var list = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, };
