@@ -372,6 +372,19 @@ namespace NeoCortexApi.Encoders
                     bottombins = maxbin - n + 1;
                     output[0:bottombins] = 1;
                     maxbin = self.n - 1;
+<<<<<<< HEAD
+=======
+
+                    if (minbin < 0)
+                    {
+                        topbins = -minbin;
+                        output[n - topbins:n] = 1;
+                        minbin = 0
+
+                    }
+                }
+            }
+>>>>>>> Team_SpiralGanglions
 
                     if (minbin < 0)
                     {
