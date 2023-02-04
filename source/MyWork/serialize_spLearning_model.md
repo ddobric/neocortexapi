@@ -192,3 +192,131 @@ I. Train method
             return cortexLayer;
         }
     ```
+
+II. Save method (HtmSerializer)
+
+1. Save method is implemented to save the trained model to a text file using StreamWriter
+
+    - fileName is the name of the file where the model will be saved to.
+    - The input object of the Save method is the model need to be saved.
+    - New instance of StreamWriter sw will be created to write the parameters of the model to the file (fileName).
+    - Htm.Serialize method will be called to serialize the model. 
+
+    ```
+        public static void Save(string fileName, object obj)
+        {
+            Reset();
+            using StreamWriter sw = new StreamWriter(fileName);
+            Serialize(obj, null, sw);
+        }
+    ```
+
+2. HtmSerializer.Serialize method analysis
+
+    - Inputs: NeoCortexLayer model, name of parameters (null), stream writer sw.
+    - SerializeBegin method is first called.
+    - Depend on the type of the objects, corresponding methods will be called.
+        + SerializeValue() // If Object is a value.
+        + SerializeDictionary() // If Object is a Dictionary
+        + SerializeIEnumerable() // If object is a List
+        + SerializeKeyValuePair() // If object is a generic type
+        + SerializeObject() // If object is a class   
+    - When the serialization is finished SerializeEnd method is call. 
+
+    ```
+        private static void SerializeBegin(string propName, StreamWriter sw, Type type)
+        {
+            List<string> list = new List<string> { "Begin" };
+            if (!string.IsNullOrEmpty(propName))
+            {
+                list.Add(propName);
+            }
+
+            if (type != null)
+            {
+                list.Add(type.FullName!.Replace(" ", ""));
+            }
+
+            sw.WriteLine(string.Join(' ', list));
+        }
+
+    ```
+
+    ```
+        public static void Serialize(object obj, string name, StreamWriter sw, Type propertyType = null, List<string> ignoreMembers = null)
+        {
+            if (obj == null)
+            {
+                return;
+            }
+
+            if (name == "ParentCell")
+            {
+            }
+
+            Type type = obj.GetType();
+            bool flag = propertyType != null && (propertyType.IsInterface || propertyType.IsAbstract || propertyType != type);
+            SerializeBegin(name, sw, flag ? type : null);
+            int hashCode = obj.GetHashCode();
+            if (type.GetInterfaces().FirstOrDefault((Type i) => i.FullName!.Equals(typeof(ISerializable)!.FullName)) != null)
+            {
+                if (SerializedHashCodes.TryGetValue(obj, out var value))
+                {
+                    Serialize(value, "ReplaceId", sw);
+                }
+                else
+                {
+                    Serialize(Id, "Id", sw);
+                    SerializedHashCodes.Add(obj, Id++);
+                    (obj as ISerializable).Serialize(obj, name, sw);
+                }
+            }
+            else if (type.IsPrimitive || type == typeof(string))
+            {
+                SerializeValue(name, obj, sw);
+            }
+            else if (IsDictionary(type))
+            {
+                SerializeDictionary(name, obj, sw, ignoreMembers);
+            }
+            else if (IsList(type))
+            {
+                SerializeIEnumerable(name, obj, sw, ignoreMembers);
+            }
+            else if (type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+            {
+                SerializeKeyValuePair(name, obj, sw);
+            }
+            else if (type.IsClass)
+            {
+                if (SerializedHashCodes.TryGetValue(obj, out var value2))
+                {
+                    Serialize(value2, "ReplaceId", sw);
+                }
+                else
+                {
+                    Serialize(Id, "Id", sw);
+                    SerializedHashCodes.Add(obj, Id++);
+                    SerializeObject(obj, name, sw, ignoreMembers);
+                }
+            }
+    ```
+
+    ```
+        private static void SerializeEnd(string propName, StreamWriter sw, Type type)
+        {
+            sw.WriteLine();
+            List<string> list = new List<string> { "End" };
+            if (!string.IsNullOrEmpty(propName))
+            {
+                list.Add(propName);
+            }
+
+            if (type != null)
+            {
+                list.Add(type.FullName!.Replace(" ", ""));
+            }
+
+            sw.WriteLine(string.Join(' ', list));
+        }
+    ```
