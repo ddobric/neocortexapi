@@ -101,7 +101,6 @@ namespace NeoCortexApiSample
             string seqPath = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
             // Console.WriteLine(path);
             string sequencePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), seqPath));
-            Console.WriteLine(sequencePath);
 
             using (StreamReader reader = new(sequencePath))
             {
@@ -131,7 +130,6 @@ namespace NeoCortexApiSample
             // path for the file
 
             string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
-            //Console.WriteLine(paths);
             string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
 
             using (var reader = new StreamReader(testDataPath))
