@@ -338,25 +338,7 @@ namespace NeoCortexApi.Encoders
         }
 
 <<<<<<< HEAD
-        public override int encodeIntoArray(double input, double output)
-        {
-
-            if input is not None and not is instance(input, object Number)
-                {
-                    throw new ArgumentException("Expected a scalar input but got input of type", type(input)");
-                }
-
-            if (bucketIdx = 0)
-                    {
-                        output = 0;
-                    }
-            if input is float and Double.IsNaN(input)
-                {
-                input = 0;
-                bucketIdx = GetFirstOnBit(input)[0];
-                 }
-=======
-        public override int encodeIntoArray(int input, double output)
+       public override int encodeIntoArray(int input, double output)
         {
 
             if (input != 0)
@@ -390,6 +372,8 @@ namespace NeoCortexApi.Encoders
                     bottombins = maxbin - n + 1;
                     output[0:bottombins] = 1;
                     maxbin = self.n - 1;
+<<<<<<< HEAD
+=======
 
                     if (minbin < 0)
                     {
@@ -400,9 +384,7 @@ namespace NeoCortexApi.Encoders
                     }
                 }
             }
-
->>>>>>> a9789846d4c9688c1f83affbb4264f2d4d1ed6d9
-        }
+>>>>>>> Team_SpiralGanglions
 
 
 
