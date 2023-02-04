@@ -1,12 +1,14 @@
 Spatial Pooler Learning Analysis
 
 I. Train method
--------------------------------------------------------------------------------------------------------------------
-	1. The method output is CortexLayer instance, inputs are Maxval for the encoder and the input set for training. 
+
+1. The method output is CortexLayer instance, inputs are Maxval for the encoder and the input set for training. 
+
     ```
 		public CortexLayer<object, object> Train(double max, List<double> inputValues)
     ```
-	2. Create new instance of htm
+
+2. Create new instance of htm
     ```
         // Pre-defined parameters for htm configuration
 		    double minOctOverlapCycles = 1.0;
@@ -38,7 +40,8 @@ I. Train method
             var mem = new Connections(cfg);
     ```
 
-    3. Create new instance of Encoder class
+3. Create new instance of Encoder class
+
     ```       
         // Dictionary defines typical encoder parameters
 
@@ -59,12 +62,13 @@ I. Train method
             EncoderBase encoder = new ScalarEncoder(settings);
     ```
 
-    4. Homeostatic Plasticity Controller 
-
-        - HPC extends the default Spatial Pooler algorithm.
-        - HPC is to set the Spatial Pooler is in the new-born stage at the begining of the training. 
-        - In this stage, the boosting is very active, but the SP behaves instable. After this stage, the hpc will control the learning process of the SP.
-        - Once the SDR generated for every input gets stable, the HPC will fire event that notifies your program. 
+4. Homeostatic Plasticity Controller 
+    
+    - HPC extends the default Spatial Pooler algorithm.
+    - HPC is to set the Spatial Pooler is in the new-born stage at the begining of the training. 
+    - In this stage, the boosting is very active, but the SP behaves instable. After this stage, the hpc will control the learning process of the SP.
+    - Once the SDR generated for every input gets stable, the HPC will fire event that notifies your program.
+         
     ```  
         // the Sp is first set to unstable 
             
@@ -92,7 +96,7 @@ I. Train method
                 });
     ```
 
-    5. Create instance of Spatial Pooler Multithread version
+5. Create instance of Spatial Pooler Multithread version
 
     ```    
         SpatialPooler sp = new SpatialPooler(hpa);
@@ -102,7 +106,7 @@ I. Train method
         sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
      ```
 
-     6. Create instance of NeoCortexLayer 
+6. Create instance of NeoCortexLayer 
 
      ``` 
         // All the algorithms will be performed within this layer
@@ -119,13 +123,13 @@ I. Train method
         cortexLayer.HtmModules.Add("sp", sp);
      ```
 
-    7. Convert input values from list to array
+7. Convert input values from list to array
 
     ```
         double[] inputs = inputValues.ToArray();
     ```
 
-    8. SDR inputs and SDR similarities
+8. SDR inputs and SDR similarities
 
     ```   
         // Will hold the SDR of every inputs.
@@ -142,9 +146,9 @@ I. Train method
             }
     ```
 
-    9. Learning process
+9. Learning process
 
-    -   At the end, the NeocortexLayer model is returned.
+    - At the end, the NeocortexLayer model is returned.
 
     ```
         // Learning process will take 1000 iterations (cycles)
