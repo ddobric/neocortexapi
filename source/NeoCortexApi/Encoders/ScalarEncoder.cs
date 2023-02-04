@@ -338,47 +338,49 @@ namespace NeoCortexApi.Encoders
         }
 
 <<<<<<< HEAD
-        public override int encodeIntoArray(double input, double output)
-        {
-
-            if input is not None and not is instance(input, object Number)
-                {
-                    throw new ArgumentException("Expected a scalar input but got input of type", type(input)");
-                }
-
-            if (bucketIdx = 0)
-                    {
-                        output = 0;
-                    }
-            if input is float and Double.IsNaN(input)
-                {
-                input = 0;
-                bucketIdx = GetFirstOnBit(input)[0];
-                 }
-        public override int encodeIntoArray(int input, double output)
+       public override int encodeIntoArray(int input, double output)
         {
 
             if (input != 0)
             {
                 throw new ArgumentException("Expected a scalar input but got input of type", input);
             }
-            if ((float)input != double.IsNaN(input))
-            {
-                input = SENTINEL_VALUE_FOR_MISSING_DATA;
-                return (int)input;
-            } 
-            ///  # Get the bucket index to use
-            bucketIdx = (int)GetFirstOnBit(input);
 
-            if (bucketIdx == 0)
+            if(input != Double.IsNaN(input))
             {
-                return (int)output;
+                input = 0;
+                bucketIdx = (int)GetFirstOnBit(input);
+            }
             
+            if(bucketIdx == 0)
+            {
+                output = 0;
+                
+            }
+            else
+            {
+                /// # The bucket index is the index of the first bit to set in the output
+                output[0:n] = 0;
+                minbin = bucketIdx;
+                maxbin = minbin + 2 * self.halfwidth;
+            }
 
+            if (periodic)
+            {
+                if (maxbin >= n)
+                {
+                    bottombins = maxbin - n + 1;
+                    output[0:bottombins] = 1;
+                    maxbin = self.n - 1;
 
+                    if (minbin < 0)
+                    {
+                        topbins = -minbin;
+                        output[n - topbins:n] = 1;
+                        minbin = 0
 
-
-        }
+                    }
+                }
 
 
 
