@@ -360,7 +360,9 @@ namespace UnitTestsProject
             }
         }
 
-
+        /// <summary>
+        /// Test the serialization of Topology. Equal method is tested at TopologyTests.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 1, 2, 4 }, true)]
@@ -378,6 +380,7 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_TOPOLOGY)}_topology.txt"))
             {
                 Topology topologyD = HtmSerializer.Deserialize<Topology>(sr);
+                //Check if Deserialized Topology is equal with original 
                 Assert.IsTrue(topology.Equals(topologyD));
             }
         }
@@ -494,25 +497,53 @@ namespace UnitTestsProject
             }
         }
 
-        //Test passed. Equal method of ComputeCycle object fixed.
+        /// <summary>
+        /// Test the serialization of Topology. Equal method is tested at TopologyTests.
+        /// DONE: Fixed Equal method of ComputeCycle object.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
-        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 }, 11, 12, 22, 10, 20, 20, 1.0, 100)]
-        [DataRow(new int[] { 2, 14, 128 }, new int[] { 8, 8 }, 2, 4, 6, 100, 256, 256, 4.0, 1000)]
-        [DataRow(new int[] { 10 }, new int[] { 12 }, 1, 1, 1, 2, 2, 2, 4.0, 40)]
-        [DataRow(new int[] { 12, 14, 16 }, new int[] { 10, 100 }, 12, 14, 16, 18, 20, 20, 8.9, 10)]
-        public void Serializationtest_COMPUTECYCLE(int[] inputDims, int[] columnDims, int parentColumnIndx, int colSeq, int numCellsPerColumn, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
+        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 })]
+        [DataRow(new int[] { 2, 14, 128 }, new int[] { 8, 8 })]
+        [DataRow(new int[] { 10 }, new int[] { 12 })]
+        [DataRow(new int[] { 12, 14, 16 }, new int[] { 10, 100 })]
+        public void Serializationtest_COMPUTECYCLE(int[] inputDims, int[] columnDims)
         {
 
             HtmConfig config = new HtmConfig(inputDims, columnDims);
 
             Connections connections = new Connections(config);
 
-            Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
+            Cell cell = new Cell(1, 12, 22, new CellActivity());
+            Cell cell2 = new Cell(1, 1, 10, new CellActivity());
+            Cell cell3 = new Cell(2, 4, 6, new CellActivity());
+            Cell cell4 = new Cell(2, 1, 12, new CellActivity());
 
-            var distDend = new DistalDendrite(cell, flatIdx, lastUsedIteration, ordinal, synapsePermConnected, numInputs);
+            Cell activeCell1 = new Cell(1, 1, 10, new CellActivity());
+            Cell activeCell2 = new Cell(1, 2, 20, new CellActivity());
+            Cell activeCell3 = new Cell(2, 2, 10, new CellActivity());
 
-            connections.ActiveSegments.Add(distDend);
+            Cell winnerCell1 = new Cell(10, 10, 10, new CellActivity());
+            Cell winnerCell2 = new Cell(12, 22, 20, new CellActivity());
+            Cell winnerCell3 = new Cell(22, 32, 30, new CellActivity());
+
+            DistalDendrite distDend1 = new DistalDendrite(cell, flatIdx: 10, lastUsedIteration: 20, ordinal: 20, synapsePermConnected: 1.0, numInputs: 100);
+            DistalDendrite distDend2 = new DistalDendrite(cell2, flatIdx: 1,lastUsedIteration: 1,ordinal: 1,synapsePermConnected: 0.5,numInputs: 10);
+            DistalDendrite distDend3 = new DistalDendrite(cell3, flatIdx: 2, lastUsedIteration: 256, ordinal: 7, synapsePermConnected: 1.0, numInputs: 1);
+            DistalDendrite distDend4 = new DistalDendrite(cell4, flatIdx: 3, lastUsedIteration: 12, ordinal: 2, synapsePermConnected: 0.5, numInputs: 2);
+
+            connections.ActiveSegments.Add(distDend1);
+            connections.ActiveSegments.Add(distDend2);
+            connections.MatchingSegments.Add(distDend3);
+            connections.MatchingSegments.Add(distDend4);
+
+            connections.ActiveCells.Add(activeCell1);
+            connections.ActiveCells.Add(activeCell2);
+            connections.ActiveCells.Add(activeCell3);
+
+            connections.WinnerCells.Add(winnerCell1);
+            connections.WinnerCells.Add(winnerCell2);
+            connections.WinnerCells.Add(winnerCell3);
 
             ComputeCycle computeCycle = new ComputeCycle(connections);
 
@@ -523,7 +554,15 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_COMPUTECYCLE)}_compute.txt"))
             {
                 ComputeCycle computeCycleD = HtmSerializer.Deserialize<ComputeCycle>(sr);
+
+                //Check if Deserialized ComputeCycle is equal with original 
                 Assert.IsTrue(computeCycle.Equals(computeCycleD));
+
+                //Check if values inside each ComputeCycle are the same
+                Assert.IsTrue(computeCycle.ActiveCells.ElementsEqual(computeCycleD.ActiveCells));
+                Assert.IsTrue(computeCycle.WinnerCells.ElementsEqual(computeCycleD.WinnerCells));
+                Assert.IsTrue(computeCycle.ActiveSegments.ElementsEqual(computeCycleD.ActiveSegments));
+                Assert.IsTrue(computeCycle.MatchingSegments.ElementsEqual(computeCycleD.MatchingSegments));
             }
         }
 
