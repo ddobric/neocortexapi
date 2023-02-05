@@ -337,7 +337,7 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-<<<<<<< HEAD
+
        public override int encodeIntoArray(int input, double output)
         {
 
@@ -360,7 +360,7 @@ namespace NeoCortexApi.Encoders
             else
             {
                 /// # The bucket index is the index of the first bit to set in the output
-                output[0:n] = 0;
+                output[0,n] = 0;
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * self.halfwidth;
             }
@@ -370,21 +370,21 @@ namespace NeoCortexApi.Encoders
                 if (maxbin >= n)
                 {
                     bottombins = maxbin - n + 1;
-                    output[0:bottombins] = 1;
+                    output[0, bottombins] = 1;
                     maxbin = self.n - 1;
-<<<<<<< HEAD
-=======
+                }
+
 
                     if (minbin < 0)
                     {
                         topbins = -minbin;
-                        output[n - topbins:n] = 1;
-                        minbin = 0
+                        output[n - topbins,n] = 1;
+                    minbin = 0;
 
                     }
                 }
             }
->>>>>>> Team_SpiralGanglions
+
 
 
 
