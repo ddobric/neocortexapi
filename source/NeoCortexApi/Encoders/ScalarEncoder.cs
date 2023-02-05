@@ -337,7 +337,7 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-<<<<<<< HEAD
+
        public override int encodeIntoArray(int input, double output)
         {
 
