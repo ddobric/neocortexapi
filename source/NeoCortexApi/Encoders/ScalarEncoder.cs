@@ -271,17 +271,17 @@ namespace NeoCortexApi.Encoders
                 ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(minbin, maxbin + 1), 1);
             }
 
-          // Added guard against immense string concatenation
-          //if (LOGGER.isTraceEnabled())
-          //{
-          //    LOGGER.trace("");
-          //    LOGGER.trace("input: " + input);
-          //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
-          //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
-          //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
-          //    LOGGER.trace("output: " + Arrays.toString(output));
-          //    LOGGER.trace("input desc: " + decode(output, ""));
-          //}
+            // Added guard against immense string concatenation
+            //if (LOGGER.isTraceEnabled())
+            //{
+            //    LOGGER.trace("");
+            //    LOGGER.trace("input: " + input);
+            //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
+            //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
+            //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
+            //    LOGGER.trace("output: " + Arrays.toString(output));
+            //    LOGGER.trace("input desc: " + decode(output, ""));
+            //}
 
             // Output 1-D array of same length resulted in parameter N    
             return output;
@@ -308,8 +308,8 @@ namespace NeoCortexApi.Encoders
 
         public override int GetBucketIndices(object inputData)
         {
-             
-            if((typeof(input) == Double)  && Double.IsNaN(input))
+
+            if ((typeof(input) == Double) && Double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
             }
@@ -321,10 +321,10 @@ namespace NeoCortexApi.Encoders
 
             var minbin = GetFirstOnBit(input)[0];
             // For periodic encoders, the bucket index is the index of the center bit
-            if(Periodic)
+            if (Periodic)
             {
                 bucketIdx = minbin + HalfWidth;
-                if(bucketIdx < 0)
+                if (bucketIdx < 0)
                 {
                     bucketIdx += N;
                 }
@@ -337,28 +337,54 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-        public override int encodeIntoArray(int input, double output)
+<<<<<<< HEAD
+       public override int encodeIntoArray(int input, double output)
         {
 
             if (input != 0)
             {
                 throw new ArgumentException("Expected a scalar input but got input of type", input);
             }
-            if ((float)input != double.IsNaN(input))
-            {
-                input = SENTINEL_VALUE_FOR_MISSING_DATA;
-                return (int)input;
-            } 
-            ///  # Get the bucket index to use
-            bucketIdx = (int)GetFirstOnBit(input);
 
-            if (bucketIdx == 0)
+            if(input != Double.IsNaN(input))
             {
-                return (int)output;
+                input = 0;
+                bucketIdx = (int)GetFirstOnBit(input);
+            }
+            
+            if(bucketIdx == 0)
+            {
+                output = 0;
+                
+            }
+            else
+            {
+                /// # The bucket index is the index of the first bit to set in the output
+                output[0:n] = 0;
+                minbin = bucketIdx;
+                maxbin = minbin + 2 * self.halfwidth;
             }
 
+            if (periodic)
+            {
+                if (maxbin >= n)
+                {
+                    bottombins = maxbin - n + 1;
+                    output[0:bottombins] = 1;
+                    maxbin = self.n - 1;
+<<<<<<< HEAD
+=======
 
-        }
+                    if (minbin < 0)
+                    {
+                        topbins = -minbin;
+                        output[n - topbins:n] = 1;
+                        minbin = 0
+
+                    }
+                }
+            }
+>>>>>>> Team_SpiralGanglions
 
 
 
