@@ -426,6 +426,8 @@ namespace NeoCortexApi.Encoders
         {
             throw new NotImplementedException();
 
+           
+
         }
 
         //public static object Deserialize<T>(StreamReader sr, string name)
