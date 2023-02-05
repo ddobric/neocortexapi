@@ -61,6 +61,33 @@ namespace UnitTestsProject
             }
         }
 
+
+        internal static HtmConfig GetHtmConfig(int inpBits, int columns)
+        {
+            var htmConfig = new HtmConfig(new int[] { inpBits }, new int[] { columns })
+            {
+                PotentialRadius = 5,
+                PotentialPct = 0.5,
+                GlobalInhibition = false,
+                LocalAreaDensity = -1.0,
+                NumActiveColumnsPerInhArea = 3.0,
+                StimulusThreshold = 0.0,
+                SynPermInactiveDec = 0.01,
+                SynPermActiveInc = 0.1,
+                SynPermConnected = 0.5,
+                ConnectedPermanence = 0.5,
+                MinPctOverlapDutyCycles = 0.1,
+                MinPctActiveDutyCycles = 0.1,
+                DutyCyclePeriod = 10,
+                MaxBoost = 10,
+                ActivationThreshold = 10,
+                MinThreshold = 6,
+                RandomGenSeed = 42,
+                Random = new ThreadSafeRandom(42),
+            };
+
+            return htmConfig;
+        }
         public static DistributedMemory GetDistributedDictionary(HtmConfig htmConfig)
         {
             var cfg = UnitTestHelpers.DefaultSbConfig;
