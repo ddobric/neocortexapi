@@ -372,8 +372,6 @@ namespace NeoCortexApi.Encoders
                     bottombins = maxbin - n + 1;
                     output[0:bottombins] = 1;
                     maxbin = self.n - 1;
-<<<<<<< HEAD
-=======
 
                     if (minbin < 0)
                     {
@@ -384,7 +382,16 @@ namespace NeoCortexApi.Encoders
                     }
                 }
             }
->>>>>>> Team_SpiralGanglions
+
+            public  decode(object encoded, object parentFieldName = "")
+            {
+                tmpoutput = NumSharp.array(encoded[::this.n] > 0).astype(encoded.dtype);
+                if (!tmpOutput.any())
+                {
+                    return (new Dictionary<object, object>(), new List<object>());
+                }
+            }
+            
 
 
 
