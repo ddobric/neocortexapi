@@ -390,6 +390,30 @@ namespace NeoCortexApi.Encoders
                 {
                     return (new Dictionary<object, object>(), new List<object>());
                 }
+                maxzerosinrow = this.halfwidth;
+                if (this.periodic)
+                {
+                    foreach (int j in xrange(this.n))
+                    {
+                        var outputIndices = NumSharp.arange(j, j + subLen);
+                        outputIndices %= this.n;
+                        if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
+                        {
+                            tmpOutput[outputIndices] = 1;
+                        }
+
+                    }
+                }
+                else
+                {
+                    foreach (var j in xrange(this.n - subLen + 1))
+                    {
+                        if (NumSharp.array_equal(searchStr, tmpOutput[j::(j + subLen)]))
+                        {
+                            tmpOutput[j::(j + subLen)] = 1;
+                        }
+                    }
+                }
             }
             
 
