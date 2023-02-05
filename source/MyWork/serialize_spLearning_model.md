@@ -193,7 +193,7 @@ I. Train method
         }
     ```
 
-II. Save method (HtmSerializer)
+II. HtmSerializer.Save() method is used for write the trained model to a text file
 
 1. Save method is implemented to save the trained model to a text file using StreamWriter
 
@@ -319,4 +319,55 @@ II. Save method (HtmSerializer)
 
             sw.WriteLine(string.Join(' ', list));
         }
+    ```
+
+III. HtmSerializer.Load() method is used for deserialize the trained model from the text file
+
+    - fileName is the file where the model is deserialized.
+    - create new instance of StreamReader sr.
+    - Deserialize<T>() method is then called.
+
+    ```
+        public static T Load<T>(string fileName)
+        {
+            Reset();
+            using StreamReader sr = new StreamReader(fileName);
+            return Deserialize<T>(sr);
+        }
+
+    ```
+
+    - typeFromHandle is the type of <T>.
+    - list contains the all the public methods of the current type. 
+    - If the type is value then DeserializeValue<T>() method is called.
+    - If the type is Dictionary then DeserializeDictionary<T>() method is called.
+    - If the type is List then DeserializeIEnumerable<T>() method is called.
+    - If the type is generic type then DeserializeKeyValuePair<T>() method is called.
+    - If the type is class then DeserializeObject<T>() is called. 
+
+    ```
+        public static T Deserialize<T>(StreamReader sr, string propName = null)
+        {
+            T val = default(T);
+            Type typeFromHandle = typeof(T);
+            if (typeFromHandle.GetInterfaces().FirstOrDefault((Type i) => i.FullName!.Equals(typeof(ISerializable)!.FullName)) != null)
+            {
+                List<MethodInfo> list = typeFromHandle.GetMethods().ToList();
+                if (typeFromHandle.BaseType != null)
+                {
+                    list.AddRange(typeFromHandle.BaseType!.GetMethods());
+                }
+
+                MethodInfo methodInfo = list.FirstOrDefault((MethodInfo m) => m.Name == "Deserialize" && m.IsStatic && m.GetParameters().Length == 2);
+                if (methodInfo == null)
+                {
+                    throw new NotImplementedException("Deserialize method is not implemented in the target type " + typeFromHandle.Name);
+                }
+
+                return (T)methodInfo.MakeGenericMethod(typeFromHandle).Invoke(null, new object[2] { sr, propName });
+            }
+
+            return IsValueType(typeFromHandle) ? DeserializeValue<T>(sr, propName) : (IsDictionary(typeFromHandle) ? DeserializeDictionary<T>(sr, propName) : (IsList(typeFromHandle) ? DeserializeIEnumerable<T>(sr, propName) : ((!typeFromHandle.IsGenericType || !(typeFromHandle.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))) ? DeserializeObject<T>(sr, propName) : DeserializeKeyValuePair<T>(sr, propName))));
+        }
+
     ```
