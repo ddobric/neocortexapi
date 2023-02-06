@@ -54,7 +54,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The unique name of the area of the segment's parent cell.
         /// </summary>
-        public string SegmentAreaName { get; set; }
+        public string? SegmentAreaName { get; set; }
 
         /// <summary>
         /// The index of the synapse.
@@ -182,7 +182,8 @@ namespace NeoCortexApi.Entities
             int prime = 31;
             int result = 1;
             result = prime * result + InputIndex;
-            result = prime * result + SegmentAreaName.GetHashCode();
+            if (SegmentAreaName != null)
+                result = prime * result + SegmentAreaName.GetHashCode();
             result = prime * result + SegmentParentCellIndex;
             result = prime * result + this.SegmentIndex;
             result = prime * result + ((SourceCell == null) ? 0 : SourceCell.GetHashCode());
