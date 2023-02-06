@@ -64,6 +64,13 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
+           this.connections.Serialize(obj, name, sw);
+            //this.layer.Serialize(??);
+            //this.classifier.Ser
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
             throw new NotImplementedException();
         }
     }
