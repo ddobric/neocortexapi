@@ -85,6 +85,8 @@ namespace NeoCortexApiSample
             PredictNextElement(predictor, list3);
         }
 
+
+
         private static void PredictNextElement(Predictor predictor, double[] list)
         {
             Debug.WriteLine("------------------------------");
