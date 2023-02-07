@@ -54,7 +54,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// The unique name of the area of the segment's parent cell.
         /// </summary>
-        public string SegmentAreaName { get; set; }
+        public string? SegmentAreaName { get; set; }
 
         /// <summary>
         /// The index of the synapse.
@@ -116,13 +116,11 @@ namespace NeoCortexApi.Entities
             this.SegmentIndex = segmentIndex;
             this.SynapseIndex = synapseIndex;
             this.InputIndex = presynapticCell.Index;
-            
+
             this.SegmentParentCellIndex = segmentCellIndex;
             this.SegmentAreaName = segmentAreaName;
 
             this.Permanence = permanence;
-
-
         }
 
 
@@ -139,7 +137,7 @@ namespace NeoCortexApi.Entities
             this.InputIndex = inputIndex;
         }
 
-      
+
         /// <summary>
         /// Called by <see cref="Connections.DestroySynapse(Synapse, Segment)"/> to assign a reused Synapse to another presynaptic Cell
         /// </summary>
@@ -158,7 +156,7 @@ namespace NeoCortexApi.Entities
             return SourceCell;
         }
 
-      
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -171,7 +169,7 @@ namespace NeoCortexApi.Entities
                 srcCell = $"[SrcCell: {SourceCell.ToString()}]";
             }
 
-            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence}[ segIndx: {SegmentIndex}], {srcCell}";
+            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence}[ segIndx: {this.SegmentAreaName}/{this.SegmentParentCellIndex}/{SegmentIndex}], {srcCell}";
         }
 
 
@@ -184,6 +182,9 @@ namespace NeoCortexApi.Entities
             int prime = 31;
             int result = 1;
             result = prime * result + InputIndex;
+            if (SegmentAreaName != null)
+                result = prime * result + SegmentAreaName.GetHashCode();
+            result = prime * result + SegmentParentCellIndex;
             result = prime * result + this.SegmentIndex;
             result = prime * result + ((SourceCell == null) ? 0 : SourceCell.GetHashCode());
             result = prime * result + SynapseIndex;
@@ -220,6 +221,16 @@ namespace NeoCortexApi.Entities
                 return false;
             if (Permanence != other.Permanence)
                 return false;
+
+            if (SegmentAreaName != other.SegmentAreaName)
+                return false;
+
+            if (SegmentIndex != other.SegmentIndex)
+                return false;
+
+            if (SegmentParentCellIndex != other.SegmentParentCellIndex)
+                return false;
+
             return true;
         }
 
