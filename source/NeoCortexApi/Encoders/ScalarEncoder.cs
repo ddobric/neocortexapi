@@ -340,12 +340,12 @@ namespace NeoCortexApi.Encoders
 
 
 
-        public  int encodeIntoArray(int input, double output)
+        public  int encodeIntoArray(int input, double output,int n)
         {
 
             if (input != 0)
             {
-                throw new ArgumentException("Expected a scalar input but got input of type", input);
+                throw new ArgumentException("$Expected a scalar input but got input of type", { input });
             }
 
             if (input != Double.IsNaN(input))
@@ -373,7 +373,7 @@ namespace NeoCortexApi.Encoders
                 {
                     bottombins = maxbin - n + 1;
                     output[0,bottombins] = 1;
-                    maxbin = self.n - 1;
+                    maxbin = this.n - 1;
 
 
                 }
@@ -388,8 +388,8 @@ namespace NeoCortexApi.Encoders
                         minbin = 0;
 
                     }
-                }
             }
+        }
 
             public int decode(object encoded, string parentFieldName = "")
             {
