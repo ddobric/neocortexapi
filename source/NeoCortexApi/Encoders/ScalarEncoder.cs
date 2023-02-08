@@ -338,7 +338,8 @@ namespace NeoCortexApi.Encoders
         }
 
 
-       public override int encodeIntoArray(int input, double output)
+
+        public override int encodeIntoArray(int input, double output)
         {
 
             if (input != 0)
@@ -346,16 +347,16 @@ namespace NeoCortexApi.Encoders
                 throw new ArgumentException("Expected a scalar input but got input of type", input);
             }
 
-            if(input != Double.IsNaN(input))
+            if (input != Double.IsNaN(input))
             {
                 input = 0;
                 bucketIdx = (int)GetFirstOnBit(input);
             }
-            
-            if(bucketIdx == 0)
+
+            if (bucketIdx == 0)
             {
                 output = 0;
-                
+
             }
             else
             {
@@ -373,6 +374,12 @@ namespace NeoCortexApi.Encoders
                     output[0:bottombins] = 1;
                     maxbin = self.n - 1;
 
+
+                }
+
+
+
+
                     if (minbin < 0)
                     {
                         topbins = -minbin;
@@ -382,6 +389,40 @@ namespace NeoCortexApi.Encoders
                     }
                 }
             }
+
+            public decode(object encoded, object parentFieldName = "")
+            {
+                tmpoutput = NumSharp.array(encoded[::this.n] > 0).astype(encoded.dtype);
+                if (!tmpOutput.any())
+                {
+                    return (new Dictionary<object, object>(), new List<object>());
+                }
+                maxzerosinrow = this.halfwidth;
+                if (this.periodic)
+                {
+                    foreach (int j in xrange(this.n))
+                    {
+                        var outputIndices = NumSharp.arange(j, j + subLen);
+                        outputIndices %= this.n;
+                        if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
+                        {
+                            tmpOutput[outputIndices] = 1;
+                        }
+
+                    }
+                }
+                else
+                {
+                    foreach (var j in xrange(this.n - subLen + 1))
+                    {
+                        if (NumSharp.array_equal(searchStr, tmpOutput[j::(j + subLen)]))
+                        {
+                            tmpOutput[j::(j + subLen)] = 1;
+                        }
+                    }
+                }
+            }
+
 
             public  decode(object encoded, object parentFieldName = "")
             {
@@ -420,10 +461,13 @@ namespace NeoCortexApi.Encoders
 
 
 
+
+
         public override List<T> GetBucketValues<T>()
         {
             throw new NotImplementedException();
 
+           
         }
 
         //public static object Deserialize<T>(StreamReader sr, string name)
