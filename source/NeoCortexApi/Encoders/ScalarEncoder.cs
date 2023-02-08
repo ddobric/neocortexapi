@@ -372,11 +372,10 @@ namespace NeoCortexApi.Encoders
                     bottombins = maxbin - n + 1;
                     output[0, bottombins] = 1;
                     maxbin = self.n - 1;
-<<<<<<< HEAD
+
                 }
 
-=======
->>>>>>> 953543ae909cd1737cbf421cc63f93a29142fcae
+
 
                     if (minbin < 0)
                     {
@@ -388,8 +387,7 @@ namespace NeoCortexApi.Encoders
                 }
             }
 
-<<<<<<< HEAD
-=======
+
             public  decode(object encoded, object parentFieldName = "")
             {
                 tmpoutput = NumSharp.array(encoded[::this.n] > 0).astype(encoded.dtype);
@@ -423,7 +421,7 @@ namespace NeoCortexApi.Encoders
                 }
             }
             
->>>>>>> 953543ae909cd1737cbf421cc63f93a29142fcae
+
 
 
 
