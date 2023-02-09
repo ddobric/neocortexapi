@@ -61,7 +61,7 @@ namespace NeoCortexApiSample
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
             var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
-          
+
             predictor.Reset();
             PredictNextElement(predictor, list1);
         }
@@ -74,7 +74,7 @@ namespace NeoCortexApiSample
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             using (StreamReader reader = new StreamReader(@"D:\FAUS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
             {
-                List<double> inputList1 = new ();
+                List<double> inputList1 = new();
                 while (!reader.EndOfStream)
                 {
                     var row = reader.ReadLine();
@@ -89,34 +89,34 @@ namespace NeoCortexApiSample
 
 
 
-            //private static void RunMultiSimpleSequenceLearningExperiment()
-            //{
-            //    Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+        //private static void RunMultiSimpleSequenceLearningExperiment()
+        //{
+        //    Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
-            //    sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
-            //    sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
+        //    sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
+        //    sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
-            //    //
-            //    // Prototype for building the prediction engine.
-            //    MultiSequenceLearning experiment = new MultiSequenceLearning();
-            //    var predictor = experiment.Run(sequences);         
-            //}
+        //    //
+        //    // Prototype for building the prediction engine.
+        //    MultiSequenceLearning experiment = new MultiSequenceLearning();
+        //    var predictor = experiment.Run(sequences);         
+        //}
 
 
-            /// <summary>
-            /// This example demonstrates how to learn two sequences and how to use the prediction mechanism.
-            /// First, two sequences are learned.
-            /// Second, three short sequences with three elements each are created und used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
-            /// The predictor tries to predict the next element.
-            /// </summary>
-            private static void RunMultiSequenceLearningExperiment()
+        /// <summary>
+        /// This example demonstrates how to learn two sequences and how to use the prediction mechanism.
+        /// First, two sequences are learned.
+        /// Second, three short sequences with three elements each are created und used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
+        /// The predictor tries to predict the next element.
+        /// </summary>
+        private static void RunMultiSequenceLearningExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0}));
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
             sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //
