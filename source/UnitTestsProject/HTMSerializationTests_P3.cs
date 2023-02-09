@@ -170,7 +170,7 @@ namespace UnitTestsProject
             config.MaxSynapsesPerSegment = 228;
             config.MaxSegmentsPerCell = 228;
             config.InitialPermanence = 0.21;
-            config.ConnectedPermanence = 0.5;
+            config.SynPermConnected = 0.5;
             config.PermanenceIncrement = 0.15;
             config.PermanenceDecrement = 0.15;
             config.PredictedSegmentDecrement = 0.1;
@@ -471,11 +471,10 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_POOL()
-        {
-            Pool pool = new Pool(size: 1, numInputs: 200);
-
+        {           
             Cell cell = new Cell(parentColumnIndx: 1, colSeq: 20, numCellsPerColumn: 16, new CellActivity());
-            Cell preSynapticCell = new Cell(parentColumnIndx: 2, colSeq: 22, numCellsPerColumn: 26, new CellActivity());
+            Cell cell2 = new Cell(parentColumnIndx: 2, colSeq: 21, numCellsPerColumn: 16, new CellActivity());
+            Cell preSynapticCell = new Cell(parentColumnIndx: 3, colSeq: 22, numCellsPerColumn: 26, new CellActivity());
 
             DistalDendrite dd = new DistalDendrite(parentCell: cell, flatIdx: 10, lastUsedIteration: 20, ordinal: 10, synapsePermConnected: 15, numInputs: 100);
             cell.DistalDendrites.Add(dd);
@@ -483,9 +482,19 @@ namespace UnitTestsProject
             Synapse synapse = new Synapse(presynapticCell: cell, distalSegmentIndex: dd.SegmentIndex, synapseIndex: 23, permanence: 1.0);
             preSynapticCell.ReceptorSynapses.Add(synapse);
 
+            //Create an empty Pool and Add synapse to SynapsesBySourceIndex of the pool
+            Pool pool = new Pool(size: 1, numInputs: 200);
+
             pool.m_SynapsesBySourceIndex = new Dictionary<int, Synapse>();
             pool.m_SynapsesBySourceIndex.Add(2, synapse);
 
+            //Update Pool with new synapse
+            //TODO: Should UpdatePool update size of the pool? - After update, the Deserialized Pool's size is 2, the original Pool's size is 1.
+            DistalDendrite dd2 = new DistalDendrite(parentCell: cell2, flatIdx: 11, lastUsedIteration: 20, ordinal: 10, synapsePermConnected: 15, numInputs: 100);
+            Synapse synapse2 = new Synapse(presynapticCell: cell2, distalSegmentIndex: dd2.SegmentIndex, synapseIndex: 21, permanence: 1.0);
+
+            pool.UpdatePool(synPermConnected: 1.0, synapse2, permanence: 2.0);
+            
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_POOL)}_pool.txt"))
             {
                 HtmSerializer.Serialize(pool, null, sw);
@@ -493,12 +502,18 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_POOL)}_pool.txt"))
             {
                 Pool poolD = HtmSerializer.Deserialize<Pool>(sr);
+                //Check if Deserialized Pool is equal with original 
                 Assert.IsTrue(pool.Equals(poolD));
+
+                //Compare SparsePermanences of original Pool and Deserialized Pool
+                Assert.IsTrue(poolD.GetSparsePermanences().ElementsEqual(pool.GetSparsePermanences()));
+                Assert.IsTrue(poolD.GetSparsePermanences().ElementsEqual(pool.GetSparsePermanences()));
+                Assert.IsTrue(poolD.GetDenseConnected().ElementsEqual(pool.GetDenseConnected()));
             }
         }
 
         /// <summary>
-        /// Test the serialization of Topology. Equal method is tested at TopologyTests.
+        /// Test the serialization of ComputeCycle. Equal method is tested at ComputeCycleTests.
         /// DONE: Fixed Equal method of ComputeCycle object.
         /// </summary>
         [TestMethod]
