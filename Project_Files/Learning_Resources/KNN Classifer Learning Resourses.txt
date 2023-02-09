@@ -11,3 +11,5 @@ https://www.tutorialspoint.com/scikit_learn/scikit_learn_kneighbors_classifier.h
 Videos
 https://www.youtube.com/watch?v=HVXime0nQeI
 https://www.youtube.com/watch?v=UqYde-LULfs
+https://www.youtube.com/watch?v=4HKqjENq9OU&t=1470s (After watching this video, we got an idea regarding what to take the value of 'K (Nearest Neighbour)'. It is explained that the value
+									of k is approximately equal to the Length of our data set)
