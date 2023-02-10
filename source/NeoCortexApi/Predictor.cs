@@ -3,6 +3,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -15,7 +16,7 @@ namespace NeoCortexApi
     /// For example, assume there ar two sequences: ABCD and ABGHI. By presenting the element B, the predictor is not sure if the next element is C or D. 
     /// When presenting after B the element C, the predictor knows that the next element must be C.
     /// </summary>
-    public class Predictor
+    public class Predictor : ISerializable
     {
         private Connections connections { get; set; }
 
@@ -59,6 +60,18 @@ namespace NeoCortexApi
             List<ClassifierResult<string>> predictedInputValues = this.classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
 
             return predictedInputValues;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+           this.connections.Serialize(obj, name, sw);
+            //this.layer.Serialize(??);
+            //this.classifier.Ser
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }
