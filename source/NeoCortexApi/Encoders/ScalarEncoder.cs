@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
+using NumSharp;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
@@ -306,7 +307,7 @@ namespace NeoCortexApi.Encoders
         ///  Vinay
         int bucketIdx;
 
-        public override int GetBucketIndices(object inputData)
+        public  int GetBucketIndices(object inputData)
         {
 
             if ((typeof(input) == Double) && Double.IsNaN(input))
@@ -339,12 +340,12 @@ namespace NeoCortexApi.Encoders
 
 
 
-        public override int encodeIntoArray(int input, double output)
+        public  int encodeIntoArray(int input, double output,int n)
         {
 
             if (input != 0)
             {
-                throw new ArgumentException("Expected a scalar input but got input of type", input);
+                throw new ArgumentException("$Expected a scalar input but got input of type", { input });
             }
 
             if (input != Double.IsNaN(input))
@@ -361,7 +362,7 @@ namespace NeoCortexApi.Encoders
             else
             {
                 /// # The bucket index is the index of the first bit to set in the output
-                output[0:n] = 0;
+                output[0,n] = 0;
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * self.halfwidth;
             }
@@ -371,8 +372,8 @@ namespace NeoCortexApi.Encoders
                 if (maxbin >= n)
                 {
                     bottombins = maxbin - n + 1;
-                    output[0:bottombins] = 1;
-                    maxbin = self.n - 1;
+                    output[0,bottombins] = 1;
+                    maxbin = this.n - 1;
 
 
                 }
@@ -383,16 +384,16 @@ namespace NeoCortexApi.Encoders
                     if (minbin < 0)
                     {
                         topbins = -minbin;
-                        output[n - topbins:n] = 1;
-                        minbin = 0
+                        output[n - topbins,n] = 1;
+                        minbin = 0;
 
                     }
-                }
             }
+        }
 
-            public decode(object encoded, object parentFieldName = "")
+            public int decode(object encoded, string parentFieldName = "")
             {
-                tmpoutput = NumSharp.array(encoded[::this.n] > 0).astype(encoded.dtype);
+                tmpoutput = NumSharp.array(encoded[0,this.n] > 0).astype(encoded.dtype);
                 if (!tmpOutput.any())
                 {
                     return (new Dictionary<object, object>(), new List<object>());
@@ -415,47 +416,16 @@ namespace NeoCortexApi.Encoders
                 {
                     foreach (var j in xrange(this.n - subLen + 1))
                     {
-                        if (NumSharp.array_equal(searchStr, tmpOutput[j::(j + subLen)]))
+                        if (NumSharp.array_equal(searchStr, tmpOutput[j:(j + subLen)]))
                         {
-                            tmpOutput[j::(j + subLen)] = 1;
+                            tmpoutput[j:(j + subLen)] = 1;
                         }
                     }
                 }
             }
 
 
-            public  decode(object encoded, object parentFieldName = "")
-            {
-                tmpoutput = NumSharp.array(encoded[::this.n] > 0).astype(encoded.dtype);
-                if (!tmpOutput.any())
-                {
-                    return (new Dictionary<object, object>(), new List<object>());
-                }
-                maxzerosinrow = this.halfwidth;
-                if (this.periodic)
-                {
-                    foreach (int j in xrange(this.n))
-                    {
-                        var outputIndices = NumSharp.arange(j, j + subLen);
-                        outputIndices %= this.n;
-                        if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
-                        {
-                            tmpOutput[outputIndices] = 1;
-                        }
-
-                    }
-                }
-                else
-                {
-                    foreach (var j in xrange(this.n - subLen + 1))
-                    {
-                        if (NumSharp.array_equal(searchStr, tmpOutput[j::(j + subLen)]))
-                        {
-                            tmpOutput[j::(j + subLen)] = 1;
-                        }
-                    }
-                }
-            }
+           
             
 
 
