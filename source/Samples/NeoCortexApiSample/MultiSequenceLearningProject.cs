@@ -11,7 +11,7 @@ using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-
+using NeoCortexApiSample;
 
 namespace MultiSequencePrediction
 {
@@ -25,8 +25,31 @@ namespace MultiSequencePrediction
             string seqPath = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
             string sequencePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), seqPath));
             sequences = readSequences(sequencePath);
+            MultiSequenceLearning newExperiment = new MultiSequenceLearning();
+            var predictor = newExperiment.Run(sequences);
+
+            //Testing sequences
+            string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
+            string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
+            var testSequences = new List<List<double>>();
+            var testList = new List<double>();
 
 
+            using (var reader = new StreamReader(testDataPath))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    Console.WriteLine(line);
+
+                    foreach (var value in values)
+                    {
+                        testList.Add(Convert.ToDouble(value));
+                    }
+                    testSequences.Add(testList);
+                }
+            }
 
 
 
