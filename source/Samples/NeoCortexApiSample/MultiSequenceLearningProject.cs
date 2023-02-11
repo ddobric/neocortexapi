@@ -35,6 +35,24 @@ namespace MultiSequencePrediction
             var testList = new List<double>();
 
 
+            using (var reader = new StreamReader(testDataPath))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    Console.WriteLine(line);
+
+                    foreach (var value in values)
+                    {
+                        testList.Add(Convert.ToDouble(value));
+                    }
+                    testSequences.Add(testList);
+                }
+            }
+
+
+
             return (null);
         }
         public Dictionary<string, List<double>> readSequences(string sequencePath)
