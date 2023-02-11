@@ -80,14 +80,14 @@ namespace NeoCortexApiSample
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
-            predictor.Reset();
+            /*predictor.Reset();
             PredictNextElement(predictor, list1);
 
             predictor.Reset();
             PredictNextElement(predictor, list2);
 
             predictor.Reset();
-            PredictNextElement(predictor, list3);
+            PredictNextElement(predictor, list3);*/
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace NeoCortexApiSample
             string seqPath = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
             // Console.WriteLine(path);
             string sequencePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), seqPath));
-
+            var sequence = new List<double>();
             using (StreamReader reader = new(sequencePath))
             {
                 int count = 1;
@@ -110,10 +110,11 @@ namespace NeoCortexApiSample
                     var line = reader.ReadLine();
                     var values = line.Split(',');
                     Console.WriteLine(line);
-                    var sequence = new List<double>();
+                    
                     foreach (var value in values)
                     {
-                        sequence.Add(Convert.ToDouble(value));
+                       // sequence.Add(Convert.ToDouble(value));
+                        sequence.Add(double.Parse(value));
                     }
                     string seqName = "seq" + count;
                     sequences.Add(seqName, sequence);
@@ -132,6 +133,7 @@ namespace NeoCortexApiSample
             string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
             string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
             var testSequences = new List<List<double>>();
+            var testList = new List<double>();
             using (var reader = new StreamReader(testDataPath))
             {
                 while (!reader.EndOfStream)
@@ -139,7 +141,7 @@ namespace NeoCortexApiSample
                     var line = reader.ReadLine();
                     var values = line.Split(',');
                     Console.WriteLine(line);
-                    var testList = new List<double>();
+                    
                     foreach (var value in values)
                     {
                         testList.Add(Convert.ToDouble(value));
