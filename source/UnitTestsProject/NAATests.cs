@@ -104,9 +104,21 @@ namespace UnitTestsProject
             Assert.IsTrue(numSegments==maxSeg.Synapses.Count);
         }
 
+
+        /// <summary>
+        /// This unit tests creates two areas X and Y and it creates one SDR in each area.
+        /// Both SDRs represent tha set of active cells that will be associated with each other.
+        /// </summary>
+        /// <param name="numCells">NUmber of cells in the Y area, that will learn associationas.</param>
+        /// <param name="numActCellsPct">NUmber of active cells in percent in the area Y.</param>
         [TestMethod]
         [TestCategory("NAA")]
-        public void AssociateAreasTest()
+        [DataRow(100, 0.02)]
+        [DataRow(100, 0.04)]
+        [DataRow(200, 0.01)]
+        [DataRow(100, 0.05)]
+        [DataRow(500, 0.01)]
+        public void AssociateAreasTest(int numCells, double numActCellsPct)
         {
             var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
             
@@ -118,7 +130,7 @@ namespace UnitTestsProject
 
             areaX.ActiveCellsIndicies = UnitTestHelpers.CreateRandomSdr(1024, 0.02);
 
-            areaY.ActiveCellsIndicies = UnitTestHelpers.CreateRandomSdr(100, 0.02);
+            areaY.ActiveCellsIndicies = UnitTestHelpers.CreateRandomSdr(numCells, numActCellsPct);
 
             Naa naa = new Naa(cfg, areaY);
 
@@ -142,7 +154,7 @@ namespace UnitTestsProject
             Assert.IsTrue(naa.MatchingApicalSegments.Count == 0);
 
             // The Y area of NAA must not have 2 active segments for the current set of active cells.
-            Assert.IsTrue(naa.ActiveApicalSegments.Count == 2);
+            Assert.IsTrue(naa.ActiveApicalSegments.Count == numCells * numActCellsPct);
 
             foreach (var activeCell in areaY.ActiveCells)
             {
