@@ -13,5 +13,9 @@ Tasks to be done by each team member  -->
 Added new method for testing sequence : RunMultiSequenceLearningExperiment()
 
 21.01.23: Analyzed the Run() method and RunExperiment() method in MultisequenceLearning.cs file. Next step would be test them with string sequences.
+
+//Implemented Code for reading the learning sequences and testing sequences from .txt file the code is implemented in RunPredictionMultiSequenceExperiment() method.
+
+* And the Sequences are in source\MySEProject as trainingSequences.txt & testingData.txt
                                         
                                          
