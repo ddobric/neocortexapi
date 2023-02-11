@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,39 +14,23 @@ using NeoCortexApi.Network;
 
 namespace MultiSequencePrediction
 {
-    class Program
+    class Project
     {
-        static void Main(string[] args)
+        public Predictor PredictionExperiment()
         {
-            List<List<double>> sequences = new List<List<double>>()
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            /*Code for reading the learning sequences from .txt file. The file has n rows which have numbers seperated by commas.*/
+            //string path = ".//.//" + System.IO.Directory.GetCurrent‌​Directory();
+            string seqPath = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
+            string sequencePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), seqPath));
+            var sequence = new List<double>();
+            using (StreamReader reader = new(sequencePath))
             {
-                new List<double>() {1, 2, 3, 4},
-                new List<double>() {5, 6, 7, 8},
-                new List<double>() {9, 10, 11, 12}
-            };
+                int count = 1;
 
-            int windowSize = 2;
-            List<double> predictions = Predict(sequences, windowSize);
 
-            Console.WriteLine("Predictions: ");
-            predictions.ForEach(p => Console.WriteLine(p));
-        }
-
-        static List<double> Predict(List<List<double>> sequences, int windowSize)
-        {
-            List<double> predictions = new List<double>();
-
-            foreach (var sequence in sequences)
-            {
-                for (int i = windowSize; i < sequence.Count; i++)
-                {
-                    List<double> window = sequence.Skip(i - windowSize).Take(windowSize).ToList();
-                    double prediction = window.Average();
-                    predictions.Add(prediction);
-                }
             }
-
-            return predictions;
+            return(null);
         }
     }
 }
