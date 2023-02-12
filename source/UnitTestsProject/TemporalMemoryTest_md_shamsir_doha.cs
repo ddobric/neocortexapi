@@ -52,5 +52,35 @@ namespace UnitTestsProject
         }
 
 
+        [TestMethod]
+       
+        public void TestPredictedActiveCellsAreAlwaysWinners2()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] previousActiveColumns = { 0 };
+            int[] activeColumns = { 1 };
+            Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
+            List<Cell> expectedWinnerCells = new List<Cell>(cn.GetCells(new int[] { 4, 6 }));
+
+            DistalDendrite activeSegment1 = cn.CreateDistalSegment(expectedWinnerCells[0]);
+            cn.CreateSynapse(activeSegment1, previousActiveCells[0], 0.7);
+            cn.CreateSynapse(activeSegment1, previousActiveCells[1], 0.8);
+            cn.CreateSynapse(activeSegment1, previousActiveCells[2], 0.5);
+
+            DistalDendrite activeSegment2 = cn.CreateDistalSegment(expectedWinnerCells[1]);
+            cn.CreateSynapse(activeSegment2, previousActiveCells[0], 0.5);
+            cn.CreateSynapse(activeSegment2, previousActiveCells[1], 0.5);
+            cn.CreateSynapse(activeSegment2, previousActiveCells[2], 0.5);
+
+            ComputeCycle cc = tm.Compute(previousActiveColumns, false) as ComputeCycle; // learn=false
+            cc = tm.Compute(activeColumns, false) as ComputeCycle; // learn=false
+
+            Assert.IsTrue(cc.WinnerCells.SequenceEqual(new LinkedHashSet<Cell>(expectedWinnerCells)));
+        }
     }
 }
