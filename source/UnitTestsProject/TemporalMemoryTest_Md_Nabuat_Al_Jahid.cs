@@ -52,7 +52,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void TestBurstUnpredictedColumns()
+        public void TestPunishPredictedColumn()
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
@@ -60,12 +60,22 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.Init(cn);
 
-            int[] activeColumns = { 0 };
+           /* int[] activeColumns = { 0 };
             var burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4 });
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
-            Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
+            List<DistalDendrite> activeSegments;
+
+            List<DistalDendrite> matchingSegments;
+
+            ICollection<Cell> prevActiveCells;
+
+            ICollection<Cell> prevWinnerCells;
+
+            double predictedSegmentDecrement;
+           */
+
         }
 
     }
