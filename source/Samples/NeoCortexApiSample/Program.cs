@@ -1,8 +1,10 @@
 ﻿using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
 
@@ -28,22 +30,77 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-           // RunMultiSimpleSequenceLearningExperiment();
-           RunMultiSequenceLearningExperiment();
+            // RunMultiSimpleSequenceLearningExperiment();
+            //RunMultiSequenceLearningExperiment();
+
+            // new MultiSequenceLearning experiment based on new method for getting sequences data from local text files
+            RunMultipleSequenceLearningExperiment();
         }
 
-        private static void RunMultiSimpleSequenceLearningExperiment()
+
+
+        private static void RunMultipleSequenceLearningExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
-            sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
-            sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
+            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
+            //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
+
+            sequences = GetInputFromTextFile();
+
+            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+            //sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);         
+            var predictor = experiment.Run(sequences);
+
+            //
+            // These list are used to see how the prediction works.
+            // Predictor is traversing the list element by element. 
+            // By providing more elements to the prediction, the predictor delivers more precise result.
+            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
+
+            predictor.Reset();
+            PredictNextElement(predictor, list1);
         }
+
+
+        //method to add input sequences through external text files
+
+        private static Dictionary<string, List<double>> GetInputFromTextFile()
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            using (StreamReader reader = new StreamReader(@"D:\FAUS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
+            {
+                List<double> inputList1 = new();
+                while (!reader.EndOfStream)
+                {
+                    var row = reader.ReadLine();
+                    var values = row.Split(',');
+                    Console.WriteLine(values);
+                    inputList1.Add(Convert.ToDouble(values[0]));
+                }
+                sequences.Add("Sq1", inputList1);
+            }
+            return sequences;
+        }
+
+
+
+        //private static void RunMultiSimpleSequenceLearningExperiment()
+        //{
+        //    Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+
+        //    sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
+        //    sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
+
+        //    //
+        //    // Prototype for building the prediction engine.
+        //    MultiSequenceLearning experiment = new MultiSequenceLearning();
+        //    var predictor = experiment.Run(sequences);         
+        //}
 
 
         /// <summary>
@@ -84,8 +141,6 @@ namespace NeoCortexApiSample
             predictor.Reset();
             PredictNextElement(predictor, list3);
         }
-
-
 
         private static void PredictNextElement(Predictor predictor, double[] list)
         {
