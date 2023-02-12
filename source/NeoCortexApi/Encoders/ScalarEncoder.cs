@@ -451,6 +451,7 @@ namespace NeoCortexApi.Encoders
                         };
                 }
                 i += 1;
+
             }
             runs.append(run);
 
