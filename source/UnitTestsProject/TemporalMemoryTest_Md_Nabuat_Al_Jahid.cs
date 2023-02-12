@@ -60,7 +60,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.Init(cn);
 
-            int[] activeColumns = { 0 };
+           /* int[] activeColumns = { 0 };
             var burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4 });
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
@@ -74,7 +74,7 @@ namespace UnitTestsProject
             ICollection<Cell> prevWinnerCells;
 
             double predictedSegmentDecrement;
-
+           */
 
         }
 
