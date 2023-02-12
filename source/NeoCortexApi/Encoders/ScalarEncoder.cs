@@ -345,7 +345,7 @@ namespace NeoCortexApi.Encoders
 
             if (input != 0)
             {
-                throw new ArgumentException("$Expected a scalar input but got input of type", { input });
+                throw new ArgumentException("$Expected a scalar input but got input of type",  input );
             }
 
             if (input != Double.IsNaN(input))
@@ -391,42 +391,81 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-            public int decode(object encoded, string parentFieldName = "")
+        public int decode(object encoded, string parentFieldName = "")
+        {
+            tmpoutput = NumSharp.array(encoded[0, this.n] > 0).astype(encoded.dtype);
+            if (!tmpOutput.any())
             {
-                tmpoutput = NumSharp.array(encoded[0,this.n] > 0).astype(encoded.dtype);
-                if (!tmpOutput.any())
-                {
-                    return (new Dictionary<object, object>(), new List<object>());
-                }
-                maxzerosinrow = this.halfwidth;
-                if (this.periodic)
-                {
-                    foreach (int j in xrange(this.n))
-                    {
-                        var outputIndices = NumSharp.arange(j, j + subLen);
-                        outputIndices %= this.n;
-                        if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
-                        {
-                            tmpOutput[outputIndices] = 1;
-                        }
+                return (new Dictionary<object, object>(), new List<object>());
+            }
+            maxzerosinrow = this.halfwidth;
 
-                    }
-                }
-                else
+            if (this.periodic)
+            {
+                foreach (int j in xrange(this.n))
                 {
-                    foreach (var j in xrange(this.n - subLen + 1))
+                    var outputIndices = NumSharp.arange(j, j + subLen);
+                    outputIndices %= this.n;
+                    if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
                     {
-                        if (NumSharp.array_equal(searchStr, tmpOutput[j:(j + subLen)]))
-                        {
-                            tmpoutput[j:(j + subLen)] = 1;
-                        }
+                        tmpOutput[outputIndices] = 1;
+                    }
+
+                }
+            }
+            else
+            {
+                foreach (var j in xrange(this.n - subLen + 1))
+                {
+                    if (NumSharp.array_equal(searchStr, tmpOutput[j: (j + subLen)]))
+                    {
+                        tmpoutput[j: (j + subLen)] = 1;
                     }
                 }
             }
 
+            if (this.verbosity >= 2)
+            {
+                Console.WriteLine("raw output:", encoded[self.n]);
+                Console.WriteLine("filtered output:", tmpOutput);
+            }
 
-           
-            
+            var nz = tmpOutput.nonzero()[0];
+            var runs = new List<object>();    /// will be tuples of (startIdx, runLength)
+            var run = new List<object> {nz[0],1};
+
+            var i = 1;
+
+            while (i < nz.Count)
+            {
+                if (nz[i] == run[0] + run[1])
+                {
+                    run[1] += 1;
+                }
+                else
+                {
+                    runs.append(run);
+                    run = new List<object> {
+                            nz[i],
+                            1
+                        };
+                }
+                i += 1;
+            }
+            runs.append(run);
+
+
+
+
+
+        }    
+
+        /// ------------------------------------------------------------------------
+        /// Find each run of 1's.
+        var nz = tmpOutput.nonzero()[0];
+
+
+
 
 
 
