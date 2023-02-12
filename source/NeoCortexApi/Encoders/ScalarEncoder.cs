@@ -454,7 +454,16 @@ namespace NeoCortexApi.Encoders
 
             }
             runs.append(run);
-
+            // If we have a periodic encoder, merge the first and last run if they
+            //  both go all the way to the edges
+            if (this.periodic && runs.Count > 1)
+            {
+                if (runs[0][0] == 0 && runs[-1][0] + runs[-1][1] == this.n)
+                {
+                    runs[-1][1] += runs[0][1];
+                    runs = runs[1];
+                }
+            }
 
 
 
