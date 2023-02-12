@@ -454,16 +454,77 @@ namespace NeoCortexApi.Encoders
 
             }
             runs.append(run);
+            // If we have a periodic encoder, merge the first and last run if they
+            //  both go all the way to the edges
+            if (this.periodic && runs.Count > 1)
+            {
+                if (runs[0][0] == 0 && runs[-1][0] + runs[-1][1] == this.n)
+                {
+                    runs[-1][1] += runs[0][1];
+                    runs = runs[1];
+                }
+            }
+            // ------------------------------------------------------------------------
+            // Now, for each group of 1's, determine the "left" and "right" edges, where
+            //  the "left" edge is inset by halfwidth and the "right" edge is inset by
+            //  halfwidth.
+            // For a group of width w or less, the "left" and "right" edge are both at
+            //   the center position of the group.
+            var ranges = new List<object>();
+            foreach (var run in runs)
+            {
+                (start, runLen) = run;
+                if (runLen <= this.w)
+                {
+                    left = start + runLen / 2;
+                }
+                else
+                {
+                    left = start + this.halfwidth;
+                    var right = start + runLen - 1 - this.halfwidth;
+                }
+
+                // Convert to input space.
+                if (!this.periodic)
+                {
+                    inMin = (left - this.padding) * this.resolution + this.minval;
+                    inMax = (right - this.padding) * this.resolution + this.minval;
+                }
+                else
+                {
+                    inMin = (left - this.padding) * this.range / this.nInternal + this.minval;
+                    inMax = (right - this.padding) * this.range / this.nInternal + this.minval;
+                }
+
+                // Handle Wape-around if periodic 
+                if (this.periodic)
+                {
+                    if (inMin >= this.maxval)
+                    {
+                        inMin -= this.range;
+                        inMax -= this.range;
+                    }
+                }
 
 
+                // Clip low end
+                if (inMin < this.minval)
+                {
+                    inMin = this.minval;
+                }
+                if (inMax < this.minval)
+                {
+                    inMax = this.minval;
+                }
 
+                /// If we have a periodic encoder, and the max is past the edge, break into
+                ///  2 separate ranges
 
+            }
 
-        }    
-
-        /// ------------------------------------------------------------------------
-        /// Find each run of 1's.
-        var nz = tmpOutput.nonzero()[0];
+            /// ------------------------------------------------------------------------
+            /// Find each run of 1's.
+            var nz = tmpOutput.nonzero()[0];
 
 
 
