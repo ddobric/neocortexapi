@@ -9,6 +9,7 @@ using NeoCortexApi.Entities;
 using System.Net.Http.Headers;
 using Naa = NeoCortexApi.NeuralAssociationAlgorithm;
 using System.Diagnostics;
+using GemBox.Spreadsheet.Drawing;
 
 namespace UnitTestsProject
 {
@@ -110,7 +111,7 @@ namespace UnitTestsProject
         /// Both SDRs represent tha set of active cells that will be associated with each other.
         /// </summary>
         /// <param name="numCells">NUmber of cells in the Y area, that will learn associationas.</param>
-        /// <param name="numActCellsPct">NUmber of active cells in percent in the area Y.</param>
+        /// <param name="numActCellsPct">Number of active cells in percent in the area Y.</param>
         [TestMethod]
         [TestCategory("NAA")]
         [DataRow(100, 0.02)]
@@ -144,6 +145,71 @@ namespace UnitTestsProject
                 Debug.WriteLine(naa.TraceState());
             }
 
+            AssertAssociations(areaX.ActiveCellsIndicies.Length, numCells, numActCellsPct, areaY, areaY, naa);
+        }
+
+        [TestMethod]
+        [TestCategory("NAA")]
+        [DataRow(100, 0.1)]
+        [DataRow(100, 0.04)]
+        [DataRow(200, 0.01)]
+        [DataRow(100, 0.05)]
+        [DataRow(500, 0.01)]
+        public void AssociatePopilationssInAreasTest(int numCells, double numActCellsPct)
+        {
+            var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
+
+            cfg.MaxNewSynapseCount = 5;
+
+            CorticalArea areaX = new CorticalArea(1, "X", 1024);
+
+            CorticalArea areaY = new CorticalArea(2, "Y", 100);
+
+            Naa naa = new Naa(cfg, areaY);
+
+            List<long[]> srcSdrsInX = new List<long[]>();
+            List<long[]> destSdrsY = new List<long[]>();
+
+            //
+            // Create populations that will be associated.
+            for (int i = 0; i < 100; i++)
+            {
+                srcSdrsInX.Add(UnitTestHelpers.CreateRandomSdr(1024, 0.02));
+                destSdrsY.Add(UnitTestHelpers.CreateRandomSdr(numCells, numActCellsPct));
+            }
+
+            //
+            // Step trough all populations.
+            for (int n = 0; n < srcSdrsInX.Count; n++)
+            {
+                Debug.WriteLine(naa.TraceState());
+
+                areaX.ActiveCellsIndicies = srcSdrsInX[n];
+                areaY.ActiveCellsIndicies = destSdrsY[n];
+
+                //
+                // We train the same association between X and Y 10 times.
+                for (int i = 0; i < 10; i++)
+                {
+                    naa.Compute(areaX, true);
+                    Debug.WriteLine(naa.TraceState());
+                }
+
+                AssertAssociations(srcSdrsInX[n].Length, numCells, numActCellsPct, areaY, areaX, naa);
+            }
+        }
+
+
+        /// <summary>
+        /// Approves if the NAA works as designed.
+        /// </summary>
+        /// <param name="numAssociatingActCells">Number of cells in area X that will be assiciated with the active cells in area Y.</param>
+        /// <param name="numCells">Total number of cells in the learning area Y.</param>
+        /// <param name="numActCellsPct">The percent number of active cells in area Y. </param>
+        /// <param name="areaY">The area that will be associated with associating cells currentlly active in area X.</param>
+        /// <param name="naa">The algorithm keeping the learned state.</param>
+        private static void AssertAssociations(int numAssociatingActCells, int numCells, double numActCellsPct, CorticalArea areaY, CorticalArea areaX, Naa naa)
+        {
             // The Y area of NAA must not have any Inactive segment for the current set of active cells.
             Assert.IsTrue(naa.InactiveApicalSegments.Count == 0);
 
@@ -166,7 +232,7 @@ namespace UnitTestsProject
                     foreach (var syn in seg.Synapses)
                     {
                         // All synapses are fully trained to maximum.
-                        Assert.IsTrue(syn.Permanence==1.0);
+                        Assert.IsTrue(syn.Permanence == 1.0);
                     }
                 }
             }
