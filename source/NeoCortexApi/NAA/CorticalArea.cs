@@ -65,9 +65,30 @@ namespace NeoCortexApi
                     Cells.TryAdd(item, new Cell(-1, indx++));
                 }
             }
-        } 
+        }
 
 
+        /// <summary>
+        /// Gets the number of outgoing synapses of all active cells.
+        /// </summary>
+        public int NumOutgoingSynapses
+        {
+            get
+            {
+                return this.ActiveCells.SelectMany(el => el.ReceptorSynapses).Count();
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of incoming synapses at apical segments.
+        /// </summary>
+        public int NumIncomingApicalSynapses
+        {
+            get
+            {
+                return this.ActiveCells.SelectMany(cell => cell.ApicalDendrites).SelectMany(aSeg => aSeg.Synapses).Count();                
+            }
+        }
 
         public CorticalArea(int index, string name, int numCells)
         {
