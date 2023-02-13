@@ -193,6 +193,7 @@ namespace UnitTestsProject
                 {
                     naa.Compute(areaX, true);
                     Debug.WriteLine(naa.TraceState());
+                    AssertApicalSynapsePermanences(areaY, cfg.InitialPermanence + i * cfg.PermanenceIncrement);
                 }
 
                 AssertAssociations(srcSdrsInX[n].Length, numCells, numActCellsPct, areaY, areaX, naa);
@@ -222,6 +223,12 @@ namespace UnitTestsProject
             // The Y area of NAA must not have 2 active segments for the current set of active cells.
             Assert.IsTrue(naa.ActiveApicalSegments.Count == numCells * numActCellsPct);
 
+            // Make sure that all permanences ar maximally learned.
+            AssertApicalSynapsePermanences(areaY, 1.0);
+        }
+
+        private static void AssertApicalSynapsePermanences(CorticalArea areaY, double expectedPermanence)
+        {
             foreach (var activeCell in areaY.ActiveCells)
             {
                 // NAA between two different areas use only ApicalSegments.
@@ -232,7 +239,7 @@ namespace UnitTestsProject
                     foreach (var syn in seg.Synapses)
                     {
                         // All synapses are fully trained to maximum.
-                        Assert.IsTrue(syn.Permanence == 1.0);
+                        Assert.IsTrue(syn.Permanence == expectedPermanence);
                     }
                 }
             }
