@@ -17,7 +17,7 @@ namespace UnitTestsProject
         /// Column Equal method tests.
         /// </summary>
         [TestMethod]
-        public void CompareColumn()
+        public void CompareColumns()
         {
             
             // Two set of configuration parameters with different values.
