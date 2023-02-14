@@ -111,35 +111,86 @@ namespace UnitTestsProject
             }
         }
 
-        //TODO: Need to test more
+        /// <summary>
+        /// Test the serialization of Connections. Equal method is tested at ConnectionsTests.
+        /// TODO: Ask if Connections should be equal with same/different Cells
+        /// TODO: Ask if Deserialized should be include Cells/ActiveCells/WinnerCells
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
-        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 }, 12, 14, 16, 1, 2, 2, 2.0, 100)]
-        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 }, 100, 256, 1000, 10, 20, 20, 1.0, 100)]
-        [DataRow(new int[] { 2, 4, 8 }, new int[] { 128, 256, 512 }, 12, 14, 16, 1, 4, 8, 4.0, 1000)]
-        [DataRow(new int[] { 2, 4, 8 }, new int[] { 128, 256, 512 }, 1, 1, 2, 1, 2, 2, 2.0, 100)]
-        public void Serializationtest_CONNECTIONS(int[] inputDims, int[] columnDims, int parentColumnIndx, int colSeq, int numCellsPerColumn,
-            int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs)
+        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 },32)]
+        [DataRow(new int[] { 100, 100 }, new int[] { 10, 10 },64)]
+        public void Serializationtest_CONNECTIONS(int[] inputDims, int[] columnDims, int numCellsPerColumn)
         {
-            HtmConfig config = new HtmConfig(inputDims, columnDims);
+            HtmConfig config = new HtmConfig(inputDims, columnDims) { CellsPerColumn = numCellsPerColumn };
+
+            Cell[] cellsGroup = new Cell[config.CellsPerColumn];
+
+            for (int i = 0; i < config.CellsPerColumn; i++)
+            {
+                cellsGroup[i] = new Cell(parentColumnIndx: 1, colSeq: i + 1, numCellsPerColumn: config.CellsPerColumn, new CellActivity());
+            }
 
             //Create connections from config
             Connections connections = new Connections(config);
 
-            Cell cell = new Cell(parentColumnIndx, colSeq, numCellsPerColumn, new CellActivity());
+            //Manual add values to connections
+            connections.Cells = cellsGroup;
 
-            var distDend = new DistalDendrite(cell, 1, 2, 2, 1.0, 100);
+            var distDend1 = new DistalDendrite(cellsGroup[2], 1, 2, 2, 1.0, 100);
+            var distDend2 = new DistalDendrite(cellsGroup[4], 2, 20, 20, 10.0, 256);
+            var distDend3 = new DistalDendrite(cellsGroup[8], 3, 4, 10, 1.0, 100);
+            var distDend4 = new DistalDendrite(cellsGroup[10], 4, 12, 14, 10.0, 256);
 
-            connections.ActiveSegments.Add(distDend);
+            connections.ActiveSegments.Add(distDend1);
+            connections.ActiveSegments.Add(distDend2);
+            connections.MatchingSegments.Add(distDend3);
+            connections.MatchingSegments.Add(distDend4);
+
+            /*Add ActiveCells and WinnerCells
+            for (int i = 0; i < numCellsPerColumn/2; i++)
+            {
+                connections.ActiveCells.Add(cellsGroup[i]);
+            }
+
+            for (int i = 0; i < numCellsPerColumn / 4; i++)
+            {
+                connections.WinnerCells.Add(cellsGroup[i]);
+            }*/
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_CONNECTIONS)}_connections.txt"))
             {
                 HtmSerializer.Serialize(connections, null, sw);
             }
+
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_CONNECTIONS)}_connections.txt"))
             {
                 Connections connectionsD = HtmSerializer.Deserialize<Connections>(sr);
+
+                //Check if Deserialized Connections is equal with original
                 Assert.IsTrue(connections.Equals(connectionsD));
+
+                //Check values of Deserialized Connections
+                //Assert.IsTrue(connectionsD.Cells.ElementsEqual(cellsGroup));
+
+                Assert.IsTrue(connectionsD.ActiveSegments.ElementsEqual(connections.ActiveSegments));
+                Assert.AreEqual(connectionsD.ActiveSegments.ElementAt(0), distDend1);
+                Assert.AreEqual(connectionsD.ActiveSegments.ElementAt(1), distDend2);
+
+                Assert.IsTrue(connectionsD.MatchingSegments.ElementsEqual(connections.MatchingSegments));
+                Assert.AreEqual(connectionsD.MatchingSegments.ElementAt(0), distDend3);
+                Assert.AreEqual(connectionsD.MatchingSegments.ElementAt(1), distDend4);
+
+                /*
+                for (int i = 0; i < numCellsPerColumn / 2; i++)
+                {
+                    Assert.Equals(connectionsD.ActiveCells.ElementAt(i), cellsGroup[i]);
+                }
+
+                for (int i = 0; i < numCellsPerColumn / 4; i++)
+                {
+                    Assert.Equals(connectionsD.WinnerCells.ElementAt(i), cellsGroup[i]);
+                }*/
             }
         }
 

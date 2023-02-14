@@ -1261,11 +1261,7 @@ namespace NeoCortexApi.Entities
             if (this == obj)
                 return true;
             if (obj == null)
-                return false;
-            if (AreCollectionsEqual(this.Cells, obj.Cells) == false)
-            {
-                return false;
-            }
+                return false;            
             if (AreCollectionsEqual(this.WinnerCells, obj.WinnerCells) == false)
             {
                 return false;
