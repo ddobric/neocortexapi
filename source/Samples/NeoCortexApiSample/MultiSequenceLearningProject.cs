@@ -31,7 +31,8 @@ namespace MultiSequencePrediction
             //Testing sequences
             string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
             string testDataPath = Path.GetFullPath(Path.Combine(Directory.GetCurrent‌​Directory(), tpaths));
-            
+            var testSequences = new List<List<double>>();
+            testSequences = readTestSequences(tpaths);
 
 
 
