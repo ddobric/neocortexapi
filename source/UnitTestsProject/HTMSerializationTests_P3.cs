@@ -465,31 +465,18 @@ namespace UnitTestsProject
             }
         }
 
+        /// <summary>
+        /// Test the serialization of SparseObjectMatrix. Equal method is tested at SparseObjectMatrixTests.
+        /// The test initialize a full set of columns for SparseObjectMatrix, serialize and compare the result with the original object.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_SPARSEOBJECTMATRIX()
         {
-            // This test must initialize a full set of columns.
-
-            /*for (int i = 0; i < numColumns; i++)
-            {
-                Column column = colZero == null ?
-                    new Column(cellsPerColumn, i, this.connections.HtmConfig.SynPermConnected, this.connections.HtmConfig.NumInputs) : matrix.GetObject(i);
-
-                for (int j = 0; j < cellsPerColumn; j++)
-                {
-                    cells[i * cellsPerColumn + j] = column.Cells[j];
-                }
-                //If columns have not been previously configured
-                if (colZero == null)
-                    matrix.set(i, column);
-
-            }*/
-
+            
             //Setup SparseObjectMatrix
             int[] dimensions = { 20, 10 };
             bool useColumnMajorOrdering = false;
-
             SparseObjectMatrix<Column> matrix = new SparseObjectMatrix<Column>(dimensions, useColumnMajorOrdering, dict: null);
 
             //Setup connection
@@ -498,14 +485,23 @@ namespace UnitTestsProject
             HtmConfig config = new HtmConfig(inputDims, columnDims);
             Connections connections = new Connections(config);
 
-            //Setup columns
+            //Initialize a full set of columns.
             int numColumns = 20;
-            int cellsPerColumn = 10;
+            int cellsPerColumn = 32;
+            Column[] columns = new Column[numColumns];
 
             for (int i = 0; i < numColumns; i++)
             {
-                Column column = new Column(cellsPerColumn, i, connections.HtmConfig.SynPermConnected, connections.HtmConfig.NumInputs);
-                matrix.set(i, column);
+                columns[i] = new Column(cellsPerColumn, i, connections.HtmConfig.SynPermConnected, connections.HtmConfig.NumInputs);
+
+                //Setup cells for each column
+                for (int j = 0; j < cellsPerColumn; j++)
+                {
+                    columns[i].Cells[j] = new Cell(parentColumnIndx: i, colSeq: j, numCellsPerColumn: cellsPerColumn, new CellActivity());
+                }
+
+                //Set column to each matrix index
+                matrix.set(i, columns[i]);
             }
 
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEOBJECTMATRIX)}_hpc.txt"))
@@ -515,10 +511,21 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_SPARSEOBJECTMATRIX)}_hpc.txt"))
             {
                 SparseObjectMatrix<Column> matrixD = HtmSerializer.Deserialize<SparseObjectMatrix<Column>>(sr);
+                //Check if Deserialized SparseObjectMatrix is equal with original 
                 Assert.IsTrue(matrix.Equals(matrixD));
+
+                //Check columns of Deserialized SparseObjectMatrix
+                for (int i = 0; i < numColumns; i++)
+                {
+                    Assert.AreEqual(matrixD.GetColumn(i), columns[i]);
+                    Assert.AreEqual(matrix.GetColumn(i), matrixD.GetColumn(i));
+                }
             }
         }
 
+        /// <summary>
+        /// Test the serialization of Pool. Equal method is tested at PoolTests.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_POOL()
@@ -631,65 +638,7 @@ namespace UnitTestsProject
                 Assert.IsTrue(computeCycle.MatchingSegments.ElementsEqual(computeCycleD.MatchingSegments));
             }
         }
-
-
-        #region Helper
-        private HtmConfig QuickSetupHtmConfig()
-        {
-            var htmConfig = new HtmConfig(new int[] { 5 }, new int[] { 5 })
-            {
-            // Temporal Memory parameters
-            CellsPerColumn = 32,
-            ActivationThreshold = 10,
-            LearningRadius = 10,
-            MinThreshold = 9,
-            MaxNewSynapseCount = 20,
-            MaxSynapsesPerSegment = 225,
-            MaxSegmentsPerCell = 225,
-            InitialPermanence = 0.21,
-            ConnectedPermanence = 0.5,
-            PermanenceIncrement = 0.10,
-            PermanenceDecrement = 0.10,
-            PredictedSegmentDecrement = 0.1,
-
-            // Spatial Pooler parameters
-
-            PotentialRadius = 15,
-            PotentialPct = 0.75,
-            GlobalInhibition = true,
-            LocalAreaDensity = -1.0,
-            NumActiveColumnsPerInhArea = 0.02 * 2048,
-            StimulusThreshold = 5.0,
-            SynPermInactiveDec = 0.008,
-            SynPermActiveInc = 0.05,
-            SynPermConnected = 0.1,
-            SynPermBelowStimulusInc = 0.01,
-            SynPermTrimThreshold = 0.05,
-            MinPctOverlapDutyCycles = 0.001,
-            MinPctActiveDutyCycles = 0.001,
-            DutyCyclePeriod = 1000,
-            MaxBoost = 10.0,
-            WrapAround = true,
-            Random = new ThreadSafeRandom(42),
-        };
-
-            return htmConfig;
-        } 
-
-        private Synapse QuickSetupSynapse()
-        {
-            Cell cell = new Cell(parentColumnIndx: 1, colSeq: 20, numCellsPerColumn: 16, new CellActivity());
-            Cell presynapticCell = new Cell(parentColumnIndx: 8, colSeq: 36, numCellsPerColumn: 46, new CellActivity());
-
-            DistalDendrite dd = new DistalDendrite(parentCell: cell, flatIdx: 10, lastUsedIteration: 20, ordinal: 10, synapsePermConnected: 15, numInputs: 100);
-            cell.DistalDendrites.Add(dd);
-
-            Synapse synapse = new Synapse(presynapticCell: cell, distalSegmentIndex: dd.SegmentIndex, synapseIndex: 23, permanence: 1.0);
-            presynapticCell.ReceptorSynapses.Add(synapse);
-
-            return synapse;
-        }
-        #endregion
+        
 
     }
 }
