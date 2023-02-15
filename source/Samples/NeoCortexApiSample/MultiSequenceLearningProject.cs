@@ -26,6 +26,17 @@ namespace MultiSequencePrediction
             string sequencePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), seqPath));
             sequences = readSequences(sequencePath);
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
+            Dictionary<string, object>  encoderSettings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", 100},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", 99}
+            };
             var predictor = newExperiment.Run(sequences);
             return predictor;
         }

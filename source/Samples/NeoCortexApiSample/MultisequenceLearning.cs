@@ -335,7 +335,7 @@ namespace NeoCortexApiSample
         /// <returns></returns>
         private static string GetKey(List<string> prevInputs, double input, string sequence)
         {
-            string key = String.Empty;
+            string key = string.Empty;
 
             for (int i = 0; i < prevInputs.Count; i++)
             {
