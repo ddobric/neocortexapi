@@ -169,7 +169,7 @@ namespace NeoCortexApi.Entities
                 srcCell = $"[SrcCell: {SourceCell.ToString()}]";
             }
 
-            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence}[ segIndx: {this.SegmentAreaName}/{this.SegmentParentCellIndex}/{SegmentIndex}], {srcCell}";
+            return $"Syn: synIndx:{SynapseIndex}, inpIndx:{InputIndex}, perm:{this.Permanence} [ area: {this.SegmentAreaName}, parent cell indx: {this.SegmentParentCellIndex}, segIndx: {SegmentIndex}], [srcCell: {srcCell}]";
         }
 
 
