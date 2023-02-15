@@ -9,6 +9,7 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
+using MultiSequencePrediction;
 
 namespace NeoCortexApiSample
 {
@@ -96,58 +97,13 @@ namespace NeoCortexApiSample
         /// </summary>
         private static void RunPredictionMultiSequenceExperiment()
         {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            /*Code for reading the learning sequences from .txt file. The file has n rows which have numbers seperated by commas.*/
-            //string path = ".//.//" + System.IO.Directory.GetCurrent‌​Directory();
-            string seqPath = @"..\..\..\..\..\MySEProject/trainingSequences.txt";
-            string sequencePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), seqPath));
-            var sequence = new List<double>();
-            using (StreamReader reader = new(sequencePath))
-            {
-                int count = 1;
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var values = line.Split(',');
-                    Console.WriteLine(line);
-                    
-                    foreach (var value in values)
-                    {
-                       // sequence.Add(Convert.ToDouble(value));
-                        sequence.Add(double.Parse(value));
-                    }
-                    string seqName = "seq" + count;
-                    sequences.Add(seqName, sequence);
-                    count++;
-
-                }
-            }
-
-
-            MultiSequenceLearning newExperiment = new MultiSequenceLearning();
-            var predictor = newExperiment.Run(sequences);
-
-            // taking Sequence from the file named "testDataPath"
-            // path for the file
             string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
-            string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
-            var testSequences = new List<List<double>>();
-            var testList = new List<double>();
-            using (var reader = new StreamReader(testDataPath))
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var values = line.Split(',');
-                    Console.WriteLine(line);
-                    
-                    foreach (var value in values)
-                    {
-                        testList.Add(Convert.ToDouble(value));
-                    }
-                    testSequences.Add(testList);
-                }
-            }
+            string testDataPath = Path.GetFullPath(Path.Combine(Directory.GetCurrent‌​Directory(), tpaths));
+            Project project = new Project();
+            List<List<double>> testSequences;
+            testSequences = project.readTestSequences(testDataPath);
+
+            Predictor predictor = project.PredictionExperiment();
             for (int i = 0; i< testSequences.Count; i++)
             {
                 predictor.Reset();

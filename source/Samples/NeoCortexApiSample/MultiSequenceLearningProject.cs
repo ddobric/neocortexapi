@@ -27,16 +27,7 @@ namespace MultiSequencePrediction
             sequences = readSequences(sequencePath);
             MultiSequenceLearning newExperiment = new MultiSequenceLearning();
             var predictor = newExperiment.Run(sequences);
-
-            //Testing sequences
-            string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
-            string testDataPath = Path.GetFullPath(Path.Combine(Directory.GetCurrent‌​Directory(), tpaths));
-            var testSequences = new List<List<double>>();
-            testSequences = readTestSequences(tpaths);
-
-
-
-            return (null);
+            return predictor;
         }
         public Dictionary<string, List<double>> readSequences(string sequencePath)
         {
