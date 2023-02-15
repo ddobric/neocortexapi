@@ -30,26 +30,8 @@ namespace MultiSequencePrediction
 
             //Testing sequences
             string tpaths = @"..\..\..\..\..\MySEProject/testingData.txt";
-            string testDataPath = File.ReadAllText(Path.Combine(System.IO.Directory.GetCurrent‌​Directory(), tpaths));
-            var testSequences = new List<List<double>>();
-            var testList = new List<double>();
-
-
-            using (var reader = new StreamReader(testDataPath))
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var values = line.Split(',');
-                    Console.WriteLine(line);
-
-                    foreach (var value in values)
-                    {
-                        testList.Add(Convert.ToDouble(value));
-                    }
-                    testSequences.Add(testList);
-                }
-            }
+            string testDataPath = Path.GetFullPath(Path.Combine(Directory.GetCurrent‌​Directory(), tpaths));
+            
 
 
 
@@ -80,6 +62,29 @@ namespace MultiSequencePrediction
                 }
                 return sequences;
             }
+        }
+        public List<List<double>> readTestSequences(string path)
+        {
+            var testSequences = new List<List<double>>();
+            var testList = new List<double>();
+
+
+            using (var reader = new StreamReader(path))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    Console.WriteLine(line);
+
+                    foreach (var value in values)
+                    {
+                        testList.Add(Convert.ToDouble(value));
+                    }
+                    testSequences.Add(testList);
+                }
+            }
+            return testSequences;
         }
     }
 }
