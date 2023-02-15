@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		nuget-vsonline.config = nuget-vsonline.config
 		nuget.config = nuget.config
+		MySEProject\testingData.txt = MySEProject\testingData.txt
+		MySEProject\trainingSequences.txt = MySEProject\trainingSequences.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexArrayLib", "NeoCortexArrayLib\NeoCortexArrayLib.csproj", "{A7F4E797-E60F-470E-96F6-B9ECD3A67451}"
