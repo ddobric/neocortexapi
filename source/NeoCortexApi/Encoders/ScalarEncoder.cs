@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
+using NumSharp;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
@@ -306,7 +307,7 @@ namespace NeoCortexApi.Encoders
         ///  Vinay
         int bucketIdx;
 
-        public override int GetBucketIndices(object inputData)
+        public  int GetBucketIndices(object inputData)
         {
 
             if ((typeof(input) == Double) && Double.IsNaN(input))
@@ -338,29 +339,30 @@ namespace NeoCortexApi.Encoders
         }
 
 
-       public override int encodeIntoArray(int input, double output)
+
+        public  int encodeIntoArray(int input, double output,int n)
         {
 
             if (input != 0)
             {
-                throw new ArgumentException("Expected a scalar input but got input of type", input);
+                throw new ArgumentException("$Expected a scalar input but got input of type",  input );
             }
 
-            if(input != Double.IsNaN(input))
+            if (input != Double.IsNaN(input))
             {
                 input = 0;
                 bucketIdx = (int)GetFirstOnBit(input);
             }
-            
-            if(bucketIdx == 0)
+
+            if (bucketIdx == 0)
             {
                 output = 0;
-                
+
             }
             else
             {
                 /// # The bucket index is the index of the first bit to set in the output
-                output[0:n] = 0;
+                output[0,n] = 0;
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * self.halfwidth;
             }
@@ -370,55 +372,169 @@ namespace NeoCortexApi.Encoders
                 if (maxbin >= n)
                 {
                     bottombins = maxbin - n + 1;
-                    output[0:bottombins] = 1;
-                    maxbin = self.n - 1;
+                    output[0,bottombins] = 1;
+                    maxbin = this.n - 1;
+
+
+                }
+
+
+
 
                     if (minbin < 0)
                     {
                         topbins = -minbin;
-                        output[n - topbins:n] = 1;
-                        minbin = 0
+                        output[n - topbins,n] = 1;
+                        minbin = 0;
 
+                    }
+            }
+        }
+
+        public int decode(object encoded, string parentFieldName = "")
+        {
+            tmpoutput = NumSharp.array(encoded[0, this.n] > 0).astype(encoded.dtype);
+            if (!tmpOutput.any())
+            {
+                return (new Dictionary<object, object>(), new List<object>());
+            }
+            maxzerosinrow = this.halfwidth;
+
+            if (this.periodic)
+            {
+                foreach (int j in xrange(this.n))
+                {
+                    var outputIndices = NumSharp.arange(j, j + subLen);
+                    outputIndices %= this.n;
+                    if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
+                    {
+                        tmpOutput[outputIndices] = 1;
+                    }
+
+                }
+            }
+            else
+            {
+                foreach (var j in xrange(this.n - subLen + 1))
+                {
+                    if (NumSharp.array_equal(searchStr, tmpOutput[j: (j + subLen)]))
+                    {
+                        tmpoutput[j: (j + subLen)] = 1;
                     }
                 }
             }
 
-            public  decode(object encoded, object parentFieldName = "")
+            if (this.verbosity >= 2)
             {
-                tmpoutput = NumSharp.array(encoded[::this.n] > 0).astype(encoded.dtype);
-                if (!tmpOutput.any())
-                {
-                    return (new Dictionary<object, object>(), new List<object>());
-                }
-                maxzerosinrow = this.halfwidth;
-                if (this.periodic)
-                {
-                    foreach (int j in xrange(this.n))
-                    {
-                        var outputIndices = NumSharp.arange(j, j + subLen);
-                        outputIndices %= this.n;
-                        if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
-                        {
-                            tmpOutput[outputIndices] = 1;
-                        }
+                Console.WriteLine("raw output:", encoded[self.n]);
+                Console.WriteLine("filtered output:", tmpOutput);
+            }
 
-                    }
+            var nz = tmpOutput.nonzero()[0];
+            var runs = new List<object>();    /// will be tuples of (startIdx, runLength)
+            var run = new List<object> {nz[0],1};
+
+            var i = 1;
+
+            while (i < nz.Count)
+            {
+                if (nz[i] == run[0] + run[1])
+                {
+                    run[1] += 1;
                 }
                 else
                 {
-                    foreach (var j in xrange(this.n - subLen + 1))
-                    {
-                        if (NumSharp.array_equal(searchStr, tmpOutput[j::(j + subLen)]))
-                        {
-                            tmpOutput[j::(j + subLen)] = 1;
-                        }
-                    }
+                    runs.append(run);
+                    run = new List<object> {
+                            nz[i],
+                            1
+                        };
+                }
+                i += 1;
+
+            }
+            runs.append(run);
+            // If we have a periodic encoder, merge the first and last run if they
+            //  both go all the way to the edges
+            if (this.periodic && runs.Count > 1)
+            {
+                if (runs[0][0] == 0 && runs[-1][0] + runs[-1][1] == this.n)
+                {
+                    runs[-1][1] += runs[0][1];
+                    runs = runs[1];
                 }
             }
+<<<<<<< HEAD
             //# Find each run of 1's.
             nz = tmpOutput.nonzero()[0]
             runs = []    // # will be tuples of (startIdx, runLength)
             run = [nz[0], 1]
+=======
+            // ------------------------------------------------------------------------
+            // Now, for each group of 1's, determine the "left" and "right" edges, where
+            //  the "left" edge is inset by halfwidth and the "right" edge is inset by
+            //  halfwidth.
+            // For a group of width w or less, the "left" and "right" edge are both at
+            //   the center position of the group.
+            var ranges = new List<object>();
+            foreach (var run in runs)
+            {
+                (start, runLen) = run;
+                if (runLen <= this.w)
+                {
+                    left = start + runLen / 2;
+                }
+                else
+                {
+                    left = start + this.halfwidth;
+                    var right = start + runLen - 1 - this.halfwidth;
+                }
+
+                // Convert to input space.
+                if (!this.periodic)
+                {
+                    inMin = (left - this.padding) * this.resolution + this.minval;
+                    inMax = (right - this.padding) * this.resolution + this.minval;
+                }
+                else
+                {
+                    inMin = (left - this.padding) * this.range / this.nInternal + this.minval;
+                    inMax = (right - this.padding) * this.range / this.nInternal + this.minval;
+                }
+
+                // Handle Wape-around if periodic 
+                if (this.periodic)
+                {
+                    if (inMin >= this.maxval)
+                    {
+                        inMin -= this.range;
+                        inMax -= this.range;
+                    }
+                }
+
+
+                // Clip low end
+                if (inMin < this.minval)
+                {
+                    inMin = this.minval;
+                }
+                if (inMax < this.minval)
+                {
+                    inMax = this.minval;
+                }
+
+                /// If we have a periodic encoder, and the max is past the edge, break into
+                ///  2 separate ranges
+
+            }
+
+            /// ------------------------------------------------------------------------
+            /// Find each run of 1's.
+            var nz = tmpOutput.nonzero()[0];
+
+
+
+>>>>>>> da0f7bc8103599b5b1ed8d979b979d285821e281
 
 
 
@@ -429,6 +545,7 @@ namespace NeoCortexApi.Encoders
         {
             throw new NotImplementedException();
 
+           
         }
 
         //public static object Deserialize<T>(StreamReader sr, string name)
