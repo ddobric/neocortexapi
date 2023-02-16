@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Xml.Linq;
 
 namespace NeoCortexApi.Network
 {
-    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT>
+    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT> , ISerializable
     {
         #region Properties
 
@@ -158,23 +161,18 @@ namespace NeoCortexApi.Network
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            //foreach (var modulePair in this.HtmModules)
-            //{
-            //    ISerializable serializableModule = modulePair.Value as ISerializable;
-            //    if (serializableModule != null)
-            //    { 
-                
-            //    }
-            //       // serializableModule.Serialize(todo);
-            //       //else
-            //            // throw new Exception()
-            //}
-            throw new NotImplementedException();
+            var sp = GetResult("sp");
+            //var encoder = (EncoderBase)this.HtmModules["encoder"];
+            var tm = GetResult("tm");
+            //HtmSerializer.SerializeObject(encoder, name, sw);
+            HtmSerializer.SerializeObject(sp, name, sw);
+            HtmSerializer.SerializeObject(tm, name, sw);
         }
 
-        public static object Deserialize<T>(StreamReader sr, string name)
+        public static object Deserialize<T>(StreamReader sr)
         {
-            throw new NotImplementedException();
+            var layer =  HtmSerializer.Deserialize<CortexLayer<object, object>>(sr);
+            return layer;
         }
         #region Private Methods
 
