@@ -415,7 +415,12 @@ namespace NeoCortexApi.Encoders
                     }
                 }
             }
-            
+            //# Find each run of 1's.
+            nz = tmpOutput.nonzero()[0]
+            runs = []    // # will be tuples of (startIdx, runLength)
+            run = [nz[0], 1]
+
+
 
 
 
