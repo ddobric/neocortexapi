@@ -54,40 +54,10 @@ namespace NeoCortexApiSample
             sequences2.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //Train the first set
-            var model1Name = "Model1.txt";
-            var model1Trace = "Model1trace.txt";
-            // Create new instance of Cortex Layer. 
-            CortexLayer<object, object> model1;
-            if (HtmSerializer.TryLoad(model1Name, out model1) == false)
-            {
-                MultisequenceLearningSerialization experiment1 = new MultisequenceLearningSerialization();
-                model1 = experiment1.Train(sequences1);
+            
 
-                // Persist the state of the model.
-                HtmSerializer.Save(model1Name, model1);
-            }
-            var sp1 = (SpatialPooler)model1.HtmModules["sp"];
-
-            // Trace the persistence value of every columns.
-            sp1.TraceColumnPermenances(model1Trace);
-
-            // Recreate the model from the persisted state and train it with the second set
-            var model2Name = "Model2.txt";
-            var model2Trace = "Model2trace.txt";
-            // Create new instance of Cortex Layer.
-            CortexLayer<object, object> loadmodel;
-            CortexLayer<object, object> model2;
-            if (HtmSerializer.TryLoad(model2Name, out model2) == false || overwrite)
-            {   
-                loadmodel = HtmSerializer.Load<CortexLayer<object, object>>(model1Name);
-                model2 = MultisequenceLearningExtension.Train(loadmodel, sequences2, "sp");
-
-                HtmSerializer.Save(model2Name, model2);
-            }
-            var sp2 = (SpatialPooler)model2.HtmModules["sp"];
-
-            // Trace the persistence value of every column.
-            sp2.TraceColumnPermenances(model2Trace);
+            MultiSequenceLearning experiment1 = new MultiSequenceLearning();
+            Predictor model1 = experiment1.Run(sequences1);
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -101,6 +71,7 @@ namespace NeoCortexApiSample
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
+
         }
 
 
