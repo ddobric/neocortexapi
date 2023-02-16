@@ -7,7 +7,7 @@ using System.IO;
 
 namespace NeoCortexApi.Network
 {
-    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT>, ISerializable
+    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT>
     {
         #region Properties
 
