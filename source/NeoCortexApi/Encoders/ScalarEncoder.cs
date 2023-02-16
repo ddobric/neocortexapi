@@ -464,12 +464,8 @@ namespace NeoCortexApi.Encoders
                     runs = runs[1];
                 }
             }
-<<<<<<< HEAD
-            //# Find each run of 1's.
-            nz = tmpOutput.nonzero()[0]
-            runs = []    // # will be tuples of (startIdx, runLength)
-            run = [nz[0], 1]
-=======
+
+
             // ------------------------------------------------------------------------
             // Now, for each group of 1's, determine the "left" and "right" edges, where
             //  the "left" edge is inset by halfwidth and the "right" edge is inset by
@@ -532,9 +528,6 @@ namespace NeoCortexApi.Encoders
             /// Find each run of 1's.
             var nz = tmpOutput.nonzero()[0];
 
-
-
->>>>>>> da0f7bc8103599b5b1ed8d979b979d285821e281
 
 
 
