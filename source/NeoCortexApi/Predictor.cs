@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace NeoCortexApi
@@ -63,15 +64,17 @@ namespace NeoCortexApi
         }
 
         public void Serialize(object obj, string name, StreamWriter sw)
-        {
-           this.connections.Serialize(obj, name, sw);
+        {     
+            this.connections.Serialize(this.connections, name, sw);
             //this.layer.Serialize(??);
             //this.classifier.Ser
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            throw new NotImplementedException();
+            var con = Connections.Deserialize<T>(sr, name);
+            Predictor predictor = new Predictor(null, (Connections)con, null);
+            return predictor;
         }
     }
 }

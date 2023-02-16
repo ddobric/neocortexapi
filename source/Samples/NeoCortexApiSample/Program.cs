@@ -8,6 +8,7 @@ using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
 using NeoCortexApi.Entities;
 using System.Xml.Linq;
+using System.IO;
 
 namespace NeoCortexApiSample
 {
@@ -31,34 +32,11 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            // RunMultiSimpleSequenceLearningExperiment();
+            RunMultiSimpleSequenceLearningExperiment();
             //RunMultiSequenceLearningExperiment();
-            RunMultiSequenceLearningSerialization();
+
         }
 
-        private static void RunMultiSequenceLearningSerialization()
-        {
-            bool overwrite = true;
-            // Prepare MultiSequence inputs for training
-
-            // Generate input for the first training 
-            Dictionary<string, List<double>> sequences1 = new Dictionary<string, List<double>>();
-
-            sequences1.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
-            sequences1.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
-
-            //Generate input for the second training
-            Dictionary<string, List<double>> sequences2 = new Dictionary<string, List<double>>();
-
-            sequences2.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
-            sequences2.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
-
-            //Train the first set
-            
-
-            MultiSequenceLearning experiment1 = new MultiSequenceLearning();
-            Predictor model1 = experiment1.Run(sequences1);
-        }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
         {
@@ -67,10 +45,14 @@ namespace NeoCortexApiSample
             sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
             sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
-            //
+            var model1Name = "Model1.txt";
+            StreamWriter sw = new StreamWriter(model1Name);
+
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
+
+            predictor.Serialize( predictor, model1Name, sw);
 
         }
 
