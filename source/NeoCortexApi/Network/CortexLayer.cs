@@ -161,11 +161,11 @@ namespace NeoCortexApi.Network
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var sp = GetResult("sp");
+            
             //var encoder = (EncoderBase)this.HtmModules["encoder"];
             var tm = GetResult("tm");
-            //HtmSerializer.SerializeObject(encoder, name, sw);
-            HtmSerializer.SerializeObject(sp, name, sw);
+            var sp = (SpatialPooler)HtmModules["sp"];
+            sp.TraceColumnPermenances(name);
             HtmSerializer.SerializeObject(tm, name, sw);
         }
 

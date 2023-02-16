@@ -45,16 +45,16 @@ namespace NeoCortexApiSample
             sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
             sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
-            var model1Name = "Model1.txt";
-            var model2Name = "Model2.txt";
-            StreamWriter sw = new StreamWriter(model2Name);
+            var modelTrace = "ModelTrace.txt";
+            var modelName = "ModelName.txt";
+            StreamWriter sw = new StreamWriter(modelName);
             // StreamReader sr = new StreamReader(model1Name);
 
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
-            predictor.Serialize(predictor, model2Name, sw);
+            predictor.Serialize(predictor, modelTrace, sw);
 
             //var predictor1 = (Predictor)Predictor.Deserialize<Predictor>(sr, model1Name);
 

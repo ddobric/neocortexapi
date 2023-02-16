@@ -65,7 +65,7 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {     
-            //this.connections.Serialize(this.connections, name, sw);
+            this.connections.Serialize(this.connections, null, sw);
             this.layer.Serialize(this.layer, name, sw);
             //this.classifier.Ser
         }
