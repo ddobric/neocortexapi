@@ -1,5 +1,6 @@
 ﻿using NeoCortexApi;
 using NeoCortexApi.Encoders;
+using NeoCortexApi.Entities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace NeoCortexApiSample
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
-            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
+            var list1 = new double[] { 0.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 20.0, 23.0 };
 
             predictor.Reset();
             PredictNextElement(predictor, list1);
@@ -74,15 +75,33 @@ namespace NeoCortexApiSample
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             using (StreamReader reader = new StreamReader(@"D:\FAUS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
             {
-                List<double> inputList1 = new();
+                int temp = 0;
+                int columns = 10;
+                List<double> inputList = new();
                 while (!reader.EndOfStream)
                 {
                     var row = reader.ReadLine();
-                    var values = row.Split(',');
-                    Console.WriteLine(values);
-                    inputList1.Add(Convert.ToDouble(values[0]));
+                    var numbers = row.Split(',');
+                    Console.WriteLine(numbers);
+                    
+                        foreach (var digit in numbers)
+                        {
+                            if (!digit.Contains(';'))
+                            {
+                                // sequence.Add(Convert.ToDouble(value));
+
+                                inputList.Add(Convert.ToDouble(digit));
+                            }
+                            else
+                            {
+                            temp++;
+                            sequences.Add("Sequence" + temp, inputList);
+                            break;
+                            
+                        }
+
+                        }
                 }
-                sequences.Add("Sq1", inputList1);
             }
             return sequences;
         }
