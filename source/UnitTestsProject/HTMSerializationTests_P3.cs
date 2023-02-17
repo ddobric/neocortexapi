@@ -407,6 +407,8 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_SYNAPSE)}_synapse.txt"))
             {
                 Synapse synapseD = HtmSerializer.Deserialize<Synapse>(sr);
+
+                //Check if Deserialized Synapse is equal with original 
                 Assert.IsTrue(synapse.Equals(synapseD));
             }
         }
@@ -437,7 +439,9 @@ namespace UnitTestsProject
         }
 
 
-        //Currently fail. Deserialize object is not correct.
+        /// <summary>
+        /// Test the serialization of HomeostaticPlasticityController. Equal method is tested at HomeostaticPlasticityControllerTests.
+        /// </summary>
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_HOMEOSTATICPLASTICITYCONTROLLER()
@@ -446,7 +450,16 @@ namespace UnitTestsProject
             int[] columnDims = { 10, 10 };
             HtmConfig config = new HtmConfig(inputDims, columnDims);
 
-            Connections htmMemory = new Connections();
+            Cell[] cellsGroup = new Cell[config.CellsPerColumn];
+
+            for (int i = 0; i < config.CellsPerColumn; i++)
+            {
+                cellsGroup[i] = new Cell(parentColumnIndx: 1, colSeq: i + 1, numCellsPerColumn: config.CellsPerColumn, new CellActivity());
+            }
+
+            Connections htmMemory = new Connections(config);
+            htmMemory.Cells = cellsGroup;
+
             int minCycles = 50;
             Action<bool, int, double, int> onStabilityStatusChanged = (isStable, numPatterns, actColAvg, seenInputs) => { };
             int numOfCyclesToWaitOnChange = 50;
@@ -461,6 +474,8 @@ namespace UnitTestsProject
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_HOMEOSTATICPLASTICITYCONTROLLER)}_hpc.txt"))
             {
                 HomeostaticPlasticityController controllerD = HtmSerializer.Deserialize<HomeostaticPlasticityController>(sr);
+
+                //Check if Deserialized HomeostaticPlasticityController is equal with original 
                 Assert.IsTrue(controller.Equals(controllerD));
             }
         }
