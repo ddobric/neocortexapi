@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml;
+using System.Linq;
 
 namespace NeoCortexApi.Encoders
 {
@@ -521,6 +522,25 @@ namespace NeoCortexApi.Encoders
 
                 /// If we have a periodic encoder, and the max is past the edge, break into
                 ///  2 separate ranges
+                if (self.periodic and inMax >= self.maxval)
+                    {
+                    ranges.append([inMin, self.maxval])
+                    ranges.append([self.minval, inMax - self.range])
+                    }
+                else
+                {
+                    if (inMax > self.maxval)
+                    {
+                        inMax = self.maxval;
+                    }
+                    if (inMin > self.maxval)
+                    {
+                        inMin = self.maxval;
+                    }
+                    ranges.append([inMin, inMax])
+
+                }
+                   
 
             }
 
