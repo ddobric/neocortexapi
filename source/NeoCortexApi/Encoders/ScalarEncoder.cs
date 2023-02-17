@@ -522,30 +522,30 @@ namespace NeoCortexApi.Encoders
 
                 /// If we have a periodic encoder, and the max is past the edge, break into
                 ///  2 separate ranges
-                if (self.periodic and inMax >= self.maxval)
+                if (this.periodic and inMax >= this.maxval)
                     {
-                    ranges.append([inMin, self.maxval])
-                    ranges.append([self.minval, inMax - self.range])
+                    ranges.append([inMin, this.maxval])
+                    ranges.append([this.minval, inMax - this.range])
                     }
                 else
                 {
-                    if (inMax > self.maxval)
+                    if (inMax > this.maxval)
                     {
-                        inMax = self.maxval;
+                        inMax = this.maxval;
                     }
-                    if (inMin > self.maxval)
+                    if (inMin > this.maxval)
                     {
-                        inMin = self.maxval;
+                        inMin = this.maxval;
                     }
                     ranges.append([inMin, inMax])
 
                 }
 
-                desc = self._generateRangeDescription(ranges)
+                desc = this._generateRangeDescription(ranges)
                     //# Return result
                     if (parentFieldName != '')
                 {
-                    fieldName = "%s.%s" % (parentFieldName, self.name);
+                    fieldName = "%s.%s" % (parentFieldName, this.name);
                 }                  
             }
 
