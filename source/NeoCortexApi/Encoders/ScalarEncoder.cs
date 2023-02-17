@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml;
+using System.Linq;
 
 namespace NeoCortexApi.Encoders
 {
@@ -464,6 +465,8 @@ namespace NeoCortexApi.Encoders
                     runs = runs[1];
                 }
             }
+
+
             // ------------------------------------------------------------------------
             // Now, for each group of 1's, determine the "left" and "right" edges, where
             //  the "left" edge is inset by halfwidth and the "right" edge is inset by
@@ -519,14 +522,31 @@ namespace NeoCortexApi.Encoders
 
                 /// If we have a periodic encoder, and the max is past the edge, break into
                 ///  2 separate ranges
+                if (self.periodic and inMax >= self.maxval)
+                    {
+                    ranges.append([inMin, self.maxval])
+                    ranges.append([self.minval, inMax - self.range])
+                    }
+                else
+                {
+                    if (inMax > self.maxval)
+                    {
+                        inMax = self.maxval;
+                    }
+                    if (inMin > self.maxval)
+                    {
+                        inMin = self.maxval;
+                    }
+                    ranges.append([inMin, inMax])
+
+                }
+                   
 
             }
 
             /// ------------------------------------------------------------------------
             /// Find each run of 1's.
             var nz = tmpOutput.nonzero()[0];
-
-
 
 
 
