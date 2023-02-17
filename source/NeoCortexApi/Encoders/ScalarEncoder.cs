@@ -540,8 +540,13 @@ namespace NeoCortexApi.Encoders
                     ranges.append([inMin, inMax])
 
                 }
-                   
 
+                desc = self._generateRangeDescription(ranges)
+                    //# Return result
+                    if (parentFieldName != '')
+                {
+                    fieldName = "%s.%s" % (parentFieldName, self.name);
+                }                  
             }
 
             /// ------------------------------------------------------------------------
