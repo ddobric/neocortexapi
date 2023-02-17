@@ -425,11 +425,11 @@ namespace NeoCortexApi.Encoders
                 }
             }
 
-            if (this.verbosity >= 2)
-            {
-                Console.WriteLine("raw output:", encoded[self.n]);
-                Console.WriteLine("filtered output:", tmpOutput);
-            }
+            //if (this.verbosity >= 2)
+            //{
+            //    Console.WriteLine("raw output:", encoded[self.n]);
+            //    Console.WriteLine("filtered output:", tmpOutput);
+            //}
 
             var nz = tmpOutput.nonzero()[0];
             var runs = new List<object>();    /// will be tuples of (startIdx, runLength)
@@ -544,15 +544,32 @@ namespace NeoCortexApi.Encoders
                 desc = this._generateRangeDescription(ranges)
                     //# Return result
                     if (parentFieldName != '')
-                {
+                    {
                     fieldName = "%s.%s" % (parentFieldName, this.name);
-                }                  
+                    }
+                else:
+
+                {
+                    FieldName = this.name;
+
+                    return ({ fieldName: (ranges, desc)}, [FieldName] })
+                }        
             }
 
-            /// ------------------------------------------------------------------------
-            /// Find each run of 1's.
-            var nz = tmpOutput.nonzero()[0];
 
+
+  //def _generateRangeDescription(self, ranges):
+  //  """generate description from a text description of the ranges"""
+  //  desc = ""
+  //  numRanges = len(ranges)
+  //  for i in xrange(numRanges):
+  //    if ranges[i][0] != ranges[i][1]:
+  //      desc += "%.2f-%.2f" % (ranges[i][0], ranges[i][1])
+  //    else:
+  //      desc += "%.2f" % (ranges[i][0])
+  //    if i < numRanges - 1:
+  //      desc += ", "
+  //  return desc
 
 
 
