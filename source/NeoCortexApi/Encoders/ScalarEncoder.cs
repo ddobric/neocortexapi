@@ -679,6 +679,14 @@ namespace NeoCortexApi.Encoders
             
         }
 
+        public String str()
+        {
+            string str + = "Scalar Encoder";
+            str = str + MinVal.TryFormat(minVal = this.MinVal);
+            str = str + MaxVal.TryFormat(maxVal=this.MaxVal);
+            s
+        }
+
 
 
         public override List<T> GetBucketValues<T>()
