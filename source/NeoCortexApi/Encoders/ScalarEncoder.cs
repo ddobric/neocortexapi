@@ -522,11 +522,17 @@ namespace NeoCortexApi.Encoders
 
                 /// If we have a periodic encoder, and the max is past the edge, break into
                 ///  2 separate ranges
-                if (this.periodic and inMax >= this.maxval)
-                    {
-                    ranges.append([inMin, this.maxval])
-                    ranges.append([this.minval, inMax - this.range])
-                    }
+                if (this.periodic && inMax >= this.maxval)
+                {
+                    ranges.append(new List<object> {
+                            inMin,
+                            this.maxval
+                        });
+                    ranges.append(new List<object> {
+                            this.minval,
+                            inMax - this.range
+                        });
+                }
                 else
                 {
                     if (inMax > this.maxval)
@@ -537,39 +543,46 @@ namespace NeoCortexApi.Encoders
                     {
                         inMin = this.maxval;
                     }
-                    ranges.append([inMin, inMax])
-
+                    ranges.append(new List<object> {
+                            inMin,
+                            inMax
+                        });
                 }
 
-                desc = this._generateRangeDescription(ranges)
-                    //# Return result
-                    if (parentFieldName != '')
-                    {
-                    fieldName = "%s.%s" % (parentFieldName, this.name);
-                    }
-                else:
-
-                {
-                    FieldName = this.name;
-
-                    return ({ fieldName: (ranges, desc)}, [FieldName] })
-                }        
             }
 
+            var desc = this._generateRangeDescription(ranges);
+            // Return result
+            if (parentFieldName != "")
+            {
+                fieldName = String.Format("%s.%s", parentFieldName, this.name);
+            }
+            else
+            {
+                fieldName = this.name;
+            }
+            return (new Dictionary<object, object> {
+                    {
+                        fieldName,
+                        (ranges, desc)}}, new List<object> {
+                    fieldName
+                });
+        }
 
 
-  //def _generateRangeDescription(self, ranges):
-  //  """generate description from a text description of the ranges"""
-  //  desc = ""
-  //  numRanges = len(ranges)
-  //  for i in xrange(numRanges):
-  //    if ranges[i][0] != ranges[i][1]:
-  //      desc += "%.2f-%.2f" % (ranges[i][0], ranges[i][1])
-  //    else:
-  //      desc += "%.2f" % (ranges[i][0])
-  //    if i < numRanges - 1:
-  //      desc += ", "
-  //  return desc
+
+        //def _generateRangeDescription(self, ranges):
+        //  """generate description from a text description of the ranges"""
+        //  desc = ""
+        //  numRanges = len(ranges)
+        //  for i in xrange(numRanges):
+        //    if ranges[i][0] != ranges[i][1]:
+        //      desc += "%.2f-%.2f" % (ranges[i][0], ranges[i][1])
+        //    else:
+        //      desc += "%.2f" % (ranges[i][0])
+        //    if i < numRanges - 1:
+        //      desc += ", "
+        //  return desc
 
 
 
