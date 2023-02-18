@@ -76,9 +76,19 @@ namespace NeoCortexApiSample
         private static Dictionary<string, List<double>> GetInputFromTextFile()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            using (StreamReader reader = new StreamReader(@"D:\FAUS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
+
+            //using (StreamReader reader = new StreamReader(@"D:\FAUS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
+           
+            //  Debug the flow by taking multiple input files from local  
+            using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input2.txt"))
+            using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input3.txt"))
+
             {
-                List<double> inputList1 = new();
+                //List<double> inputList1 = new();
+
+                List<double> inputList2 = new();
+                List<double> inputList3 = new();
+
                 while (!reader.EndOfStream)
                 {
                     var row = reader.ReadLine();
@@ -86,7 +96,10 @@ namespace NeoCortexApiSample
                     Console.WriteLine(values);
                     inputList1.Add(Convert.ToDouble(values[0]));
                 }
-                sequences.Add("Sq1", inputList1);
+                //sequences.Add("Sq1", inputList1);
+                sequences.Add("Sq2", inputList2);
+                sequences.Add("Sq3", inputList3);
+
             }
             return sequences;
         }
