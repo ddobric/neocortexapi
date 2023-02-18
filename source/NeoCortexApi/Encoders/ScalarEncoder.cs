@@ -673,7 +673,17 @@ namespace NeoCortexApi.Encoders
                 };
         }
 
-
+        public virtual object topDownCompute(object encoded)
+        {
+            // Get/generate the topDown mapping table
+            var topDownMappingM = this._getTopDownMapping();
+            // See which "category" we match the closest.
+            var category = topDownMappingM.rightVecProd(encoded).argmax();
+            // Return that bucket info
+            return this.getBucketInfo(new List<object> {
+                    category
+                });
+        }
 
 
 
