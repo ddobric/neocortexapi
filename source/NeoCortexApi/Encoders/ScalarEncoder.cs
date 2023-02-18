@@ -571,29 +571,6 @@ namespace NeoCortexApi.Encoders
 
 
 
-        /// generate description from a text description of the ranges
-        public virtual object _generateRangeDescription(object ranges)
-        {
-            var desc = "";
-            var numRanges = ranges.Count;
-            foreach (var i in xrange(numRanges))
-            {
-                if (ranges[i][0] != ranges[i][1])
-                {
-                    desc += String.Format("%.2f-%.2f", ranges[i][0], ranges[i][1]);
-                }
-                else
-                {
-                    desc += String.Format("%.2f", ranges[i][0]);
-                }
-                if (i < numRanges - 1)
-                {
-                    desc += ", ";
-                }
-            }
-            return desc;
-        }
-
         //  Return the interal _topDownMappingM matrix used for handling the
         //     bucketInfo() and topDownCompute() methods. This is a matrix, one row per
         //     category (bucket) where each row contains the encoded output for that
@@ -630,23 +607,7 @@ namespace NeoCortexApi.Encoders
             return this._topDownMappingM;
         }
 
-        public virtual object getBucketValues()
-        {
-            // Need to re-create?
-            if (this._bucketValues == null)
-            {
-                var topDownMappingM = this._getTopDownMapping();
-                var numBuckets = topDownMappingM.nRows();
-                this._bucketValues = new List<object>();
-                foreach (var bucketIdx in Enumerable.Range(0, numBuckets))
-                {
-                    this._bucketValues.append(this.getBucketInfo(new List<object> {
-                            bucketIdx
-                        })[0].value);
-                }
-            }
-            return this._bucketValues;
-        }
+
 
 
         public virtual object getBucketInfo(object buckets)
