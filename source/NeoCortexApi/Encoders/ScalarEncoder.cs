@@ -646,7 +646,7 @@ namespace NeoCortexApi.Encoders
             });
         }
 
-        public closenessScores(int expvalues,int actvalues, int expvalue, int actvalue)
+        public closenessScores(int expvalues,int actvalues, int expvalue, int actvalue,bool fractional,int closeness)
         {
             expvalue = expvalues[0];
             actvalue = actvalues[0];
@@ -656,6 +656,25 @@ namespace NeoCortexApi.Encoders
                 expvalue = expvalue / this.MaxVal;
                 actvalue = actvalue / this.MaxVal;
             }
+           int  Err == expvalue - actvalue;
+
+            if (this.Periodic)
+            {
+                Err = int.MinValue(Err,this.MaxVal -Err);
+
+            }
+            if (fractional == true)
+            {
+                float pctErr = float(Err) / (this.MaxVal - this.MinVal);
+                float pctErr =double.MinVal(1.0 : pctErr);
+                closeness = 1.0 - pctErr;
+            }
+            else
+            {
+                closeness = Err;
+            }
+
+            return NumSharp.array(closeness);
 
             
         }
