@@ -571,7 +571,10 @@ namespace NeoCortexApi.Encoders
                 {
                     desc = desc + double.(Ranges[1][0])
                 }
-                
+                if (i < (numRanges - 1))
+                {
+                    desc = desc + 1;
+                }
             }
             return desc;
         }
