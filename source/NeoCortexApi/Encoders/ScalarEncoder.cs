@@ -571,20 +571,34 @@ namespace NeoCortexApi.Encoders
 
 
 
-        //def _generateRangeDescription(self, ranges):
-        //  """generate description from a text description of the ranges"""
-        //  desc = ""
-        //  numRanges = len(ranges)
-        //  for i in xrange(numRanges):
-        //    if ranges[i][0] != ranges[i][1]:
-        //      desc += "%.2f-%.2f" % (ranges[i][0], ranges[i][1])
-        //    else:
-        //      desc += "%.2f" % (ranges[i][0])
-        //    if i < numRanges - 1:
-        //      desc += ", "
-        //  return desc
+        /// generate description from a text description of the ranges
+        public virtual object _generateRangeDescription(object ranges)
+        {
+            var desc = "";
+            var numRanges = ranges.Count;
+            foreach (var i in xrange(numRanges))
+            {
+                if (ranges[i][0] != ranges[i][1])
+                {
+                    desc += String.Format("%.2f-%.2f", ranges[i][0], ranges[i][1]);
+                }
+                else
+                {
+                    desc += String.Format("%.2f", ranges[i][0]);
+                }
+                if (i < numRanges - 1)
+                {
+                    desc += ", ";
+                }
+            }
+            return desc;
+        }
 
-
+        //  Return the interal _topDownMappingM matrix used for handling the
+        //     bucketInfo() and topDownCompute() methods. This is a matrix, one row per
+        //     category (bucket) where each row contains the encoded output for that
+        //     category.
+        //     
 
 
 
