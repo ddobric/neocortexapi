@@ -564,6 +564,13 @@ namespace NeoCortexApi.Encoders
             int numRanges = Convert.ToString(Ranges);
             String NumR = numRanges.length();
             for i in range(){
+                if ranges[i][0] != Ranges[i][1]{
+                    desc = desc + double.(Ranges[i][0], Ranges[i][1])
+                }
+                else
+                {
+                    desc = desc + double.(Ranges[1][0])
+                }
                 
             }
             return desc;
