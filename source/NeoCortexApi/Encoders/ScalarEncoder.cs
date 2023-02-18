@@ -555,11 +555,11 @@ namespace NeoCortexApi.Encoders
             // Return result
             if (parentFieldName != "")
             {
-                fieldName = String.Format("%s.%s", parentFieldName, this.name);
+                String fieldName = String.Format("%s.%s", parentFieldName, this.name);
             }
             else
             {
-                fieldName = this.name;
+                String fieldName = this.name;
             }
             return (new Dictionary<object, object> {
                     {
@@ -576,7 +576,7 @@ namespace NeoCortexApi.Encoders
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
-        public virtual object _getTopDownMapping()
+        public int  getTopDownMapping()
         {
             // Do we need to build up our reverse mapping table?
             if (this._topDownMappingM == null)
@@ -610,7 +610,7 @@ namespace NeoCortexApi.Encoders
 
 
 
-        public virtual object getBucketInfo(object buckets)
+        public int getBucketInfo(object buckets)
         {
             object inputVal;
             // Get/generate the topDown mapping table
@@ -631,7 +631,7 @@ namespace NeoCortexApi.Encoders
             }
             return new List<object> {
                     EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding)
-                };
+            }
         }
 
         public virtual object topDownCompute(object encoded)
@@ -643,7 +643,7 @@ namespace NeoCortexApi.Encoders
             // Return that bucket info
             return this.getBucketInfo(new List<object> {
                     category
-                });
+            });
         }
 
 
