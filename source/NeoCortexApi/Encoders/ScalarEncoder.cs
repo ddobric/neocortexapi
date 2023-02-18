@@ -522,11 +522,17 @@ namespace NeoCortexApi.Encoders
 
                 /// If we have a periodic encoder, and the max is past the edge, break into
                 ///  2 separate ranges
-                if (this.periodic and inMax >= this.maxval)
-                    {
-                    ranges.append([inMin, this.maxval])
-                    ranges.append([this.minval, inMax - this.range])
-                    }
+                if (this.periodic && inMax >= this.maxval)
+                {
+                    ranges.append(new List<object> {
+                            inMin,
+                            this.maxval
+                        });
+                    ranges.append(new List<object> {
+                            this.minval,
+                            inMax - this.range
+                        });
+                }
                 else
                 {
                     if (inMax > this.maxval)
@@ -537,42 +543,147 @@ namespace NeoCortexApi.Encoders
                     {
                         inMin = this.maxval;
                     }
-                    ranges.append([inMin, inMax])
-
+                    ranges.append(new List<object> {
+                            inMin,
+                            inMax
+                        });
                 }
 
-                desc = this._generateRangeDescription(ranges)
-                    //# Return result
-                    if (parentFieldName != '')
-                    {
-                    fieldName = "%s.%s" % (parentFieldName, this.name);
-                    }
-                else:
-
-                {
-                    FieldName = this.name;
-
-                    return ({ fieldName: (ranges, desc)}, [FieldName] })
-                }        
             }
 
+            var desc = this._generateRangeDescription(ranges);
+            // Return result
+            if (parentFieldName != "")
+            {
+                fieldName = String.Format("%s.%s", parentFieldName, this.name);
+            }
+            else
+            {
+                fieldName = this.name;
+            }
+            return (new Dictionary<object, object> {
+                    {
+                        fieldName,
+                        (ranges, desc)}}, new List<object> {
+                    fieldName
+                });
+        }
 
 
-  //def _generateRangeDescription(self, ranges):
-  //  """generate description from a text description of the ranges"""
-  //  desc = ""
-  //  numRanges = len(ranges)
-  //  for i in xrange(numRanges):
-  //    if ranges[i][0] != ranges[i][1]:
-  //      desc += "%.2f-%.2f" % (ranges[i][0], ranges[i][1])
-  //    else:
-  //      desc += "%.2f" % (ranges[i][0])
-  //    if i < numRanges - 1:
-  //      desc += ", "
-  //  return desc
+
+        /// generate description from a text description of the ranges
+        public virtual object _generateRangeDescription(object ranges)
+        {
+            var desc = "";
+            var numRanges = ranges.Count;
+            foreach (var i in xrange(numRanges))
+            {
+                if (ranges[i][0] != ranges[i][1])
+                {
+                    desc += String.Format("%.2f-%.2f", ranges[i][0], ranges[i][1]);
+                }
+                else
+                {
+                    desc += String.Format("%.2f", ranges[i][0]);
+                }
+                if (i < numRanges - 1)
+                {
+                    desc += ", ";
+                }
+            }
+            return desc;
+        }
+
+        //  Return the interal _topDownMappingM matrix used for handling the
+        //     bucketInfo() and topDownCompute() methods. This is a matrix, one row per
+        //     category (bucket) where each row contains the encoded output for that
+        //     category.
+        //     
+        public virtual object _getTopDownMapping()
+        {
+            // Do we need to build up our reverse mapping table?
+            if (this._topDownMappingM == null)
+            {
+                // The input scalar value corresponding to each possible output encoding
+                if (this.periodic)
+                {
+                    this._topDownValues = numpy.arange(this.minval + this.resolution / 2.0, this.maxval, this.resolution);
+                }
+                else
+                {
+                    //Number of values is (max-min)/resolutions
+                    this._topDownValues = numpy.arange(this.minval, this.maxval + this.resolution / 2.0, this.resolution);
+                }
+                // Each row represents an encoded output pattern
+                var numCategories = this._topDownValues.Count;
+                this._topDownMappingM = SM32(numCategories, this.n);
+                var outputSpace = numpy.zeros(this.n, dtype: GetNTAReal());
+                foreach (var i in xrange(numCategories))
+                {
+                    var value = this._topDownValues[i];
+                    value = max(value, this.minval);
+                    value = min(value, this.maxval);
+                    this.encodeIntoArray(value, outputSpace, learn: false);
+                    this._topDownMappingM.setRowFromDense(i, outputSpace);
+                }
+            }
+            return this._topDownMappingM;
+        }
+
+        public virtual object getBucketValues()
+        {
+            // Need to re-create?
+            if (this._bucketValues == null)
+            {
+                var topDownMappingM = this._getTopDownMapping();
+                var numBuckets = topDownMappingM.nRows();
+                this._bucketValues = new List<object>();
+                foreach (var bucketIdx in Enumerable.Range(0, numBuckets))
+                {
+                    this._bucketValues.append(this.getBucketInfo(new List<object> {
+                            bucketIdx
+                        })[0].value);
+                }
+            }
+            return this._bucketValues;
+        }
 
 
+        public virtual object getBucketInfo(object buckets)
+        {
+            object inputVal;
+            // Get/generate the topDown mapping table
+            //NOTE: although variable topDownMappingM is unused, some (bad-style) actions
+            //are executed during _getTopDownMapping() so this line must stay here
+            var topDownMappingM = this._getTopDownMapping();
+            // The "category" is simply the bucket index
+            var category = buckets[0];
+            var encoding = this._topDownMappingM.getRow(category);
+            // Which input value does this correspond to?
+            if (this.periodic)
+            {
+                inputVal = this.minval + this.resolution / 2.0 + category * this.resolution;
+            }
+            else
+            {
+                inputVal = this.minval + category * this.resolution;
+            }
+            return new List<object> {
+                    EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding)
+                };
+        }
 
+        public virtual object topDownCompute(object encoded)
+        {
+            // Get/generate the topDown mapping table
+            var topDownMappingM = this._getTopDownMapping();
+            // See which "category" we match the closest.
+            var category = topDownMappingM.rightVecProd(encoded).argmax();
+            // Return that bucket info
+            return this.getBucketInfo(new List<object> {
+                    category
+                });
+        }
 
 
 
