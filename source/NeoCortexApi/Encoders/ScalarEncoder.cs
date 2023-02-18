@@ -599,7 +599,36 @@ namespace NeoCortexApi.Encoders
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
-
+        public virtual object _getTopDownMapping()
+        {
+            // Do we need to build up our reverse mapping table?
+            if (this._topDownMappingM == null)
+            {
+                // The input scalar value corresponding to each possible output encoding
+                if (this.periodic)
+                {
+                    this._topDownValues = numpy.arange(this.minval + this.resolution / 2.0, this.maxval, this.resolution);
+                }
+                else
+                {
+                    //Number of values is (max-min)/resolutions
+                    this._topDownValues = numpy.arange(this.minval, this.maxval + this.resolution / 2.0, this.resolution);
+                }
+                // Each row represents an encoded output pattern
+                var numCategories = this._topDownValues.Count;
+                this._topDownMappingM = SM32(numCategories, this.n);
+                var outputSpace = numpy.zeros(this.n, dtype: GetNTAReal());
+                foreach (var i in xrange(numCategories))
+                {
+                    var value = this._topDownValues[i];
+                    value = max(value, this.minval);
+                    value = min(value, this.maxval);
+                    this.encodeIntoArray(value, outputSpace, learn: false);
+                    this._topDownMappingM.setRowFromDense(i, outputSpace);
+                }
+            }
+            return this._topDownMappingM;
+        }
 
 
 
