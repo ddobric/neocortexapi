@@ -634,7 +634,7 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-        public virtual object topDownCompute(object encoded)
+        public int topDownCompute(object encoded)
         {
             // Get/generate the topDown mapping table
             var topDownMappingM = this._getTopDownMapping();
@@ -644,6 +644,20 @@ namespace NeoCortexApi.Encoders
             return this.getBucketInfo(new List<object> {
                     category
             });
+        }
+
+        public closenessScores(int expvalues,int actvalues, int expvalue, int actvalue)
+        {
+            expvalue = expvalues[0];
+            actvalue = actvalues[0];
+
+            if (this.Periodic)
+            {
+                expvalue = expvalue / this.MaxVal;
+                actvalue = actvalue / this.MaxVal;
+            }
+
+            
         }
 
 
