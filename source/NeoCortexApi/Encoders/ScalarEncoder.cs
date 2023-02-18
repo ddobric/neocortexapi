@@ -560,7 +560,13 @@ namespace NeoCortexApi.Encoders
         {
             """generate description from a text description of the ranges"""
             float desc = " ";
-           
+            int i = 0;
+            int numRanges = Convert.ToString(Ranges);
+            String NumR = numRanges.length();
+            for i in range(){
+                
+            }
+            return desc;
         }
 
 
