@@ -630,6 +630,51 @@ namespace NeoCortexApi.Encoders
             return this._topDownMappingM;
         }
 
+        public virtual object getBucketValues()
+        {
+            // Need to re-create?
+            if (this._bucketValues == null)
+            {
+                var topDownMappingM = this._getTopDownMapping();
+                var numBuckets = topDownMappingM.nRows();
+                this._bucketValues = new List<object>();
+                foreach (var bucketIdx in Enumerable.Range(0, numBuckets))
+                {
+                    this._bucketValues.append(this.getBucketInfo(new List<object> {
+                            bucketIdx
+                        })[0].value);
+                }
+            }
+            return this._bucketValues;
+        }
+
+
+        public virtual object getBucketInfo(object buckets)
+        {
+            object inputVal;
+            // Get/generate the topDown mapping table
+            //NOTE: although variable topDownMappingM is unused, some (bad-style) actions
+            //are executed during _getTopDownMapping() so this line must stay here
+            var topDownMappingM = this._getTopDownMapping();
+            // The "category" is simply the bucket index
+            var category = buckets[0];
+            var encoding = this._topDownMappingM.getRow(category);
+            // Which input value does this correspond to?
+            if (this.periodic)
+            {
+                inputVal = this.minval + this.resolution / 2.0 + category * this.resolution;
+            }
+            else
+            {
+                inputVal = this.minval + category * this.resolution;
+            }
+            return new List<object> {
+                    EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding)
+                };
+        }
+
+
+
 
 
         public override List<T> GetBucketValues<T>()
