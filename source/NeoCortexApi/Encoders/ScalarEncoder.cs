@@ -684,7 +684,9 @@ namespace NeoCortexApi.Encoders
             string str + = "Scalar Encoder";
             str = str + MinVal.TryFormat(minVal = this.MinVal);
             str = str + MaxVal.TryFormat(maxVal=this.MaxVal);
-            s
+            str += "  w:   {w}".format(w = self.w);
+            str += "  n:   {n}".format(n = self.n);
+            str += "  resolution: {resolution}".format(resolution = self.resolution);
         }
 
 
