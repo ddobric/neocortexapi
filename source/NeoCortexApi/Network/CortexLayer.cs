@@ -161,12 +161,16 @@ namespace NeoCortexApi.Network
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
+            if (obj is CortexLayer<object,object> layer)
+            {
+                var modelTrace = "ModelTrace.txt";
+                //var encoder = (EncoderBase)this.HtmModules["encoder"];
+                var tm = layer.GetResult("tm");
+                var sp = (SpatialPooler)layer.HtmModules["sp"];
+                sp.TraceColumnPermenances(modelTrace);
+                HtmSerializer.SerializeObject(tm, name, sw);
+            }
             
-            //var encoder = (EncoderBase)this.HtmModules["encoder"];
-            var tm = GetResult("tm");
-            var sp = (SpatialPooler)HtmModules["sp"];
-            sp.TraceColumnPermenances(name);
-            HtmSerializer.SerializeObject(tm, name, sw);
         }
 
         public static object Deserialize<T>(StreamReader sr)
