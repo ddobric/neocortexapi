@@ -94,19 +94,19 @@ namespace NeoCortexApi
             sr_con.Close();
 
             StreamReader sr_tm = new StreamReader(model_tm);
-            //var tm = TemporalMemory.Deserialize<T>(sr_tm); need to implement Deserialize for TM ?
+            var tm = TemporalMemory.Deserialize<T>(sr_tm, null);
             sr_tm.Close();
 
             StreamReader sr_sp = new StreamReader(modelTrace);
-            var sp = SpatialPooler.Deserialize<T>(sr_sp, null);
+            var sp = SpatialPooler.Deserialize(sr_sp);
             sr_con.Close();
 
             EncoderBase encoder = new ScalarEncoder();
 
             CortexLayer<object, object> layer = new CortexLayer<object, object>();
             layer.HtmModules.Add("encoder", encoder);
-            //layer.HtmModules.Add("tm", tm);
-            //layer.HtmModules.Add("sp", sp);
+            layer.HtmModules.Add("tm", (TemporalMemory)tm);
+            layer.HtmModules.Add("sp", sp);
             
 
             Predictor predictor = new Predictor(layer, (Connections)con, null);
