@@ -1,44 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MauiApp1.MainPage">
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             x:Class="MauiApp1.MainPage"
+             xmlns:viewmodel="clr-namespace:MauiApp1.ViewModel"
+             x:DataType="viewmodel:MainViewModel">
 
     <Grid RowDefinitions="100, Auto, *"
-          ColumnDefinitions=".75, .25*"
+          ColumnDefinitions=".25*,.25*,.25*, .25*"
           Padding="10"
           RowSpacing="10"
           ColumnSpacing="10">
-        
-        <Image Grid.ColumnSpan="2"
+
+        <Image Grid.ColumnSpan="4"
                Source="sdr_represent.png"
                BackgroundColor="Transparent"/>
 
-        <Entry Placeholder="Enter parameter"
-               Grid.Row="1"/>
-
-        <Button Text="Add"
-                Grid.Row="1"
-                Grid.Column="1"/>
-        
-        <CollectionView Grid.Row="2" Grid.ColumnSpan="2">
-            <CollectionView.ItemsSource>
-                <x:Array Type ="{x:Type x:String}">
-                    <x:String>File name</x:String>
-                    <x:String>Graph name</x:String>
-                    <x:String>Max cycles</x:String>
-                    <x:String>Highlight touch</x:String>
-                    <x:String>Axis</x:String>
-                    <x:String>X_axis title</x:String>
-                    <x:String>Y_axis title</x:String>
-                    <x:String>Min range of cell</x:String>
-                    <x:String>Max range of cell</x:String>
-                    <x:String>Subplot title</x:String>
-                    <x:String>Figure name</x:String>
-                </x:Array>
-                
-            </CollectionView.ItemsSource>
-        </CollectionView>                        
-
+        <TableView Intent="Settings"
+                   Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2">
+            <TableRoot>
+                <TableSection>
+                    <EntryCell Label="Graph name"
+                       Placeholder="graph name" />
+                    <EntryCell Label="Max cycles"
+                       Placeholder="max cycles" />
+                    <EntryCell Label="Highlight touch"
+                       Placeholder="Hhghlight touch" />
+                    <EntryCell Label="Axis"
+                       Placeholder="axis" />
+                    <EntryCell Label="X_axis title"
+                       Placeholder="x_axis title" />
+                    <EntryCell Label="Y_axis title"
+                       Placeholder="y_axis title" />
+                    <EntryCell Label="Min range of cell"
+                       Placeholder="min range of cell" />
+                    <EntryCell Label="Max range of cell"
+                       Placeholder="max range of cell" />
+                    <EntryCell Label="Subplot title"
+                       Placeholder="subplot title" />
+                    <EntryCell Label="Figure name"
+                       Placeholder="figure name" />
+                </TableSection>
+            </TableRoot>
+        </TableView>
     </Grid>
 
 </ContentPage>
