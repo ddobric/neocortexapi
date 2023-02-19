@@ -88,5 +88,10 @@ namespace NeoCortexApi
             Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, null);
             return predictor;
         }
+
+        public void Save(Predictor obj)
+        {
+            this.Serialize(obj, null, null);
+        }
     }
 }
