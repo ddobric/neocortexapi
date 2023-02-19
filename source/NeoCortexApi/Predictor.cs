@@ -65,16 +65,20 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var model_con = "Model_con.txt";
-            var model_tm= "Model_tm.txt";
-            
-            StreamWriter sw_con = new StreamWriter(model_con);
-            this.connections.Serialize(this.connections, null, sw_con);
-            sw_con.Close();
-            StreamWriter sw_tm = new StreamWriter(model_tm);
-            this.layer.Serialize(this.layer, null, sw_tm);
-            sw_tm.Close();
-            //this.classifier.Ser
+            if (obj is Predictor predictor)
+            {
+                var model_con = "Model_con.txt";
+                var model_tm = "Model_tm.txt";
+
+                StreamWriter sw_con = new StreamWriter(model_con);
+                predictor.connections.Serialize(predictor.connections, null, sw_con);
+                sw_con.Close();
+                StreamWriter sw_tm = new StreamWriter(model_tm);
+                predictor.layer.Serialize(predictor.layer, null, sw_tm);
+                sw_tm.Close();
+                //this.classifier.Ser
+            }
+
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
