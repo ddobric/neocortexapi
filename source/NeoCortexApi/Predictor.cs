@@ -1,10 +1,12 @@
 ﻿using NeoCortexApi.Classifiers;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -83,9 +85,31 @@ namespace NeoCortexApi
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            var con = Connections.Deserialize<T>(sr, name);
-            var layer = CortexLayer<object, object>.Deserialize<T>(sr);
-            Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, null);
+            var model_con = "Model_con.txt";
+            var model_tm = "Model_tm.txt";
+            var modelTrace = "ModelTrace.txt";
+
+            StreamReader sr_con = new StreamReader(model_con);
+            var con = Connections.Deserialize<T>(sr_con, null);
+            sr_con.Close();
+
+            StreamReader sr_tm = new StreamReader(model_tm);
+            //var tm = TemporalMemory.Deserialize<T>(sr_tm); need to implement Deserialize for TM ?
+            sr_tm.Close();
+
+            StreamReader sr_sp = new StreamReader(modelTrace);
+            var sp = SpatialPooler.Deserialize<T>(sr_sp, null);
+            sr_con.Close();
+
+            EncoderBase encoder = new ScalarEncoder();
+
+            CortexLayer<object, object> layer = new CortexLayer<object, object>();
+            layer.HtmModules.Add("encoder", encoder);
+            //layer.HtmModules.Add("tm", tm);
+            //layer.HtmModules.Add("sp", sp);
+            
+
+            Predictor predictor = new Predictor(layer, (Connections)con, null);
             return predictor;
         }
 
