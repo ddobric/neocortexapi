@@ -687,6 +687,9 @@ namespace NeoCortexApi.Encoders
             str += "  w:   {w}".format(w = self.w);
             str += "  n:   {n}".format(n = self.n);
             str += "  resolution: {resolution}".format(resolution = self.resolution);
+            str += "  radius:     {radius}".format(radius = self.radius);
+            str += "  periodic: {periodic}".format(periodic = self.periodic);
+            str += "  nInternal: {nInternal}".format(nInternal = self.nInternal);
         }
 
 
