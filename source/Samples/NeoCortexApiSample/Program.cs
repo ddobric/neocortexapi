@@ -51,7 +51,7 @@ namespace NeoCortexApiSample
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
-            predictor.Serialize(predictor, null, null);
+            predictor.Save(predictor);
 
             //var predictor1 = (Predictor)Predictor.Deserialize<Predictor>(sr, model1Name);
 
