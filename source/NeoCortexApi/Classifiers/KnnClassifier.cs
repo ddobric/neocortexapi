@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace NeoCortexApi.Classifiers
@@ -14,7 +13,7 @@ namespace NeoCortexApi.Classifiers
     ///     |1 0 0 0|
     ///     |0 1 1 0|
     ///
-    /// Which then needs to run through a model of similar martices to be classified which matrix it resembles
+    /// Which then needs to run through a model of similar matrices to be classified which matrix it resembles
     /// closest to.
     ///
     ///               {     |0 0 1 1|       |1 1 0 0|       |0 0 0 0| }
@@ -35,7 +34,8 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        ///     Gets the distance using the equilidean principle using coordinate values (x, y).
+        ///     Gets the distance using the euclidean principle using coordinate values int[] = (x, y).
+        ///     i.e (x1, x2) & (x2, y2) => sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
         /// </summary>
         /// <param name="model">The model with active cells</param>
         /// <param name="item">The unidentified data with active cells</param>
@@ -47,9 +47,10 @@ namespace NeoCortexApi.Classifiers
         Dictionary<string, double> GetDistance(int[] model, int[] item)
         {
             double distance =
-                Math.Sqrt(Math.Pow(model[0] - item[0], 2) + Math.Pow(model[0] - item[0], 2));
+                Math.Sqrt(Math.Pow(model[0] - item[0], 2) + Math.Pow(model[1] - item[1], 2));
             return new Dictionary<string, double>
             {
+                // The idea of using dictionary to list items is to keep a track of the elements with convenience.
                 { "Classified Row", model[0] }, { "Classified Col", model[1] }, { "Unclassified Row", item[0] },
                 { "Unclassified Col", item[1] }, { "Distance", distance }
             };
@@ -65,7 +66,7 @@ namespace NeoCortexApi.Classifiers
         /// </param>
         /// <returns>
         ///     Returns a 2d array containing the cell information of the active regions.
-        ///     A[(0,2),(0,3),(1,0)....]
+        ///     List[int[2]] A = [(0,2),(0,3),(1,0)....]
         /// </returns>
         List<int[]> GetIndexes(int[][] dataItem)
         {
@@ -150,14 +151,16 @@ namespace NeoCortexApi.Classifiers
         /// </param>
         /// <param name="unclassifiedMatrix">
         ///     |0 0 1 1|
-        ///     |1 0 0 0| = ?
-        ///     |0 1 1 0|
+        ///     |1 0 1 0| = Unclassified Matrix
+        ///     |1 1 1 0|
         /// </param>
         /// <returns>
-        ///     Returns a dataframe containing the cell information classified matrix and unclassified matrix of all the models
+        ///     Returns a dataframe containing the cell information classified matrix and unclassified matrix of *all the models*.
         ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance
         ///              2                  3                 3                  2             1.65
+        ///              6                  5                 3                  2             3.65
         ///              4                  5                 3                  4             1.23
+        ///              3                  7                 3                  4             2.23
         ///             ...                ...               ...                ...             ...
         /// </returns>
         Dictionary<string, List<double>> GetComparisonMatrix(int[][] classifiedMatrix,
@@ -174,19 +177,35 @@ namespace NeoCortexApi.Classifiers
             };
 
             foreach (var index in unclassifiedMatrixIndexes)
-                FirstNValues(classifiedMatrixIndexes, index);
-
+            {
+                foreach (var item in FirstNValues(classifiedMatrixIndexes, index))
+                    distanceTable[item.Key].AddRange(item.Value);
+            }
 
             return distanceTable;
         }
 
         /// <summary>
-        ///     This function should return the voting
+        ///     This function should get the maximum occurence of Unclassified row/col pair to the classified row/col
+        ///     pair.
         /// </summary>
-        /// <param name="Matrix"></param>
-        /// <returns></returns>
+        /// <param name="Matrix">
+        /// Takes in the tabular data of all the comparison points and gives the verdict of the
+        ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance
+        ///              2                  3                 3                  2             1.65
+        ///              6                  5                 3                  2             3.65
+        ///              4                  5                 3                  4             1.23
+        ///              3                  7                 3                  4             2.23
+        ///             ...                ...               ...                ...             ...
+        /// </param>
+        /// <returns>
+        ///                        |0 0 1 1|
+        ///  Unclassified Matrix = |1 0 0 0|
+        ///                        |0 1 1 0|
+        /// </returns>
         string Voting(Dictionary<string, List<double>> Matrix)
         {
+            return "";
         }
 
         /// <summary>
@@ -194,12 +213,17 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         /// <param name="unclassifiedMatrix">
         ///     |0 0 1 1|
-        ///     |1 0 0 0| = ?
+        ///     |1 0 0 0| = Unclassified Matrix
         ///     |0 1 1 0|
         /// </param>
         void GetPredictedInputValue(int[][] unclassifiedMatrix)
         {
-            var matrices = new List<Task>();
+            var distanceTables = new Dictionary<string, List<double>>()
+            {
+                { "Classified Row", new List<double>() }, { "Classified Col", new List<double>() },
+                { "Unclassified Row", new List<double>() },
+                { "Unclassified Col", new List<double>() }, { "Distance", new List<double>() }
+            };
             foreach (var dict in _model)
                 GetComparisonMatrix(dict.Value, unclassifiedMatrix);
         }
