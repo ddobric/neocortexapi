@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 
 namespace KNN
 {
@@ -144,3 +147,51 @@ namespace KNN
 
     } // Program
 } // ns
+
+
+# Testing part 2 matrix data is represented as a list of double arrays
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class KNNClassifier
+{
+    private readonly int k;
+    private readonly List<double[]> features;
+    private readonly List<string> labels;
+
+    public KNNClassifier(int k)
+    {
+        this.k = k;
+        features = new List<double[]>();
+        labels = new List<string>();
+    }
+
+    public void Fit(List<double[]> X, List<string> y)
+    {
+        features.AddRange(X);
+        labels.AddRange(y);
+    }
+
+    public string Predict(double[] x)
+    {
+        var distances = new List<double>();
+
+        for (int i = 0; i < features.Count; i++)
+        {
+            double distance = 0;
+
+            for (int j = 0; j < x.Length; j++)
+            {
+                distance += Math.Pow(features[i][j] - x[j], 2);
+            }
+
+            distances.Add(Math.Sqrt(distance));
+        }
+
+        var sortedLabels = labels.OrderBy(l => distances[labels.IndexOf(l)]).Take(k).ToList();
+        var mostCommonLabel = sortedLabels.GroupBy(l => l).OrderByDescending(l => l.Count()).First().Key;
+
+        return mostCommonLabel;
+    }
+}
