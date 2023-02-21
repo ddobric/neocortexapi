@@ -1,12 +1,14 @@
 ﻿using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
 
 namespace NeoCortexApiSample
@@ -55,6 +57,15 @@ namespace NeoCortexApiSample
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
+            List<Double> InputSeq = new();
+
+            // to get list of double values needed in later code changes
+            //foreach (List<Double> entry in sequences.Values)
+            //{
+            //   InputSeq = entry;
+            //    Console.WriteLine(InputSeq);
+            //}
+
             var predictor = experiment.Run(sequences);
 
             //
@@ -76,7 +87,6 @@ namespace NeoCortexApiSample
             using (StreamReader reader = new StreamReader(@"D:\FAUS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
             {
                 int temp = 0;
-                int columns = 10;
                 List<double> inputList = new();
                 while (!reader.EndOfStream)
                 {
@@ -86,10 +96,9 @@ namespace NeoCortexApiSample
                     
                         foreach (var digit in numbers)
                         {
+                        // splitting multiple input sequences with semi-colon
                             if (!digit.Contains(';'))
                             {
-                                // sequence.Add(Convert.ToDouble(value));
-
                                 inputList.Add(Convert.ToDouble(digit));
                             }
                             else
