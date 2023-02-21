@@ -66,6 +66,8 @@ namespace SequenceLearningExperiment
                 { "ClipInput", false},
                 { "MaxVal", max}
             };
+			
+			/*Getting the Predictor Object feeding into prediction next element for every sequence in the test sequence file*/
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
