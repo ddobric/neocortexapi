@@ -407,7 +407,6 @@ namespace NeoCortexApi.Entities
                 return false;
             if (obj.Cells != null && Cells != null)
             {
-
                 if (!obj.Cells.ElementsEqual(Cells))
                     return false;
             }

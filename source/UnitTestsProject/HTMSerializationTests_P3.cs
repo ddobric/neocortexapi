@@ -45,13 +45,13 @@ namespace UnitTestsProject
             //Updates the permanence matrix with a column's new permanence values
             column.UpdatePermanencesForColumnSparse(config,perm:new double[] {0.1,0.27},maskPotential: new int[] {1,7},false);
 
-            //Serialize the column and save to a text file
+            //Serialize
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
                 HtmSerializer.Serialize(column, null, sw);
             }
 
-            //Deserialize the text file created above and compare with the original column
+            //Deserialize, compare with the original column
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_COLUMN)}_column.txt"))
             {
                 var columnD = HtmSerializer.Deserialize<Column>(sr);
@@ -65,9 +65,6 @@ namespace UnitTestsProject
         [TestMethod]
         [TestCategory("serialization")]
         [DataRow(new int[] { 100, 100 }, true)]
-        //[DataRow(new int[] { 10, 100, 1000 }, true)]
-        //[DataRow(new int[] { 12, 14, 16, 18 }, false)]
-        //[DataRow(new int[] { 100, 1000, 10000, 100000, 1000000 }, false)]
         public void Serializationtest_SPARSEBINARYMATRIXS(int[] dimensions, bool useColumnMajorOrdering)
         {
             HtmSerializer serializer = new HtmSerializer();
@@ -75,7 +72,7 @@ namespace UnitTestsProject
             //Create an empty matrix
             SparseBinaryMatrix matrix = new SparseBinaryMatrix(dimensions, useColumnMajorOrdering);
 
-            //Sets the value to be indexed
+            //Sets the value to be indexed. 
             for (int i = 0; i < 20; i++)
             {
                 matrix.set(value: 7,coordinates: new int[] { i, 1 });
@@ -84,12 +81,14 @@ namespace UnitTestsProject
             {
                 matrix.set(value: 9, coordinates: new int[] { i, 2 });
             }
-        
+
+            //Serialize
             using (StreamWriter sw = new StreamWriter($"ser_{nameof(Serializationtest_SPARSEBINARYMATRIXS)}_sbmatrix.txt"))
             {
                 HtmSerializer.Serialize(matrix, null, sw);
             }
 
+            //Deserialize, compare with the original matrix
             using (StreamReader sr = new StreamReader($"ser_{nameof(Serializationtest_SPARSEBINARYMATRIXS)}_sbmatrix.txt"))
             {
                 var matrixD = HtmSerializer.Deserialize<SparseBinaryMatrix>(sr);
@@ -345,13 +344,14 @@ namespace UnitTestsProject
         }
 
 
-        //Currently fail because the created proDent's Synapses is an empty list (after added Pool). The Deserialize object is correct.
-        //Equal() method tested.
+        //Test failed. 
+        //The Synapses from RFPoll are added to ProximalDendrite.Synapses after object is deserialized .
+        //Equal() method tested at ProximalDendriteTests.
         [TestMethod]
         [TestCategory("serialization")]
         public void Serializationtest_PROXIMALDENTRITE()
         {
-            Pool rfPool = new Pool(size: 2, numInputs: 100);
+            Pool rfPool = new Pool(size: 1, numInputs: 100);
 
             Cell cell = new Cell(parentColumnIndx: 1, colSeq: 20, numCellsPerColumn: 16, new CellActivity());
             Cell preSynapticCell = new Cell(parentColumnIndx: 2, colSeq: 22, numCellsPerColumn: 26, new CellActivity());
