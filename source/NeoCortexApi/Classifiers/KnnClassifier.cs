@@ -7,20 +7,31 @@ using System.Linq;
 namespace NeoCortexApi.Classifiers
 {
     /// <summary>
-    /// This KNN classified takes an input as a 2D array of on: 1, off: 0 which is provided for classification.
+    ///     This KNN classifier takes an input as a 2D array of on: 1, off: 0 which is provided for classification.
     /// 
     ///     |0 0 1 1|
-    ///     |1 0 0 0|
-    ///     |0 1 1 0|
+    ///     |1 0 0 0| = Unclassified
+    ///     |0 1 1 1|
     ///
-    /// Which then needs to run through a model of similar matrices to be classified which matrix it resembles
-    /// closest to.
+    ///     Which then needs to run through a model of similar matrices to be classified which matrix it resembles
+    ///     closest to. The K-nearest-neighbor 
     ///
-    ///               {     |0 0 1 1|       |1 1 0 0|       |0 0 0 0| }
-    ///  Dict model = { A = |1 0 0 0| , B = |0 1 1 1| , C = |1 1 1 1| }
+    ///               {     |0 0 1 1|       |1 1 0 0|       |1 1 0 0| }
+    ///  Dict model = { A = |1 0 0 1| , B = |0 1 1 1| , C = |1 1 1 1| }
     ///               {     |0 1 1 0|       |1 0 0 0|       |0 0 0 0| }
     ///
-    /// The verdict must be in terms of %. Where each point of the unknown matrix is calculated and  
+    ///     The verdict must be in terms of %. Where the distance of each point of the unknown/unclassified matrix is
+    ///     calculated and compared to the known matrices. Whence a comparison is made by using the shortest nNeighbors
+    ///     to each unclassified coordinate and assigns the classification keys A, B, C by considering the most amount
+    ///     classifications closest to that point.
+    ///
+    ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance  Classification
+    ///              2                  3                 3                  2             1.65          A
+    ///              6                  5                 3                  2             3.65          B
+    ///              4                  5                 3                  2             1.23          A
+    ///              3                  7                 3                  2             2.23          C
+    ///
+    ///     In this case A is highest occurence hence A for the coordinate (3, 2).
     /// </summary>
     public class KNeighborsClassifier
     {
@@ -61,7 +72,7 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         /// <param name="dataItem">Is the matrix:
         ///     |0 0 1 1|
-        ///     |1 0 0 0|
+        ///     |1 0 0 1|
         ///     |0 1 1 0|
         /// </param>
         /// <returns>
@@ -127,9 +138,10 @@ namespace NeoCortexApi.Classifiers
                     .Where(x => x.value.Equals(distances[i]))
                     .Select(x => x.index).ToList();
 
+                // The counter increments multiple times if the distances are the same in coordinates.
                 if (indices.Count > 1)
-                    i = indices.Count - 1; // The counter increments multiple times if the distances are the same in coordinates.
-                
+                    i = indices.Count - 1;
+
                 foreach (var idx in indices)
                 {
                     // loops through all the key value pairs of the unsorted matrix and add it to the sorted values given the indices is known.
@@ -142,20 +154,21 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        /// This function computes the distance of the unclassified point to the distance of the classified points.
+        ///     This function computes the distance of the unclassified point to the distance of the classified points.
         /// </summary>
         /// <param name="classifiedMatrix">
         ///       |0 0 1 1|
-        ///   A = |1 0 0 0|
+        ///   A = |1 0 0 1|
         ///       |0 1 1 0|
         /// </param>
         /// <param name="unclassifiedMatrix">
         ///     |0 0 1 1|
         ///     |1 0 1 0| = Unclassified Matrix
-        ///     |1 1 1 0|
+        ///     |1 1 0 0|
         /// </param>
         /// <returns>
-        ///     Returns a dataframe containing the cell information classified matrix and unclassified matrix of *all the models*.
+        ///     Returns a dataframe containing the cell information classified matrix and unclassified matrix of
+        ///     *all the models*.
         ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance
         ///              2                  3                 3                  2             1.65
         ///              6                  5                 3                  2             3.65
@@ -185,31 +198,35 @@ namespace NeoCortexApi.Classifiers
             return distanceTable;
         }
 
+
         /// <summary>
-        ///     This function should get the maximum occurence of Unclassified row/col pair to the classified row/col
-        ///     pair.
+        ///     This function should take the Table and find the shortest distances to the different unclassified
+        ///     coordinates i.e (3, 2) and cast a vote, i.e (A, B, C) which classification occurs the highest. This
+        ///     should be done for all the unclassified coordinates.
         /// </summary>
-        /// <param name="Matrix">
-        /// Takes in the tabular data of all the comparison points and gives the verdict of the
-        ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance
-        ///              2                  3                 3                  2             1.65
-        ///              6                  5                 3                  2             3.65
-        ///              4                  5                 3                  4             1.23
-        ///              3                  7                 3                  4             2.23
-        ///             ...                ...               ...                ...             ...
+        /// <param name="Table">
+        ///     Takes in the tabular data of all the comparison points and gives the verdict on the maximum occurance.
+        ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance  Classification
+        ///              2                  3                 3                  2             1.65          A
+        ///              6                  5                 3                  2             3.65          B
+        ///              4                  5                 3                  4             1.23          A
+        ///              3                  7                 3                  4             2.23          C
+        ///             ...                ...               ...                ...             ...         ...
         /// </param>
         /// <returns>
-        ///                        |0 0 1 1|
-        ///  Unclassified Matrix = |1 0 0 0|
-        ///                        |0 1 1 0|
+        ///     |0 0 A B|
+        ///     |C 0 A 0| = Unclassified Matrix
+        ///     |A B 0 0|
         /// </returns>
-        string Voting(Dictionary<string, List<double>> Matrix)
+        char[][] Voting(Dictionary<string, dynamic> Table)
         {
-            return "";
+            //TODO: Implementation!!!
+            return null;
         }
 
         /// <summary>
-        ///     This function takes in the unclassified matrix and assigns a classification verdict.
+        ///     This function takes in the unclassified matrix and assigns a classification verdict. i.e:
+        ///     A = 30%, B = 30%, C = 40%
         /// </summary>
         /// <param name="unclassifiedMatrix">
         ///     |0 0 1 1|
@@ -218,14 +235,23 @@ namespace NeoCortexApi.Classifiers
         /// </param>
         void GetPredictedInputValue(int[][] unclassifiedMatrix)
         {
-            var distanceTables = new Dictionary<string, List<double>>()
+            var distanceTables = new Dictionary<string, dynamic>()
             {
                 { "Classified Row", new List<double>() }, { "Classified Col", new List<double>() },
-                { "Unclassified Row", new List<double>() },
-                { "Unclassified Col", new List<double>() }, { "Distance", new List<double>() }
+                { "Unclassified Row", new List<double>() }, { "Unclassified Col", new List<double>() },
+                { "Distance", new List<double>() }, { "Classification", new List<string>() }
             };
+
             foreach (var dict in _model)
-                GetComparisonMatrix(dict.Value, unclassifiedMatrix);
+            {
+                foreach (var item in GetComparisonMatrix(dict.Value, unclassifiedMatrix))
+                    distanceTables[item.Key].AddRange(item.Value);
+
+                distanceTables["Classification"]
+                    .AddRange(Enumerable.Repeat(dict.Key, distanceTables["Distance"].Count));
+            }
+
+            var info = Voting(distanceTables);
         }
 
         void Learn(object x, string[] tags)
