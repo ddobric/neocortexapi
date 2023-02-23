@@ -164,9 +164,9 @@ namespace NeoCortexApi.Encoders
                 double nFloat = w * (Range / Radius) + 2 * Padding;
                 N = (int)(nFloat);
             }
-           
-            
-            
+
+
+
         }
 
         protected int? GetFirstOnBit(double input)
@@ -308,7 +308,7 @@ namespace NeoCortexApi.Encoders
         ///  Vinay
         int bucketIdx;
 
-        public  int GetBucketIndices(object inputData)
+        public int GetBucketIndices(object inputData)
         {
 
             if ((typeof(input) == Double) && Double.IsNaN(input))
@@ -341,12 +341,12 @@ namespace NeoCortexApi.Encoders
 
 
 
-        public  int encodeIntoArray(int input, double output,int n)
+        public int encodeIntoArray(int input, double output, int n)
         {
 
             if (input != 0)
             {
-                throw new ArgumentException("$Expected a scalar input but got input of type",  input );
+                throw new ArgumentException("$Expected a scalar input but got input of type", input);
             }
 
             if (input != Double.IsNaN(input))
@@ -363,7 +363,7 @@ namespace NeoCortexApi.Encoders
             else
             {
                 /// # The bucket index is the index of the first bit to set in the output
-                output[0,n] = 0;
+                output[0, n] = 0;
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * self.halfwidth;
             }
@@ -373,7 +373,7 @@ namespace NeoCortexApi.Encoders
                 if (maxbin >= n)
                 {
                     bottombins = maxbin - n + 1;
-                    output[0,bottombins] = 1;
+                    output[0, bottombins] = 1;
                     maxbin = this.n - 1;
 
 
@@ -382,13 +382,13 @@ namespace NeoCortexApi.Encoders
 
 
 
-                    if (minbin < 0)
-                    {
-                        topbins = -minbin;
-                        output[n - topbins,n] = 1;
-                        minbin = 0;
+                if (minbin < 0)
+                {
+                    topbins = -minbin;
+                    output[n - topbins, n] = 1;
+                    minbin = 0;
 
-                    }
+                }
             }
         }
 
@@ -433,7 +433,7 @@ namespace NeoCortexApi.Encoders
 
             var nz = tmpOutput.nonzero()[0];
             var runs = new List<object>();    /// will be tuples of (startIdx, runLength)
-            var run = new List<object> {nz[0],1};
+            var run = new List<object> { nz[0], 1 };
 
             var i = 1;
 
@@ -576,7 +576,7 @@ namespace NeoCortexApi.Encoders
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
-        public int  getTopDownMapping()
+        public int getTopDownMapping()
         {
             // Do we need to build up our reverse mapping table?
             if (this._topDownMappingM == null)
@@ -629,9 +629,10 @@ namespace NeoCortexApi.Encoders
             {
                 inputVal = this.minval + category * this.resolution;
             }
-            return new List<object> {
-                    EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding);
-            }
+            return new List<object>
+            {
+                EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding)
+            };
         }
 
         public int topDownCompute(object encoded)
@@ -646,126 +647,123 @@ namespace NeoCortexApi.Encoders
             });
         }
 
-        public closenessScores(int expvalues,int actvalues, int expvalue, int actvalue,bool fractional,int closeness)
+        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
         {
-            expvalue = expvalues[0];
-            actvalue = actvalues[0];
-
-            if (this.Periodic)
+            object closeness;
+            var expValue = expValues[0];
+            var actValue = actValues[0];
+            if (this.periodic)
             {
-                expvalue = expvalue / this.MaxVal;
-                actvalue = actvalue / this.MaxVal;
+                expValue = expValue % this.maxval;
+                actValue = actValue % this.maxval;
             }
-           int  Err = expvalue - actvalue;
-
-            if (this.Periodic)
+            var err = abs(expValue - actValue);
+            if (this.periodic)
             {
-                Err = int.MinValue(Err,this.MaxVal -Err);
-
+                err = min(err, this.maxval - err);
             }
-            if (fractional == true)
+            if (fractional)
             {
-                double pctErr = double.Err / (this.MaxVal - this.MinVal);
-                double pctErr =double.MinVal((1.0) : pctErr);
+                var pctErr = (float)err / (this.maxval - this.minval);
+                pctErr = min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
             }
             else
             {
-                closeness = Err;
+                closeness = err;
             }
-
-            return NumSharp.array(closeness);
-
-            
-        }
-
-    //  See the function description in base.py
-    //     
-    public virtual object closenessScores(object expValues, object actValues, object fractional = true)
-    {
-        object closeness;
-        var expValue = expValues[0];
-        var actValue = actValues[0];
-        if (this.periodic)
-        {
-            expValue = expValue % this.maxval;
-            actValue = actValue % this.maxval;
-        }
-        var err = abs(expValue - actValue);
-        if (this.periodic)
-        {
-            err = min(err, this.maxval - err);
-        }
-        if (fractional)
-        {
-            var pctErr = float(err) / (this.maxval - this.minval);
-            pctErr = min(1.0, pctErr);
-            closeness = 1.0 - pctErr;
-        }
-        else
-        {
-            closeness = err;
-        }
-        return numpy.array(new List<object> {
+            return numpy.array(new List<object> {
                     closeness
                 });
-    }
-
-    public override object ToString()
-    {
-        var @string = "ScalarEncoder:";
-        @string += "  min: {minval}".format(minval: this.minval);
-        @string += "  max: {maxval}".format(maxval: this.maxval);
-        @string += "  w:   {w}".format(w: this.w);
-        @string += "  n:   {n}".format(n: this.n);
-        @string += "  resolution: {resolution}".format(resolution: this.resolution);
-        @string += "  radius:     {radius}".format(radius: this.radius);
-        @string += "  periodic: {periodic}".format(periodic: this.periodic);
-        @string += "  nInternal: {nInternal}".format(nInternal: this.nInternal);
-        @string += "  rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
-        @string += "  padding: {padding}".format(padding: this.padding);
-        return @string;
-    }
-    [classmethod]
-    public static object getSchema(object cls)
-    {
-        return ScalarEncoderProto;
-    }
-
-    [classmethod]
-    public static object read(object cls, object proto)
-    {
-        object resolution;
-        object radius;
-        if (proto.n != null)
-        {
-            radius = DEFAULT_RADIUS;
-            resolution = DEFAULT_RESOLUTION;
         }
-        else
+
+        //  See the function description in base.py
+        //     
+        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
         {
-            radius = proto.radius;
-            resolution = proto.resolution;
+            object closeness;
+            var expValue = expValues[0];
+            var actValue = actValues[0];
+            if (this.periodic)
+            {
+                expValue = expValue % this.maxval;
+                actValue = actValue % this.maxval;
+            }
+            var err = abs(expValue - actValue);
+            if (this.periodic)
+            {
+                err = min(err, this.maxval - err);
+            }
+            if (fractional)
+            {
+                var pctErr = (float)err / (this.maxval - this.minval);
+                pctErr = min(1.0, pctErr);
+                closeness = 1.0 - pctErr;
+            }
+            else
+            {
+                closeness = err;
+            }
+            return numpy.array(new List<object> {
+                    closeness
+                });
         }
-        return cls(w: proto.w, minval: proto.minval, maxval: proto.maxval, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, clipInput: proto.clipInput, forced: true);
-    }
 
-    public virtual object write(object proto)
-    {
-        proto.w = this.w;
-        proto.minval = this.minval;
-        proto.maxval = this.maxval;
-        proto.periodic = this.periodic;
-        // Radius and resolution can be recalculated based on n
-        proto.n = this.n;
-        proto.name = this.name;
-        proto.verbosity = this.verbosity;
-        proto.clipInput = this.clipInput;
-    }
+        public override object ToString()
+        {
+            var @string = "ScalarEncoder:";
+            @string += "  min: {minval}".format(minval: this.minval);
+            @string += "  max: {maxval}".format(maxval: this.maxval);
+            @string += "  w:   {w}".format(w: this.w);
+            @string += "  n:   {n}".format(n: this.n);
+            @string += "  resolution: {resolution}".format(resolution: this.resolution);
+            @string += "  radius:     {radius}".format(radius: this.radius);
+            @string += "  periodic: {periodic}".format(periodic: this.periodic);
+            @string += "  nInternal: {nInternal}".format(nInternal: this.nInternal);
+            @string += "  rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
+            @string += "  padding: {padding}".format(padding: this.padding);
+            return @string;
+        }
+        [classmethod]
+        public static object getSchema(object cls)
+        {
+            return ScalarEncoderProto;
+        }
 
-  
+        [classmethod]
+        public static object read(object cls, object proto)
+        {
+            object resolution;
+            object radius;
+            if (proto.n != null)
+            {
+                radius = DEFAULT_RADIUS;
+                resolution = DEFAULT_RESOLUTION;
+            }
+            else
+            {
+                radius = proto.radius;
+                resolution = proto.resolution;
+            }
+            return cls(w: proto.w, minval: proto.minval, maxval: proto.maxval, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, clipInput: proto.clipInput, forced: true);
+        }
 
-   
+        public virtual object write(object proto)
+        {
+            proto.w = this.w;
+            proto.minval = this.minval;
+            proto.maxval = this.maxval;
+            proto.periodic = this.periodic;
+            // Radius and resolution can be recalculated based on n
+            proto.n = this.n;
+            proto.name = this.name;
+            proto.verbosity = this.verbosity;
+            proto.clipInput = this.clipInput;
+        }
+
+
+
+
 
         //public static object Deserialize<T>(StreamReader sr, string name)
         //{
@@ -773,6 +771,6 @@ namespace NeoCortexApi.Encoders
         //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         //}
 
-
+    }
     
 }
