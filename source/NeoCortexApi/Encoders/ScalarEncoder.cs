@@ -630,7 +630,7 @@ namespace NeoCortexApi.Encoders
                 inputVal = this.minval + category * this.resolution;
             }
             return new List<object> {
-                    EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding)
+                    EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding);
             }
         }
 
@@ -656,7 +656,7 @@ namespace NeoCortexApi.Encoders
                 expvalue = expvalue / this.MaxVal;
                 actvalue = actvalue / this.MaxVal;
             }
-           int  Err == expvalue - actvalue;
+           int  Err = expvalue - actvalue;
 
             if (this.Periodic)
             {
@@ -665,8 +665,8 @@ namespace NeoCortexApi.Encoders
             }
             if (fractional == true)
             {
-                float pctErr = float(Err) / (this.MaxVal - this.MinVal);
-                float pctErr =double.MinVal(1.0 : pctErr);
+                double pctErr = double.Err / (this.MaxVal - this.MinVal);
+                double pctErr =double.MinVal((1.0) : pctErr);
                 closeness = 1.0 - pctErr;
             }
             else
@@ -679,27 +679,93 @@ namespace NeoCortexApi.Encoders
             
         }
 
-        public String str()
+    //  See the function description in base.py
+    //     
+    public virtual object closenessScores(object expValues, object actValues, object fractional = true)
+    {
+        object closeness;
+        var expValue = expValues[0];
+        var actValue = actValues[0];
+        if (this.periodic)
         {
-            string str + = "Scalar Encoder";
-            str = str + MinVal.TryFormat(minVal = this.MinVal);
-            str = str + MaxVal.TryFormat(maxVal=this.MaxVal);
-            str += "  w:   {w}".format(w = self.w);
-            str += "  n:   {n}".format(n = self.n);
-            str += "  resolution: {resolution}".format(resolution = self.resolution);
-            str += "  radius:     {radius}".format(radius = self.radius);
-            str += "  periodic: {periodic}".format(periodic = self.periodic);
-            str += "  nInternal: {nInternal}".format(nInternal = self.nInternal);
+            expValue = expValue % this.maxval;
+            actValue = actValue % this.maxval;
         }
-
-
-
-        public override List<T> GetBucketValues<T>()
+        var err = abs(expValue - actValue);
+        if (this.periodic)
         {
-            throw new NotImplementedException();
-
-           
+            err = min(err, this.maxval - err);
         }
+        if (fractional)
+        {
+            var pctErr = float(err) / (this.maxval - this.minval);
+            pctErr = min(1.0, pctErr);
+            closeness = 1.0 - pctErr;
+        }
+        else
+        {
+            closeness = err;
+        }
+        return numpy.array(new List<object> {
+                    closeness
+                });
+    }
+
+    public override object ToString()
+    {
+        var @string = "ScalarEncoder:";
+        @string += "  min: {minval}".format(minval: this.minval);
+        @string += "  max: {maxval}".format(maxval: this.maxval);
+        @string += "  w:   {w}".format(w: this.w);
+        @string += "  n:   {n}".format(n: this.n);
+        @string += "  resolution: {resolution}".format(resolution: this.resolution);
+        @string += "  radius:     {radius}".format(radius: this.radius);
+        @string += "  periodic: {periodic}".format(periodic: this.periodic);
+        @string += "  nInternal: {nInternal}".format(nInternal: this.nInternal);
+        @string += "  rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
+        @string += "  padding: {padding}".format(padding: this.padding);
+        return @string;
+    }
+    [classmethod]
+    public static object getSchema(object cls)
+    {
+        return ScalarEncoderProto;
+    }
+
+    [classmethod]
+    public static object read(object cls, object proto)
+    {
+        object resolution;
+        object radius;
+        if (proto.n != null)
+        {
+            radius = DEFAULT_RADIUS;
+            resolution = DEFAULT_RESOLUTION;
+        }
+        else
+        {
+            radius = proto.radius;
+            resolution = proto.resolution;
+        }
+        return cls(w: proto.w, minval: proto.minval, maxval: proto.maxval, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, clipInput: proto.clipInput, forced: true);
+    }
+
+    public virtual object write(object proto)
+    {
+        proto.w = this.w;
+        proto.minval = this.minval;
+        proto.maxval = this.maxval;
+        proto.periodic = this.periodic;
+        // Radius and resolution can be recalculated based on n
+        proto.n = this.n;
+        proto.name = this.name;
+        proto.verbosity = this.verbosity;
+        proto.clipInput = this.clipInput;
+    }
+
+  
+
+   
 
         //public static object Deserialize<T>(StreamReader sr, string name)
         //{
@@ -708,5 +774,5 @@ namespace NeoCortexApi.Encoders
         //}
 
 
-    }
+    
 }
