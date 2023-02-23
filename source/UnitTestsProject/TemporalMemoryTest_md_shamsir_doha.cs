@@ -17,16 +17,16 @@ namespace UnitTestsProject
             Parameters retVal = Parameters.getTemporalDefaultParameters();
             retVal.Set(KEY.COLUMN_DIMENSIONS, new int[] { 36 });
             retVal.Set(KEY.CELLS_PER_COLUMN, 5);
-            retVal.Set(KEY.ACTIVATION_THRESHOLD, 3);
-            retVal.Set(KEY.INITIAL_PERMANENCE, 0.21);
+            retVal.Set(KEY.ACTIVATION_THRESHOLD, 4);
+            retVal.Set(KEY.INITIAL_PERMANENCE, 0.22);
             retVal.Set(KEY.CONNECTED_PERMANENCE, 0.5);
             retVal.Set(KEY.MIN_THRESHOLD, 2);
             retVal.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 3);
-            retVal.Set(KEY.PERMANENCE_INCREMENT, 0.10);
+            retVal.Set(KEY.PERMANENCE_INCREMENT, 0.9);
             retVal.Set(KEY.PERMANENCE_DECREMENT, 0.10);
             retVal.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);
-            retVal.Set(KEY.RANDOM, new ThreadSafeRandom(42));
-            retVal.Set(KEY.SEED, 42);
+            retVal.Set(KEY.RANDOM, new ThreadSafeRandom(22));
+            retVal.Set(KEY.SEED, 22);
 
             return retVal;
         }
@@ -35,17 +35,17 @@ namespace UnitTestsProject
         {
             HtmConfig htmConfig = new HtmConfig(new int[] { 32 }, new int[] { 32 })
             {
-                CellsPerColumn = 5,
-                ActivationThreshold = 3,
+                CellsPerColumn = 2,
+                ActivationThreshold = 6,
                 InitialPermanence = 0.21,
-                ConnectedPermanence = 0.5,
+                ConnectedPermanence = 0.1,
                 MinThreshold = 2,
                 MaxNewSynapseCount = 3,
                 PermanenceIncrement = 0.10,
                 PermanenceDecrement = 0.10,
                 PredictedSegmentDecrement = 0,
-                Random = new ThreadSafeRandom(42),
-                RandomGenSeed = 42
+                Random = new ThreadSafeRandom(22),
+                RandomGenSeed = 22
             };
 
             return htmConfig;
@@ -65,7 +65,7 @@ namespace UnitTestsProject
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
             Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(2), cn.GetCell(1), cn.GetCell(2) };
-            List<Cell> expectedWinnerCells = new List<Cell>(cn.GetCells(new int[] { 4, 6 }));
+            List<Cell> expectedWinnerCells = new List<Cell>(cn.GetCells(new int[] { 4, 9 }));
 
             DistalDendrite activeSegment1 = cn.CreateDistalSegment(expectedWinnerCells[0]);
             cn.CreateSynapse(activeSegment1, previousActiveCells[0], 0.7);
