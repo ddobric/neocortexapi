@@ -555,11 +555,11 @@ namespace NeoCortexApi.Encoders
             // Return result
             if (parentFieldName != "")
             {
-                fieldName = String.Format("%s.%s", parentFieldName, this.name);
+                String fieldName = String.Format("%s.%s", parentFieldName, this.name);
             }
             else
             {
-                fieldName = this.name;
+                String fieldName = this.name;
             }
             return (new Dictionary<object, object> {
                     {
@@ -571,35 +571,12 @@ namespace NeoCortexApi.Encoders
 
 
 
-        /// generate description from a text description of the ranges
-        public virtual object _generateRangeDescription(object ranges)
-        {
-            var desc = "";
-            var numRanges = ranges.Count;
-            foreach (var i in xrange(numRanges))
-            {
-                if (ranges[i][0] != ranges[i][1])
-                {
-                    desc += String.Format("%.2f-%.2f", ranges[i][0], ranges[i][1]);
-                }
-                else
-                {
-                    desc += String.Format("%.2f", ranges[i][0]);
-                }
-                if (i < numRanges - 1)
-                {
-                    desc += ", ";
-                }
-            }
-            return desc;
-        }
-
         //  Return the interal _topDownMappingM matrix used for handling the
         //     bucketInfo() and topDownCompute() methods. This is a matrix, one row per
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
-        public virtual object _getTopDownMapping()
+        public int  getTopDownMapping()
         {
             // Do we need to build up our reverse mapping table?
             if (this._topDownMappingM == null)
@@ -630,26 +607,10 @@ namespace NeoCortexApi.Encoders
             return this._topDownMappingM;
         }
 
-        public virtual object getBucketValues()
-        {
-            // Need to re-create?
-            if (this._bucketValues == null)
-            {
-                var topDownMappingM = this._getTopDownMapping();
-                var numBuckets = topDownMappingM.nRows();
-                this._bucketValues = new List<object>();
-                foreach (var bucketIdx in Enumerable.Range(0, numBuckets))
-                {
-                    this._bucketValues.append(this.getBucketInfo(new List<object> {
-                            bucketIdx
-                        })[0].value);
-                }
-            }
-            return this._bucketValues;
-        }
 
 
-        public virtual object getBucketInfo(object buckets)
+
+        public int getBucketInfo(object buckets)
         {
             object inputVal;
             // Get/generate the topDown mapping table
@@ -670,10 +631,10 @@ namespace NeoCortexApi.Encoders
             }
             return new List<object> {
                     EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding)
-                };
+            }
         }
 
-        public virtual object topDownCompute(object encoded)
+        public int topDownCompute(object encoded)
         {
             // Get/generate the topDown mapping table
             var topDownMappingM = this._getTopDownMapping();
@@ -682,7 +643,53 @@ namespace NeoCortexApi.Encoders
             // Return that bucket info
             return this.getBucketInfo(new List<object> {
                     category
-                });
+            });
+        }
+
+        public closenessScores(int expvalues,int actvalues, int expvalue, int actvalue,bool fractional,int closeness)
+        {
+            expvalue = expvalues[0];
+            actvalue = actvalues[0];
+
+            if (this.Periodic)
+            {
+                expvalue = expvalue / this.MaxVal;
+                actvalue = actvalue / this.MaxVal;
+            }
+           int  Err == expvalue - actvalue;
+
+            if (this.Periodic)
+            {
+                Err = int.MinValue(Err,this.MaxVal -Err);
+
+            }
+            if (fractional == true)
+            {
+                float pctErr = float(Err) / (this.MaxVal - this.MinVal);
+                float pctErr =double.MinVal(1.0 : pctErr);
+                closeness = 1.0 - pctErr;
+            }
+            else
+            {
+                closeness = Err;
+            }
+
+            return NumSharp.array(closeness);
+
+            
+        }
+
+        public String str()
+        {
+            string str + = "Scalar Encoder";
+            str = str + MinVal.TryFormat(minVal = this.MinVal);
+            str = str + MaxVal.TryFormat(maxVal=this.MaxVal);
+            str += "  w:   {w}".format(w = self.w);
+            str += "  n:   {n}".format(n = self.n);
+            str += "  resolution: {resolution}".format(resolution = self.resolution);
+            str += "  radius:     {radius}".format(radius = self.radius);
+            str += "  periodic: {periodic}".format(periodic = self.periodic);
+            str += "  nInternal: {nInternal}".format(nInternal = self.nInternal);
         }
 
 
