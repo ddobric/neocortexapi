@@ -98,6 +98,14 @@ namespace NeoCortexApi.Classifiers
         ///     This function return the first N values which is determined by the _nNeighbours.
         ///     i.e comparison unclassified coordinates (2, 3) to unclassified coordinates (1, 5), (3, 2) .... & (6, 7) 
         /// </summary>
+        /// <param name="classifiedMatrixIndexes">
+        ///     The active indices from the classified Matrix.
+        ///     (1, 5), (3, 2) .... & (6, 7)
+        /// </param>
+        /// <param name="unclassifiedIdx">
+        ///     The active index from the unclassified Matrix.
+        ///     (2, 3)
+        /// </param>
         /// <returns>
         ///     Returns a dataframe containing the cell information classified matrix and unclassified matrix.
         ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance
@@ -110,8 +118,8 @@ namespace NeoCortexApi.Classifiers
             var rawDistanceTable = new Dictionary<string, List<double>>()
             {
                 { "Classified Row", new List<double>() }, { "Classified Col", new List<double>() },
-                { "Unclassified Row", new List<double>() },
-                { "Unclassified Col", new List<double>() }, { "Distance", new List<double>() }
+                { "Unclassified Row", new List<double>() }, { "Unclassified Col", new List<double>() }, 
+                { "Distance", new List<double>() }
             };
 
             foreach (var classifiedIdx in classifiedMatrixIndexes)
@@ -123,19 +131,19 @@ namespace NeoCortexApi.Classifiers
             var sortedDistanceTable = new Dictionary<string, List<double>>()
             {
                 { "Classified Row", new List<double>() }, { "Classified Col", new List<double>() },
-                { "Unclassified Row", new List<double>() },
-                { "Unclassified Col", new List<double>() }, { "Distance", new List<double>() }
+                { "Unclassified Row", new List<double>() }, { "Unclassified Col", new List<double>() }, 
+                { "Distance", new List<double>() }
             };
 
-            List<double> distances = rawDistanceTable["Distance"].Distinct().ToList();
-            distances.Sort();
+            List<double> sortedDistances = rawDistanceTable["Distance"].Distinct().ToList();
+            sortedDistances.Sort();
 
             for (int i = 0; i < _nNeighbors;) // This loop gathers the first nNeighbors.
             {
                 // This stores the indexes of the distance/s from the unsorted Dictionary.
                 var indices = rawDistanceTable["Distance"]
                     .Select((value, index) => new { value, index })
-                    .Where(x => x.value.Equals(distances[i]))
+                    .Where(x => x.value.Equals(sortedDistances[i]))
                     .Select(x => x.index).ToList();
 
                 // The counter increments multiple times if the distances are the same in coordinates.
@@ -185,8 +193,8 @@ namespace NeoCortexApi.Classifiers
             var distanceTable = new Dictionary<string, List<double>>()
             {
                 { "Classified Row", new List<double>() }, { "Classified Col", new List<double>() },
-                { "Unclassified Row", new List<double>() },
-                { "Unclassified Col", new List<double>() }, { "Distance", new List<double>() }
+                { "Unclassified Row", new List<double>() }, { "Unclassified Col", new List<double>() }, 
+                { "Distance", new List<double>() }
             };
 
             foreach (var index in unclassifiedMatrixIndexes)
