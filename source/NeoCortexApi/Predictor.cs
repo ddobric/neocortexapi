@@ -86,30 +86,14 @@ namespace NeoCortexApi
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             var model_con = "Model_con.txt";
-            var model_tm = "Model_tm.txt";
-            var modelTrace = "ModelTrace.txt";
 
             StreamReader sr_con = new StreamReader(model_con);
-            var con = Connections.Deserialize<T>(sr_con, null);
+            var con = Connections.Deserialize<Connections>(sr_con, null);
             sr_con.Close();
-
-            StreamReader sr_tm = new StreamReader(model_tm);
-            var tm = TemporalMemory.Deserialize<T>(sr_tm, null);
-            sr_tm.Close();
-
-            StreamReader sr_sp = new StreamReader(modelTrace);
-            var sp = SpatialPooler.Deserialize(sr_sp);
-            sr_con.Close();
-
-            EncoderBase encoder = new ScalarEncoder();
-
-            CortexLayer<object, object> layer = new CortexLayer<object, object>();
-            layer.HtmModules.Add("encoder", encoder);
-            layer.HtmModules.Add("tm", (TemporalMemory)tm);
-            layer.HtmModules.Add("sp", sp);
             
+            var layer = CortexLayer<object,object>.Deserialize<CortexLayer<object,object>>(null);
 
-            Predictor predictor = new Predictor(layer, (Connections)con, null);
+            Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, null);
             return predictor;
         }
 

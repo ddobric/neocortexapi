@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Xml.Linq;
 
 namespace NeoCortexApi.Network
@@ -168,6 +170,7 @@ namespace NeoCortexApi.Network
                 var tm = layer.GetResult("tm");
                 var sp = (SpatialPooler)layer.HtmModules["sp"];
                 sp.TraceColumnPermenances(modelTrace);
+
                 HtmSerializer.SerializeObject(tm, name, sw);
             }
             
@@ -175,8 +178,25 @@ namespace NeoCortexApi.Network
 
         public static object Deserialize<T>(StreamReader sr)
         {
-            var layer =  HtmSerializer.Deserialize<CortexLayer<object, object>>(sr);
+            var model_tm = "Model_tm.txt";
+            var modelTrace = "ModelTrace.txt";
+
+            StreamReader sr_tm = new StreamReader(model_tm);
+            var tm = TemporalMemoryMT.Deserialize<TemporalMemoryMT>(sr_tm, model_tm);
+            sr_tm.Close();
+
+            StreamReader sr_sp = new StreamReader(modelTrace);
+            var sp = SpatialPooler.Deserialize(sr_sp);
+            sr_sp.Close();
+
+            CortexLayer<object, object> layer = new CortexLayer<object, object>();
+            //layer.HtmModules.Add("encoder", encoder);
+            layer.HtmModules.Add("sp", sp);
+            layer.HtmModules.Add("tm", (TemporalMemory)tm);
+
             return layer;
+
+
         }
         #region Private Methods
 
