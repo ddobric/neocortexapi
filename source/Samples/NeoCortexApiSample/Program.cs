@@ -93,23 +93,23 @@ namespace NeoCortexApiSample
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
                     Console.WriteLine(numbers);
-                    
-                        foreach (var digit in numbers)
-                        {
+
+                    foreach (var digit in numbers)
+                    {
                         // splitting multiple input sequences with semi-colon
-                            if (!digit.Contains(';'))
-                            {
-                                inputList.Add(Convert.ToDouble(digit));
-                            }
-                            else
-                            {
+                        if (!digit.Contains(';'))
+                        {
+                            inputList.Add(Convert.ToDouble(digit));
+                        }
+                        else
+                        {
                             temp++;
                             sequences.Add("Sequence" + temp, inputList);
                             break;
-                            
-                        }
 
                         }
+
+                    }
                 }
             }
             return sequences;
