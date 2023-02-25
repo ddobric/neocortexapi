@@ -54,7 +54,7 @@ namespace NeoCortexApiSample
             predictor.Save(predictor);
 
          
-            var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
+            //var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
 
 
         }

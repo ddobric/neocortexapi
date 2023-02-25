@@ -165,13 +165,19 @@ namespace NeoCortexApi.Network
         {
             if (obj is CortexLayer<object,object> layer)
             {
-                var modelTrace = "ModelTrace.txt";
-                //var encoder = (EncoderBase)this.HtmModules["encoder"];
-                var tm = layer.GetResult("tm");
-                var sp = (SpatialPooler)layer.HtmModules["sp"];
-                sp.TraceColumnPermenances(modelTrace);
+                
+                var model_tm = "Model_tm.txt";
+                StreamWriter sw_tm = new StreamWriter(model_tm);
+                var tm = (TemporalMemory)layer.HtmModules["tm"];
+                tm.Serialize(tm, null, sw_tm);
+                sw_tm.Close();
 
-                HtmSerializer.SerializeObject(tm, name, sw);
+                var modelTrace = "ModelTrace.txt";
+                StreamWriter sw_sp = new StreamWriter(modelTrace);
+                var sp = (SpatialPooler)layer.HtmModules["sp"];
+                sp.Serialize(sw_sp);
+
+                
             }
             
         }
@@ -180,11 +186,11 @@ namespace NeoCortexApi.Network
         {
             var model_tm = "Model_tm.txt";
             var modelTrace = "ModelTrace.txt";
-
+        /*
             StreamReader sr_tm = new StreamReader(model_tm);
-            var tm = TemporalMemoryMT.Deserialize<TemporalMemoryMT>(sr_tm, model_tm);
+            var tm = TemporalMemoryMT.Deserialize<T>(sr_tm, model_tm);
             sr_tm.Close();
-
+        */
             StreamReader sr_sp = new StreamReader(modelTrace);
             var sp = SpatialPooler.Deserialize(sr_sp);
             sr_sp.Close();
@@ -192,11 +198,9 @@ namespace NeoCortexApi.Network
             CortexLayer<object, object> layer = new CortexLayer<object, object>();
             //layer.HtmModules.Add("encoder", encoder);
             layer.HtmModules.Add("sp", sp);
-            layer.HtmModules.Add("tm", (TemporalMemory)tm);
+            //layer.HtmModules.Add("tm", (TemporalMemory)tm);
 
             return layer;
-
-
         }
         #region Private Methods
 

@@ -70,19 +70,21 @@ namespace NeoCortexApi
             if (obj is Predictor predictor)
             {
                 var model_con = "Model_con.txt";
-                var model_tm = "Model_tm.txt";
+                
 
                 StreamWriter sw_con = new StreamWriter(model_con);
                 predictor.connections.Serialize(predictor.connections, null, sw_con);
                 sw_con.Close();
-                StreamWriter sw_tm = new StreamWriter(model_tm);
-                predictor.layer.Serialize(predictor.layer, null, sw_tm);
-                sw_tm.Close();
+
+                
+                predictor.layer.Serialize(predictor.layer, null, null);
+                
                 //this.classifier.Ser
             }
 
         }
 
+/*
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             var model_con = "Model_con.txt";
@@ -90,13 +92,13 @@ namespace NeoCortexApi
             StreamReader sr_con = new StreamReader(model_con);
             var con = Connections.Deserialize<Connections>(sr_con, null);
             sr_con.Close();
-            
-            var layer = CortexLayer<object,object>.Deserialize<CortexLayer<object,object>>(null);
+
+            var layer = CortexLayer<object, object>.Deserialize<T>(null);
 
             Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, null);
             return predictor;
         }
-
+*/
         public void Save(Predictor obj)
         {
             this.Serialize(obj, null, null);
