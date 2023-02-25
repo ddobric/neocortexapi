@@ -89,6 +89,8 @@ namespace NeoCortexApiSample
                 {
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
+                 
+
                     Console.WriteLine(numbers[temp]);  //debug purpose to print the numbers from txt file
 
                     foreach (var digit in numbers)
