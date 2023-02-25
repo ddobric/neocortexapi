@@ -13,7 +13,7 @@ namespace NeoCortexApi
     /// <summary>
     /// Implementation of Temporal Memory algorithm.
     /// </summary>
-    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>/*, ISerializable*///: IComputeDecorator
+    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>/*ISerializable*///: IComputeDecorator
     {
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace NeoCortexApi
 
         protected Connections connections;
 
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Name { get /*=> throw new NotImplementedException()*/; set /*=> throw new NotImplementedException()*/; }
 
         /// <summary>
         /// Uses the specified <see cref="Connections"/> object to Build the structural  anatomy needed by this <see cref="TemporalMemory"/> 
@@ -900,7 +900,7 @@ namespace NeoCortexApi
             {
                 //nameof(TemporalMemory.connections)
             };
-            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);  
+            HtmSerializer.SerializeObject(obj, null, sw, ignoreMembers);  
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
