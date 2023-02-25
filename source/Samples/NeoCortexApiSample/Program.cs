@@ -51,17 +51,7 @@ namespace NeoCortexApiSample
         private static void RunPredictionMultiSequenceExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-
-            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
-            //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
-
-            sequences = GetInputFromTextFile();
-
-            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-            //sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
-
-            //
-            // Prototype for building the prediction engine.
+            sequences = GetInputFromTextFile();       
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             List<Double> InputSeq = new();
 
@@ -72,16 +62,17 @@ namespace NeoCortexApiSample
             //    Console.WriteLine(InputSeq);
             //}
 
-            var predictor = experiment.Run(sequences);
+            
 
             //
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
             var list1 = new double[] { 0.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 20.0, 23.0 };
-
+            var predictor = experiment.Run(sequences);
             predictor.Reset();
             PredictNextElement(predictor, list1);
+
         }
 
 
@@ -98,7 +89,7 @@ namespace NeoCortexApiSample
                 {
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
-                    Console.WriteLine(numbers);
+                    Console.WriteLine(numbers[temp]);  //debug purpose to print the numbers from txt file
 
                     foreach (var digit in numbers)
                     {
@@ -110,7 +101,7 @@ namespace NeoCortexApiSample
                         else
                         {
                             temp++;
-                            sequences.Add("Sequence" + temp, inputList);
+                            sequences.Add("Sequence: " + temp, inputList);
                             break;
 
                         }
