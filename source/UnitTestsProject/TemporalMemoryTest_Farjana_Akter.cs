@@ -118,7 +118,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        public void TestPredictedActiveCellsAreAlwaysWinners2()
+        public void TestPredictedActiveCellsAreAlwaysWinners3()
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
