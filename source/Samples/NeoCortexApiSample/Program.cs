@@ -33,7 +33,7 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            // RunMultiSimpleSequenceLearningExperiment();
+            //RunMultiSimpleSequenceLearningExperiment();
             //RunMultiSequenceLearningExperiment();
 
             // new RunPredictionMultiSequenceExperiment() 
@@ -92,9 +92,10 @@ namespace NeoCortexApiSample
                 {
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
-                    Console.WriteLine(numbers[temp]);
+                    Console.WriteLine(row);
 
-                    foreach (var digit in numbers)
+
+                    foreach (var digit in numbers)  //assigning each number to the digit variable
                     {
                         // splitting multiple input sequences with semi-colon
                         if (!digit.Contains(';'))
