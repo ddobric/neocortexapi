@@ -36,13 +36,13 @@ namespace NeoCortexApiSample
             // RunMultiSimpleSequenceLearningExperiment();
             //RunMultiSequenceLearningExperiment();
 
-            // new MultiSequenceLearning experiment based on new method for getting sequences data from local text files
-            RunMultipleSequenceLearningExperiment();
+            // new RunPredictionMultiSequenceExperiment() 
+            RunPredictionMultiSequenceExperiment(); /* This method is developed by Team_MSL to read arbitrary data from single txt file and improve CPU utilization*/
         }
 
 
 
-        private static void RunMultipleSequenceLearningExperiment()
+        private static void RunPredictionMultiSequenceExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
@@ -84,7 +84,7 @@ namespace NeoCortexApiSample
         private static Dictionary<string, List<double>> GetInputFromTextFile()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            using (StreamReader reader = new StreamReader(@"D:\FAUS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
+            using (StreamReader reader = new StreamReader(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
             {
                 int temp = 0;
                 List<double> inputList = new();
@@ -92,7 +92,7 @@ namespace NeoCortexApiSample
                 {
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
-                    Console.WriteLine(numbers);
+                    Console.WriteLine(numbers[temp]);
 
                     foreach (var digit in numbers)
                     {
@@ -117,26 +117,26 @@ namespace NeoCortexApiSample
 
 
 
-        //private static void RunMultiSimpleSequenceLearningExperiment()
-        //{
-        //    Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+        private static void RunMultiSimpleSequenceLearningExperiment()
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
-        //    sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
-        //    sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
+            sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
+            sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
-        //    //
-        //    // Prototype for building the prediction engine.
-        //    MultiSequenceLearning experiment = new MultiSequenceLearning();
-        //    var predictor = experiment.Run(sequences);         
-        //}
+            //
+            // Prototype for building the prediction engine.
+            MultiSequenceLearning experiment = new MultiSequenceLearning();
+            var predictor = experiment.Run(sequences);
+        }
 
 
-        /// <summary>
-        /// This example demonstrates how to learn two sequences and how to use the prediction mechanism.
-        /// First, two sequences are learned.
-        /// Second, three short sequences with three elements each are created und used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
-        /// The predictor tries to predict the next element.
-        /// </summary>
+        /*<summary>
+        This example demonstrates how to learn two sequences and how to use the prediction mechanism.
+        First, two sequences are learned.
+        Second, three short sequences with three elements each are created und used for prediction.The predictor used by experiment privides to the HTM every element of every predicting sequence.
+        The predictor tries to predict the next element.
+        </summary>*/
         private static void RunMultiSequenceLearningExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
