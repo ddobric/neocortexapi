@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\CortexLayer.md = Documentation\CortexLayer.md
 		Documentation\Encoders.md = Documentation\Encoders.md
 		Documentation\experiments.md = Documentation\experiments.md
+		MultiSequenceLearning_Team_MSL\Input_Files\input1.txt = MultiSequenceLearning_Team_MSL\Input_Files\input1.txt
 		Documentation\SdrRepresentation.md = Documentation\SdrRepresentation.md
 		Documentation\SpatialPooler.md = Documentation\SpatialPooler.md
 		Documentation\TemporalMemory.md = Documentation\TemporalMemory.md
