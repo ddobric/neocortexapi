@@ -37,7 +37,7 @@ namespace NeoCortexApiSample
             //RunMultiSequenceLearningExperiment();
 
             // new MultiSequenceLearning experiment based on new method for getting sequences data from local text files
-            RunPredictionMultiSequenceExperiment();
+            RunPredictionMultiSequenceExperiment(); /* This method is developed by Team_MSL to read arbitrary data from single txt file and improve CPU utilization*/
         }
 
 
