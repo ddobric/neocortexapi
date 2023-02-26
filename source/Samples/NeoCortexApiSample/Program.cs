@@ -44,7 +44,7 @@ namespace NeoCortexApiSample
 
         private static void RunPredictionMultiSequenceExperiment()
         {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            Dictionary<string, List<double>> sequences = new ();
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
@@ -56,12 +56,12 @@ namespace NeoCortexApiSample
 
             //
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            List<Double> InputSeq = new();
+            MultiSequenceLearning experiment = new ();
 
             // to get list of double values needed in later code changes
             //foreach (List<Double> entry in sequences.Values)
             //{
+            //List<Double> InputSeq = new();
             //   InputSeq = entry;
             //    Console.WriteLine(InputSeq);
             //}
