@@ -37,12 +37,12 @@ namespace NeoCortexApiSample
             //RunMultiSequenceLearningExperiment();
 
             // new MultiSequenceLearning experiment based on new method for getting sequences data from local text files
-            RunMultipleSequenceLearningExperiment();
+            RunPredictionMultiSequenceExperiment();
         }
 
 
 
-        private static void RunMultipleSequenceLearningExperiment()
+        private static void RunPredictionMultiSequenceExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
