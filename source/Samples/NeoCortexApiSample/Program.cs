@@ -84,7 +84,7 @@ namespace NeoCortexApiSample
         private static Dictionary<string, List<double>> GetInputFromTextFile()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            using (StreamReader reader = new StreamReader(@"D:\FAUS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
+            using (StreamReader reader = new StreamReader(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
             {
                 int temp = 0;
                 List<double> inputList = new();
