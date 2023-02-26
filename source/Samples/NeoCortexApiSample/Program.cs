@@ -92,7 +92,7 @@ namespace NeoCortexApiSample
                 {
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
-                    Console.WriteLine(numbers);
+                    Console.WriteLine(numbers[temp]);
 
                     foreach (var digit in numbers)
                     {
