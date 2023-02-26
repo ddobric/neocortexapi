@@ -104,7 +104,7 @@ namespace NeoCortexApiSample
                         else
                         {
                             temp++;
-                            sequences.Add("Sequence" + temp, inputList);
+                            sequences.Add("Sequence: " + temp, inputList);
                             break;
 
                         }
