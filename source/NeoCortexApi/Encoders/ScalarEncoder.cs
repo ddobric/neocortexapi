@@ -674,7 +674,7 @@ namespace NeoCortexApi.Encoders
             }
             return numpy.array(new List<object> {
                     closeness
-                });
+            });
         }
 
         //  See the function description in base.py
