@@ -117,26 +117,26 @@ namespace NeoCortexApiSample
 
 
 
-        //private static void RunMultiSimpleSequenceLearningExperiment()
-        //{
-        //    Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+        private static void RunMultiSimpleSequenceLearningExperiment()
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
-        //    sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
-        //    sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
+            sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
+            sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
-        //    //
-        //    // Prototype for building the prediction engine.
-        //    MultiSequenceLearning experiment = new MultiSequenceLearning();
-        //    var predictor = experiment.Run(sequences);         
-        //}
+            //
+            // Prototype for building the prediction engine.
+            MultiSequenceLearning experiment = new MultiSequenceLearning();
+            var predictor = experiment.Run(sequences);
+        }
 
 
-        /// <summary>
-        /// This example demonstrates how to learn two sequences and how to use the prediction mechanism.
-        /// First, two sequences are learned.
-        /// Second, three short sequences with three elements each are created und used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
-        /// The predictor tries to predict the next element.
-        /// </summary>
+        /*<summary>
+        This example demonstrates how to learn two sequences and how to use the prediction mechanism.
+        First, two sequences are learned.
+        Second, three short sequences with three elements each are created und used for prediction.The predictor used by experiment privides to the HTM every element of every predicting sequence.
+        The predictor tries to predict the next element.
+        </summary>*/
         private static void RunMultiSequenceLearningExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
