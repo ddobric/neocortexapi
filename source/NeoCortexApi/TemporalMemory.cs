@@ -13,7 +13,7 @@ namespace NeoCortexApi
     /// <summary>
     /// Implementation of Temporal Memory algorithm.
     /// </summary>
-    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>/*ISerializable*///: IComputeDecorator
+    public class TemporalMemory : IHtmAlgorithm<int[], ComputeCycle>, ISerializable //: IComputeDecorator
     {
 
         /// <summary>

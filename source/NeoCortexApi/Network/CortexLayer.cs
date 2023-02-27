@@ -16,6 +16,8 @@ namespace NeoCortexApi.Network
     {
         #region Properties
 
+        
+
         public string Name { get; set; }
 
         public Dictionary<string, IHtmModule> HtmModules { get; set; }
@@ -163,6 +165,7 @@ namespace NeoCortexApi.Network
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
+
             if (obj is CortexLayer<object,object> layer)
             {
                 
@@ -172,18 +175,34 @@ namespace NeoCortexApi.Network
                 tm.Serialize(tm, null, sw_tm);
                 sw_tm.Close();
 
-                /*
+                
                 var modelTrace = "ModelTrace.txt";
                 StreamWriter sw_sp = new StreamWriter(modelTrace);
-                var sp = (SpatialPooler)layer.HtmModules["sp"];
-                sp.Serialize(sw_sp);
-                */              
+                var sp = (SpatialPoolerMT)layer.HtmModules["sp"];
+                sp.Serialize(sp, null, sw_sp) ;
+                                     
             }
             
         }
 
         public static object Deserialize<T>(StreamReader sr)
         {
+            // We will use 100 bits to represent an input vector( pattern).
+            int inputBits = 100;
+            double max = 20;
+
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
             var model_tm = "Model_tm.txt";
             var modelTrace = "ModelTrace.txt";
         
@@ -194,11 +213,13 @@ namespace NeoCortexApi.Network
             StreamReader sr_sp = new StreamReader(modelTrace);
             var sp = SpatialPooler.Deserialize(sr_sp);
             sr_sp.Close();
-        
-            CortexLayer<object, object> layer = new CortexLayer<object, object>();
-            //layer.HtmModules.Add("encoder", encoder);
-            layer.HtmModules.Add("sp", sp);
-            //layer.HtmModules.Add("tm", (TemporalMemory)tm);
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            CortexLayer<object, object> layer = new CortexLayer<object, object>("L");
+            layer.HtmModules.Add("encoder", encoder);
+            layer.HtmModules.Add("sp", (sp));
+            layer.HtmModules.Add("tm", (TemporalMemory)tm);
 
             return layer;
         }
