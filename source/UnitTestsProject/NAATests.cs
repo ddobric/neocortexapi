@@ -16,8 +16,6 @@ namespace UnitTestsProject
     [TestClass]
     public class NAATests
     {
-      
-
         [TestMethod]
         [TestCategory("Prod")]
         [TestCategory("NAA")]
@@ -86,7 +84,7 @@ namespace UnitTestsProject
             {
                 ApicalDendrite segment = new ApicalDendrite(testNeuron, i, 0.5);
 
-                for (int y = 0; y < i+1; y++)
+                for (int y = 0; y < i + 1; y++)
                 {
                     var synapse = new Synapse(preSynapticNeuron, segment.SegmentIndex, segment.Synapses.Count, 0.5);
 
@@ -100,9 +98,9 @@ namespace UnitTestsProject
 
             var maxSeg = HtmCompute.GetSegmentWithHighesPotential(segments);
 
-            Assert.AreEqual(numSegments-1, maxSeg.SegmentIndex);
+            Assert.AreEqual(numSegments - 1, maxSeg.SegmentIndex);
 
-            Assert.IsTrue(numSegments==maxSeg.Synapses.Count);
+            Assert.IsTrue(numSegments == maxSeg.Synapses.Count);
         }
 
 
@@ -122,10 +120,10 @@ namespace UnitTestsProject
         public void AssociateAreasTest(int numCells, double numActCellsPct)
         {
             var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
-            
+
             cfg.MaxNewSynapseCount = 5;
 
-            CorticalArea areaX = new CorticalArea(1,"X", 1024);
+            CorticalArea areaX = new CorticalArea(1, "X", 1024);
 
             CorticalArea areaY = new CorticalArea(2, "Y", 100);
 
@@ -196,7 +194,7 @@ namespace UnitTestsProject
                 {
                     naa.Compute(areaX, true);
                     Debug.WriteLine(naa.TraceState());
-                   // AssertApicalSynapsePermanences(areaY, cfg.InitialPermanence + (i) * cfg.PermanenceIncrement);
+                    // AssertApicalSynapsePermanences(areaY, cfg.InitialPermanence + (i) * cfg.PermanenceIncrement);
                 }
 
                 AssertAssociations(srcSdrsInX[n].Length, numCells, numActCellsPct, areaY, areaX, naa);
@@ -239,18 +237,17 @@ namespace UnitTestsProject
         {
             foreach (var activeCell in areaY.ActiveCells)
             {
-                // NAA between two different areas use only ApicalSegments.
+                // Currentlly, NAA between two different areas use only ApicalSegments.
                 Assert.IsTrue(activeCell.DistalDendrites.Count == 0);
 
                 foreach (var seg in activeCell.ApicalDendrites)
                 {
                     foreach (var syn in seg.Synapses)
-                    {
-                        // All synapses are fully trained to maximum.
+
                         Assert.IsTrue(syn.Permanence == expectedPermanence);
-                    }
                 }
             }
         }
     }
+
 }
