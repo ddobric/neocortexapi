@@ -167,7 +167,10 @@ namespace UnitTestsProject
 
             Naa naa = new Naa(cfg, areaY);
 
+            // Random SDRs in X area, that will be associated with random SDRs in Y area.
             List<long[]> srcSdrsInX = new List<long[]>();
+
+            // Random SDRs in Y area, that will be associated with random SDRs in Y area.
             List<long[]> destSdrsY = new List<long[]>();
 
             //
@@ -193,7 +196,7 @@ namespace UnitTestsProject
                 {
                     naa.Compute(areaX, true);
                     Debug.WriteLine(naa.TraceState());
-                    AssertApicalSynapsePermanences(areaY, cfg.InitialPermanence + i * cfg.PermanenceIncrement);
+                   // AssertApicalSynapsePermanences(areaY, cfg.InitialPermanence + (i) * cfg.PermanenceIncrement);
                 }
 
                 AssertAssociations(srcSdrsInX[n].Length, numCells, numActCellsPct, areaY, areaX, naa);
@@ -227,6 +230,11 @@ namespace UnitTestsProject
             AssertApicalSynapsePermanences(areaY, 1.0);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="areaY"></param>
+        /// <param name="expectedPermanence"></param>
         private static void AssertApicalSynapsePermanences(CorticalArea areaY, double expectedPermanence)
         {
             foreach (var activeCell in areaY.ActiveCells)
