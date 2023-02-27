@@ -195,3 +195,5 @@ class KNNClassifier
         return mostCommonLabel;
     }
 }
+
+## Functions for collecting the inputs from data sources
