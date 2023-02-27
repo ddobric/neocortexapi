@@ -96,14 +96,16 @@ namespace NeoCortexApiSample
 
                     foreach (var digit in numbers)
                     {
-                        // splitting multiple input sequences with semi-colon
+                        // semicolon act as termination between two sequences
                         if (!digit.Contains(';'))
                         {
+                            //digit is converting to double
                             inputList.Add(Convert.ToDouble(digit));
                         }
                         else
                         {
                             temp++;
+                            //temp defined to identify sequence number
                             sequences.Add("Sequence" + temp, inputList);
                             break;
 
