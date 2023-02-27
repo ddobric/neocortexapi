@@ -172,12 +172,12 @@ namespace NeoCortexApi.Network
                 tm.Serialize(tm, null, sw_tm);
                 sw_tm.Close();
 
+                /*
                 var modelTrace = "ModelTrace.txt";
                 StreamWriter sw_sp = new StreamWriter(modelTrace);
                 var sp = (SpatialPooler)layer.HtmModules["sp"];
                 sp.Serialize(sw_sp);
-
-                
+                */              
             }
             
         }
@@ -186,15 +186,15 @@ namespace NeoCortexApi.Network
         {
             var model_tm = "Model_tm.txt";
             var modelTrace = "ModelTrace.txt";
-        /*
+        
             StreamReader sr_tm = new StreamReader(model_tm);
-            var tm = TemporalMemoryMT.Deserialize<T>(sr_tm, model_tm);
+            var tm = TemporalMemory.Deserialize<TemporalMemoryMT>(sr_tm, null);
             sr_tm.Close();
-        */
+        
             StreamReader sr_sp = new StreamReader(modelTrace);
             var sp = SpatialPooler.Deserialize(sr_sp);
             sr_sp.Close();
-
+        
             CortexLayer<object, object> layer = new CortexLayer<object, object>();
             //layer.HtmModules.Add("encoder", encoder);
             layer.HtmModules.Add("sp", sp);

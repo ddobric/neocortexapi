@@ -46,15 +46,15 @@ namespace NeoCortexApiSample
             sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
 
-
+            /*
             //Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
             predictor.Save(predictor);
-
+            */
          
-            //var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
+            var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
 
 
         }
