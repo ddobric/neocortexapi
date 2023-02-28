@@ -744,13 +744,12 @@ namespace NeoCortexApi.Encoders
             @string += " padding: {padding}".format(padding: this.padding);
             return @string;
         }
-        [classmethod]
-        public static object getSchema(object cls)
+        public static object GetSchema(Type cls)
         {
             return ScalarEncoderProto;
         }
 
-        [classmethod]
+        
         public static object read(object cls, object proto)
         {
             object resolution;
