@@ -108,8 +108,14 @@ namespace NeoCortexApi.Encoders
             }
             // Initialized bucketValues to null.
             this.bucketValues = null;
-        }
 
+
+        }
+        
+            // This matrix is used for the topDownCompute. We build it the first time
+            // topDownCompute is called
+            this._topDownMappingM = null;
+            this._topDownValues = null;
 
         public void InitEncoder(int w, double minVal, double maxVal, int n, double radius, double resolution)
         {
@@ -553,7 +559,7 @@ namespace NeoCortexApi.Encoders
                 {
                     ranges.append(new List<object> {
                             inMin,
-                            this.maxval
+                            this.MaxVal
                         });
                     ranges.append(new List<object> {
                             this.MinVal,
@@ -562,13 +568,13 @@ namespace NeoCortexApi.Encoders
                 }
                 else
                 {
-                    if (inMax > this.maxval)
+                    if (inMax > this.MaxVal)
                     {
-                        inMax = this.maxval;
+                        inMax = this.MaxVal;
                     }
-                    if (inMin > this.maxval)
+                    if (inMin > this.MaxVal)
                     {
-                        inMin = this.maxval;
+                        inMin = this.MaxVal;
                     }
                     ranges.append(new List<object> {
                             inMin,
@@ -603,6 +609,10 @@ namespace NeoCortexApi.Encoders
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
+        private int[,] _topDownMappingM;
+        //By defining _topDownMappingM as a member variable of the ScalarEncoder class,
+        //you will be able to access it within the getTopDownMapping()
+
         public int getTopDownMapping()
         {
             // Do we need to build up our reverse mapping table
@@ -611,12 +621,12 @@ namespace NeoCortexApi.Encoders
                 // The input scalar value corresponding to each possible output encoding
                 if (this.Periodic)
                 {
-                    this._topDownValues = numpy.arange(this.MinVal + this.Resolution / 2.0, this.maxval, this.Resolution);
+                    this._topDownValues = numpy.arange(this.MinVal + this.Resolution / 2.0, this.MaxVal, this.Resolution);
                 }
                 else
                 {
                     //Number of values is (max-min)/resolutions
-                    this._topDownValues = numpy.arange(this.MinVal, this.maxval + this.Resolution / 2.0, this.Resolution);
+                    this._topDownValues = numpy.arange(this.MinVal, this.MaxVal + this.Resolution / 2.0, this.Resolution);
                 }
                 // Each row represents an encoded output pattern
                 var numCategories = this._topDownValues.Count;
