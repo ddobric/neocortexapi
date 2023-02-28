@@ -338,7 +338,7 @@ namespace NeoCortexApi.Encoders
             }
 
 
-            var minbin = GetFirstOnBit(input)[0];
+            var minbin = GetFirstOnBit(input).ToString()[0];
             // For periodic encoders, the bucket index is the index of the center bit
             if (Periodic)
             {
@@ -456,7 +456,7 @@ namespace NeoCortexApi.Encoders
 
             while (i < nz.Count)
             {
-                if (nz[i] == run[0] + run[1])
+                if (nz[i].Equals((int)run[0] + (int)run[1]))
                 {
                     run[1] += 1;
                 }
