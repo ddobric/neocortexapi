@@ -726,7 +726,10 @@ namespace NeoCortexApi.Encoders
                 });
         }
 
-        public override object ToString()
+
+        /*
+
+        public override object.ToString()
         {
             var @string = "ScalarEncoder:";
             @string += "  min: {minval}".format(minval: this.minval);
@@ -787,7 +790,9 @@ namespace NeoCortexApi.Encoders
         //    var excludeMembers = new List<string> { nameof(ScalarEncoder.Properties) };
         //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         //}
-
+*/
     }
+
+        
     
 }
