@@ -3,6 +3,7 @@
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -346,6 +347,71 @@ namespace NeoCortexApi.Encoders
         public bool Equals(IHtmModule other)
         {
             return this.Equals((object)other);
+        }
+        // Define the Encoders property as a dictionary of tuples
+        public Dictionary<string, (object encoder, int offset)> Encoders { get; set; }
+
+        public static object GetBucketIndices(object inputData)
+        {
+            List<int> retVals = new List<int>();
+            if (EncoderBase.Encoders != null)
+            {
+                foreach (var (name, encoder, offset) in EncoderBase.Encoders.Values)
+                {
+                    var values = ((IEncoder)encoder).GetBucketIndices(_getInputValue(inputData, name));
+                    retVals.AddRange(values);
+                }
+            }
+            else
+            {
+                throw new Exception("Should be implemented in base classes that are not containers for other encoders");
+            }
+            return retVals;
+        }
+
+
+        /// the System.Collections.BitArray class to represent the encoded input. The List<(float, float)> type 
+        ///represents the ranges of input that would generate bits in the encoded output. The Dictionary<string, 
+        ///(List<(float, float)> ranges, string desc)> type represents the fields dictionary where the keys represent 
+        ///field names and the values are tuples containing the ranges and pretty print descriptions of each field.
+        public (Dictionary<string, (List<(float, float)> ranges, string desc)> fieldsDict, List<string> fieldOrder) Decode(BitArray encoded, string parentFieldName = "")
+        {
+            var fieldsDict = new Dictionary<string, (List<(float, float)> ranges, string desc)>();
+            var fieldsOrder = new List<string>();
+
+            // What is the effective parent name?
+            var name = string.IsNullOrEmpty(parentFieldName) ? Name : $"{parentFieldName}.{Name}";
+
+            if (Encoders != null)
+            {
+                // Merge decodings of all child encoders together
+                for (var i = 0; i < Encoders.Count; i++)
+                {
+                    // Get the encoder and the encoded output
+                    var (subFieldName, encoder, offset) = Encoders[i];
+                    var nextOffset = i < Encoders.Count - 1 ? Encoders[i + 1].Offset : Width;
+                    var fieldOutput = encoded.Cast<bool>().Skip(offset).Take(nextOffset - offset).ToArray();
+                    var (subFieldsDict, subFieldsOrder) = encoder.Decode(new BitArray(fieldOutput), name);
+
+                    foreach (var (fieldName, (ranges, desc)) in subFieldsDict)
+                    {
+                        if (fieldsDict.ContainsKey(fieldName))
+                        {
+                            // Merge overlapping ranges
+                            fieldsDict[fieldName].ranges.AddRange(ranges);
+                        }
+                        else
+                        {
+                            fieldsDict[fieldName] = (ranges, desc);
+                            fieldsOrder.Add(fieldName);
+                        }
+                    }
+
+                    fieldsOrder.AddRange(subFieldsOrder);
+                }
+            }
+
+            return (fieldsDict, fieldsOrder);
         }
     }
 }

@@ -112,10 +112,7 @@ namespace NeoCortexApi.Encoders
 
         }
         
-            // This matrix is used for the topDownCompute. We build it the first time
-            // topDownCompute is called
-            this._topDownMappingM = null;
-            this._topDownValues = null;
+         
 
         public void InitEncoder(int w, double minVal, double maxVal, int n, double radius, double resolution)
         {
