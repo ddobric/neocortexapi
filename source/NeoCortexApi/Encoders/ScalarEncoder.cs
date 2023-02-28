@@ -10,7 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 using System.Linq;
-
+using NeoCortexApi.Encoders;
 
 
 namespace NeoCortexApi.Encoders
@@ -112,10 +112,7 @@ namespace NeoCortexApi.Encoders
 
         }
         
-            // This matrix is used for the topDownCompute. We build it the first time
-            // topDownCompute is called
-            this._topDownMappingM = null;
-            this._topDownValues = null;
+         
 
         public void InitEncoder(int w, double minVal, double maxVal, int n, double radius, double resolution)
         {
@@ -528,8 +525,8 @@ namespace NeoCortexApi.Encoders
                 else
                 {
                     // Convert to input space.
-                    inMin = (left - this.padding) * this.range / this.nInternal + this.MinVal;
-                    inMax = (right - this.padding) * this.range / this.nInternal + this.MinVal;
+                    inMin = (left - this.padding) * this.Range / this.nInternal + this.MinVal;
+                    inMax = (right - this.padding) * this.Range / this.nInternal + this.MinVal;
                 }
 
                 // Handle Wape-around if periodic 
@@ -537,8 +534,8 @@ namespace NeoCortexApi.Encoders
                 {
                     if (inMin >= this.MaxVal)
                     {
-                        inMin -= this.range;
-                        inMax -= this.range;
+                        inMin -= this.Range;
+                        inMax -= this.Range;
                     }
                 }
 
@@ -563,7 +560,7 @@ namespace NeoCortexApi.Encoders
                         });
                     ranges.append(new List<object> {
                             this.MinVal,
-                            inMax - this.range
+                            inMax - this.Range
                         });
                 }
                 else

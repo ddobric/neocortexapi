@@ -9,5 +9,8 @@ namespace NeoCortexApi.Entities
     {
         void Serialize(object obj, string name, StreamWriter sw);
         static object Deserialize<T>(StreamReader sr, string name) => throw new NotImplementedException();
+        List<NeoCortexApi.Encoders.EncoderResult> GetBucketInfo(int[] buckets);
+        List<NeoCortexApi.Encoders.EncoderResult> TopDownCompute(int[] encoded);
+        List<NeoCortexApi.Encoders.EncoderResult> TopDownCompute(int[] encoded);
     }
 }
