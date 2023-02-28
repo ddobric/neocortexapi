@@ -10,7 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 using System.Linq;
-
+using NeoCortexApi.Encoders;
 
 
 namespace NeoCortexApi.Encoders

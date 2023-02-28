@@ -351,23 +351,35 @@ namespace NeoCortexApi.Encoders
         // Define the Encoders property as a dictionary of tuples
         public Dictionary<string, (object encoder, int offset)> Encoders { get; set; }
 
+
+
+
+
         public static object GetBucketIndices(object inputData)
         {
             List<int> retVals = new List<int>();
-            if (EncoderBase.Encoders != null)
+            var encoder = new ConcreteEncoder(); // create an instance of a concrete subclass of EncoderBase
+            if (encoder.Encoders != null)
             {
-                foreach (var (name, encoder, offset) in EncoderBase.Encoders.Values)
+                foreach ((IEncoder subEncoder, int offset) in ((IDictionary<string, (IEncoder, int)>)encoder.Encoders).Values)
                 {
-                    var values = ((IEncoder)encoder).GetBucketIndices(_getInputValue(inputData, name));
-                    retVals.AddRange(values);
+                    var values = subEncoder.GetBucketIndices(_getInputValue(inputData, subEncoder.Name));
+                    retVals.AddRange((IEnumerable<int>)values);
                 }
             }
             else
             {
-                throw new Exception("Should be implemented in base classes that are not containers for other encoders");
+                throw new System.Exception("Should be implemented in base classes that are not containers for other encoders");
             }
             return retVals;
         }
+
+        private static object _getInputValue(object inputData, object name)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
 
         /// the System.Collections.BitArray class to represent the encoded input. The List<(float, float)> type 
