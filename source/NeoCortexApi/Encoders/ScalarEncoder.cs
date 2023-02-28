@@ -327,8 +327,8 @@ namespace NeoCortexApi.Encoders
 
         public int GetBucketIndices(object inputData)
         {
-
-            if ((typeof(input) == Double) && Double.IsNaN(input))
+            double input;
+            if (input is double && double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
             }
@@ -338,7 +338,7 @@ namespace NeoCortexApi.Encoders
             }
 
 
-            var minbin = GetFirstOnBit(input)[0];
+            var minbin = GetFirstOnBit(input).ToString()[0];
             // For periodic encoders, the bucket index is the index of the center bit
             if (Periodic)
             {
@@ -363,10 +363,10 @@ namespace NeoCortexApi.Encoders
 
             if (input != 0)
             {
-                throw new ArgumentException("$Expected a scalar input but got input of type", input);
+                throw new ArgumentException("Expected a scalar input but got input of type " + input.GetType().Name);
             }
 
-            if (input != Double.IsNaN(input))
+            if (!Double.IsNaN(input))
             {
                 input = 0;
                 bucketIdx = (int)GetFirstOnBit(input);
@@ -456,7 +456,7 @@ namespace NeoCortexApi.Encoders
 
             while (i < nz.Count)
             {
-                if (nz[i] == run[0] + run[1])
+                if (nz[i].Equals((int)run[0] + (int)run[1]))
                 {
                     run[1] += 1;
                 }
@@ -664,7 +664,7 @@ namespace NeoCortexApi.Encoders
             });
         }
 
-        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
+        public virtual object closenessScores(object expValues, object actValues, object fractional = null)
         {
             object closeness;
             var expValue = expValues[0];
@@ -696,7 +696,7 @@ namespace NeoCortexApi.Encoders
 
         //  See the function description in base.py
         //     
-        public virtual object closenessScores(object expValues, object actValues, object fractional = null)
+        public virtual object closenessScoresNew(object expValues, object actValues, object fractional = null)
         {
             object closeness;
             var expValue = expValues[0];
