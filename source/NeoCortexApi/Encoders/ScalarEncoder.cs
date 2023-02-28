@@ -11,6 +11,8 @@ using System.IO;
 using System.Xml;
 using System.Linq;
 
+
+
 namespace NeoCortexApi.Encoders
 {
 
@@ -37,7 +39,7 @@ namespace NeoCortexApi.Encoders
         {
 
         }
-
+        private const double SENTINEL_VALUE_FOR_MISSING_DATA = double.NaN;
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
         /// </summary>
@@ -106,8 +108,14 @@ namespace NeoCortexApi.Encoders
             }
             // Initialized bucketValues to null.
             this.bucketValues = null;
-        }
 
+
+        }
+        
+            // This matrix is used for the topDownCompute. We build it the first time
+            // topDownCompute is called
+            this._topDownMappingM = null;
+            this._topDownValues = null;
 
         public void InitEncoder(int w, double minVal, double maxVal, int n, double radius, double resolution)
         {
@@ -327,16 +335,21 @@ namespace NeoCortexApi.Encoders
 
         public int GetBucketIndices(object inputData)
         {
-            double input;
-            if (input is double && double.IsNaN(input))
+            double input = 0.0; // assign a default value
+            if (inputData is double && double.IsNaN((double)inputData))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
+            }
+            else
+            {
+                // handle the case where inputData is not a double or not NaN
+                throw new ArgumentException("Input data type not supported");
             }
             if (input == SENTINEL_VALUE_FOR_MISSING_DATA)
             {
                 return 0;
             }
-
+            // rest of the code
 
             var minbin = GetFirstOnBit(input).ToString()[0];
             // For periodic encoders, the bucket index is the index of the center bit
@@ -354,6 +367,7 @@ namespace NeoCortexApi.Encoders
                 }
                 return bucketIdx;
             }
+            return 0;
         }
 
 
@@ -379,15 +393,15 @@ namespace NeoCortexApi.Encoders
             }
             else
             {
-                /// # The bucket index is the index of the first bit to set in the output
+                /// # The bucket index is the index of the first bit to set in the output             
                 output[0, n] = 0;
                 minbin = bucketIdx;
-                maxbin = minbin + 2 * self.halfwidth;
+                maxbin = minbin + 2 * halfwidth;
             }
 
-            if (periodic)
+            if (Periodic)
             {
-                if (maxbin >= n)
+                if (axbin >= n)
                 {
                     bottombins = maxbin - n + 1;
                     output[0, bottombins] = 1;
@@ -407,6 +421,7 @@ namespace NeoCortexApi.Encoders
 
                 }
             }
+            return 0;
         }
 
         public int decode(object encoded, string parentFieldName = "")
@@ -416,9 +431,9 @@ namespace NeoCortexApi.Encoders
             {
                 return (new Dictionary<object, object>(), new List<object>());
             }
-            maxzerosinrow = this.halfwidth;
+            maxzerosinrow = halfwidth;
 
-            if (this.periodic)
+            if (this.Periodic)
             {
                 foreach (int j in xrange(this.n))
                 {
@@ -474,7 +489,7 @@ namespace NeoCortexApi.Encoders
             runs.append(run);
             // If we have a periodic encoder, merge the first and last run if they
             //  both go all the way to the edges
-            if (this.periodic && runs.Count > 1)
+            if (this.Periodic && runs.Count > 1)
             {
                 if (runs[0][0] == 0 && runs[-1][0] + runs[-1][1] == this.n)
                 {
@@ -500,26 +515,27 @@ namespace NeoCortexApi.Encoders
                 }
                 else
                 {
-                    left = start + this.halfwidth;
-                    var right = start + runLen - 1 - this.halfwidth;
+                    left = start + halfwidth;
+                    var right = start + runLen - 1 - halfwidth;
                 }
 
-                // Convert to input space.
-                if (!this.periodic)
+                if (!this.Periodic)
                 {
-                    inMin = (left - this.padding) * this.resolution + this.minval;
-                    inMax = (right - this.padding) * this.resolution + this.minval;
+                    // Convert to input space.
+                    inMin = (left - this.padding) * this.Resolution + this.MinVal;
+                    inMax = (right - this.padding) * this.Resolution + this.MinVal;
                 }
                 else
                 {
-                    inMin = (left - this.padding) * this.range / this.nInternal + this.minval;
-                    inMax = (right - this.padding) * this.range / this.nInternal + this.minval;
+                    // Convert to input space.
+                    inMin = (left - this.padding) * this.range / this.nInternal + this.MinVal;
+                    inMax = (right - this.padding) * this.range / this.nInternal + this.MinVal;
                 }
 
                 // Handle Wape-around if periodic 
-                if (this.periodic)
+                if (this.Periodic)
                 {
-                    if (inMin >= this.maxval)
+                    if (inMin >= this.MaxVal)
                     {
                         inMin -= this.range;
                         inMax -= this.range;
@@ -528,37 +544,37 @@ namespace NeoCortexApi.Encoders
 
 
                 // Clip low end
-                if (inMin < this.minval)
+                if (inMin < this.MinVal)
                 {
-                    inMin = this.minval;
+                    inMin = this.MinVal;
                 }
-                if (inMax < this.minval)
+                if (inMax < this.MinVal)
                 {
-                    inMax = this.minval;
+                    inMax = this.MinVal;
                 }
 
                 /// If we have a periodic encoder, and the max is past the edge, break into
                 ///  2 separate ranges
-                if (this.periodic && inMax >= this.maxval)
+                if (this.Periodic && inMax >= this.MaxVal)
                 {
                     ranges.append(new List<object> {
                             inMin,
-                            this.maxval
+                            this.MaxVal
                         });
                     ranges.append(new List<object> {
-                            this.minval,
+                            this.MinVal,
                             inMax - this.range
                         });
                 }
                 else
                 {
-                    if (inMax > this.maxval)
+                    if (inMax > this.MaxVal)
                     {
-                        inMax = this.maxval;
+                        inMax = this.MaxVal;
                     }
-                    if (inMin > this.maxval)
+                    if (inMin > this.MaxVal)
                     {
-                        inMin = this.maxval;
+                        inMin = this.MaxVal;
                     }
                     ranges.append(new List<object> {
                             inMin,
@@ -593,20 +609,24 @@ namespace NeoCortexApi.Encoders
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
+        private int[,] _topDownMappingM;
+        //By defining _topDownMappingM as a member variable of the ScalarEncoder class,
+        //you will be able to access it within the getTopDownMapping()
+
         public int getTopDownMapping()
         {
-            // Do we need to build up our reverse mapping table?
+            // Do we need to build up our reverse mapping table
             if (this._topDownMappingM == null)
             {
                 // The input scalar value corresponding to each possible output encoding
-                if (this.periodic)
+                if (this.Periodic)
                 {
-                    this._topDownValues = numpy.arange(this.minval + this.resolution / 2.0, this.maxval, this.resolution);
+                    this._topDownValues = numpy.arange(this.MinVal + this.Resolution / 2.0, this.MaxVal, this.Resolution);
                 }
                 else
                 {
                     //Number of values is (max-min)/resolutions
-                    this._topDownValues = numpy.arange(this.minval, this.maxval + this.resolution / 2.0, this.resolution);
+                    this._topDownValues = numpy.arange(this.MinVal, this.MaxVal + this.Resolution / 2.0, this.Resolution);
                 }
                 // Each row represents an encoded output pattern
                 var numCategories = this._topDownValues.Count;
@@ -615,7 +635,7 @@ namespace NeoCortexApi.Encoders
                 foreach (var i in xrange(numCategories))
                 {
                     var value = this._topDownValues[i];
-                    value = max(value, this.minval);
+                    value = max(value, this.MinVal);
                     value = min(value, this.maxval);
                     this.encodeIntoArray(value, outputSpace, learn: false);
                     this._topDownMappingM.setRowFromDense(i, outputSpace);
@@ -638,13 +658,13 @@ namespace NeoCortexApi.Encoders
             var category = buckets[0];
             var encoding = this._topDownMappingM.getRow(category);
             // Which input value does this correspond to?
-            if (this.periodic)
+            if (this.Periodic)
             {
-                inputVal = this.minval + this.resolution / 2.0 + category * this.resolution;
+                inputVal = this.MinVal + this.Resolution / 2.0 + category * this.Resolution;
             }
             else
             {
-                inputVal = this.minval + category * this.resolution;
+                inputVal = this.MinVal + category * this.Resolution;
             }
             return new List<object>
             {
@@ -669,19 +689,19 @@ namespace NeoCortexApi.Encoders
             object closeness;
             var expValue = expValues[0];
             var actValue = actValues[0];
-            if (this.periodic)
+            if (this.Periodic)
             {
                 expValue = expValue % this.maxval;
                 actValue = actValue % this.maxval;
             }
             var err = abs(expValue - actValue);
-            if (this.periodic)
+            if (this.Periodic)
             {
                 err = min(err, this.maxval - err);
             }
             if (fractional)
             {
-                var pctErr = (float)err / (this.maxval - this.minval);
+                var pctErr = (float)err / (this.maxval - this.MinVal);
                 pctErr = min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
             }
@@ -694,26 +714,26 @@ namespace NeoCortexApi.Encoders
             });
         }
 
-        //  See the function description in base.py
+       
         //     
         public virtual object closenessScoresNew(object expValues, object actValues, object fractional = null)
         {
             object closeness;
             var expValue = expValues[0];
             var actValue = actValues[0];
-            if (this.periodic)
+            if (this.Periodic)
             {
                 expValue = expValue % this.maxval;
                 actValue = actValue % this.maxval;
             }
             var err = abs(expValue - actValue);
-            if (this.periodic)
+            if (this.Periodic)
             {
                 err = min(err, this.maxval - err);
             }
             if (fractional)
             {
-                var pctErr = (float)err / (this.maxval - this.minval);
+                var pctErr = (float)err / (this.maxval - this.MinVal);
                 pctErr = min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
             }
@@ -732,25 +752,24 @@ namespace NeoCortexApi.Encoders
         public override string ToString()
         {
             var @string = "ScalarEncoder:";
-            @string += " min: {minval}".format(minval: this.minval);
-            @string += " max: {maxval}".format(maxval: this.maxval);
-            @string += " w: {w}".format(w: this.w);
-            @string += " n: {n}".format(n: this.n);
-            @string += " resolution: {resolution}".format(resolution: this.resolution);
-            @string += " radius: {radius}".format(radius: this.radius);
-            @string += " periodic: {periodic}".format(periodic: this.periodic);
-            @string += " nInternal: {nInternal}".format(nInternal: this.nInternal);
-            @string += " rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
-            @string += " padding: {padding}".format(padding: this.padding);
+            @string += $" min: {this.MinVal}";
+            @string += $" min: {this.maxval}";
+            @string += $" min: {this.w}";
+            @string += $" min: {this.n}";
+            @string += $" min: {this.Resolution}";
+            @string += $" min: {this.radius}";
+            @string += $" min: {this.Periodic}";
+            @string += $" min: {this.nInternal}";
+            @string += $" min: {this.rangeInternal}";
+            @string += $" min: {this.padding}";
             return @string;
         }
-        [classmethod]
-        public static object getSchema(object cls)
+        public static object GetSchema(Type cls)
         {
             return ScalarEncoderProto;
         }
 
-        [classmethod]
+        
         public static object read(object cls, object proto)
         {
             object resolution;
@@ -765,15 +784,15 @@ namespace NeoCortexApi.Encoders
                 radius = proto.radius;
                 resolution = proto.resolution;
             }
-            return cls(w: proto.w, minval: proto.minval, maxval: proto.maxval, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, clipInput: proto.clipInput, forced: true);
+            return cls(w: proto.w, minval: proto.minval, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, clipInput: proto.clipInput, forced: true);
         }
 
         public virtual object write(object proto)
         {
             proto.w = this.w;
-            proto.minval = this.minval;
-            proto.maxval = this.maxval;
-            proto.periodic = this.periodic;
+            proto.MinVal = this.MinVal;
+            proto.maxval = this.MaxVal;
+            proto.periodic = this.Periodic;
             // Radius and resolution can be recalculated based on n
             proto.n = this.n;
             proto.name = this.name;
