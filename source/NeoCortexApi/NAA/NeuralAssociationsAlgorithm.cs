@@ -283,9 +283,6 @@ namespace NeoCortexApi
             if (learn == false)
                 return;
 
-            // Lookup the cell with the lowest number of synapses in the _area.
-            //var leastUsedPotentialCell = HtmCompute.GetLeastUsedCell(this._area.ActiveCells, _rnd);
-
             bool distalOrApical = DistalOrApical(associatedArea, this._area);
 
             Segment[] inactiveSegments = distalOrApical ? throw new NotImplementedException() : InactiveApicalSegments.ToArray();
@@ -295,24 +292,22 @@ namespace NeoCortexApi
             // In a case of HTM-TM, new segment is created only at the leastUsedPotentialCell of the active mini-column.
             foreach (var inactiveSeg in inactiveSegments)
             {
-                Cell segOwnerCell = inactiveSeg.ParentCell;
+                FormNewSynapses(associatedArea, inactiveSeg);
 
-                foreach (var associatingCell in associatedArea.ActiveCells)
-                {
-                   // associatingCell.ReceptorSynapses.First().
-                }
-                //if(segOwnerCell)
-                //
-                // Maximal number of segments per cell should not be exceeded.
-                int currNumSegments = distalOrApical ? segOwnerCell.DistalDendrites.Count : segOwnerCell.ApicalDendrites.Count;
+                //Cell segOwnerCell = inactiveSeg.ParentCell;
 
-                if ( currNumSegments >= _cfg.MaxSegmentsPerCell)
-                    continue;
+                ////if(segOwnerCell)
+                ////
+                //// Maximal number of segments per cell should not be exceeded.
+                //int currNumSegments = distalOrApical ? segOwnerCell.DistalDendrites.Count : segOwnerCell.ApicalDendrites.Count;
 
-                // This is why we substract number of winner cells from the MaxNewSynapseCount.
-                int numSynapses = Math.Min(this._cfg.MaxNewSynapseCount, Math.Min(this._cfg.MaxSynapsesPerSegment, associatedArea.ActiveCells.Count));
+                //if (currNumSegments >= _cfg.MaxSegmentsPerCell)
+                //    continue;
 
-                CreateSegmentAtCell(associatedArea, inactiveSeg.ParentCell, numSynapses);
+                //// This is why we substract number of winner cells from the MaxNewSynapseCount.
+                //int numSynapses = Math.Min(this._cfg.MaxNewSynapseCount, Math.Min(this._cfg.MaxSynapsesPerSegment, associatedArea.ActiveCells.Count));
+
+                //CreateSegmentAtCell(associatedArea, inactiveSeg.ParentCell, numSynapses);
             }
 
             //
@@ -328,6 +323,46 @@ namespace NeoCortexApi
                 // Creates the segment with synapses from associating active cells to this cell.
                 CreateSegmentAtCell(associatedArea, cell, numSynapses);
             }
+        }
+
+
+        /// <summary>
+        /// Creates/Forms new synapses at the segment if not all associating cells are connected to the segment.
+        /// </summary>
+        /// <param name="associatedArea"></param>
+        /// <param name="inactiveSeg"></param>
+        private void FormNewSynapses(CorticalArea associatedArea, Segment inactiveSeg)
+        {
+            foreach (var associatingCell in associatedArea.ActiveCells)
+            {
+                if (!AreConnected(associatingCell, inactiveSeg))
+                {
+                    int numNewSynapses = Math.Min(this._cfg.MaxNewSynapseCount, Math.Min(this._cfg.MaxSynapsesPerSegment, associatedArea.ActiveCells.Count));
+
+                    GrowSynapses(associatedArea.ActiveCells, inactiveSeg, this._cfg.InitialPermanence, numNewSynapses, this._cfg.MaxSynapsesPerSegment, _rnd);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Checks if the presynaptic cell is connected to the segment owne by some post-synaptic cell.
+        /// </summary>
+        /// <param name="presynapticCell"></param>
+        /// <param name="segment"></param>
+        /// <returns>True if the cell forms a synapse to the segment.</returns>
+        private bool AreConnected(Cell presynapticCell, Segment segment)
+        {
+            foreach (var syn1 in segment.Synapses)
+            {
+                foreach (var syn2 in presynapticCell.ReceptorSynapses)
+                {
+                    if (syn1 == syn2)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
 
@@ -563,8 +598,6 @@ namespace NeoCortexApi
             removingCandidates = removingCandidates.OrderBy(c => c).ToList();
 
             //
-            // Enumarates all synapses in a segment and remove winner-cells from
-            // list of removingCandidates if they are presynaptic winners cells.
             // So, we will create synapses only from cells, which do not already have synaptic connection to the segment.          
             foreach (Synapse synapse in segment.Synapses)
             {
@@ -586,7 +619,7 @@ namespace NeoCortexApi
             for (int i = 0; i < numMissingSynapses; i++)
             {
                 int rndIndex = random.Next(removingCandidates.Count);
-                CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence, maxSynapsesPerSegment);
+                var newSynapse = CreateSynapse(segment, removingCandidates[rndIndex], initialPermanence, maxSynapsesPerSegment);
                 removingCandidates.RemoveAt(rndIndex);
             }
         }
@@ -598,7 +631,7 @@ namespace NeoCortexApi
         /// <param name="presynapticCell">the source <see cref="Cell"/>.</param>
         /// <param name="permanence">the initial permanence.</param>
         /// <returns>the created <see cref="Synapse"/>.</returns>
-        protected  Synapse CreateSynapse(Segment segment, Cell presynapticCell, double permanence, int maxSynapsesPerSegment)
+        protected Synapse CreateSynapse(Segment segment, Cell presynapticCell, double permanence, int maxSynapsesPerSegment)
         {
             while (segment.Synapses.Count >= maxSynapsesPerSegment)
             {
@@ -609,15 +642,31 @@ namespace NeoCortexApi
             {
                 Synapse synapse = null;
 
-                segment.Synapses.Add(synapse = new Synapse(presynapticCell,
-                    segment.Synapses.Count,
-                    segment.SegmentIndex, segment.ParentCell.Index, this._area.Name,
+                segment.Synapses.Add(synapse = new Synapse(presynapticCell, synapseIndex: segment.Synapses.Count,
+                    segmentIndex: segment.SegmentIndex, segmentCellIndex: segment.ParentCell.Index, this._area.Name,
                     permanence));
 
                 presynapticCell.ReceptorSynapses.Add(synapse);
 
                 return synapse;
             }
+        }
+
+
+        /// <summary>
+        /// Calculates the synaptic energy of the segment. SUmmirizes all permanences of apical segments.
+        /// </summary>
+        /// <returns></returns>
+        public double GetApicalSynapticEnergy()
+        {
+            double energy = 0;
+
+            foreach (var seg in this.ActiveApicalSegments)
+            {
+                seg.Synapses.ForEach(s => energy += s.Permanence);
+            }
+
+            return energy;
         }
 
 
@@ -631,7 +680,11 @@ namespace NeoCortexApi
 
             sb.AppendLine($"Iteration {_iteration}");
 
-            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {ActiveApicalSegments.Count}, Matching Apical Segments: {MatchingApicalSegments.Count}, Inactive Apical Segments: {InactiveApicalSegments.Count}, Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}");
+            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {ActiveApicalSegments.Count}");
+            sb.AppendLine($"Matching Apical Segments: {MatchingApicalSegments.Count}");
+            sb.AppendLine($"Inactive Apical Segments: {InactiveApicalSegments.Count}");
+            sb.AppendLine($"Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}.");
+            sb.AppendLine($"Synaptic Energy = {GetApicalSynapticEnergy()}");
 
             foreach (var cell in this._area.ActiveCells)
             {

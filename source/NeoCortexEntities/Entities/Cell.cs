@@ -153,6 +153,7 @@ namespace NeoCortexApi.Entities
         }
 
 
+
         /// <summary>
         /// Trace dendrites and synapses.
         /// </summary>
@@ -169,7 +170,7 @@ namespace NeoCortexApi.Entities
             {
                 sb.AppendLine(seg.ToString());
             }
-
+            
             return sb.ToString();
         }
 
