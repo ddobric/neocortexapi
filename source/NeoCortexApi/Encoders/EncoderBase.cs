@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi.Encoders
@@ -52,6 +53,8 @@ namespace NeoCortexApi.Encoders
         // Moved to MultiEncoder.
         //protected Dictionary<EncoderTuple, List<EncoderTuple>> encoders;
         protected List<String> scalarNames;
+        private int offset;
+        private object encoder;
 
         /// <summary>
         /// Default constructor.
@@ -386,7 +389,7 @@ namespace NeoCortexApi.Encoders
         ///represents the ranges of input that would generate bits in the encoded output. The Dictionary<string, 
         ///(List<(float, float)> ranges, string desc)> type represents the fields dictionary where the keys represent 
         ///field names and the values are tuples containing the ranges and pretty print descriptions of each field.
-        public (Dictionary<string, (List<(float, float)> ranges, string desc)> fieldsDict, List<string> fieldOrder) Decode(BitArray encoded, string parentFieldName = "")
+        public (Dictionary<string, (List<(float, float)> ranges, string desc)> fieldsDict, List<string> fieldOrder) Decode(BitArray encoded, (object subFieldName, int encoder, object offset) value, string parentFieldName = "")
         {
             var fieldsDict = new Dictionary<string, (List<(float, float)> ranges, string desc)>();
             var fieldsOrder = new List<string>();
@@ -399,31 +402,116 @@ namespace NeoCortexApi.Encoders
                 // Merge decodings of all child encoders together
                 for (var i = 0; i < Encoders.Count; i++)
                 {
-                    // Get the encoder and the encoded output
-                    var (subFieldName, encoder, offset) = Encoders[i];
-                    var nextOffset = i < Encoders.Count - 1 ? Encoders[i + 1].Offset : Width;
+                    var subEncoder = Encoders.ElementAt(i).Value;
+
+                    var nextOffset = i >= Encoders.Count - 1 ? Width : Encoders[i + 1].Offset;
                     var fieldOutput = encoded.Cast<bool>().Skip(offset).Take(nextOffset - offset).ToArray();
-                    var (subFieldsDict, subFieldsOrder) = encoder.Decode(new BitArray(fieldOutput), name);
+
+                    Dictionary<string, (int[] ranges, string desc)> subFieldsDict;
+                    List<string> subFieldsOrder;
+                    (subFieldsDict, subFieldsOrder) = encoder.Decode(new BitArray(fieldOutput), name);
 
                     foreach (var (fieldName, (ranges, desc)) in subFieldsDict)
                     {
                         if (fieldsDict.ContainsKey(fieldName))
                         {
                             // Merge overlapping ranges
-                            fieldsDict[fieldName].ranges.AddRange(ranges);
+                            var existingRanges = fieldsDict[fieldName].ranges;
+                            var newRanges = ranges.Select(x => ((float)x, (float)x));
+                            var mergedRanges = existingRanges.Concat(newRanges);
+                            fieldsDict[fieldName] = (mergedRanges.ToList(), desc);
                         }
                         else
                         {
-                            fieldsDict[fieldName] = (ranges, desc);
+                            var newRanges = ranges.Select(x => ((float)x, (float)x));
+                            fieldsDict[fieldName] = (newRanges.ToList(), desc);
                             fieldsOrder.Add(fieldName);
                         }
                     }
+
+
 
                     fieldsOrder.AddRange(subFieldsOrder);
                 }
             }
 
+
             return (fieldsDict, fieldsOrder);
         }
+
+        public virtual List<EncoderResult> GetBucketInfo(int[] buckets)
+        {
+            // Fall back topdown compute
+            if (Encoders == null)
+            {
+                throw new NotImplementedException("Must be implemented in sub-class");
+            }
+
+            // Concatenate the results from bucketInfo on each child encoder
+            List<EncoderResult> retVals = new List<EncoderResult>();
+            int bucketOffset = 0;
+            var Encoders = new List<(EncoderBase encoder, int offset)>(); // define and initialize Encoders
+
+            for (int i = 0; i < Encoders.Count; i++)
+            {
+                var (encoder, offset) = Encoders[i];
+
+                int nextBucketOffset;
+                if (encoder.Encoders != null)
+                {
+                    nextBucketOffset = bucketOffset + encoder.Encoders.Count;
+                }
+                else
+                {
+                    nextBucketOffset = bucketOffset + 1;
+                }
+                int[] bucketIndices = buckets.Skip(bucketOffset).Take(nextBucketOffset - bucketOffset).ToArray();
+                List<EncoderResult> values = encoder.GetBucketInfo(bucketIndices);
+
+                retVals.AddRange(values);
+
+                bucketOffset = nextBucketOffset;
+            }
+
+
+
+            return retVals;
+        }
+
+
+
+        public List<EncoderResult> TopDownCompute(int[] encoded)
+        {
+            // Fallback topdown compute
+            if (Encoders == null)
+            {
+                throw new InvalidOperationException("Must be implemented in sub-class");
+            }
+
+            // Concatenate the results from topDownCompute on each child encoder
+            List<EncoderResult> retVals = new List<EncoderResult>();
+            for (int i = 0; i < Encoders.Count; i++)
+            {
+                var (encoder, offset) = Encoders[i];
+
+                int nextOffset = i < Encoders.Count - 1 ? Encoders[i + 1].Offset : Width;
+
+                int[] fieldOutput = encoded.Skip(offset).Take(nextOffset - offset).ToArray();
+                List<EncoderResult> values = encoder.TopDownCompute(fieldOutput);
+
+                if (values is IEnumerable<EncoderResult>)
+                {
+                    retVals.AddRange(values);
+                }
+                else
+                {
+                    retVals.Add(values);
+                }
+            }
+
+            return retVals;
+        }
+
+
     }
 }
