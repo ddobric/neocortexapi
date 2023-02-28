@@ -11,6 +11,8 @@ using System.IO;
 using System.Xml;
 using System.Linq;
 
+
+
 namespace NeoCortexApi.Encoders
 {
 
@@ -37,7 +39,7 @@ namespace NeoCortexApi.Encoders
         {
 
         }
-
+        private const double SENTINEL_VALUE_FOR_MISSING_DATA = double.NaN;
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
         /// </summary>
@@ -327,16 +329,21 @@ namespace NeoCortexApi.Encoders
 
         public int GetBucketIndices(object inputData)
         {
-            double input;
-            if (input is double && double.IsNaN(input))
+            double input = 0.0; // assign a default value
+            if (inputData is double && double.IsNaN((double)inputData))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
+            }
+            else
+            {
+                // handle the case where inputData is not a double or not NaN
+                throw new ArgumentException("Input data type not supported");
             }
             if (input == SENTINEL_VALUE_FOR_MISSING_DATA)
             {
                 return 0;
             }
-
+            // rest of the code
 
             var minbin = GetFirstOnBit(input).ToString()[0];
             // For periodic encoders, the bucket index is the index of the center bit
@@ -354,6 +361,7 @@ namespace NeoCortexApi.Encoders
                 }
                 return bucketIdx;
             }
+            return 0;
         }
 
 
@@ -379,7 +387,7 @@ namespace NeoCortexApi.Encoders
             }
             else
             {
-                /// # The bucket index is the index of the first bit to set in the output
+                /// # The bucket index is the index of the first bit to set in the output             
                 output[0, n] = 0;
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * self.halfwidth;
@@ -407,6 +415,7 @@ namespace NeoCortexApi.Encoders
 
                 }
             }
+            return 0;
         }
 
         public int decode(object encoded, string parentFieldName = "")
