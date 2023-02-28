@@ -696,7 +696,7 @@ namespace NeoCortexApi.Encoders
 
         //  See the function description in base.py
         //     
-        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
+        public virtual object closenessScores(object expValues, object actValues, object fractional = null)
         {
             object closeness;
             var expValue = expValues[0];
@@ -726,19 +726,22 @@ namespace NeoCortexApi.Encoders
                 });
         }
 
-        public override object ToString()
+
+
+
+        public override string ToString()
         {
             var @string = "ScalarEncoder:";
-            @string += "  min: {minval}".format(minval: this.minval);
-            @string += "  max: {maxval}".format(maxval: this.maxval);
-            @string += "  w:   {w}".format(w: this.w);
-            @string += "  n:   {n}".format(n: this.n);
-            @string += "  resolution: {resolution}".format(resolution: this.resolution);
-            @string += "  radius:     {radius}".format(radius: this.radius);
-            @string += "  periodic: {periodic}".format(periodic: this.periodic);
-            @string += "  nInternal: {nInternal}".format(nInternal: this.nInternal);
-            @string += "  rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
-            @string += "  padding: {padding}".format(padding: this.padding);
+            @string += " min: {minval}".format(minval: this.minval);
+            @string += " max: {maxval}".format(maxval: this.maxval);
+            @string += " w: {w}".format(w: this.w);
+            @string += " n: {n}".format(n: this.n);
+            @string += " resolution: {resolution}".format(resolution: this.resolution);
+            @string += " radius: {radius}".format(radius: this.radius);
+            @string += " periodic: {periodic}".format(periodic: this.periodic);
+            @string += " nInternal: {nInternal}".format(nInternal: this.nInternal);
+            @string += " rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
+            @string += " padding: {padding}".format(padding: this.padding);
             return @string;
         }
         [classmethod]
@@ -789,5 +792,7 @@ namespace NeoCortexApi.Encoders
         //}
 
     }
+
+        
     
 }
