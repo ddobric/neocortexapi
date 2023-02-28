@@ -390,12 +390,12 @@ namespace NeoCortexApi.Encoders
                 /// # The bucket index is the index of the first bit to set in the output             
                 output[0, n] = 0;
                 minbin = bucketIdx;
-                maxbin = minbin + 2 * self.halfwidth;
+                maxbin = minbin + 2 * halfwidth;
             }
 
-            if (periodic)
+            if (Periodic)
             {
-                if (maxbin >= n)
+                if (axbin >= n)
                 {
                     bottombins = maxbin - n + 1;
                     output[0, bottombins] = 1;
@@ -425,9 +425,9 @@ namespace NeoCortexApi.Encoders
             {
                 return (new Dictionary<object, object>(), new List<object>());
             }
-            maxzerosinrow = this.halfwidth;
+            maxzerosinrow = halfwidth;
 
-            if (this.periodic)
+            if (this.Periodic)
             {
                 foreach (int j in xrange(this.n))
                 {
@@ -483,7 +483,7 @@ namespace NeoCortexApi.Encoders
             runs.append(run);
             // If we have a periodic encoder, merge the first and last run if they
             //  both go all the way to the edges
-            if (this.periodic && runs.Count > 1)
+            if (this.Periodic && runs.Count > 1)
             {
                 if (runs[0][0] == 0 && runs[-1][0] + runs[-1][1] == this.n)
                 {
@@ -509,12 +509,12 @@ namespace NeoCortexApi.Encoders
                 }
                 else
                 {
-                    left = start + this.halfwidth;
-                    var right = start + runLen - 1 - this.halfwidth;
+                    left = start + halfwidth;
+                    var right = start + runLen - 1 - halfwidth;
                 }
 
                 // Convert to input space.
-                if (!this.periodic)
+                if (!this.Periodic)
                 {
                     inMin = (left - this.padding) * this.resolution + this.minval;
                     inMax = (right - this.padding) * this.resolution + this.minval;
