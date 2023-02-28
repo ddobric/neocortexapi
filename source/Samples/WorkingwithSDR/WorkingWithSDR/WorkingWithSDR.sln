@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkingWithSDR", "WorkingWithSDR.csproj", "{B0302A7A-C40D-4463-8A57-85E720B10B08}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B0302A7A-C40D-4463-8A57-85E720B10B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0302A7A-C40D-4463-8A57-85E720B10B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0302A7A-C40D-4463-8A57-85E720B10B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0302A7A-C40D-4463-8A57-85E720B10B08}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9076FA28-FE6F-42A0-9B02-06C21A7CC6CE}
+	EndGlobalSection
+EndGlobal
