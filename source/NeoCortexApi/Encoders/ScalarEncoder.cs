@@ -513,20 +513,21 @@ namespace NeoCortexApi.Encoders
                     var right = start + runLen - 1 - halfwidth;
                 }
 
-                // Convert to input space.
                 if (!this.Periodic)
                 {
-                    inMin = (left - this.padding) * this.resolution + this.minval;
-                    inMax = (right - this.padding) * this.resolution + this.minval;
+                    // Convert to input space.
+                    inMin = (left - this.padding) * this.Resolution + this.MinVal;
+                    inMax = (right - this.padding) * this.Resolution + this.MinVal;
                 }
                 else
                 {
-                    inMin = (left - this.padding) * this.range / this.nInternal + this.minval;
-                    inMax = (right - this.padding) * this.range / this.nInternal + this.minval;
+                    // Convert to input space.
+                    inMin = (left - this.padding) * this.range / this.nInternal + this.MinVal;
+                    inMax = (right - this.padding) * this.range / this.nInternal + this.MinVal;
                 }
 
                 // Handle Wape-around if periodic 
-                if (this.periodic)
+                if (this.Periodic)
                 {
                     if (inMin >= this.maxval)
                     {
@@ -537,25 +538,25 @@ namespace NeoCortexApi.Encoders
 
 
                 // Clip low end
-                if (inMin < this.minval)
+                if (inMin < this.MinVal)
                 {
-                    inMin = this.minval;
+                    inMin = this.MinVal;
                 }
-                if (inMax < this.minval)
+                if (inMax < this.MinVal)
                 {
-                    inMax = this.minval;
+                    inMax = this.MinVal;
                 }
 
                 /// If we have a periodic encoder, and the max is past the edge, break into
                 ///  2 separate ranges
-                if (this.periodic && inMax >= this.maxval)
+                if (this.Periodic && inMax >= this.maxval)
                 {
                     ranges.append(new List<object> {
                             inMin,
                             this.maxval
                         });
                     ranges.append(new List<object> {
-                            this.minval,
+                            this.MinVal,
                             inMax - this.range
                         });
                 }
@@ -608,14 +609,14 @@ namespace NeoCortexApi.Encoders
             if (this._topDownMappingM == null)
             {
                 // The input scalar value corresponding to each possible output encoding
-                if (this.periodic)
+                if (this.Periodic)
                 {
-                    this._topDownValues = numpy.arange(this.minval + this.resolution / 2.0, this.maxval, this.resolution);
+                    this._topDownValues = numpy.arange(this.MinVal + this.Resolution / 2.0, this.maxval, this.Resolution);
                 }
                 else
                 {
                     //Number of values is (max-min)/resolutions
-                    this._topDownValues = numpy.arange(this.minval, this.maxval + this.resolution / 2.0, this.resolution);
+                    this._topDownValues = numpy.arange(this.minval, this.maxval + this.Resolution / 2.0, this.Resolution);
                 }
                 // Each row represents an encoded output pattern
                 var numCategories = this._topDownValues.Count;
@@ -647,13 +648,13 @@ namespace NeoCortexApi.Encoders
             var category = buckets[0];
             var encoding = this._topDownMappingM.getRow(category);
             // Which input value does this correspond to?
-            if (this.periodic)
+            if (this.Periodic)
             {
-                inputVal = this.minval + this.resolution / 2.0 + category * this.resolution;
+                inputVal = this.minval + this.Resolution / 2.0 + category * this.Resolution;
             }
             else
             {
-                inputVal = this.minval + category * this.resolution;
+                inputVal = this.minval + category * this.Resolution;
             }
             return new List<object>
             {
@@ -678,13 +679,13 @@ namespace NeoCortexApi.Encoders
             object closeness;
             var expValue = expValues[0];
             var actValue = actValues[0];
-            if (this.periodic)
+            if (this.Periodic)
             {
                 expValue = expValue % this.maxval;
                 actValue = actValue % this.maxval;
             }
             var err = abs(expValue - actValue);
-            if (this.periodic)
+            if (this.Periodic)
             {
                 err = min(err, this.maxval - err);
             }
@@ -710,13 +711,13 @@ namespace NeoCortexApi.Encoders
             object closeness;
             var expValue = expValues[0];
             var actValue = actValues[0];
-            if (this.periodic)
+            if (this.Periodic)
             {
                 expValue = expValue % this.maxval;
                 actValue = actValue % this.maxval;
             }
             var err = abs(expValue - actValue);
-            if (this.periodic)
+            if (this.Periodic)
             {
                 err = min(err, this.maxval - err);
             }
@@ -741,16 +742,16 @@ namespace NeoCortexApi.Encoders
         public override string ToString()
         {
             var @string = "ScalarEncoder:";
-            @string += " min: {minval}".format(minval: this.minval);
-            @string += " max: {maxval}".format(maxval: this.maxval);
-            @string += " w: {w}".format(w: this.w);
-            @string += " n: {n}".format(n: this.n);
-            @string += " resolution: {resolution}".format(resolution: this.resolution);
-            @string += " radius: {radius}".format(radius: this.radius);
-            @string += " periodic: {periodic}".format(periodic: this.periodic);
-            @string += " nInternal: {nInternal}".format(nInternal: this.nInternal);
-            @string += " rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
-            @string += " padding: {padding}".format(padding: this.padding);
+            @string += $" min: {this.minval}";
+            @string += $" min: {this.maxval}";
+            @string += $" min: {this.w}";
+            @string += $" min: {this.n}";
+            @string += $" min: {this.Resolution}";
+            @string += $" min: {this.radius}";
+            @string += $" min: {this.Periodic}";
+            @string += $" min: {this.nInternal}";
+            @string += $" min: {this.rangeInternal}";
+            @string += $" min: {this.padding}";
             return @string;
         }
         public static object GetSchema(Type cls)
@@ -781,7 +782,7 @@ namespace NeoCortexApi.Encoders
             proto.w = this.w;
             proto.minval = this.minval;
             proto.maxval = this.maxval;
-            proto.periodic = this.periodic;
+            proto.periodic = this.Periodic;
             // Radius and resolution can be recalculated based on n
             proto.n = this.n;
             proto.name = this.name;
