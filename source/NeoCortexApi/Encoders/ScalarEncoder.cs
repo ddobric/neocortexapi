@@ -164,9 +164,9 @@ namespace NeoCortexApi.Encoders
                 double nFloat = w * (Range / Radius) + 2 * Padding;
                 N = (int)(nFloat);
             }
-           
-            
-            
+
+
+
         }
 
 
@@ -325,7 +325,7 @@ namespace NeoCortexApi.Encoders
         ///  Vinay
         int bucketIdx;
 
-        public  int GetBucketIndices(object inputData)
+        public int GetBucketIndices(object inputData)
         {
 
             if ((typeof(input) == Double) && Double.IsNaN(input))
@@ -358,12 +358,12 @@ namespace NeoCortexApi.Encoders
 
 
 
-        public  int encodeIntoArray(int input, double output,int n)
+        public int encodeIntoArray(int input, double output, int n)
         {
 
             if (input != 0)
             {
-                throw new ArgumentException("$Expected a scalar input but got input of type",  input );
+                throw new ArgumentException("$Expected a scalar input but got input of type", input);
             }
 
             if (input != Double.IsNaN(input))
@@ -380,7 +380,7 @@ namespace NeoCortexApi.Encoders
             else
             {
                 /// # The bucket index is the index of the first bit to set in the output
-                output[0,n] = 0;
+                output[0, n] = 0;
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * self.halfwidth;
             }
@@ -390,7 +390,7 @@ namespace NeoCortexApi.Encoders
                 if (maxbin >= n)
                 {
                     bottombins = maxbin - n + 1;
-                    output[0,bottombins] = 1;
+                    output[0, bottombins] = 1;
                     maxbin = this.n - 1;
 
 
@@ -399,13 +399,13 @@ namespace NeoCortexApi.Encoders
 
 
 
-                    if (minbin < 0)
-                    {
-                        topbins = -minbin;
-                        output[n - topbins,n] = 1;
-                        minbin = 0;
+                if (minbin < 0)
+                {
+                    topbins = -minbin;
+                    output[n - topbins, n] = 1;
+                    minbin = 0;
 
-                    }
+                }
             }
         }
 
@@ -450,7 +450,7 @@ namespace NeoCortexApi.Encoders
 
             var nz = tmpOutput.nonzero()[0];
             var runs = new List<object>();    /// will be tuples of (startIdx, runLength)
-            var run = new List<object> {nz[0],1};
+            var run = new List<object> { nz[0], 1 };
 
             var i = 1;
 
@@ -572,11 +572,11 @@ namespace NeoCortexApi.Encoders
             // Return result
             if (parentFieldName != "")
             {
-                fieldName = String.Format("%s.%s", parentFieldName, this.name);
+                String fieldName = String.Format("%s.%s", parentFieldName, this.name);
             }
             else
             {
-                fieldName = this.name;
+                String fieldName = this.name;
             }
             return (new Dictionary<object, object> {
                     {
@@ -588,35 +588,12 @@ namespace NeoCortexApi.Encoders
 
 
 
-        /// generate description from a text description of the ranges
-        public virtual object _generateRangeDescription(object ranges)
-        {
-            var desc = "";
-            var numRanges = ranges.Count;
-            foreach (var i in xrange(numRanges))
-            {
-                if (ranges[i][0] != ranges[i][1])
-                {
-                    desc += String.Format("%.2f-%.2f", ranges[i][0], ranges[i][1]);
-                }
-                else
-                {
-                    desc += String.Format("%.2f", ranges[i][0]);
-                }
-                if (i < numRanges - 1)
-                {
-                    desc += ", ";
-                }
-            }
-            return desc;
-        }
-
         //  Return the interal _topDownMappingM matrix used for handling the
         //     bucketInfo() and topDownCompute() methods. This is a matrix, one row per
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
-        public virtual object _getTopDownMapping()
+        public int getTopDownMapping()
         {
             // Do we need to build up our reverse mapping table?
             if (this._topDownMappingM == null)
@@ -647,26 +624,10 @@ namespace NeoCortexApi.Encoders
             return this._topDownMappingM;
         }
 
-        public virtual object getBucketValues()
-        {
-            // Need to re-create?
-            if (this._bucketValues == null)
-            {
-                var topDownMappingM = this._getTopDownMapping();
-                var numBuckets = topDownMappingM.nRows();
-                this._bucketValues = new List<object>();
-                foreach (var bucketIdx in Enumerable.Range(0, numBuckets))
-                {
-                    this._bucketValues.append(this.getBucketInfo(new List<object> {
-                            bucketIdx
-                        })[0].value);
-                }
-            }
-            return this._bucketValues;
-        }
 
 
-        public virtual object getBucketInfo(object buckets)
+
+        public int getBucketInfo(object buckets)
         {
             object inputVal;
             // Get/generate the topDown mapping table
@@ -685,12 +646,13 @@ namespace NeoCortexApi.Encoders
             {
                 inputVal = this.minval + category * this.resolution;
             }
-            return new List<object> {
-                    EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding)
-                };
+            return new List<object>
+            {
+                EncoderResult(value: inputVal, scalar: inputVal, encoding: encoding)
+            };
         }
 
-        public virtual object topDownCompute(object encoded)
+        public int topDownCompute(object encoded)
         {
             // Get/generate the topDown mapping table
             var topDownMappingM = this._getTopDownMapping();
@@ -699,17 +661,126 @@ namespace NeoCortexApi.Encoders
             // Return that bucket info
             return this.getBucketInfo(new List<object> {
                     category
+            });
+        }
+
+        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
+        {
+            object closeness;
+            var expValue = expValues[0];
+            var actValue = actValues[0];
+            if (this.periodic)
+            {
+                expValue = expValue % this.maxval;
+                actValue = actValue % this.maxval;
+            }
+            var err = abs(expValue - actValue);
+            if (this.periodic)
+            {
+                err = min(err, this.maxval - err);
+            }
+            if (fractional)
+            {
+                var pctErr = (float)err / (this.maxval - this.minval);
+                pctErr = min(1.0, pctErr);
+                closeness = 1.0 - pctErr;
+            }
+            else
+            {
+                closeness = err;
+            }
+            return numpy.array(new List<object> {
+                    closeness
+            });
+        }
+
+        //  See the function description in base.py
+        //     
+        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
+        {
+            object closeness;
+            var expValue = expValues[0];
+            var actValue = actValues[0];
+            if (this.periodic)
+            {
+                expValue = expValue % this.maxval;
+                actValue = actValue % this.maxval;
+            }
+            var err = abs(expValue - actValue);
+            if (this.periodic)
+            {
+                err = min(err, this.maxval - err);
+            }
+            if (fractional)
+            {
+                var pctErr = (float)err / (this.maxval - this.minval);
+                pctErr = min(1.0, pctErr);
+                closeness = 1.0 - pctErr;
+            }
+            else
+            {
+                closeness = err;
+            }
+            return numpy.array(new List<object> {
+                    closeness
                 });
         }
 
-
-
-        public override List<T> GetBucketValues<T>()
+        public override object ToString()
         {
-            throw new NotImplementedException();
-
-           
+            var @string = "ScalarEncoder:";
+            @string += "  min: {minval}".format(minval: this.minval);
+            @string += "  max: {maxval}".format(maxval: this.maxval);
+            @string += "  w:   {w}".format(w: this.w);
+            @string += "  n:   {n}".format(n: this.n);
+            @string += "  resolution: {resolution}".format(resolution: this.resolution);
+            @string += "  radius:     {radius}".format(radius: this.radius);
+            @string += "  periodic: {periodic}".format(periodic: this.periodic);
+            @string += "  nInternal: {nInternal}".format(nInternal: this.nInternal);
+            @string += "  rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
+            @string += "  padding: {padding}".format(padding: this.padding);
+            return @string;
         }
+        [classmethod]
+        public static object getSchema(object cls)
+        {
+            return ScalarEncoderProto;
+        }
+
+        [classmethod]
+        public static object read(object cls, object proto)
+        {
+            object resolution;
+            object radius;
+            if (proto.n != null)
+            {
+                radius = DEFAULT_RADIUS;
+                resolution = DEFAULT_RESOLUTION;
+            }
+            else
+            {
+                radius = proto.radius;
+                resolution = proto.resolution;
+            }
+            return cls(w: proto.w, minval: proto.minval, maxval: proto.maxval, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, clipInput: proto.clipInput, forced: true);
+        }
+
+        public virtual object write(object proto)
+        {
+            proto.w = this.w;
+            proto.minval = this.minval;
+            proto.maxval = this.maxval;
+            proto.periodic = this.periodic;
+            // Radius and resolution can be recalculated based on n
+            proto.n = this.n;
+            proto.name = this.name;
+            proto.verbosity = this.verbosity;
+            proto.clipInput = this.clipInput;
+        }
+
+
+
+
 
         //public static object Deserialize<T>(StreamReader sr, string name)
         //{
@@ -717,6 +788,6 @@ namespace NeoCortexApi.Encoders
         //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         //}
 
-
     }
+    
 }
