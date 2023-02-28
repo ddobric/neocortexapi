@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
 
@@ -83,33 +84,52 @@ namespace NeoCortexApiSample
 
         private static Dictionary<string, List<double>> GetInputFromTextFile()
         {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            using (StreamReader reader = new StreamReader(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
+            Dictionary<string, List<double>> sequences = new();
+            using (StreamReader reader = new StreamReader(@"D:\FUAS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
             {
                 int temp = 0;
                 List<double> inputList = new();
+                var list1;
+
                 while (!reader.EndOfStream)
                 {
-                    var row = reader.ReadLine();
-                    var numbers = row.Split(',');
+
+                    var all_rows = reader.ReadToEnd();
+
+                    for (int i = 0; i <= all_rows.Length; i++)
+                    {
+                        if (all_rows.Contains("\r\n"))
+                        {
+                             list1 = Regex.Split(all_rows, "(?<=\r\n)");
+                        }
+                    }
+                    var numbers = all_rows.Split(',');
                     Console.WriteLine(numbers[temp]);
+                    //string[] splittedFile = Regex.Split(all_rows, "(?<=\r\n)");
+
 
                     foreach (var digit in numbers)
-                    {
-                        // splitting multiple input sequences with semi-colon
-                        if (!digit.Contains(';'))
                         {
-                            inputList.Add(Convert.ToDouble(digit));
-                        }
-                        else
-                        {
-                            temp++;
-                            sequences.Add("Sequence" + temp, inputList);
-                            break;
+                            // splitting multiple input sequences with semi-colon
+                            // if (!digit.Contains(';'))
+                            //{
+                            //inputList.Add(Convert.ToDouble(digit));
+                            //}
+                            // changing logic for splitting of sequences logic from semi-colon to square bracket
+                            if (!digit.Contains(']') && !digit.Contains('['))
+                            {
+                                inputList.Add(Convert.ToDouble(digit));
+                            }
+                            else
+                            {
+                                temp++;
+                                sequences.Add("Sequence" + temp, inputList);
+                             break;
+
+                            }
 
                         }
-
-                    }
+                    
                 }
             }
             return sequences;
