@@ -26,7 +26,12 @@ namespace NeoCortexApi
         private ConcurrentDictionary<long, Cell> Cells { get; set; } = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
-        /// The name of the _area.
+        /// The index of the area.
+        /// </summary>
+        //public int Index { get; set; }
+
+        /// <summary>
+        /// The name of the _area. It must be unique in the application.
         /// </summary>
         public string Name { get; private set; }
 
@@ -54,17 +59,38 @@ namespace NeoCortexApi
                 Cells = new ConcurrentDictionary<long, Cell>();
 
                 int indx = 0;
-
+              
                 foreach (var item in value)
                 {
-                    Cells.TryAdd(item, new Cell(0, indx++, _numCells, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell));
+                    Cells.TryAdd(item, new Cell(-1, indx++));
                 }
             }
-        } 
+        }
 
 
+        /// <summary>
+        /// Gets the number of outgoing synapses of all active cells.
+        /// </summary>
+        public int NumOutgoingSynapses
+        {
+            get
+            {
+                return this.ActiveCells.SelectMany(el => el.ReceptorSynapses).Count();
+            }
+        }
 
-        public CorticalArea(string name, int numCells)
+        /// <summary>
+        /// Gets the number of incoming synapses at apical segments.
+        /// </summary>
+        public int NumIncomingApicalSynapses
+        {
+            get
+            {
+                return this.ActiveCells.SelectMany(cell => cell.ApicalDendrites).SelectMany(aSeg => aSeg.Synapses).Count();                
+            }
+        }
+
+        public CorticalArea(int index, string name, int numCells)
         {
             this.Name = name;
 
