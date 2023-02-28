@@ -327,8 +327,8 @@ namespace NeoCortexApi.Encoders
 
         public int GetBucketIndices(object inputData)
         {
-
-            if ((typeof(input) == Double) && Double.IsNaN(input))
+            double input;
+            if ((typeof(input) == double) && double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
             }
@@ -366,7 +366,7 @@ namespace NeoCortexApi.Encoders
                 throw new ArgumentException("$Expected a scalar input but got input of type", input);
             }
 
-            if (input != Double.IsNaN(input))
+            if (!Double.IsNaN(input))
             {
                 input = 0;
                 bucketIdx = (int)GetFirstOnBit(input);
@@ -664,7 +664,7 @@ namespace NeoCortexApi.Encoders
             });
         }
 
-        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
+        public virtual object closenessScores(object expValues, object actValues, object fractional = null)
         {
             object closeness;
             var expValue = expValues[0];
@@ -696,7 +696,7 @@ namespace NeoCortexApi.Encoders
 
         //  See the function description in base.py
         //     
-        public virtual object closenessScores(object expValues, object actValues, object fractional = null)
+        public virtual object closenessScoresNew(object expValues, object actValues, object fractional = null)
         {
             object closeness;
             var expValue = expValues[0];
