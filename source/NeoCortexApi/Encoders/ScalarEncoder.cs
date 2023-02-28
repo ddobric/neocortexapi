@@ -328,7 +328,7 @@ namespace NeoCortexApi.Encoders
         public int GetBucketIndices(object inputData)
         {
             double input;
-            if ((typeof(input) == double) && double.IsNaN(input))
+            if (input is double && double.IsNaN(input))
             {
                 input = SENTINEL_VALUE_FOR_MISSING_DATA;
             }
@@ -363,7 +363,7 @@ namespace NeoCortexApi.Encoders
 
             if (input != 0)
             {
-                throw new ArgumentException("$Expected a scalar input but got input of type", input);
+                throw new ArgumentException("Expected a scalar input but got input of type " + input.GetType().Name);
             }
 
             if (!Double.IsNaN(input))
