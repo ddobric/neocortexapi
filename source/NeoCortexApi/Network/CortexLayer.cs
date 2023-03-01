@@ -166,7 +166,7 @@ namespace NeoCortexApi.Network
         public void Serialize(object obj, string name, StreamWriter sw)
         {
 
-            if (obj is CortexLayer<object,object> layer)
+            if (obj is CortexLayer<object, object> layer)
             {
                 /*
                 foreach (var modulePair in layer.HtmModules)
@@ -182,7 +182,7 @@ namespace NeoCortexApi.Network
                     }
                 }
                 */
-                    
+                  
                     var model_en = "Model_en.txt";
                     StreamWriter sw_en = new StreamWriter(model_en);
                     var en = layer.HtmModules["encoder"];
@@ -191,58 +191,63 @@ namespace NeoCortexApi.Network
                         encoder.Serialize(en, null, sw_en);
                     }                    
                     sw_en.Close();
-                /*
-                    var model_tm = "Model_tm.txt";
-                    StreamWriter sw_tm = new StreamWriter(model_tm);
-                    var tm = (TemporalMemory)layer.HtmModules["tm"];
-                    tm.Serialize(tm, null, sw_tm);
-                    sw_tm.Close();
+                
 
-                    var model_sp = "Model_sp.txt";
-                    StreamWriter sw_sp = new StreamWriter(model_sp);
-                    var sp = (SpatialPooler)layer.HtmModules["sp"];
-                    sp.Serialize(sp, null, sw_sp) ;
-                    */
+                
+                var model_sp = "Model_sp.txt";
+                StreamWriter sw_sp = new StreamWriter(model_sp);
+                var sp = layer.HtmModules["sp"];
+                if (sp is SpatialPoolerMT spMT)
+                {
+                    spMT.Serialize(spMT, null, sw_sp);
                 }
+                sw_sp.Close();
+                
+
+                
+                var model_tm = "Model_tm.txt";
+                StreamWriter sw_tm = new StreamWriter(model_tm);
+                var tm = (TemporalMemory)layer.HtmModules["tm"];
+                if (tm is TemporalMemory tmem)
+                {
+                    tmem.Serialize(tmem, null, sw_tm);
+                }             
+                sw_tm.Close();
+                
+            }
             
         }
 
         public static object Deserialize<T>(StreamReader sr)
         {
-            // We will use 100 bits to represent an input vector( pattern).
-            int inputBits = 100;
-            double max = 20;
 
-            Dictionary<string, object> settings = new Dictionary<string, object>()
-            {
-                { "W", 15},
-                { "N", inputBits},
-                { "Radius", -1.0},
-                { "MinVal", 0.0},
-                { "Periodic", false},
-                { "Name", "scalar"},
-                { "ClipInput", false},
-                { "MaxVal", max}
-            };
-
+            var model_en = "Model_en.txt";
             var model_tm = "Model_tm.txt";
-            var modelTrace = "ModelTrace.txt";
-        
+            var model_sp = "Model_sp.txt";
+
+            
+            StreamReader sr_en = new StreamReader(model_en);
+            var encoder = ScalarEncoder.Deserialize<ScalarEncoder>(sr_en, null);
+            sr_en.Close();
+            
+
+            /*
+            StreamReader sr_sp = new StreamReader(model_sp);
+            var sp = SpatialPooler.Deserialize<SpatialPoolerMT>(sr_sp, null);
+            sr_sp.Close();
+            */
+
+            /*
             StreamReader sr_tm = new StreamReader(model_tm);
             var tm = TemporalMemory.Deserialize<TemporalMemoryMT>(sr_tm, null);
-            sr_tm.Close();
-        
-            StreamReader sr_sp = new StreamReader(modelTrace);
-            var sp = SpatialPooler.Deserialize(sr_sp);
-            sr_sp.Close();
-
-            EncoderBase encoder = new ScalarEncoder(settings);
+            sr_tm.Close();           
+            */ 
 
             CortexLayer<object, object> layer = new CortexLayer<object, object>("L");
-            layer.HtmModules.Add("encoder", encoder);
-            layer.HtmModules.Add("sp", (sp));
-            layer.HtmModules.Add("tm", (TemporalMemory)tm);
-
+            layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
+            //layer.HtmModules.Add("sp", (SpatialPoolerMT)sp);
+            //layer.HtmModules.Add("tm", (TemporalMemory)tm);
+            
             return layer;
         }
         #region Private Methods

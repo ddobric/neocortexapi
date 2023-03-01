@@ -9,6 +9,7 @@ using static NeoCortexApiSample.MultiSequenceLearning;
 using NeoCortexApi.Entities;
 using System.Xml.Linq;
 using System.IO;
+using System.Drawing;
 
 namespace NeoCortexApiSample
 {
@@ -49,12 +50,13 @@ namespace NeoCortexApiSample
             
             //Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
+            //var predictor = experiment.Run(sequences);
 
-            predictor.Save(predictor);
-            
-         
-            //var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
+            //predictor.Save(predictor);
+
+
+           
+            var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
 
 
         }
