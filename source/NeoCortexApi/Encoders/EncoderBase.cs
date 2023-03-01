@@ -319,8 +319,10 @@ namespace NeoCortexApi.Encoders
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeMembers = new List<string> 
-            { 
+            if (obj is EncoderBase encoder)
+            {
+                var excludeMembers = new List<string>
+            {
                 nameof(EncoderBase.Properties),
                 nameof(EncoderBase.halfWidth),
                 nameof(EncoderBase.rangeInternal),
@@ -331,9 +333,16 @@ namespace NeoCortexApi.Encoders
                 nameof(EncoderBase.topDownValues),
                 nameof(EncoderBase.bucketValues),
                 nameof(EncoderBase.topDownMapping),
+                // Added properties
+                nameof(EncoderBase.IsForced),
+                nameof(EncoderBase.IsDelta),
+                nameof(EncoderBase.Offset),
+                nameof(EncoderBase.Width),
 
             };
-            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers: excludeMembers);
+
+                HtmSerializer.SerializeObject(encoder, name, sw, ignoreMembers: excludeMembers);
+            }    
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)

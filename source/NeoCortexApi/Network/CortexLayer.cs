@@ -168,20 +168,42 @@ namespace NeoCortexApi.Network
 
             if (obj is CortexLayer<object,object> layer)
             {
-                
-                var model_tm = "Model_tm.txt";
-                StreamWriter sw_tm = new StreamWriter(model_tm);
-                var tm = (TemporalMemory)layer.HtmModules["tm"];
-                tm.Serialize(tm, null, sw_tm);
-                sw_tm.Close();
+                /*
+                foreach (var modulePair in layer.HtmModules)
+                {
+                    ISerializable serializableModule = modulePair.Value as ISerializable;
+                    if (serializableModule != null)
+                    {
+                        serializableModule.Serialize(serializableModule, nameof(serializableModule), sw);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+                */
+                    
+                    var model_en = "Model_en.txt";
+                    StreamWriter sw_en = new StreamWriter(model_en);
+                    var en = layer.HtmModules["encoder"];
+                    if (en is EncoderBase encoder)
+                    {
+                        encoder.Serialize(en, null, sw_en);
+                    }                    
+                    sw_en.Close();
+                /*
+                    var model_tm = "Model_tm.txt";
+                    StreamWriter sw_tm = new StreamWriter(model_tm);
+                    var tm = (TemporalMemory)layer.HtmModules["tm"];
+                    tm.Serialize(tm, null, sw_tm);
+                    sw_tm.Close();
 
-                
-                var modelTrace = "ModelTrace.txt";
-                StreamWriter sw_sp = new StreamWriter(modelTrace);
-                var sp = (SpatialPoolerMT)layer.HtmModules["sp"];
-                sp.Serialize(sp, null, sw_sp) ;
-                                     
-            }
+                    var model_sp = "Model_sp.txt";
+                    StreamWriter sw_sp = new StreamWriter(model_sp);
+                    var sp = (SpatialPooler)layer.HtmModules["sp"];
+                    sp.Serialize(sp, null, sw_sp) ;
+                    */
+                }
             
         }
 
