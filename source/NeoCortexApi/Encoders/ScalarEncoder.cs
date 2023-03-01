@@ -424,10 +424,7 @@ namespace NeoCortexApi.Encoders
             return 0;
         }
 
-        public object GetStart()
-        {
-            return start;
-        }
+        
 
         public int Decode(object encoded, object start, int newStruct, string parentFieldName = "")
         {
@@ -729,15 +726,15 @@ namespace NeoCortexApi.Encoders
                 expValue = expValue % this.maxval;
                 actValue = actValue % this.maxval;
             }
-            var err = abs(expValue - actValue);
+            double err = Math.Abs(expValue - actValue);
             if (this.Periodic)
             {
-                err = min(err, this.maxval - err);
+                err = Math.Min(err, this.maxval - err);
             }
             if (fractional)
             {
-                var pctErr = (float)err / (this.maxval - this.MinVal);
-                pctErr = min(1.0, pctErr);
+                double pctErr = err / (this.maxval - this.minVal);
+                pctErr = Math.Min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
             }
             else
