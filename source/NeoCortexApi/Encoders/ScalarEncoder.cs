@@ -394,7 +394,10 @@ namespace NeoCortexApi.Encoders
             else
             {
                 /// # The bucket index is the index of the first bit to set in the output             
-                output[0, bucketIdx] = 1;
+                for (int i = 0; i < n; i++)
+                {
+                    output[0, i] = 0;
+                }
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * halfwidth;
             }
