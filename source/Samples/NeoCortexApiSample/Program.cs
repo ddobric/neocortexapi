@@ -177,11 +177,34 @@ namespace NeoCortexApiSample
             Dictionary<string, List<double>> subsequences = new Dictionary<string, List<double>>();
             using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input.txt"))
             {
-                
+                int temp1 = 0;
+
                 List<double> inputList = new();
                 while (!reader.EndOfStream)
                 {
-                    
+                    var row = reader.ReadLine();
+                    var numbers = row.Split(',');
+                    Console.WriteLine(numbers[temp1]);
+
+                    foreach (var variable in numbers)
+                    {
+                        
+                        if (!digit.Contains(';'))
+                        {
+                           
+                            inputList.Add(Convert.ToDouble(variable));
+                        }
+                        else
+                        {
+                            temp1++;
+                            
+                            sequences.Add("Sequence" + temp1, inputList);
+                            break;
+
+                        }
+
+                    }
+
                 }
             }
             return subsequences;
