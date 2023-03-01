@@ -70,14 +70,13 @@ namespace NeoCortexApi
             if (obj is Predictor predictor)
             {
                 var model_con = "Model_con.txt";
-                
-
                 StreamWriter sw_con = new StreamWriter(model_con);
                 predictor.connections.Serialize(predictor.connections, null, sw_con);
                 sw_con.Close();
 
-                
-                predictor.layer.Serialize(predictor.layer, null, null);
+                var model_layer = "Model_layer.txt";
+                StreamWriter sw_layer = new StreamWriter(model_layer);
+                predictor.layer.Serialize(predictor.layer, null, sw_layer);
                 
                 //this.classifier.Ser
             }
