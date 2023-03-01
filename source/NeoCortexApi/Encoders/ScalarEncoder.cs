@@ -10,7 +10,8 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 using System.Linq;
-using NeoCortexApi.Encoders;
+using System.Numerics;
+
 
 
 namespace NeoCortexApi.Encoders
@@ -31,6 +32,8 @@ namespace NeoCortexApi.Encoders
         /// Gets the Width
         /// </summary>
         public override int Width => throw new NotImplementedException();
+
+        public int halfwidth { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
@@ -391,7 +394,10 @@ namespace NeoCortexApi.Encoders
             else
             {
                 /// # The bucket index is the index of the first bit to set in the output             
-                output[0, n] = 0;
+                for (int i = 0; i < n; i++)
+                {
+                    output[0, i] = 0;
+                }
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * halfwidth;
             }
@@ -421,12 +427,19 @@ namespace NeoCortexApi.Encoders
             return 0;
         }
 
-        public int decode(object encoded, string parentFieldName = "")
+        
+
+        public int Decode(object encoded, object start, int newStruct, string parentFieldName = "")
         {
+            if (parentFieldName is null)
+            {
+                throw new ArgumentNullException(nameof(parentFieldName));
+            }
+
             tmpoutput = NumSharp.array(encoded[0, this.n] > 0).astype(encoded.dtype);
             if (!tmpOutput.any())
             {
-                return (new Dictionary<object, object>(), new List<object>());
+                return new NewStruct(new Dictionary<object, object>(), new List<object>());
             }
             maxzerosinrow = halfwidth;
 
@@ -474,7 +487,7 @@ namespace NeoCortexApi.Encoders
                 }
                 else
                 {
-                    runs.append(run);
+                    runs.Append(run);
                     run = new List<object> {
                             nz[i],
                             1
@@ -483,7 +496,7 @@ namespace NeoCortexApi.Encoders
                 i += 1;
 
             }
-            runs.append(run);
+            runs.Append(run);
             // If we have a periodic encoder, merge the first and last run if they
             //  both go all the way to the edges
             if (this.Periodic && runs.Count > 1)
@@ -503,12 +516,13 @@ namespace NeoCortexApi.Encoders
             // For a group of width w or less, the "left" and "right" edge are both at
             //   the center position of the group.
             var ranges = new List<object>();
-            foreach (var run in runs)
+            for (int i1 = 0; i1 < runs.Count; i1++)
             {
+                object run = runs[i1];
                 (start, runLen) = run;
                 if (runLen <= this.w)
                 {
-                    left = start + runLen / 2;
+                    left = start + (runLen / 2);
                 }
                 else
                 {
@@ -519,14 +533,14 @@ namespace NeoCortexApi.Encoders
                 if (!this.Periodic)
                 {
                     // Convert to input space.
-                    inMin = (left - this.padding) * this.Resolution + this.MinVal;
-                    inMax = (right - this.padding) * this.Resolution + this.MinVal;
+                    inMin = (left - Padding) * this.Resolution + this.MinVal;
+                    inMax = (right - Padding) * this.Resolution + this.MinVal;
                 }
                 else
                 {
                     // Convert to input space.
-                    inMin = (left - this.padding) * this.Range / this.nInternal + this.MinVal;
-                    inMax = (right - this.padding) * this.Range / this.nInternal + this.MinVal;
+                    inMin = (left - this.Padding) * this.Range / this.nInternal + this.MinVal;
+                    inMax = (right - this.Padding) * this.Range / this.nInternal + this.MinVal;
                 }
 
                 // Handle Wape-around if periodic 
@@ -554,11 +568,11 @@ namespace NeoCortexApi.Encoders
                 ///  2 separate ranges
                 if (this.Periodic && inMax >= this.MaxVal)
                 {
-                    ranges.append(new List<object> {
+                    ranges.Append(new List<object> {
                             inMin,
                             this.MaxVal
                         });
-                    ranges.append(new List<object> {
+                    ranges.Append(new List<object> {
                             this.MinVal,
                             inMax - this.Range
                         });
@@ -573,7 +587,7 @@ namespace NeoCortexApi.Encoders
                     {
                         inMin = this.MaxVal;
                     }
-                    ranges.append(new List<object> {
+                    ranges.Append(new List<object> {
                             inMin,
                             inMax
                         });
@@ -589,14 +603,22 @@ namespace NeoCortexApi.Encoders
             }
             else
             {
-                String fieldName = this.name;
+                String fieldName = (string)name;
             }
-            return (new Dictionary<object, object> {
+
+            NewStruct newStruct1 = new NewStruct(new Dictionary<object, object> {
                     {
                         fieldName,
                         (ranges, desc)}}, new List<object> {
                     fieldName
                 });
+            NewStruct newStruct11 = (NewStruct)newStruct1;
+            return newStruct11;
+        }
+
+        private object _generateRangeDescription(List<object> ranges)
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -606,7 +628,23 @@ namespace NeoCortexApi.Encoders
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
-        private int[,] _topDownMappingM;
+        private object _topDownMappingM = null;
+        private int bottombins;
+        private int minbin;
+        private int maxbin;
+        private int axbin;
+        private object start;
+        private int runLen;
+        private int w;
+        private int left;
+        private double inMin;
+        private double inMax;
+        private int right;
+        private object name;
+        private object fieldName;
+        private object _topDownValues;
+        private object tmpoutput;
+
         //By defining _topDownMappingM as a member variable of the ScalarEncoder class,
         //you will be able to access it within the getTopDownMapping()
 
@@ -626,7 +664,7 @@ namespace NeoCortexApi.Encoders
                     this._topDownValues = numpy.arange(this.MinVal, this.MaxVal + this.Resolution / 2.0, this.Resolution);
                 }
                 // Each row represents an encoded output pattern
-                var numCategories = this._topDownValues.Count;
+                var numCategories = _topDownValues.Count;
                 this._topDownMappingM = SM32(numCategories, this.n);
                 var outputSpace = numpy.zeros(this.n, dtype: GetNTAReal());
                 foreach (var i in xrange(numCategories))
@@ -691,15 +729,15 @@ namespace NeoCortexApi.Encoders
                 expValue = expValue % this.maxval;
                 actValue = actValue % this.maxval;
             }
-            var err = abs(expValue - actValue);
+            double err = Math.Abs(expValue - actValue);
             if (this.Periodic)
             {
-                err = min(err, this.maxval - err);
+                err = Math.Min(err, this.maxval - err);
             }
             if (fractional)
             {
-                var pctErr = (float)err / (this.maxval - this.MinVal);
-                pctErr = min(1.0, pctErr);
+                double pctErr = err / (this.maxval - this.minVal);
+                pctErr = Math.Min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
             }
             else
@@ -758,7 +796,7 @@ namespace NeoCortexApi.Encoders
             @string += $" min: {this.Periodic}";
             @string += $" min: {this.nInternal}";
             @string += $" min: {this.rangeInternal}";
-            @string += $" min: {this.padding}";
+            @string += $" min: {this.Padding}";
             return @string;
         }
         public static object GetSchema(Type cls)
@@ -781,7 +819,7 @@ namespace NeoCortexApi.Encoders
                 radius = proto.radius;
                 resolution = proto.resolution;
             }
-            return cls(w: proto.w, minval: proto.minval, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, clipInput: proto.clipInput, forced: true);
+            return cls(w: proto.w, minval: proto.minval, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: proto.ClipInput, forced: true);
         }
 
         public virtual object write(object proto)
@@ -794,7 +832,12 @@ namespace NeoCortexApi.Encoders
             proto.n = this.n;
             proto.name = this.name;
             proto.verbosity = this.verbosity;
-            proto.clipInput = this.clipInput;
+            proto.ClipInput = this.ClipInput;
+        }
+
+        public override List<T> GetBucketValues<T>()
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -809,6 +852,48 @@ namespace NeoCortexApi.Encoders
 
     }
 
-        
-    
+    internal struct NewStruct
+    {
+        public Dictionary<object, object> Item1;
+        public List<object> Item2;
+
+        public NewStruct(Dictionary<object, object> item1, List<object> item2)
+        {
+            Item1 = item1;
+            Item2 = item2;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is NewStruct other &&
+                   EqualityComparer<Dictionary<object, object>>.Default.Equals(Item1, other.Item1) &&
+                   EqualityComparer<List<object>>.Default.Equals(Item2, other.Item2);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Item1, Item2);
+        }
+
+        public void Deconstruct(out Dictionary<object, object> item1, out List<object> item2)
+        {
+            item1 = Item1;
+            item2 = Item2;
+        }
+
+        public static implicit operator (Dictionary<object, object>, List<object>)(NewStruct value)
+        {
+            return (value.Item1, value.Item2);
+        }
+
+        public static implicit operator NewStruct((Dictionary<object, object>, List<object>) value)
+        {
+            return new NewStruct(value.Item1, value.Item2);
+        }
+
+        public static explicit operator NewStruct(NewStruct v)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

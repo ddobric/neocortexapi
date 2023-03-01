@@ -7,9 +7,9 @@ namespace NeoCortexApi
     {
         string Name { get; set; }
         bool Equals(IHtmModule other);
-        System.Collections.Generic.List<NeoCortexApi.Encoders.EncoderResult> GetBucketInfo(int[] buckets);
-        System.Collections.Generic.List<NeoCortexApi.Encoders.EncoderResult> GetBucketInfo(int[] buckets);
-        System.Collections.Generic.List<NeoCortexApi.Encoders.EncoderResult> TopDownCompute(int[] encoded);
+        ///System.Collections.Generic.List<NeoCortexApi.Encoders.EncoderResult> GetBucketInfo(int[] buckets);
+        ///System.Collections.Generic.List<NeoCortexApi.Encoders.EncoderResult> GetBucketInfo(int[] buckets);
+        ///System.Collections.Generic.List<NeoCortexApi.Encoders.EncoderResult> TopDownCompute(int[] encoded);
     }
 
     /// <summary>
