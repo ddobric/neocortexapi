@@ -141,9 +141,10 @@ namespace NeoCortexApiSample
                     {
                         if (double.TryParse(digit, out double number))
                         {
+                            
                             inputList.Add(number);
                         }
-                        else
+                        else 
                         {
                             temp++;
                             sequences.Add("Sequence: " + temp, inputList);
@@ -159,7 +160,8 @@ namespace NeoCortexApiSample
                 }
             }
             return sequences;
-        }
+        } 
+
 
 
         private static void RunMultiSimpleSequenceLearningExperiment()
