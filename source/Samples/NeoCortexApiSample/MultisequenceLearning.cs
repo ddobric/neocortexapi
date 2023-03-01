@@ -1,9 +1,9 @@
-﻿using NeoCortexApi;
+﻿
+using NeoCortexApi;
 using NeoCortexApi.Classifiers;
-using NeoCortexApi.Encoders;
+
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-using Org.BouncyCastle.Asn1.Tsp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,7 +69,7 @@ namespace NeoCortexApiSample
                 { "MaxVal", max}
             };
 
-            EncoderBase encoder = new ScalarEncoder(settings);
+            NeoCortexApi.Encoders.EncoderBase encoder = new NeoCortexApi.Encoders.ScalarEncoder(settings);
 
             return RunExperiment(inputBits, cfg, encoder, sequences);
         }

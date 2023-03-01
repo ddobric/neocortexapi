@@ -356,7 +356,7 @@ namespace NeoCortexApi.Encoders
 
 
 
-
+        /*
 
         public static object GetBucketIndices(object inputData)
         {
@@ -511,7 +511,7 @@ namespace NeoCortexApi.Encoders
 
             return retVals;
         }
-
+        */
 
     }
 }

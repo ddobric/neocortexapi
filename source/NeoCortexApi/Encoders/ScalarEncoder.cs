@@ -333,7 +333,7 @@ namespace NeoCortexApi.Encoders
         ///  Vinay
         int bucketIdx;
 
-        public int GetBucketIndices(object inputData)
+        public new int GetBucketIndices(object inputData)
         {
             double input = 0.0; // assign a default value
             if (inputData is double && double.IsNaN((double)inputData))
@@ -370,9 +370,12 @@ namespace NeoCortexApi.Encoders
             return 0;
         }
 
+        public int EncodeIntoArray(int input, double[] output, int n)
+        {
+            return EncodeIntoArray(input, output, n, topbins);
+        }
 
-
-        public int encodeIntoArray(int input, double output, int n)
+        public int EncodeIntoArray(int input, double[] output, int n, int topbins)
         {
 
             if (input != 0)
@@ -388,7 +391,7 @@ namespace NeoCortexApi.Encoders
 
             if (bucketIdx == 0)
             {
-                output = 0;
+                output = null;
 
             }
             else
@@ -396,7 +399,7 @@ namespace NeoCortexApi.Encoders
                 /// # The bucket index is the index of the first bit to set in the output             
                 for (int i = 0; i < n; i++)
                 {
-                    output[0, i] = 0;
+                    output[i] = 0;
                 }
                 minbin = bucketIdx;
                 maxbin = minbin + 2 * halfwidth;
@@ -407,8 +410,8 @@ namespace NeoCortexApi.Encoders
                 if (axbin >= n)
                 {
                     bottombins = maxbin - n + 1;
-                    output[0, bottombins] = 1;
-                    maxbin = this.n - 1;
+                    output[bottombins] = 1;
+                    maxbin = this.N - 1;
 
 
                 }
@@ -419,92 +422,119 @@ namespace NeoCortexApi.Encoders
                 if (minbin < 0)
                 {
                     topbins = -minbin;
-                    output[n - topbins, n] = 1;
+                    for (int i = n - topbins; i < n; i++)
+                    {
+                        output[i] = 1;
+                    }
                     minbin = 0;
-
                 }
             }
             return 0;
         }
 
-        
+        private int[] tmpOutput;
 
         public int Decode(object encoded, object start, int newStruct, string parentFieldName = "")
         {
-            if (parentFieldName is null)
+            (int[], (Dictionary<string, object>, List<object>)) Encode(int input)
             {
-                throw new ArgumentNullException(nameof(parentFieldName));
-            }
+                double[] encodedArray = EncodeIntoArray(input);
 
-            tmpoutput = NumSharp.array(encoded[0, this.n] > 0).astype(encoded.dtype);
-            if (!tmpOutput.any())
-            {
-                return new NewStruct(new Dictionary<object, object>(), new List<object>());
-            }
-            maxzerosinrow = halfwidth;
-
-            if (this.Periodic)
-            {
-                foreach (int j in xrange(this.n))
+                tmpOutput = encodedArray.Take(N).Select(x => Convert.ToInt32(x > 0)).ToArray();
+                if (!tmpOutput.Any())
                 {
-                    var outputIndices = NumSharp.arange(j, j + subLen);
-                    outputIndices %= this.n;
-                    if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
-                    {
-                        tmpOutput[outputIndices] = 1;
-                    }
-
+                    return (new int[0], (new Dictionary<string, object>(), new List<object>()));
                 }
+
+                var result = (tmpOutput, (new Dictionary<string, object>(), new List<object>()));
+                return result;
             }
-            else
+            
+
+
+            // First, assume the input pool is not sampled 100%, and fill in the
+            // "holes" in the encoded representation (which are likely to be present
+            // if this is a coincidence that was learned by the SP).
+
+            // Search for portions of the output that have "holes"
+            int maxZerosInARow = halfwidth;
+            for (int i = 0; i < maxZerosInARow; i++)
             {
-                foreach (var j in xrange(this.n - subLen + 1))
+                int[] searchStr = Enumerable.Repeat(1, i + 3).ToArray();
+                searchStr[1] = 0;
+                searchStr[searchStr.Length - 2] = 0;
+                int subLen = searchStr.Length;
+
+                /// Does this search string appear in the output?
+
+                if (Periodic)
                 {
-                    if (NumSharp.array_equal(searchStr, tmpOutput[j: (j + subLen)]))
+                    for (int j = 0; j < n; j++)
                     {
-                        tmpoutput[j: (j + subLen)] = 1;
+                        int[] outputIndices = Enumerable.Range(j, subLen).Select(x => x % n).ToArray();
+                        if (searchStr.SequenceEqual(tmpOutput.Where((value, index) => outputIndices.Contains(index))))
+                        {
+                            for (int k = 0; k < subLen; k++)
+                            {
+                                tmpOutput[outputIndices[k]] = 1;
+                            }
+                        }
                     }
-                }
-            }
-
-            //if (this.verbosity >= 2)
-            //{
-            //    Console.WriteLine("raw output:", encoded[self.n]);
-            //    Console.WriteLine("filtered output:", tmpOutput);
-            //}
-
-            var nz = tmpOutput.nonzero()[0];
-            var runs = new List<object>();    /// will be tuples of (startIdx, runLength)
-            var run = new List<object> { nz[0], 1 };
-
-            var i = 1;
-
-            while (i < nz.Count)
-            {
-                if (nz[i].Equals((int)run[0] + (int)run[1]))
-                {
-                    run[1] += 1;
                 }
                 else
                 {
-                    runs.Append(run);
-                    run = new List<object> {
-                            nz[i],
-                            1
-                        };
+                    for (int j = 0; j < n - subLen + 1; j++)
+                    {
+                        if (searchStr.SequenceEqual(tmpOutput.Skip(j).Take(subLen)))
+                        {
+                            for (int k = 0; k < subLen; k++)
+                            {
+                                tmpOutput[j + k] = 1;
+                            }
+                        }
+                    }
                 }
-                i += 1;
-
             }
-            runs.Append(run);
+
+            if (verbosity >= 2)
+            {
+                Console.WriteLine("raw output: " + string.Join(",", ((double[])encoded).Take(N).ToArray()));
+                Console.WriteLine("filtered output: " + string.Join(",", tmpOutput));
+            }
+
+
+
+            // Find each run of 1's.
+            int[] nz = Array.FindAll(tmpOutput, x => x != 0);
+            List<(int, int)> runs = new List<(int, int)>(); // will be tuples of (startIdx, runLength)
+            if (nz.Length > 0)
+            {
+                int[] run = new int[] { nz[0], 1 };
+                int i = 1;
+                while (i < nz.Length)
+                {
+                    if (nz[i] == run[0] + run[1])
+                    {
+                        run[1] += 1;
+                    }
+                    else
+                    {
+                        runs.Add((run[0], run[1]));
+                        run = new int[] { nz[i], 1 };
+                    }
+                    i += 1;
+                }
+                runs.Add((run[0], run[1]));
+            }
+
             // If we have a periodic encoder, merge the first and last run if they
-            //  both go all the way to the edges
+            // both go all the way to the edges
             if (this.Periodic && runs.Count > 1)
             {
-                if (runs[0][0] == 0 && runs[-1][0] + runs[-1][1] == this.n)
+                if (runs[0].Item1 == 0 && runs[^1].Item1 + runs[^1].Item2 == this.n)
                 {
-                    runs[-1][1] += runs[0][1];
-                    runs = runs[1];
+                    runs[^1] = (runs[^1].Item1, runs[^1].Item2 + runs[0].Item2);
+                    runs.RemoveAt(0);
                 }
             }
 
@@ -515,20 +545,24 @@ namespace NeoCortexApi.Encoders
             //  halfwidth.
             // For a group of width w or less, the "left" and "right" edge are both at
             //   the center position of the group.
-            var ranges = new List<object>();
-            for (int i1 = 0; i1 < runs.Count; i1++)
+            List<int[]> ranges = new List<int[]>();
+            foreach (var run in runs)
             {
-                object run = runs[i1];
-                (start, runLen) = run;
-                if (runLen <= this.w)
+                int runStart = run[0];
+                int runLen = run[1];
+                int left, right;
+
+                if (runLen <= w)
                 {
-                    left = start + (runLen / 2);
+                    left = right = runStart + runLen / 2;
                 }
                 else
                 {
-                    left = start + halfwidth;
-                    var right = start + runLen - 1 - halfwidth;
+                    left = runStart + halfwidth;
+                    right = runStart + runLen - 1 - halfwidth;
                 }
+
+                ranges.Add(new int[] { left, right });
 
                 if (!this.Periodic)
                 {
@@ -616,6 +650,11 @@ namespace NeoCortexApi.Encoders
             return newStruct11;
         }
 
+        private double[] EncodeIntoArray(int input)
+        {
+            throw new NotImplementedException();
+        }
+
         private object _generateRangeDescription(List<object> ranges)
         {
             throw new NotImplementedException();
@@ -644,6 +683,9 @@ namespace NeoCortexApi.Encoders
         private object fieldName;
         private object _topDownValues;
         private object tmpoutput;
+        private int topbins;
+        private int n;
+        private int verbosity=0;
 
         //By defining _topDownMappingM as a member variable of the ScalarEncoder class,
         //you will be able to access it within the getTopDownMapping()
@@ -665,7 +707,7 @@ namespace NeoCortexApi.Encoders
                 }
                 // Each row represents an encoded output pattern
                 var numCategories = _topDownValues.Count;
-                this._topDownMappingM = SM32(numCategories, this.n);
+                this._topDownMappingM = SM32(numCategories, this.N);
                 var outputSpace = numpy.zeros(this.n, dtype: GetNTAReal());
                 foreach (var i in xrange(numCategories))
                 {
@@ -790,7 +832,7 @@ namespace NeoCortexApi.Encoders
             @string += $" min: {this.MinVal}";
             @string += $" min: {this.maxval}";
             @string += $" min: {this.w}";
-            @string += $" min: {this.n}";
+            @string += $" min: {this.N}";
             @string += $" min: {this.Resolution}";
             @string += $" min: {this.radius}";
             @string += $" min: {this.Periodic}";
@@ -809,7 +851,7 @@ namespace NeoCortexApi.Encoders
         {
             object resolution;
             object radius;
-            if (proto.n != null)
+            if (proto.N != null)
             {
                 radius = DEFAULT_RADIUS;
                 resolution = DEFAULT_RESOLUTION;
@@ -829,7 +871,7 @@ namespace NeoCortexApi.Encoders
             proto.maxval = this.MaxVal;
             proto.periodic = this.Periodic;
             // Radius and resolution can be recalculated based on n
-            proto.n = this.n;
+            proto.N = this.N;
             proto.name = this.name;
             proto.verbosity = this.verbosity;
             proto.ClipInput = this.ClipInput;
@@ -891,9 +933,46 @@ namespace NeoCortexApi.Encoders
             return new NewStruct(value.Item1, value.Item2);
         }
 
-        public static explicit operator NewStruct(NewStruct v)
+        
+    }
+
+    internal struct NewStruct1
+    {
+        public Dictionary<string, object> Item1;
+        public List<object> Item2;
+
+        public NewStruct1(Dictionary<string, object> item1, List<object> item2)
         {
-            throw new NotImplementedException();
+            Item1 = item1;
+            Item2 = item2;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is NewStruct1 other &&
+                   EqualityComparer<Dictionary<string, object>>.Default.Equals(Item1, other.Item1) &&
+                   EqualityComparer<List<object>>.Default.Equals(Item2, other.Item2);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Item1, Item2);
+        }
+
+        public void Deconstruct(out Dictionary<string, object> item1, out List<object> item2)
+        {
+            item1 = Item1;
+            item2 = Item2;
+        }
+
+        public static implicit operator (Dictionary<string, object>, List<object>)(NewStruct1 value)
+        {
+            return (value.Item1, value.Item2);
+        }
+
+        public static implicit operator NewStruct1((Dictionary<string, object>, List<object>) value)
+        {
+            return new NewStruct1(value.Item1, value.Item2);
         }
     }
 }
