@@ -233,20 +233,20 @@ namespace NeoCortexApi.Network
 
             /*
             StreamReader sr_sp = new StreamReader(model_sp);
-            var sp = SpatialPooler.Deserialize<SpatialPoolerMT>(sr_sp, null);
+            var sp = SpatialPooler.Deserialize<SpatialPooler>(sr_sp, null);
             sr_sp.Close();
             */
 
-            /*
+            
             StreamReader sr_tm = new StreamReader(model_tm);
             var tm = TemporalMemory.Deserialize<TemporalMemoryMT>(sr_tm, null);
             sr_tm.Close();           
-            */ 
+            
 
             CortexLayer<object, object> layer = new CortexLayer<object, object>("L");
             layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
             //layer.HtmModules.Add("sp", (SpatialPoolerMT)sp);
-            //layer.HtmModules.Add("tm", (TemporalMemory)tm);
+            layer.HtmModules.Add("tm", (TemporalMemory)tm);
             
             return layer;
         }

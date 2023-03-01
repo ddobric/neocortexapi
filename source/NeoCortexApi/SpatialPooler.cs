@@ -1442,13 +1442,16 @@ namespace NeoCortexApi
 
         public static object Deserialize<T>(StreamReader sr, string propName)
         {
+         
             var obj = HtmSerializer.DeserializeObject<T>(sr, propName);
 
             var sp = obj as SpatialPooler;
+            
             if (sp == null)
                 return obj;
             //sp.m_HomeoPlastAct.SetConnections(sp.connections);
             return sp;
+           
         }
     }
 }
