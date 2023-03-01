@@ -34,6 +34,9 @@ namespace NeoCortexApi.Encoders
         public override int Width => throw new NotImplementedException();
 
         public int halfwidth { get; private set; }
+        public static object DEFAULT_RADIUS { get; private set; }
+        public static object DEFAULT_RESOLUTION { get; private set; }
+        public static object ScalarEncoderProto { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
@@ -638,6 +641,11 @@ namespace NeoCortexApi.Encoders
             return newStruct11;
         }
 
+        private double[] EncodeIntoArray(int input)
+        {
+            throw new NotImplementedException();
+        }
+
         private object _generateRangeDescription(List<int[]> ranges)
         {
             throw new NotImplementedException();
@@ -737,12 +745,13 @@ namespace NeoCortexApi.Encoders
             {
                 int[,] topDownMappingM = this.GetTopDownMapping();
                 int numBuckets = topDownMappingM.GetLength(0);
-                List<double> list = new List<double>();
+                List<object> list = new List<object>();
                 this.bucketValues = list;
                 for (int bucketIdx = 0; bucketIdx < numBuckets; bucketIdx++)
                 {
                     int[] buckets = new int[] { bucketIdx };
-                    this.bucketValues.Add(this.getBucketInfo(buckets)[0].Value);
+                    List<BucketInfo> bucketInfoList = this.getBucketInfo(buckets);
+                    this.bucketValues.Add((double)bucketInfoList[0].Value);
                 }
             }
 
@@ -798,17 +807,17 @@ namespace NeoCortexApi.Encoders
             var actValue = actValues[0];
             if (this.Periodic)
             {
-                expValue = expValue % this.maxval;
-                actValue = actValue % this.maxval;
+                expValue = expValue % this.MaxVal;
+                actValue = actValue % this.MaxVal;
             }
             double err = Math.Abs(expValue - actValue);
             if (this.Periodic)
             {
-                err = Math.Min(err, this.maxval - err);
+                err = Math.Min(err, this.MaxVal - err);
             }
-            if (fractional)
+            if ((bool)fractional)
             {
-                double pctErr = err / (this.maxval - this.minVal);
+                double pctErr = err / (this.MaxVal - this.MinVal);
                 pctErr = Math.Min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
             }
@@ -833,17 +842,17 @@ namespace NeoCortexApi.Encoders
                 expValue = expValue % this.MaxVal;
                 actValue = actValue % this.MaxVal;
             }
-            var err = abs(expValue - actValue);
+            var err = Math.Abs(expValue - actValue);
             if (this.Periodic)
             {
-                err = min(err, this.MaxVal - err);
+                err = Math.Min(err, this.MaxVal - err);
             }
-            if (fractional)
+            if ((bool)fractional)
             {
                 var pctErr = (float)err / (this.MaxVal - this.MinVal);
-                pctErr = min(1.0, pctErr);
+                pctErr = Math.Min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
-            }
+            }   
             else
             {
                 closeness = err;
@@ -864,16 +873,16 @@ namespace NeoCortexApi.Encoders
             @string += $" min: {this.w}";
             @string += $" min: {this.N}";
             @string += $" min: {this.Resolution}";
-            @string += $" min: {this.radius}";
+            @string += $" min: {this.Radius}";
             @string += $" min: {this.Periodic}";
             @string += $" min: {this.nInternal}";
             @string += $" min: {this.rangeInternal}";
             @string += $" min: {this.Padding}";
             return @string;
         }
-        public static object GetSchema(Type cls)
+        public static object GetSchema(Type cls, object scalarEncoderProto)
         {
-            return ScalarEncoderProto;
+            return scalarEncoderProto;
         }
 
         
@@ -888,8 +897,8 @@ namespace NeoCortexApi.Encoders
             }
             else
             {
-                radius = proto.radius;
-                resolution = proto.resolution;
+                radius = proto.Radius;
+                resolution = proto.Resolution;
             }
             return cls(w: proto.w, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: proto.ClipInput, forced: true);
         }
@@ -898,8 +907,8 @@ namespace NeoCortexApi.Encoders
         {
             proto.w = this.w;
             proto.MinVal = this.MinVal;
-            proto.maxval = this.MaxVal;
-            proto.periodic = this.Periodic;
+            proto.MaxVal = this.MaxVal;
+            proto.Periodic = this.Periodic;
             // Radius and resolution can be recalculated based on n
             proto.N = this.N;
             proto.name = this.name;
@@ -922,6 +931,11 @@ namespace NeoCortexApi.Encoders
         //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
         //}
 
+    }
+
+    internal class BucketInfo
+    {
+        public double Value { get; internal set; }
     }
 
     internal class SM32
