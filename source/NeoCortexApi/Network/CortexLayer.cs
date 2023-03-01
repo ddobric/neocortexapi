@@ -55,6 +55,8 @@ namespace NeoCortexApi.Network
         /// Outputs of evey module in the pipeline.
         /// </summary>
         private Dictionary<string, object> m_Results = new Dictionary<string, object>();
+        private object field2;
+        private object field1;
 
         /// <summary>
         /// Gets the result of the specific module inside of the layer's pipeline.
