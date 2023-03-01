@@ -1016,6 +1016,16 @@ namespace NeoCortexApi.Entities
             var htmConfig = HtmSerializer.DeserializeObject<HtmConfig>(sr, name);
             return htmConfig;
         }
+
+        public List<Encoders.EncoderResult> GetBucketInfo(int[] buckets)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Encoders.EncoderResult> TopDownCompute(int[] encoded)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
     }
