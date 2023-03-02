@@ -50,7 +50,7 @@ namespace UnitTestsProject
 
             return htmConfig;
         }
-
+        // Test 1
         [TestMethod]
         public void TestBurstUnpredictedColumns1()
         {
@@ -68,8 +68,8 @@ namespace UnitTestsProject
             Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
         }
 
-
-
+        
+        //Test 2
         [TestMethod]
         public void TestBurstUnpredictedColumns2()
         {
@@ -86,7 +86,7 @@ namespace UnitTestsProject
 
             Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
         }
-
+        //Test 3
         [TestMethod]
         public void TestZeroActiveColumns2()
         {
@@ -116,7 +116,7 @@ namespace UnitTestsProject
             Assert.IsTrue(cc2.WinnerCells.Count == 0);
             Assert.IsTrue(cc2.PredictiveCells.Count == 0);
         }
-
+        //Test4
         [TestMethod]
         public void TestPredictedActiveCellsAreAlwaysWinners3()
         {
@@ -146,6 +146,26 @@ namespace UnitTestsProject
 
             Assert.IsTrue(cc.WinnerCells.SequenceEqual(new LinkedHashSet<Cell>(expectedWinnerCells)));
         }
+  
 
+        [TestMethod]
+        public void Compute_ActiveColumns_ReturnsExpectedResult()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+            // Arrange
+
+            var activeColumns = new int[] { 1, 2, 3 };
+            var learn = true;
+
+            // Act
+            var result = tm.Compute(activeColumns, learn);
+
+            // Assert
+            Assert.IsNotNull(result);
+        }
     }
 }
