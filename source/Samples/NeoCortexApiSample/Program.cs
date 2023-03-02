@@ -122,7 +122,7 @@ namespace NeoCortexApiSample
         }
 
         /* Method to read the data from CSV file for comparing which file type is having less CPU utilization */
-
+        
         private static Dictionary<string, List<double>> GetInputFromCsvFile(string filePath)
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
@@ -136,15 +136,17 @@ namespace NeoCortexApiSample
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
                     Console.WriteLine(row);
-
+                    Console.WriteLine(row.Length); 
                     foreach (var digit in numbers)
                     {
+                        
                         if (double.TryParse(digit, out double number))
                         {
-                            
+                           
                             inputList.Add(number);
                         }
-                        else 
+
+                        else
                         {
                             temp++;
                             sequences.Add("Sequence: " + temp, inputList);
@@ -152,6 +154,8 @@ namespace NeoCortexApiSample
                             break;
                         }
                     }
+
+                    
                 }
                 if (inputList.Count > 0)
                 {
@@ -161,7 +165,9 @@ namespace NeoCortexApiSample
             }
             return sequences;
         } 
+        
 
+       
 
 
         private static void RunMultiSimpleSequenceLearningExperiment()
