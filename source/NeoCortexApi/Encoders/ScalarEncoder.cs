@@ -290,8 +290,8 @@ namespace NeoCortexApi.Encoders
 
                 int bucketIdx = bucketVal.Value;
                 //Arrays.fill(output, 0);
-                int minbin = bucketIdx;
-                int maxbin = minbin + 2 * HalfWidth;
+                var minbin = bucketIdx;
+                var maxbin = minbin + 2 * HalfWidth;
                 if (Periodic)
                 {
                     if (maxbin >= N)
@@ -303,7 +303,7 @@ namespace NeoCortexApi.Encoders
                     }
                     if (minbin < 0)
                     {
-                        int topbins = -minbin;
+                        var topbins = -minbin;
                         ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(N - topbins, N), 1);
                         minbin = 0;
                     }
@@ -354,7 +354,7 @@ namespace NeoCortexApi.Encoders
             }
             // rest of the code
 
-            var minbin = GetFirstOnBit(input).ToString()[0];
+            var minbin = this.GetFirstOnBit(input)[0];
             // For periodic encoders, the bucket index is the index of the center bit
             if (Periodic)
             {
@@ -793,7 +793,7 @@ namespace NeoCortexApi.Encoders
             // Get/generate the topDown mapping table
             var topDownMappingM = this.GetTopDownMapping(this.Get_topDownValues());
             // See which "category" we match the closest.
-            var category = topDownMappingM.rightVecProd(encoded).argmax();
+            var category = Matrix.rightVecProd(encoded).argmax();
             // Return that bucket info
             return this.getBucketInfo(new List<object> {
                     category
@@ -900,7 +900,7 @@ namespace NeoCortexApi.Encoders
                 radius = proto.Radius;
                 resolution = proto.Resolution;
             }
-            return cls(w: proto.w, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: proto.ClipInput, forced: true);
+            return cls(w: proto.w, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: Encoder.ClipInput(proto.ClipInput), forced: true);
         }
 
         public virtual object write(object proto)
