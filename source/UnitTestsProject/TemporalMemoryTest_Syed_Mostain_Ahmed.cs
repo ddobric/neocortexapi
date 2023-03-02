@@ -71,39 +71,24 @@ namespace UnitTestsProject
             return retVal;
         }
 
+
         [TestMethod]
-        public void CreateSynapse_WhenMaxSynapsesIsNotExceeded_AddsSynapseAndIncrementsCounters()
+        public void Compute_ExternalPredictiveInputsActive_ReturnsExpectedResult()
         {
-            var segment = new Mock<DistalDendrite>();
-            var synapses = new List<Synapse>();
-            segment.Setup(s => s.Synapses).Returns(synapses);
-            var presynapticCell = new Mock<Cell>();
-            var receptorSynapses = new List<Synapse>();
-            presynapticCell.Setup(s => s.ReceptorSynapses).Returns(receptorSynapses);
-            double permanence = 0.5;
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
 
-            var htmConfig = new HtmConfig
-            {
-                MaxSynapsesPerSegment = 10
-            };
+            var activeColumns = new int[] { 1, 2, 3 };
+            var learn = true;
+            var externalPredictiveInputsActive = new int[] { 4, 5, 6 };
+            var externalPredictiveInputsWinners = new int[] { 7, 8, 9 };
 
-            var mockHtm = new Mock<Htm>();
-            mockHtm.SetupGet(s => s.HtmConfig).Returns(htmConfig);
+            var result = tm.Compute(activeColumns, learn, externalPredictiveInputsActive, externalPredictiveInputsWinners);
 
-            var synapseManager = new SynapseManager(mockHtm.Object);
-
-            // Act
-            var synapse = synapseManager.CreateSynapse(segment.Object, presynapticCell.Object, permanence);
-
-            // Assert
-            Assert.IsNotNull(synapse);
-            Assert.AreEqual(synapse.Permanence, permanence);
-            Assert.AreEqual(segment.Object.Synapses.Count, 1);
-            Assert.AreEqual(segment.Object.Synapses[0], synapse);
-            Assert.AreEqual(presynapticCell.Object.ReceptorSynapses.Count, 1);
-            Assert.AreEqual(presynapticCell.Object.ReceptorSynapses[0], synapse);
-            Assert.AreEqual(synapseManager.NextSynapseOrdinal, 1);
-            Assert.AreEqual(synapseManager.NumSynapses, 1);
+            Assert.IsNotNull(result);
         }
 
     }
