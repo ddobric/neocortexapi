@@ -325,8 +325,25 @@ namespace NeoCortexApi.Encoders
             return retVals;
         }
 
+        public double[] Encode(object inputData)
+        {
+            // Create a new double array of length `Width` initialized to 0
+            double[] output = new double[GetWidth()];
 
+            // Call the `EncodeIntoArray` method to populate the `output` array
+            EncodeIntoArray(inputData, output);
 
+            // Return the `output` array
+            return output;
+        }
+
+        public int GetWidth()
+        {
+            // TODO: Return the appropriate width value
+            throw new NotImplementedException();
+        }
+
+        private Type defaultDtype = typeof(double);
 
 
 
