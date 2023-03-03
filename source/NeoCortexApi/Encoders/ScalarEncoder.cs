@@ -37,7 +37,7 @@ namespace NeoCortexApi.Encoders
         public static object DEFAULT_RADIUS { get; private set; }
         public static object DEFAULT_RESOLUTION { get; private set; }
         public static object ScalarEncoderProto { get; private set; }
-
+        public int[] tmpOutput { get; private set; }
 
         public int GetWidth()
         {
@@ -377,11 +377,11 @@ namespace NeoCortexApi.Encoders
         /// <param name="inputData"></param>
         /// <param name="learn"></param>
         /// <returns></returns>
-        public int[] Compute(object inputData, bool learn)
+        public int Compute(object inputData, bool learn, int v)
         {
-            return Encode(inputData);
+            ScalarEncoder encoder = new ScalarEncoder();
+            return v;
         }
-
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -509,14 +509,13 @@ namespace NeoCortexApi.Encoders
             return 0;
 
         }
-        
 
+        private Tuple<Dictionary<string, Tuple<List<int>, string>>, List<string>> Decode(double[] output)
+        {
+            throw new NotImplementedException();
+        }
 
-
-
-
-        private int[] tmpOutput;
-
+       
         public int Decode(object encoded, object start, int newStruct, string parentFieldName = "")
         {
             (int[], (Dictionary<string, object>, List<object>)) Encode(int input)
@@ -540,7 +539,7 @@ namespace NeoCortexApi.Encoders
             // if this is a coincidence that was learned by the SP).
 
             // Search for portions of the output that have "holes"
-            int maxZerosInARow = halfwidth;
+            int maxZerosInARow = HalfWidth;
             for (int i = 0; i < maxZerosInARow; i++)
             {
                 int[] searchStr = Enumerable.Repeat(1, i + 3).ToArray();
@@ -552,9 +551,9 @@ namespace NeoCortexApi.Encoders
 
                 if (Periodic)
                 {
-                    for (int j = 0; j < n; j++)
+                    for (int j = 0; j < N; j++)
                     {
-                        int[] outputIndices = Enumerable.Range(j, subLen).Select(x => x % n).ToArray();
+                        int[] outputIndices = Enumerable.Range(j, subLen).Select(x => x % N).ToArray();
                         if (searchStr.SequenceEqual(tmpOutput.Where((value, index) => outputIndices.Contains(index))))
                         {
                             for (int k = 0; k < subLen; k++)
@@ -566,7 +565,7 @@ namespace NeoCortexApi.Encoders
                 }
                 else
                 {
-                    for (int j = 0; j < n - subLen + 1; j++)
+                    for (int j = 0; j < N - subLen + 1; j++)
                     {
                         if (searchStr.SequenceEqual(tmpOutput.Skip(j).Take(subLen)))
                         {
@@ -641,8 +640,8 @@ namespace NeoCortexApi.Encoders
                 }
                 else
                 {
-                    left = runStart + halfwidth;
-                    right = runStart + runLen - 1 - halfwidth;
+                    left = runStart + HalfWidth;
+                    right = runStart + runLen - 1 - HalfWidth;
                 }
 
                 ranges.Add(new int[] { left, right });
@@ -980,23 +979,28 @@ namespace NeoCortexApi.Encoders
                 radius = proto.Radius;
                 resolution = proto.Resolution;
             }
-            return cls(w: proto.w, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: Encoder.ClipInput(proto.ClipInput), forced: true);
+            return new cls(W: proto.W, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: Encoder.ClipInput(proto.ClipInput), forced: true);
         }
 
         public virtual object write(object proto)
         {
-            proto.w = this.w;
+            proto.w = this.W;
             proto.MinVal = this.MinVal;
             proto.MaxVal = this.MaxVal;
             proto.Periodic = this.Periodic;
             // Radius and resolution can be recalculated based on n
             proto.N = this.N;
-            proto.name = this.name;
+            proto.Name = this.Name;
             proto.verbosity = this.verbosity;
             proto.ClipInput = this.ClipInput;
         }
 
         public override List<T> GetBucketValues<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void EncodeIntoArray(object inputData, double[] output)
         {
             throw new NotImplementedException();
         }
