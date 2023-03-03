@@ -197,7 +197,7 @@ namespace NeoCortexApi.Network
                 var model_sp = "Model_sp.txt";
                 StreamWriter sw_sp = new StreamWriter(model_sp);
                 var sp = layer.HtmModules["sp"];
-                if (sp is SpatialPoolerMT spMT)
+                if (sp is SpatialPooler spMT)
                 {
                     spMT.Serialize(spMT, null, sw_sp);
                 }
@@ -231,11 +231,11 @@ namespace NeoCortexApi.Network
             sr_en.Close();
             
 
-            /*
+            
             StreamReader sr_sp = new StreamReader(model_sp);
             var sp = SpatialPooler.Deserialize<SpatialPooler>(sr_sp, null);
             sr_sp.Close();
-            */
+            
 
             
             StreamReader sr_tm = new StreamReader(model_tm);
@@ -245,7 +245,7 @@ namespace NeoCortexApi.Network
 
             CortexLayer<object, object> layer = new CortexLayer<object, object>("L");
             layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
-            //layer.HtmModules.Add("sp", (SpatialPoolerMT)sp);
+            layer.HtmModules.Add("sp", (SpatialPooler)sp);
             layer.HtmModules.Add("tm", (TemporalMemory)tm);
             
             return layer;
