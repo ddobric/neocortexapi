@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
+using static System.Net.WebRequestMethods;
 
 namespace NeoCortexApi.Encoders
 {
@@ -92,6 +94,10 @@ namespace NeoCortexApi.Encoders
                 Radius = -1.0;
                 Periodic = false;
                 ClipInput = false;
+                verbosity = 0;
+                forced = false;
+
+
 
                 foreach (var item in encoderSettings)
                 {
@@ -144,6 +150,9 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public bool IsRealCortexModel { get => (bool)this["IsRealCortexModel"]; set => this["IsRealCortexModel"] = (bool)value; }
 
+        public bool forced { get => (bool)this["forced"]; set => this["forced"] = (bool)value; }
+
+
         /// <summary>
         /// The width of output vector of encoder. 
         /// It specifies the length of array, which will be occupied by output vector.
@@ -151,12 +160,20 @@ namespace NeoCortexApi.Encoders
 
         public int N { get => (int)this["N"]; set => this["N"] = (int)value; }
 
+        public int verbosity { get => (int)this["verbosity"]; set => this["verbosity"] = (int)value; }
+
         public int NInternal { get => (int)this["NInternal"]; set => this["NInternal"] = (int)value; }
 
         /// <summary>
         /// Number of bits set on one, which represents single encoded value.
         /// </summary>
         public int W { get => (int)this["W"]; set => this["W"] = (int)value; }
+
+        //This matrix is used for the topDownCompute. We build it the first time
+        //topDownCompute is called
+        public int _topDownMappingM { get => (int)this["_topDownMappingM"]; set => this["_topDownMappingM"] = (int)value; }
+
+        public int _topDownValues { get => (int)this["_topDownValues"]; set => this["_topDownValues"] = (int)value; }
 
         public double MinVal { get => (double)this["MinVal"]; set => this["MinVal"] = (double)value; }
 
@@ -167,6 +184,9 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public double Radius { get => (double)this["Radius"]; set => this["Radius"] = (double)value; }
 
+        public double bucketVal { get => (double)this["bucketVal"]; set => this["bucketVal"] = (double)value; }
+
+       
         /// <summary>
         /// How many input values are embedded in the single encoding bit. Res = (max-min)/N.
         /// </summary>
@@ -191,13 +211,15 @@ namespace NeoCortexApi.Encoders
         public int Offset { get => (int)this["Offset"]; set => this["Offset"] = value; }
 
 
-        public double RangeInternal { get => rangeInternal; set => this.rangeInternal = value; }
+        public double RangeInternal { get => RangeInternal; set => this.RangeInternal = value; }
 
         //public int NumOfBits { get => m_NumOfBits; set => this.m_NumOfBits = value; }     
 
-        public int HalfWidth { get => halfWidth; set => this.halfWidth = value; }
+        public int HalfWidth { get => HalfWidth; set => this.HalfWidth = value; }
 
+        public int minbin { get => (int)this["minbin"]; set => this["minbin"] = value; }
 
+        public int maxbin { get => (int)this["maxbin"]; set => this["maxbin"] = value; }
         ///<summary>
         /// Gets the output width, in bits.
         ///</summary>
@@ -263,6 +285,128 @@ namespace NeoCortexApi.Encoders
             }
             return retVal;
         }
+
+
+
+
+        public void EncodeIntoArray(object inputData, Array output)
+        {
+            // Encodes inputData and puts the encoded value into the output array, which is a 1-D array of length returned by GetWidth().
+            // .. note:: The output array is reused, so clear it before updating it.
+            throw new NotImplementedException();
+        }
+
+        public virtual List<(string name, int offset)> GetDescription()
+        {
+            throw new NotImplementedException("GetDescription must be implemented by all subclasses");
+        }
+
+        public void PPrint(double[] output, string prefix = "")
+        {
+            Console.Write(prefix);
+            var description = this.GetDescription().Concat(new List<(string, int)> { ("end", this.GetWidth()) }).ToList();
+
+            for (int i = 0; i < description.Count - 1; i++)
+            {
+                int offset = description[i].Item2;
+                int nextoffset = description[i + 1].Item2;
+                Console.Write($" {bitsToString(output, offset, nextoffset)} |");
+            }
+
+            Console.WriteLine();
+        }
+
+
+        public (Dictionary<string, (List<(double, double)> ranges, string desc)> fieldsDict, List<string> fieldsOrder) Decode(BitArray encoded, string parentFieldName = "")
+        {
+            var fieldsDict = new Dictionary<string, (List<(double, double)> ranges, string desc)>();
+            var fieldsOrder = new List<string>();
+
+            // What is the effective parent name?
+            var parentName = parentFieldName == "" ? Name : $"{parentFieldName}.{Name}";
+
+            if (Encoders != null)
+            {
+                // Merge decodings of all child encoders together
+                for (int i = 0; i < Encoders.Count; i++)
+                {
+                    // Get the encoder and the encoded output
+                    var (Name, Encoder, offset) = Encoders[i];
+                    var nextOffset = i < encoders.Count - 1 ? Encoders[i + 1].offset : width;
+                    var fieldOutput = new BitArray(encoded.Cast<bool>().Skip(offset).Take(nextOffset - offset).ToArray());
+                    var (subFieldsDict, subFieldsOrder) = encoder.Decode(fieldOutput, parentName);
+
+                    foreach (var (key, value) in subFieldsDict)
+                    {
+                        var fieldName = $"{parentName}.{key}";
+                        if (!fieldsDict.TryGetValue(fieldName, out var existingValue))
+                        {
+                            existingValue = (new List<(double, double)>(), "");
+                            fieldsDict[fieldName] = existingValue;
+                            fieldsOrder.Add(key);
+                        }
+
+                        var (ranges, desc) = value;
+                        existingValue.ranges.AddRange(ranges);
+                        if (existingValue.desc != "" && desc != "")
+                        {
+                            existingValue.desc += ", ";
+                        }
+
+                        existingValue.desc += desc;
+                    }
+
+                    fieldsOrder.AddRange(subFieldsOrder);
+                }
+            }
+
+            return (fieldsDict, fieldsOrder);
+        }
+
+
+
+
+        public string DecodedToStr(Tuple<Dictionary<string, Tuple<List<int>, string>>, List<string>> decodeResults)
+        {
+            var fieldsDict = decodeResults.Item1;
+            var fieldsOrder = decodeResults.Item2;
+            var desc = "";
+
+            foreach (var fieldName in fieldsOrder)
+            {
+                var ranges = fieldsDict[fieldName].Item1;
+                var rangesStr = fieldsDict[fieldName].Item2;
+                if (desc.Length > 0)
+                {
+                    desc += $", {fieldName}:";
+                }
+                else
+                {
+                    desc += $"{fieldName}:";
+                }
+
+                desc += $"[{rangesStr}]";
+            }
+
+            return desc;
+        }
+
+        private string bitsToString(double[] output, int start, int end)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = start; i < end; i++)
+            {
+                sb.Append(output[i] > 0.5 ? "1" : "0");
+            }
+
+            return sb.ToString();
+        }
+
+        public virtual int GetWidth()
+        {
+            throw new NotImplementedException();
+        }
+
 
 
         /// <summary>
@@ -356,162 +500,14 @@ namespace NeoCortexApi.Encoders
 
 
 
-        /*
-
-        public static object GetBucketIndices(object inputData)
-        {
-            List<int> retVals = new List<int>();
-            var encoder = new ConcreteEncoder(); // create an instance of a concrete subclass of EncoderBase
-            if (encoder.Encoders != null)
-            {
-                foreach ((IEncoder subEncoder, int offset) in ((IDictionary<string, (IEncoder, int)>)encoder.Encoders).Values)
-                {
-                    var values = subEncoder.GetBucketIndices(_getInputValue(inputData, subEncoder.Name));
-                    retVals.AddRange((IEnumerable<int>)values);
-                }
-            }
-            else
-            {
-                throw new System.Exception("Should be implemented in base classes that are not containers for other encoders");
-            }
-            return retVals;
-        }
-
-        private static object _getInputValue(object inputData, object name)
-        {
-            throw new NotImplementedException();
-        }
+       
 
 
 
 
-        /// the System.Collections.BitArray class to represent the encoded input. The List<(float, float)> type 
-        ///represents the ranges of input that would generate bits in the encoded output. The Dictionary<string, 
-        ///(List<(float, float)> ranges, string desc)> type represents the fields dictionary where the keys represent 
-        ///field names and the values are tuples containing the ranges and pretty print descriptions of each field.
-        public (Dictionary<string, (List<(float, float)> ranges, string desc)> fieldsDict, List<string> fieldOrder) Decode(BitArray encoded, (object subFieldName, int encoder, object offset) value, string parentFieldName = "")
-        {
-            var fieldsDict = new Dictionary<string, (List<(float, float)> ranges, string desc)>();
-            var fieldsOrder = new List<string>();
-
-            // What is the effective parent name?
-            var name = string.IsNullOrEmpty(parentFieldName) ? Name : $"{parentFieldName}.{Name}";
-
-            if (Encoders != null)
-            {
-                // Merge decodings of all child encoders together
-                for (var i = 0; i < Encoders.Count; i++)
-                {
-                    var subEncoder = Encoders.ElementAt(i).Value;
-
-                    var nextOffset = i >= Encoders.Count - 1 ? Width : Encoders[i + 1].Offset;
-                    var fieldOutput = encoded.Cast<bool>().Skip(offset).Take(nextOffset - offset).ToArray();
-
-                    Dictionary<string, (int[] ranges, string desc)> subFieldsDict;
-                    List<string> subFieldsOrder;
-                    (subFieldsDict, subFieldsOrder) = encoder.Decode(new BitArray(fieldOutput), name);
-
-                    foreach (var (fieldName, (ranges, desc)) in subFieldsDict)
-                    {
-                        if (fieldsDict.ContainsKey(fieldName))
-                        {
-                            // Merge overlapping ranges
-                            var existingRanges = fieldsDict[fieldName].ranges;
-                            var newRanges = ranges.Select(x => ((float)x, (float)x));
-                            var mergedRanges = existingRanges.Concat(newRanges);
-                            fieldsDict[fieldName] = (mergedRanges.ToList(), desc);
-                        }
-                        else
-                        {
-                            var newRanges = ranges.Select(x => ((float)x, (float)x));
-                            fieldsDict[fieldName] = (newRanges.ToList(), desc);
-                            fieldsOrder.Add(fieldName);
-                        }
-                    }
 
 
-
-                    fieldsOrder.AddRange(subFieldsOrder);
-                }
-            }
-
-
-            return (fieldsDict, fieldsOrder);
-        }
-
-        public virtual List<EncoderResult> GetBucketInfo(int[] buckets)
-        {
-            // Fall back topdown compute
-            if (Encoders == null)
-            {
-                throw new NotImplementedException("Must be implemented in sub-class");
-            }
-
-            // Concatenate the results from bucketInfo on each child encoder
-            List<EncoderResult> retVals = new List<EncoderResult>();
-            int bucketOffset = 0;
-            var Encoders = new List<(EncoderBase encoder, int offset)>(); // define and initialize Encoders
-
-            for (int i = 0; i < Encoders.Count; i++)
-            {
-                var (encoder, offset) = Encoders[i];
-
-                int nextBucketOffset;
-                if (encoder.Encoders != null)
-                {
-                    nextBucketOffset = bucketOffset + encoder.Encoders.Count;
-                }
-                else
-                {
-                    nextBucketOffset = bucketOffset + 1;
-                }
-                int[] bucketIndices = buckets.Skip(bucketOffset).Take(nextBucketOffset - bucketOffset).ToArray();
-                List<EncoderResult> values = encoder.GetBucketInfo(bucketIndices);
-
-                retVals.AddRange(values);
-
-                bucketOffset = nextBucketOffset;
-            }
-
-
-
-            return retVals;
-        }
-
-
-
-        public List<EncoderResult> TopDownCompute(int[] encoded)
-        {
-            // Fallback topdown compute
-            if (Encoders == null)
-            {
-                throw new InvalidOperationException("Must be implemented in sub-class");
-            }
-
-            // Concatenate the results from topDownCompute on each child encoder
-            List<EncoderResult> retVals = new List<EncoderResult>();
-            for (int i = 0; i < Encoders.Count; i++)
-            {
-                var (encoder, offset) = Encoders[i];
-
-                int nextOffset = i < Encoders.Count - 1 ? Encoders[i + 1].Offset : Width;
-
-                int[] fieldOutput = encoded.Skip(offset).Take(nextOffset - offset).ToArray();
-                List<EncoderResult> values = encoder.TopDownCompute(fieldOutput);
-
-                if (values is IEnumerable<EncoderResult>)
-                {
-                    retVals.AddRange(values);
-                }
-                else
-                {
-                    retVals.Add(values);
-                }
-            }
-
-            return retVals;
-        }
-        */
+      
 
     }
 }
