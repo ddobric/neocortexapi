@@ -21,11 +21,11 @@ namespace NeoCortexApi
     /// </summary>
     public class Predictor : ISerializable
     {
-        private Connections connections { get; set; }
+        public Connections connections { get; set; }
 
-        private CortexLayer<object, object> layer { get; set; }
+        public CortexLayer<object, object> layer { get; set; }
 
-        private HtmClassifier<string, ComputeCycle> classifier { get; set; }
+        public HtmClassifier<string, ComputeCycle> classifier { get; set; }
 
         /// <summary>
         /// Initializes the predictor functionality.
@@ -40,6 +40,7 @@ namespace NeoCortexApi
             this.layer = layer;
             this.classifier = classifier;
         }
+
 
         /// <summary>
         /// Starts predicting of the next subsequences.
