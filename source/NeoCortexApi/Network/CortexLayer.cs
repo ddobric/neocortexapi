@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace NeoCortexApi.Network
 {
-    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT>
+    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT>, ISerializable
     {
         #region Properties
 
@@ -53,6 +55,8 @@ namespace NeoCortexApi.Network
         /// Outputs of evey module in the pipeline.
         /// </summary>
         private Dictionary<string, object> m_Results = new Dictionary<string, object>();
+        private object field2;
+        private object field1;
 
         /// <summary>
         /// Gets the result of the specific module inside of the layer's pipeline.
@@ -119,6 +123,18 @@ namespace NeoCortexApi.Network
 
         #endregion
 
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + field1.GetHashCode();
+                hash = hash * 23 + field2.GetHashCode();
+                // add more fields as needed
+                return hash;
+            }
+        }
+
         public override bool Equals(object obj)
         {
             var layer = obj as CortexLayer<TIN, TOUT>;
@@ -152,6 +168,27 @@ namespace NeoCortexApi.Network
         public bool Equals(IHtmModule other)
         {
             return this.Equals((object)other);
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            //foreach (var modulePair in this.HtmModules)
+            //{
+            //    ISerializable serializableModule = modulePair.Value as ISerializable;
+            //    if (serializableModule != null)
+            //    { 
+                
+            //    }
+            //       // serializableModule.Serialize(todo);
+            //       //else
+            //            // throw new Exception()
+            //}
+            throw new NotImplementedException();
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            throw new NotImplementedException();
         }
         #region Private Methods
 

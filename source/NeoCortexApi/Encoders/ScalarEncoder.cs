@@ -10,6 +10,9 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 using System.Linq;
+using System.Numerics;
+
+
 
 namespace NeoCortexApi.Encoders
 {
@@ -30,6 +33,18 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public override int Width => throw new NotImplementedException();
 
+        //public int halfwidth { get; private set; }
+        public static object DEFAULT_RADIUS { get; private set; }
+        public static object DEFAULT_RESOLUTION { get; private set; }
+        public static object ScalarEncoderProto { get; private set; }
+        public int[] tmpOutput { get; private set; }
+
+        public int GetWidth()
+        {
+            return this.N;
+        }
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
         /// </summary>
@@ -37,7 +52,7 @@ namespace NeoCortexApi.Encoders
         {
 
         }
-
+        private const double SENTINEL_VALUE_FOR_MISSING_DATA = double.NaN;
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
         /// </summary>
@@ -52,12 +67,22 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public override void AfterInitialize()
         {
+            this.Encoders = null;
+            this.verbosity = verbosity;
+            this.W = W;
             if (W % 2 == 0)
             {
                 throw new ArgumentException("W must be an odd number (to eliminate centering difficulty)");
             }
 
-            HalfWidth = (W - 1) / 2;
+            this.MinVal = MinVal;
+            this.MaxVal = MaxVal;
+
+            this.Periodic = Periodic;
+            this.ClipInput = ClipInput;
+
+
+            this.HalfWidth = (W - 1) / 2;
 
             // For non-periodic inputs, padding is the number of bits "outside" the range,
             // on each side. I.e. the representation of minval is centered on some bit, and
@@ -72,15 +97,15 @@ namespace NeoCortexApi.Encoders
                     throw new ArgumentException("maxVal must be > minVal");
                 }
 
-                RangeInternal = MaxVal - MinVal;
+                this.RangeInternal = (float)(this.MaxVal - this.MinVal);
             }
 
             // There are three different ways of thinking about the representation. Handle
             // each case here.
-            InitEncoder(W, MinVal, MaxVal, N, Radius, Resolution);
+            this.InitEncoder(W, MinVal, MaxVal, N, Radius, Resolution);
 
-            //nInternal represents the output _area excluding the possible padding on each side
-            NInternal = N - 2 * Padding;
+            //NInternal represents the output _area excluding the possible padding on each side
+            this.NInternal = this.N - 2 * this.Padding;
 
             if (Name == null)
             {
@@ -106,8 +131,12 @@ namespace NeoCortexApi.Encoders
             }
             // Initialized bucketValues to null.
             this.bucketValues = null;
-        }
 
+
+
+        }
+        
+         
 
         public void InitEncoder(int w, double minVal, double maxVal, int n, double radius, double resolution)
         {
@@ -140,11 +169,11 @@ namespace NeoCortexApi.Encoders
             {
                 if (radius != 0)
                 {
-                    Resolution = Radius / w;
+                    Resolution = (float)(this.Radius) / W;
                 }
                 else if (resolution != 0)
                 {
-                    Radius = Resolution * w;
+                    Radius = Resolution * W;
                 }
                 else
                 {
@@ -161,7 +190,7 @@ namespace NeoCortexApi.Encoders
                     Range = RangeInternal + Resolution;
                 }
 
-                double nFloat = w * (Range / Radius) + 2 * Padding;
+                double nFloat = W * (this.Range / this.Radius) + 2 * this.Padding;
                 N = (int)(nFloat);
             }
 
@@ -169,6 +198,42 @@ namespace NeoCortexApi.Encoders
 
         }
 
+        public void RecalcParams()
+        {
+            RangeInternal = (float)(this.MaxVal - this.MinVal);
+
+            if (!Periodic)
+            {
+               
+                Resolution = RangeInternal / (N - W);
+            }
+            else
+            {
+                
+                Resolution = (float)RangeInternal / this.N;
+            }
+            Radius = W * Resolution;
+
+            if (Periodic)
+            {
+                Range = RangeInternal;
+            }
+            else
+            {
+                Radius = this.RangeInternal * this.Resolution;
+            }
+            string Name = "[" + MinVal + ":" + MaxVal + "]";
+        }
+
+
+
+
+        /// <summary>
+        /// Gets the index of the first non-zero bit.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>Null in a case of an error.</returns>
+        /// <exception cref="ArgumentException"></exception>
         protected int? GetFirstOnBit(double input)
         {
             if (input == double.NaN)
@@ -181,9 +246,11 @@ namespace NeoCortexApi.Encoders
                 {
                     if (ClipInput && !Periodic)
                     {
-                        Debug.WriteLine("Clipped input " + Name + "=" + input + " to minval " + MinVal);
-
-                        input = MinVal;
+                        if (this.verbosity > 0)
+                        {
+                            Debug.WriteLine("Clipped input " + Name + "=" + input + " to minval " + MinVal);
+                            input = MinVal;
+                        }
                     }
                     else
                     {
@@ -192,22 +259,24 @@ namespace NeoCortexApi.Encoders
                 }
             }
 
-            if (Periodic)
+            if (this.Periodic)
             {
-                if (input >= MaxVal)
+                if (input >= this.MaxVal)
                 {
                     throw new ArgumentException($"Input ({input}) greater than periodic range ({MinVal} - {MaxVal}");
                 }
             }
             else
             {
-                if (input > MaxVal)
+                if (input > this.MaxVal)
                 {
                     if (ClipInput)
                     {
-
-                        Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");
-                        input = MaxVal;
+                        if (this.verbosity >= 0)
+                        {
+                            Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");
+                            input = MaxVal;
+                        }
                     }
                     else
                     {
@@ -219,18 +288,42 @@ namespace NeoCortexApi.Encoders
             int centerbin;
             if (Periodic)
             {
-                centerbin = (int)((input - MinVal) * NInternal / Range + Padding);
+                centerbin = (int)((input - this.MinVal) * this.NInternal / this.Range + this.Padding);
             }
             else
             {
-                centerbin = ((int)(((input - MinVal) + Resolution / 2) / Resolution)) + Padding;
+                centerbin = ((int)(((input - this.MinVal) + this.Resolution / 2) / this.Resolution)) + this.Padding;
             }
+            // We use the first bit to be set in the encoded output as the bucket index
 
-            return centerbin - HalfWidth;
+            int minbin = centerbin - this.HalfWidth;
+
+            return minbin;
         }
 
+
         /// <summary>
-        /// The Encode
+        /// Gets the bucket index of the given value.
+        /// </summary>
+        /// <param name="inputData">The data to be encoded. Must be of type double.</param>
+        /// <param name="bucketIndex">The bucket index.</param>
+        /// <returns></returns>
+       /* public int? GetBucketIndex(object inputData)
+        {
+            double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
+            if (input == double.NaN)
+            {
+                return null;
+            }
+
+            int? bucketVal = GetFirstOnBit(input);
+
+            return bucketVal; 
+        }
+       */
+
+        /// <summary>
+        /// Encodes the given scalar value as SDR as defined by HTM.
         /// </summary>
         /// <param name="inputData">The inputData<see cref="object"/></param>
         /// <returns>The <see cref="int[]"/></returns>
@@ -251,8 +344,8 @@ namespace NeoCortexApi.Encoders
 
                 int bucketIdx = bucketVal.Value;
                 //Arrays.fill(output, 0);
-                int minbin = bucketIdx;
-                int maxbin = minbin + 2 * HalfWidth;
+                var minbin = bucketIdx;
+                var maxbin = minbin + 2 * HalfWidth;
                 if (Periodic)
                 {
                     if (maxbin >= N)
@@ -264,7 +357,7 @@ namespace NeoCortexApi.Encoders
                     }
                     if (minbin < 0)
                     {
-                        int topbins = -minbin;
+                        var topbins = -minbin;
                         ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(N - topbins, N), 1);
                         minbin = 0;
                     }
@@ -273,21 +366,10 @@ namespace NeoCortexApi.Encoders
                 ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(minbin, maxbin + 1), 1);
             }
 
-            // Added guard against immense string concatenation
-            //if (LOGGER.isTraceEnabled())
-            //{
-            //    LOGGER.trace("");
-            //    LOGGER.trace("input: " + input);
-            //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
-            //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
-            //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
-            //    LOGGER.trace("output: " + Arrays.toString(output));
-            //    LOGGER.trace("input desc: " + decode(output, ""));
-            //}
-
             // Output 1-D array of same length resulted in parameter N    
             return output;
         }
+
 
         /// <summary>
         /// This method enables running in the network.
@@ -295,11 +377,11 @@ namespace NeoCortexApi.Encoders
         /// <param name="inputData"></param>
         /// <param name="learn"></param>
         /// <returns></returns>
-        public int[] Compute(object inputData, bool learn)
+        public int Compute(object inputData, bool learn, int v)
         {
-            return Encode(inputData);
+            ScalarEncoder encoder = new ScalarEncoder();
+            return v;
         }
-
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -308,161 +390,235 @@ namespace NeoCortexApi.Encoders
         ///  Vinay
         int bucketIdx;
 
-        public int GetBucketIndices(object inputData)
+        public int? GetBucketIndex(double input)
         {
-
-            if ((typeof(input) == Double) && Double.IsNaN(input))
+            if (input is double && double.IsNaN((double)input))
             {
-                input = SENTINEL_VALUE_FOR_MISSING_DATA;
-            }
-            if (input == SENTINEL_VALUE_FOR_MISSING_DATA)
-            {
-                return 0;
+                input = double.NaN;
             }
 
+            if (input == double.NaN)
+            {
+                return null;
+            }
 
-            var minbin = GetFirstOnBit(input)[0];
+          
+
+            minbin = this.GetFirstOnBit(input) ?? 0;
+            int? bucketVal = GetFirstOnBit(input);
             // For periodic encoders, the bucket index is the index of the center bit
-            if (Periodic)
+            if (this.Periodic)
             {
-                bucketIdx = minbin + HalfWidth;
-                if (bucketIdx < 0)
+                bucketVal = minbin + this.HalfWidth;
+                if (bucketVal < 0)
                 {
-                    bucketIdx += N;
+                    bucketVal += this.N;
                 }
                 else
                 {
                     /// for non-periodic encoders, the bucket index is the index of the left bit
-                    bucketIdx = minbin;
+                    bucketVal = minbin;
                 }
-                return bucketIdx;
+                return bucketVal;
             }
+            return 0;
         }
 
 
 
-        public int encodeIntoArray(int input, double output, int n)
+        public int EncodeIntoArray(int input, double[] output, int n, bool learn = true)
         {
 
-            if (input != 0)
+            if (input != 0 && !typeof(System.IConvertible).IsAssignableFrom(input.GetType()))
             {
-                throw new ArgumentException("$Expected a scalar input but got input of type", input);
+                throw new ArgumentException("Expected a scalar input but got input of type " + input.GetType().Name);
             }
 
-            if (input != Double.IsNaN(input))
+            if ((!Double.IsNaN(input)) && float.IsNaN((float)input))
             {
                 input = 0;
-                bucketIdx = (int)GetFirstOnBit(input);
             }
+            bucketVal = (int)GetFirstOnBit(input);
 
-            if (bucketIdx == 0)
+            if (bucketVal == 0)
             {
-                output = 0;
-
+                // None is returned for missing value
+                for (int i = 0; i < this.N; i++)
+                {
+                    output[i] = 0;
+                }
+                // TODO: should all 1s, or random SDR be returned instead?
             }
+
             else
             {
-                /// # The bucket index is the index of the first bit to set in the output
-                output[0, n] = 0;
-                minbin = bucketIdx;
-                maxbin = minbin + 2 * self.halfwidth;
-            }
+                // The bucket index is the index of the first bit to set in the output
+                for (int i = 0; i < this.N; i++)
+                {
+                    output[i] = 0;
+                }
 
-            if (periodic)
+                int minbin = (int)bucketVal;
+                int maxbin = minbin + 2 * HalfWidth;
+
+                if (this.Periodic)
+                {
+                    // Handle the edges by computing wrap-around
+                    if (maxbin >= this.N)
+                    {
+                        int bottombins = maxbin - this.N + 1;
+                        for (int i = 0; i < bottombins; i++)
+                        {
+                            output[i] = 1;
+                        }
+                        maxbin = this.N - 1;
+                    }
+
+                    if (minbin < 0)
+                    {
+                        int topbins = -minbin;
+                        for (int i = this.N - topbins; i < this.N; i++)
+                        {
+                            output[i] = 1;
+                        }
+                        minbin = 0;
+                    }
+                }
+
+                Debug.Assert(minbin >= 0);
+                Debug.Assert(maxbin < this.N);
+
+                // Set the output (except for periodic wraparound)
+                for (int i = minbin; i <= maxbin; i++)
+                {
+                    output[i] = 1;
+                }
+            }
+            // Debug the decode() method
+            if (verbosity >= 2)
             {
-                if (maxbin >= n)
-                {
-                    bottombins = maxbin - n + 1;
-                    output[0, bottombins] = 1;
-                    maxbin = this.n - 1;
-
-
-                }
-
-
-
-
-                if (minbin < 0)
-                {
-                    topbins = -minbin;
-                    output[n - topbins, n] = 1;
-                    minbin = 0;
-
-                }
+                Console.WriteLine();
+                Console.WriteLine("input: " + input);
+                Console.WriteLine("range: " + MinVal + " - " + MaxVal);
+                Console.WriteLine("n: " + this.N + " w: " + this.W + " resolution: " + this.Resolution +
+                                  " radius: " + this.Radius + " periodic: " + this.Periodic);
+                Console.Write("output: ");
+                PPrint(output);
+                Console.WriteLine("input desc: " + DecodedToStr(Decode(output)));
             }
+            return 0;
+
         }
 
-        public int decode(object encoded, string parentFieldName = "")
+        private Tuple<Dictionary<string, Tuple<List<int>, string>>, List<string>> Decode(double[] output)
         {
-            tmpoutput = NumSharp.array(encoded[0, this.n] > 0).astype(encoded.dtype);
-            if (!tmpOutput.any())
-            {
-                return (new Dictionary<object, object>(), new List<object>());
-            }
-            maxzerosinrow = this.halfwidth;
+            throw new NotImplementedException();
+        }
 
-            if (this.periodic)
+       
+        public int Decode(object encoded, object start, int newStruct, string parentFieldName = "")
+        {
+            (int[], (Dictionary<string, object>, List<object>)) Encode(int input)
             {
-                foreach (int j in xrange(this.n))
+                double[] encodedArray = EncodeIntoArray(input);
+                /// For now, we simply assume any top-down output greater than 0
+                /// is ON. Eventually, we will probably want to incorporate the strength
+                /// of each top-down output.
+                tmpOutput = encodedArray.Take(N).Select(x => Convert.ToInt32(x > 0)).ToArray();
+                if (!tmpOutput.Any())
                 {
-                    var outputIndices = NumSharp.arange(j, j + subLen);
-                    outputIndices %= this.n;
-                    if (NumSharp.array_equal(searchStr, tmpOutput[outputIndices]))
-                    {
-                        tmpOutput[outputIndices] = 1;
-                    }
-
+                    return (new int[0], (new Dictionary<string, object>(), new List<object>()));
                 }
+
+                var result = (tmpOutput, (new Dictionary<string, object>(), new List<object>()));
+                return result;
             }
-            else
+            
+
+
+            // First, assume the input pool is not sampled 100%, and fill in the
+            // "holes" in the encoded representation (which are likely to be present
+            // if this is a coincidence that was learned by the SP).
+
+            // Search for portions of the output that have "holes"
+            maxZerosInARow = HalfWidth;
+            for (int i = 0; i < maxZerosInARow; i++)
             {
-                foreach (var j in xrange(this.n - subLen + 1))
+                List<int> searchStr = Enumerable.Repeat(1, i + 3).ToList();
+                searchStr[0] = 0;
+                searchStr[searchStr.Count - 1] = 0;
+                subLen = searchStr.Count;
+
+                /// Does this search string appear in the output?
+
+                if (Periodic)
                 {
-                    if (NumSharp.array_equal(searchStr, tmpOutput[j: (j + subLen)]))
+                    for (int j = 0; j < N; j++)
                     {
-                        tmpoutput[j: (j + subLen)] = 1;
+                        outputIndices = Enumerable.Range(j, subLen).Select(x => x % N).ToArray();
+                        if (searchStr.SequenceEqual(tmpOutput.Where((value, index) => outputIndices.Contains(index))))
+                        {
+                            for (int k = 0; k < subLen; k++)
+                            {
+                                tmpOutput[outputIndices[k]] = 1;
+                            }
+                        }
                     }
-                }
-            }
-
-            //if (this.verbosity >= 2)
-            //{
-            //    Console.WriteLine("raw output:", encoded[self.n]);
-            //    Console.WriteLine("filtered output:", tmpOutput);
-            //}
-
-            var nz = tmpOutput.nonzero()[0];
-            var runs = new List<object>();    /// will be tuples of (startIdx, runLength)
-            var run = new List<object> { nz[0], 1 };
-
-            var i = 1;
-
-            while (i < nz.Count)
-            {
-                if (nz[i] == run[0] + run[1])
-                {
-                    run[1] += 1;
                 }
                 else
                 {
-                    runs.append(run);
-                    run = new List<object> {
-                            nz[i],
-                            1
-                        };
+                    for (int j = 0; j < N - subLen + 1; j++)
+                    {
+                        if (searchStr.SequenceEqual(tmpOutput.Skip(j).Take(subLen)))
+                        {
+                            for (int k = 0; k < subLen; k++)
+                            {
+                                tmpOutput[j + k] = 1;
+                            }
+                        }
+                    }
                 }
-                i += 1;
-
             }
-            runs.append(run);
-            // If we have a periodic encoder, merge the first and last run if they
-            //  both go all the way to the edges
-            if (this.periodic && runs.Count > 1)
+
+            if (this.verbosity >= 2)
             {
-                if (runs[0][0] == 0 && runs[-1][0] + runs[-1][1] == this.n)
+                Console.WriteLine("raw output: " + string.Join(",", ((double[])encoded).Take(N).ToArray()));
+                Console.WriteLine("filtered output: " + string.Join(",", tmpOutput));
+            }
+
+
+
+            // Find each run of 1's.
+            nz = Array.FindAll(tmpOutput, x => x != 0);
+            List<(int, int)> runs = new List<(int, int)>(); // will be tuples of (startIdx, runLength)
+            if (nz.Length > 0)
+            {
+                run = new int[] { nz[0], 1 };
+                int i = 1;
+                while (i < nz.Length)
                 {
-                    runs[-1][1] += runs[0][1];
-                    runs = runs[1];
+                    if (nz[i] == run[0] + run[1])
+                    {
+                        run[1] += 1;
+                    }
+                    else
+                    {
+                        runs.Add((run[0], run[1]));
+                        run = new int[] { nz[i], 1 };
+                    }
+                    i += 1;
+                }
+                runs.Add((run[0], run[1]));
+            }
+
+            // If we have a periodic encoder, merge the first and last run if they
+            // both go all the way to the edges
+            if (this.Periodic && runs.Count > 1)
+            {
+                if (runs[0].Item1 == 0 && runs[^1].Item1 + runs[^1].Item2 == this.N)
+                {
+                    runs[^1] = (runs[^1].Item1, runs[^1].Item2 + runs[0].Item2);
+                    runs.RemoveAt(0);
                 }
             }
 
@@ -473,142 +629,212 @@ namespace NeoCortexApi.Encoders
             //  halfwidth.
             // For a group of width w or less, the "left" and "right" edge are both at
             //   the center position of the group.
-            var ranges = new List<object>();
+            List<int[]> ranges = new List<int[]>();
             foreach (var run in runs)
             {
-                (start, runLen) = run;
-                if (runLen <= this.w)
+                Start = run.Item1;
+                runLen = run.Item2;
+                if (runLen <= this.W)
                 {
-                    left = start + runLen / 2;
+                    left = right = Start + runLen / 2;
                 }
                 else
                 {
-                    left = start + this.halfwidth;
-                    var right = start + runLen - 1 - this.halfwidth;
+                    left = Start + this.HalfWidth;
+                    right = Start + runLen - 1 - this.HalfWidth;
                 }
 
-                // Convert to input space.
-                if (!this.periodic)
+                ranges.Add(new int[] { left, right });
+
+                if (!this.Periodic)
                 {
-                    inMin = (left - this.padding) * this.resolution + this.minval;
-                    inMax = (right - this.padding) * this.resolution + this.minval;
+                    // Convert to input space.
+                    inMin = (left - Padding) * this.Resolution + this.MinVal;
+                    inMax = (right - Padding) * this.Resolution + this.MinVal;
                 }
                 else
                 {
-                    inMin = (left - this.padding) * this.range / this.nInternal + this.minval;
-                    inMax = (right - this.padding) * this.range / this.nInternal + this.minval;
+                    // Convert to input space.
+                    inMin = (left - this.Padding) * this.Range / this.NInternal + this.MinVal;
+                    inMax = (right - this.Padding) * this.Range / this.NInternal + this.MinVal;
                 }
 
                 // Handle Wape-around if periodic 
-                if (this.periodic)
+                if (this.Periodic)
                 {
-                    if (inMin >= this.maxval)
+                    if (inMin >= this.MaxVal)
                     {
-                        inMin -= this.range;
-                        inMax -= this.range;
+                        inMin -= this.Range;
+                        inMax -= this.Range;
                     }
                 }
 
 
                 // Clip low end
-                if (inMin < this.minval)
+                if (inMin < this.MinVal)
                 {
-                    inMin = this.minval;
+                    inMin = this.MinVal;
                 }
-                if (inMax < this.minval)
+                if (inMax < this.MinVal)
                 {
-                    inMax = this.minval;
+                    inMax = this.MinVal;
                 }
 
                 /// If we have a periodic encoder, and the max is past the edge, break into
                 ///  2 separate ranges
-                if (this.periodic && inMax >= this.maxval)
+                if (this.Periodic && inMax >= this.MaxVal)
                 {
-                    ranges.append(new List<object> {
-                            inMin,
-                            this.maxval
-                        });
-                    ranges.append(new List<object> {
-                            this.minval,
-                            inMax - this.range
-                        });
+                    ranges.Add(new int[] { (int)inMin, (int)this.MaxVal });
+                    ranges.Add(new int[] { (int)this.MinVal, (int)(inMax - Range) });
                 }
                 else
                 {
-                    if (inMax > this.maxval)
+                    if (inMax > this.MaxVal)
                     {
-                        inMax = this.maxval;
+                        inMax = this.MaxVal;
                     }
-                    if (inMin > this.maxval)
+                    if (inMin > this.MaxVal)
                     {
-                        inMin = this.maxval;
+                        inMin = this.MaxVal;
                     }
-                    ranges.append(new List<object> {
-                            inMin,
-                            inMax
-                        });
+                    ranges.Add(new int[] { (int)inMin, (int)inMax });
                 }
 
             }
 
-            var desc = this._generateRangeDescription(ranges);
+            var desc = this.GenerateRangeDescription(ranges);
             // Return result
             if (parentFieldName != "")
             {
-                String fieldName = String.Format("%s.%s", parentFieldName, this.name);
+                fieldName = $"{parentFieldName}.{Name}";
             }
             else
             {
-                String fieldName = this.name;
+                fieldName = Name;
             }
-            return (new Dictionary<object, object> {
-                    {
-                        fieldName,
-                        (ranges, desc)}}, new List<object> {
-                    fieldName
-                });
+
+            var result = new Dictionary<string, Tuple<List<double[]>, List<string>>>();
+            result.Add(fieldName, new Tuple<List<double[]>, List<string>>(ranges, new List<string>() { fieldName }));
+
+            return  result;
+
+        }
+
+        private object GenerateRangeDescription(List<int[]> ranges)
+        {
+            throw new NotImplementedException();
+        }
+
+        private double[] EncodeIntoArray(int input)
+        {
+            throw new NotImplementedException();
+        }
+
+        
+
+        private double[] EncodeIntoArray(double value, int input)
+        {
+            throw new NotImplementedException();
         }
 
 
 
-        //  Return the interal _topDownMappingM matrix used for handling the
-        //     bucketInfo() and topDownCompute() methods. This is a matrix, one row per
-        //     category (bucket) where each row contains the encoded output for that
-        //     category.
-        //     
-        public int getTopDownMapping()
+        public string GenerateRangeDescription(List<double[]> ranges)
         {
-            // Do we need to build up our reverse mapping table?
-            if (this._topDownMappingM == null)
+            string desc = "";
+            int numRanges = ranges.Count;
+
+            for (int i = 0; i < numRanges; i++)
             {
-                // The input scalar value corresponding to each possible output encoding
-                if (this.periodic)
+                if (ranges[i][0] != ranges[i][1])
                 {
-                    this._topDownValues = numpy.arange(this.minval + this.resolution / 2.0, this.maxval, this.resolution);
+                    desc += $"{ranges[i][0]:#.##}-{ranges[i][1]:#.##}";
                 }
                 else
                 {
-                    //Number of values is (max-min)/resolutions
-                    this._topDownValues = numpy.arange(this.minval, this.maxval + this.resolution / 2.0, this.resolution);
+                    desc += $"{ranges[i][0]:#.##}";
                 }
-                // Each row represents an encoded output pattern
-                var numCategories = this._topDownValues.Count;
-                this._topDownMappingM = SM32(numCategories, this.n);
-                var outputSpace = numpy.zeros(this.n, dtype: GetNTAReal());
-                foreach (var i in xrange(numCategories))
+
+                if (i < numRanges - 1)
                 {
-                    var value = this._topDownValues[i];
-                    value = max(value, this.minval);
-                    value = min(value, this.maxval);
-                    this.encodeIntoArray(value, outputSpace, learn: false);
-                    this._topDownMappingM.setRowFromDense(i, outputSpace);
+                    desc += ", ";
                 }
             }
-            return this._topDownMappingM;
+
+            return desc;
         }
 
 
 
+
+
+
+        public object Get_topDownValues()
+        {
+            return _topDownValues;
+        }
+
+        //By defining _topDownMappingM as a member variable of the ScalarEncoder class,
+        //you will be able to access it within the getTopDownMapping()
+
+        public int[][] GetTopDownMapping()
+        {
+            if (_topDownMappingM == null)
+            {
+                if (Periodic)
+                {
+                    _topDownValues = Enumerable.Range(MinVal + Resolution / 2, (int)((MaxVal - MinVal) / Resolution))
+                                                .Select(x => (double)x).ToArray();
+                }
+                else
+                {
+                    int numValues = (int)((maxval - minval) / resolution) + 1;
+                    _topDownValues = Enumerable.Range(minval, numValues)
+                                                .Select(x => x + resolution / 2.0).ToArray();
+                }
+
+                int numCategories = _topDownValues.Length;
+                _topDownMappingM = new int[numCategories][];
+                for (int i = 0; i < numCategories; i++)
+                {
+                    double value = _topDownValues[i];
+                    value = Math.Max(value, minval);
+                    value = Math.Min(value, maxval);
+                    int[] outputSpace = new int[n];
+                    encodeIntoArray(value, outputSpace, learn: false);
+                    _topDownMappingM[i] = outputSpace;
+                }
+            }
+
+            return _topDownMappingM;
+        }
+
+
+
+        public List<double> GetBucketValues()
+        {
+            // Need to re-create?
+            if (this.bucketValues == null)
+            {
+                int[,] topDownMappingM = this.GetTopDownMapping();
+                int numBuckets = topDownMappingM.GetLength(0);
+                List<object> list = new List<object>();
+                this.bucketValues = list;
+                for (int bucketIdx = 0; bucketIdx < numBuckets; bucketIdx++)
+                {
+                    int[] buckets = new int[] { bucketIdx };
+                    List<BucketInfo> bucketInfoList = this.getBucketInfo(buckets);
+                    this.bucketValues.Add((double)bucketInfoList[0].Value);
+                }
+            }
+
+            return this.bucketValues;
+        }
+
+        private int[,] GetTopDownMapping()
+        {
+            throw new NotImplementedException();
+        }
 
         public int getBucketInfo(object buckets)
         {
@@ -616,18 +842,18 @@ namespace NeoCortexApi.Encoders
             // Get/generate the topDown mapping table
             //NOTE: although variable topDownMappingM is unused, some (bad-style) actions
             //are executed during _getTopDownMapping() so this line must stay here
-            var topDownMappingM = this._getTopDownMapping();
+            var topDownMappingM = this.GetTopDownMapping(this.Get_topDownValues());
             // The "category" is simply the bucket index
             var category = buckets[0];
             var encoding = this._topDownMappingM.getRow(category);
             // Which input value does this correspond to?
-            if (this.periodic)
+            if (this.Periodic)
             {
-                inputVal = this.minval + this.resolution / 2.0 + category * this.resolution;
+                inputVal = this.MinVal + this.Resolution / 2.0 + category * this.Resolution;
             }
             else
             {
-                inputVal = this.minval + category * this.resolution;
+                inputVal = this.MinVal + category * this.Resolution;
             }
             return new List<object>
             {
@@ -638,34 +864,34 @@ namespace NeoCortexApi.Encoders
         public int topDownCompute(object encoded)
         {
             // Get/generate the topDown mapping table
-            var topDownMappingM = this._getTopDownMapping();
+            var topDownMappingM = this.GetTopDownMapping(this.Get_topDownValues());
             // See which "category" we match the closest.
-            var category = topDownMappingM.rightVecProd(encoded).argmax();
+            var category = Matrix.rightVecProd(encoded).argmax();
             // Return that bucket info
             return this.getBucketInfo(new List<object> {
                     category
             });
         }
 
-        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
+        public virtual object closenessScores(object expValues, object actValues, object fractional = null)
         {
             object closeness;
             var expValue = expValues[0];
             var actValue = actValues[0];
-            if (this.periodic)
+            if (this.Periodic)
             {
-                expValue = expValue % this.maxval;
-                actValue = actValue % this.maxval;
+                expValue = expValue % this.MaxVal;
+                actValue = actValue % this.MaxVal;
             }
-            var err = abs(expValue - actValue);
-            if (this.periodic)
+            double err = Math.Abs(expValue - actValue);
+            if (this.Periodic)
             {
-                err = min(err, this.maxval - err);
+                err = Math.Min(err, this.MaxVal - err);
             }
-            if (fractional)
+            if ((bool)fractional)
             {
-                var pctErr = (float)err / (this.maxval - this.minval);
-                pctErr = min(1.0, pctErr);
+                double pctErr = err / (this.MaxVal - this.MinVal);
+                pctErr = Math.Min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
             }
             else
@@ -677,29 +903,29 @@ namespace NeoCortexApi.Encoders
             });
         }
 
-        //  See the function description in base.py
+       
         //     
-        public virtual object closenessScores(object expValues, object actValues, object fractional = true)
+        public virtual object closenessScoresNew(object expValues, object actValues, object fractional = null)
         {
             object closeness;
             var expValue = expValues[0];
             var actValue = actValues[0];
-            if (this.periodic)
+            if (this.Periodic)
             {
-                expValue = expValue % this.maxval;
-                actValue = actValue % this.maxval;
+                expValue = expValue % this.MaxVal;
+                actValue = actValue % this.MaxVal;
             }
-            var err = abs(expValue - actValue);
-            if (this.periodic)
+            var err = Math.Abs(expValue - actValue);
+            if (this.Periodic)
             {
-                err = min(err, this.maxval - err);
+                err = Math.Min(err, this.MaxVal - err);
             }
-            if (fractional)
+            if ((bool)fractional)
             {
-                var pctErr = (float)err / (this.maxval - this.minval);
-                pctErr = min(1.0, pctErr);
+                var pctErr = (float)err / (this.MaxVal - this.MinVal);
+                pctErr = Math.Min(1.0, pctErr);
                 closeness = 1.0 - pctErr;
-            }
+            }   
             else
             {
                 closeness = err;
@@ -709,56 +935,69 @@ namespace NeoCortexApi.Encoders
                 });
         }
 
-        public override object ToString()
+
+
+
+        public override string ToString()
         {
             var @string = "ScalarEncoder:";
-            @string += "  min: {minval}".format(minval: this.minval);
-            @string += "  max: {maxval}".format(maxval: this.maxval);
-            @string += "  w:   {w}".format(w: this.w);
-            @string += "  n:   {n}".format(n: this.n);
-            @string += "  resolution: {resolution}".format(resolution: this.resolution);
-            @string += "  radius:     {radius}".format(radius: this.radius);
-            @string += "  periodic: {periodic}".format(periodic: this.periodic);
-            @string += "  nInternal: {nInternal}".format(nInternal: this.nInternal);
-            @string += "  rangeInternal: {rangeInternal}".format(rangeInternal: this.rangeInternal);
-            @string += "  padding: {padding}".format(padding: this.padding);
+            @string += $" min: {this.MinVal}";
+            @string += $" min: {this.MaxVal}";
+            @string += $" min: {this.W}";
+            @string += $" min: {this.N}";
+            @string += $" min: {this.Resolution}";
+            @string += $" min: {this.Radius}";
+            @string += $" min: {this.Periodic}";
+            @string += $" min: {this.NInternal}";
+            @string += $" min: {this.rangeInternal}";
+            @string += $" min: {this.Padding}";
             return @string;
         }
-        [classmethod]
-        public static object getSchema(object cls)
+        public static object GetSchema(Type cls, object scalarEncoderProto)
         {
-            return ScalarEncoderProto;
+            return scalarEncoderProto;
         }
 
-        [classmethod]
+        
         public static object read(object cls, object proto)
         {
             object resolution;
             object radius;
-            if (proto.n != null)
+            if (proto.N != null)
             {
                 radius = DEFAULT_RADIUS;
                 resolution = DEFAULT_RESOLUTION;
             }
             else
             {
-                radius = proto.radius;
-                resolution = proto.resolution;
+                radius = proto.Radius;
+                resolution = proto.Resolution;
             }
-            return cls(w: proto.w, minval: proto.minval, maxval: proto.maxval, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, clipInput: proto.clipInput, forced: true);
+            return new cls(W: proto.W, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: Encoder.ClipInput(proto.ClipInput), forced: true);
         }
 
-        public virtual object write(object proto)
+        public virtual object Write(object proto)
         {
-            proto.w = this.w;
-            proto.minval = this.minval;
-            proto.maxval = this.maxval;
-            proto.periodic = this.periodic;
+            proto.W = this.W;
+            proto.MinVal = this.MinVal;
+            proto.MaxVal = this.MaxVal;
+            proto.Periodic = this.Periodic;
             // Radius and resolution can be recalculated based on n
-            proto.n = this.n;
-            proto.name = this.name;
+            proto.N = this.N;
+            proto.Name = this.Name;
             proto.verbosity = this.verbosity;
-            proto.clipInput = this.clipInput;
+            proto.ClipInput = this.ClipInput;
+            return proto;
+        }
+
+        public override List<T> GetBucketValues<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void EncodeIntoArray(object inputData, double[] output)
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -772,5 +1011,103 @@ namespace NeoCortexApi.Encoders
         //}
 
     }
-    
+
+    internal class BucketInfo
+    {
+        public double Value { get; internal set; }
+    }
+
+    internal class SM32
+    {
+        private int numCategories;
+        private int n;
+
+        public SM32(int numCategories, int n)
+        {
+            this.numCategories = numCategories;
+            this.n = n;
+        }
+    }
+
+    internal struct NewStruct
+    {
+        public Dictionary<object, object> Item1;
+        public List<object> Item2;
+
+        public NewStruct(Dictionary<object, object> item1, List<object> item2)
+        {
+            Item1 = item1;
+            Item2 = item2;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is NewStruct other &&
+                   EqualityComparer<Dictionary<object, object>>.Default.Equals(Item1, other.Item1) &&
+                   EqualityComparer<List<object>>.Default.Equals(Item2, other.Item2);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Item1, Item2);
+        }
+
+        public void Deconstruct(out Dictionary<object, object> item1, out List<object> item2)
+        {
+            item1 = Item1;
+            item2 = Item2;
+        }
+
+        public static implicit operator (Dictionary<object, object>, List<object>)(NewStruct value)
+        {
+            return (value.Item1, value.Item2);
+        }
+
+        public static implicit operator NewStruct((Dictionary<object, object>, List<object>) value)
+        {
+            return new NewStruct(value.Item1, value.Item2);
+        }
+
+        
+    }
+
+    internal struct NewStruct1
+    {
+        public Dictionary<string, object> Item1;
+        public List<object> Item2;
+
+        public NewStruct1(Dictionary<string, object> item1, List<object> item2)
+        {
+            Item1 = item1;
+            Item2 = item2;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is NewStruct1 other &&
+                   EqualityComparer<Dictionary<string, object>>.Default.Equals(Item1, other.Item1) &&
+                   EqualityComparer<List<object>>.Default.Equals(Item2, other.Item2);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Item1, Item2);
+        }
+
+        public void Deconstruct(out Dictionary<string, object> item1, out List<object> item2)
+        {
+            item1 = Item1;
+            item2 = Item2;
+        }
+
+        public static implicit operator (Dictionary<string, object>, List<object>)(NewStruct1 value)
+        {
+            return (value.Item1, value.Item2);
+        }
+
+        public static implicit operator NewStruct1((Dictionary<string, object>, List<object>) value)
+        {
+            return new NewStruct1(value.Item1, value.Item2);
+        }
+    }
 }

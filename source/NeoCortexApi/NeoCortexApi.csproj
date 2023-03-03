@@ -77,6 +77,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Numpy" Version="3.11.1.33" />
+    <PackageReference Include="NumSharp" Version="0.30.0" />
    
   </ItemGroup>
 

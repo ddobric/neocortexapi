@@ -342,6 +342,16 @@ namespace NeoCortexApi.Entities
             var ignoreMembers = new List<string> { /*"Item"*/ };
             return HtmSerializer.DeserializeObject<T>(sr, name, ignoreMembers);
         }
+
+        public List<NeoCortexApi.Encoders.EncoderResult> GetBucketInfo(int[] buckets)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<NeoCortexApi.Encoders.EncoderResult> TopDownCompute(int[] encoded)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }
