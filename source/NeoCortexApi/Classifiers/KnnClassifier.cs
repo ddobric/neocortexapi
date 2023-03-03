@@ -196,4 +196,27 @@ class KNNClassifier
     }
 }
 
-## Functions for collecting the inputs from data sources
+//Functions for collecting the inputs from data sources
+// Function on Hold
+
+
+// Functions for KNN Voting algorithm
+private int GetMajorityClass(int[] labels, List<int> neighbors)
+{
+    var counts = new Dictionary<int, int>();
+    foreach (int neighbor in neighbors)
+    {
+        int label = labels[neighbor];
+        if (counts.ContainsKey(label))
+        {
+            counts[label]++;
+        }
+        else
+        {
+            counts[label] = 1;
+        }
+    }
+    return counts.OrderByDescending(c => c.Value)
+                 .First().Key;
+}
+
