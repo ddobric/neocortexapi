@@ -143,8 +143,24 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-   
 
+        public int[] outputIndices
+        {
+            get { return (int[])this["outputIndices"]; }
+            set { this["outputIndices"] = value; }
+        }
+
+        public int[] run
+        {
+            get { return (int[])this["run"]; }
+            set { this["run"] = value; }
+        }
+
+        public int[] nz
+        {
+            get { return (int[])this["nz"]; }
+            set { this["nz"] = value; }
+        }
         /// <summary>
         /// In real cortex mode, W must be >= 21. Empirical value.
         /// </summary>
@@ -164,10 +180,28 @@ namespace NeoCortexApi.Encoders
 
         public int NInternal { get => (int)this["NInternal"]; set => this["NInternal"] = (int)value; }
 
+        public int subLen { get => (int)this["subLen"]; set => this["subLen"] = (int)value; }
+
+
+        public int maxZerosInARow { get => (int)this["maxZerosInARow"]; set => this["maxZerosInARow"] = (int)value; }
         /// <summary>
         /// Number of bits set on one, which represents single encoded value.
         /// </summary>
         public int W { get => (int)this["W"]; set => this["W"] = (int)value; }
+
+
+        public int Start { get => (int)this["Start"]; set => this["Start"] = (int)value; }
+
+        public int runLen { get => (int)this["runLen"]; set => this["runLen"] = (int)value; }
+        public int left { get => (int)this["left"]; set => this["left"] = (int)value; }
+
+        public double inMin { get => (double)this["inMin"]; set => this["inMin"] = (double)value; }
+
+        public string fieldName { get => (string)this["fieldName"]; set => this["fieldName"] = (string)value; }
+
+        public double inMax { get => (double)this["inMax"]; set => this["inMax"] = (double)value; }
+
+        public int right { get => (int)this["right"]; set => this["right"] = (int)value; }
 
         //This matrix is used for the topDownCompute. We build it the first time
         //topDownCompute is called

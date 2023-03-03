@@ -521,7 +521,9 @@ namespace NeoCortexApi.Encoders
             (int[], (Dictionary<string, object>, List<object>)) Encode(int input)
             {
                 double[] encodedArray = EncodeIntoArray(input);
-
+                /// For now, we simply assume any top-down output greater than 0
+                /// is ON. Eventually, we will probably want to incorporate the strength
+                /// of each top-down output.
                 tmpOutput = encodedArray.Take(N).Select(x => Convert.ToInt32(x > 0)).ToArray();
                 if (!tmpOutput.Any())
                 {
@@ -539,13 +541,13 @@ namespace NeoCortexApi.Encoders
             // if this is a coincidence that was learned by the SP).
 
             // Search for portions of the output that have "holes"
-            int maxZerosInARow = HalfWidth;
+            maxZerosInARow = HalfWidth;
             for (int i = 0; i < maxZerosInARow; i++)
             {
-                int[] searchStr = Enumerable.Repeat(1, i + 3).ToArray();
-                searchStr[1] = 0;
-                searchStr[searchStr.Length - 2] = 0;
-                int subLen = searchStr.Length;
+                List<int> searchStr = Enumerable.Repeat(1, i + 3).ToList();
+                searchStr[0] = 0;
+                searchStr[searchStr.Count - 1] = 0;
+                subLen = searchStr.Count;
 
                 /// Does this search string appear in the output?
 
@@ -553,7 +555,7 @@ namespace NeoCortexApi.Encoders
                 {
                     for (int j = 0; j < N; j++)
                     {
-                        int[] outputIndices = Enumerable.Range(j, subLen).Select(x => x % N).ToArray();
+                        outputIndices = Enumerable.Range(j, subLen).Select(x => x % N).ToArray();
                         if (searchStr.SequenceEqual(tmpOutput.Where((value, index) => outputIndices.Contains(index))))
                         {
                             for (int k = 0; k < subLen; k++)
@@ -578,7 +580,7 @@ namespace NeoCortexApi.Encoders
                 }
             }
 
-            if (verbosity >= 2)
+            if (this.verbosity >= 2)
             {
                 Console.WriteLine("raw output: " + string.Join(",", ((double[])encoded).Take(N).ToArray()));
                 Console.WriteLine("filtered output: " + string.Join(",", tmpOutput));
@@ -587,11 +589,11 @@ namespace NeoCortexApi.Encoders
 
 
             // Find each run of 1's.
-            int[] nz = Array.FindAll(tmpOutput, x => x != 0);
+            nz = Array.FindAll(tmpOutput, x => x != 0);
             List<(int, int)> runs = new List<(int, int)>(); // will be tuples of (startIdx, runLength)
             if (nz.Length > 0)
             {
-                int[] run = new int[] { nz[0], 1 };
+                run = new int[] { nz[0], 1 };
                 int i = 1;
                 while (i < nz.Length)
                 {
@@ -613,7 +615,7 @@ namespace NeoCortexApi.Encoders
             // both go all the way to the edges
             if (this.Periodic && runs.Count > 1)
             {
-                if (runs[0].Item1 == 0 && runs[^1].Item1 + runs[^1].Item2 == this.n)
+                if (runs[0].Item1 == 0 && runs[^1].Item1 + runs[^1].Item2 == this.N)
                 {
                     runs[^1] = (runs[^1].Item1, runs[^1].Item2 + runs[0].Item2);
                     runs.RemoveAt(0);
@@ -630,18 +632,16 @@ namespace NeoCortexApi.Encoders
             List<int[]> ranges = new List<int[]>();
             foreach (var run in runs)
             {
-                int runStart = run[0];
-                int runLen = run[1];
-                int left, right;
-
-                if (runLen <= W)
+                Start = run.Item1;
+                runLen = run.Item2;
+                if (runLen <= this.W)
                 {
-                    left = right = runStart + runLen / 2;
+                    left = right = Start + runLen / 2;
                 }
                 else
                 {
-                    left = runStart + HalfWidth;
-                    right = runStart + runLen - 1 - HalfWidth;
+                    left = Start + this.HalfWidth;
+                    right = Start + runLen - 1 - this.HalfWidth;
                 }
 
                 ranges.Add(new int[] { left, right });
@@ -702,22 +702,27 @@ namespace NeoCortexApi.Encoders
 
             }
 
-            var desc = this._generateRangeDescription(ranges);
+            var desc = this.GenerateRangeDescription(ranges);
             // Return result
             if (parentFieldName != "")
             {
-                String fieldName = String.Format("%s.%s", parentFieldName, this.Name);
+                fieldName = $"{parentFieldName}.{Name}";
             }
             else
             {
-                String fieldName = (string)Name;
+                fieldName = Name;
             }
 
-            NewStruct newStruct1 = new NewStruct(new Dictionary<object, object> {
-                    {
-                        fieldName,(ranges, desc)}}, new List<object> {fieldName});
-            NewStruct newStruct11 = (NewStruct)newStruct1;
-            return newStruct11;
+            var result = new Dictionary<string, Tuple<List<double[]>, List<string>>>();
+            result.Add(fieldName, new Tuple<List<double[]>, List<string>>(ranges, new List<string>() { fieldName }));
+
+            return  result;
+
+        }
+
+        private object GenerateRangeDescription(List<int[]> ranges)
+        {
+            throw new NotImplementedException();
         }
 
         private double[] EncodeIntoArray(int input)
@@ -725,48 +730,44 @@ namespace NeoCortexApi.Encoders
             throw new NotImplementedException();
         }
 
-        private object _generateRangeDescription(List<int[]> ranges)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         private double[] EncodeIntoArray(double value, int input)
         {
             throw new NotImplementedException();
         }
 
-        private object _generateRangeDescription(List<object> ranges)
+
+
+        public string GenerateRangeDescription(List<double[]> ranges)
         {
-            throw new NotImplementedException();
+            string desc = "";
+            int numRanges = ranges.Count;
+
+            for (int i = 0; i < numRanges; i++)
+            {
+                if (ranges[i][0] != ranges[i][1])
+                {
+                    desc += $"{ranges[i][0]:#.##}-{ranges[i][1]:#.##}";
+                }
+                else
+                {
+                    desc += $"{ranges[i][0]:#.##}";
+                }
+
+                if (i < numRanges - 1)
+                {
+                    desc += ", ";
+                }
+            }
+
+            return desc;
         }
 
 
 
-        //  Return the interal _topDownMappingM matrix used for handling the
-        //     bucketInfo() and topDownCompute() methods. This is a matrix, one row per
-        //     category (bucket) where each row contains the encoded output for that
-        //     category.
-        //     
-        //private object _topDownMappingM = null;
-        //private int bottombins;
-        //private int minbin;
-        //private int maxbin;
-        //private int axbin;
-        //private object start;
-        //private int runLen;
-        //private int w;
-       // private int left;
-        //private double inMin;
-       // private double inMax;
-       // private int right;
-       // private object name;
-        //private object fieldName;
-        //private object _topDownValues;
-        //private object tmpoutput;
-        //private int topbins;
-        //private int n;
-       
-      
+
+
 
         public object Get_topDownValues()
         {
@@ -776,46 +777,39 @@ namespace NeoCortexApi.Encoders
         //By defining _topDownMappingM as a member variable of the ScalarEncoder class,
         //you will be able to access it within the getTopDownMapping()
 
-        public int[,] GetTopDownMapping(object _topDownValues)
+        public int[][] GetTopDownMapping()
         {
-            // Do we need to build up our reverse mapping table
             if (_topDownMappingM == null)
             {
-                double[] topDownValues;
                 if (Periodic)
                 {
-                    topDownValues = Enumerable.Range((int)(MinVal + Resolution / 2.0), (int)((MaxVal - MinVal) / Resolution))
-                    .Select(x => x * Resolution + MinVal)
-                    .ToArray();
+                    _topDownValues = Enumerable.Range(MinVal + Resolution / 2, (int)((MaxVal - MinVal) / Resolution))
+                                                .Select(x => (double)x).ToArray();
                 }
                 else
                 {
-                    topDownValues = Enumerable.Range((int)MinVal, (int)((MaxVal - MinVal) / Resolution + 1))
-                    .Select(x => x * Resolution + MinVal + Resolution / 2.0)
-                    .ToArray();
+                    int numValues = (int)((maxval - minval) / resolution) + 1;
+                    _topDownValues = Enumerable.Range(minval, numValues)
+                                                .Select(x => x + resolution / 2.0).ToArray();
                 }
-                // Each row represents an encoded output pattern
-                int numCategories = ((object[])this._topDownValues).Length;
-                int[,] topDownMappingM = new int[numCategories, N];
-                double[] outputSpace = new double[this.N];
 
+                int numCategories = _topDownValues.Length;
+                _topDownMappingM = new int[numCategories][];
                 for (int i = 0; i < numCategories; i++)
                 {
-                    double value = (double)((object[])this._topDownValues)[i];
-                    value = Math.Max(value, this.MinVal);
-                    value = Math.Min(value, this.MaxVal);
-                    this.EncodeIntoArray((int)value, outputSpace, 0);
-                    for (int j = 0; j < this.N; j++)
-                    {
-                        topDownMappingM[i, j] = (int)outputSpace[j];
-                    }
+                    double value = _topDownValues[i];
+                    value = Math.Max(value, minval);
+                    value = Math.Min(value, maxval);
+                    int[] outputSpace = new int[n];
+                    encodeIntoArray(value, outputSpace, learn: false);
+                    _topDownMappingM[i] = outputSpace;
                 }
-
-                return topDownMappingM;
             }
-            return (int[,])(_topDownMappingM ?? throw new InvalidOperationException("_topDownMappingM is null"));
 
+            return _topDownMappingM;
         }
+
+
 
         public List<double> GetBucketValues()
         {
@@ -982,9 +976,9 @@ namespace NeoCortexApi.Encoders
             return new cls(W: proto.W, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: Encoder.ClipInput(proto.ClipInput), forced: true);
         }
 
-        public virtual object write(object proto)
+        public virtual object Write(object proto)
         {
-            proto.w = this.W;
+            proto.W = this.W;
             proto.MinVal = this.MinVal;
             proto.MaxVal = this.MaxVal;
             proto.Periodic = this.Periodic;
@@ -993,6 +987,7 @@ namespace NeoCortexApi.Encoders
             proto.Name = this.Name;
             proto.verbosity = this.verbosity;
             proto.ClipInput = this.ClipInput;
+            return proto;
         }
 
         public override List<T> GetBucketValues<T>()
