@@ -249,12 +249,7 @@ namespace NeoCortexApi.Encoders
         /// <returns>The <see cref="int[]"/></returns>
         //public abstract int[] Encode(object inputData);
 
-        public IModuleData Compute(int[] input, bool learn)
-        {
-            var result = Encode(input);
-
-            return null;
-        }
+       
 
         /// <summary>
         /// Returns a list of items, one for each bucket defined by this encoder. Each item is the value assigned to that bucket, this is the same as the
@@ -284,6 +279,10 @@ namespace NeoCortexApi.Encoders
                 }
             }
             return retVal;
+        }
+        public class EncoderResult
+        {
+            // TODO: Define the `EncoderResult` class
         }
 
         public List<EncoderResult> GetBucketInfo(List<int> buckets)
@@ -324,7 +323,7 @@ namespace NeoCortexApi.Encoders
 
             return retVals;
         }
-
+        public abstract void EncodeIntoArray(object inputData, double[] output);
         public double[] Encode(object inputData)
         {
             // Create a new double array of length `Width` initialized to 0
@@ -375,7 +374,7 @@ namespace NeoCortexApi.Encoders
         }
 
 
-        public (Dictionary<string, (List<(double, double)> ranges, string desc)> fieldsDict, List<string> fieldsOrder) Decode(BitArray encoded, string parentFieldName = "")
+        public (Dictionary<string, (List<(double, double)> ranges, string desc)> fieldsDict, List<string> fieldsOrder) Decode(BitArray encoded, int i, string parentFieldName = "")
         {
             var fieldsDict = new Dictionary<string, (List<(double, double)> ranges, string desc)>();
             var fieldsOrder = new List<string>();
@@ -389,7 +388,7 @@ namespace NeoCortexApi.Encoders
                 for (int i = 0; i < Encoders.Count; i++)
                 {
                     // Get the encoder and the encoded output
-                    var (Name, Encode, offset) = Encoders[i];
+                    var (Encode, offset) = Encoders[i];
                     var nextOffset = i < Encoders.Count - 1 ? Encoders[i + 1].offset : Width;
                     var fieldOutput = new BitArray(encoded.Cast<bool>().Skip(offset).Take(nextOffset - offset).ToArray());
                     var (subFieldsDict, subFieldsOrder) = encoder.Decode(fieldOutput, parentName);
@@ -460,10 +459,7 @@ namespace NeoCortexApi.Encoders
             return sb.ToString();
         }
 
-        public virtual int GetWidth()
-        {
-            throw new NotImplementedException();
-        }
+      
 
 
 

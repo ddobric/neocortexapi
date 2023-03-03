@@ -979,18 +979,18 @@ namespace NeoCortexApi.Encoders
                 radius = proto.Radius;
                 resolution = proto.Resolution;
             }
-            return cls(w: proto.w, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: Encoder.ClipInput(proto.ClipInput), forced: true);
+            return new cls(W: proto.W, minval: proto.MinVal, maxval: proto.MaxVal, periodic: proto.periodic, n: proto.n, name: proto.name, verbosity: proto.verbosity, ClipInput: Encoder.ClipInput(proto.ClipInput), forced: true);
         }
 
         public virtual object write(object proto)
         {
-            proto.w = this.w;
+            proto.w = this.W;
             proto.MinVal = this.MinVal;
             proto.MaxVal = this.MaxVal;
             proto.Periodic = this.Periodic;
             // Radius and resolution can be recalculated based on n
             proto.N = this.N;
-            proto.name = this.name;
+            proto.Name = this.Name;
             proto.verbosity = this.verbosity;
             proto.ClipInput = this.ClipInput;
         }
