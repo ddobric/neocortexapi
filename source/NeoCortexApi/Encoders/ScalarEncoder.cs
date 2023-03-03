@@ -33,10 +33,17 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public override int Width => throw new NotImplementedException();
 
-        public int halfwidth { get; private set; }
+        //public int halfwidth { get; private set; }
         public static object DEFAULT_RADIUS { get; private set; }
         public static object DEFAULT_RESOLUTION { get; private set; }
         public static object ScalarEncoderProto { get; private set; }
+
+
+        public int GetWidth()
+        {
+            return this.N;
+        }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
@@ -60,12 +67,22 @@ namespace NeoCortexApi.Encoders
         /// </summary>
         public override void AfterInitialize()
         {
+            this.Encoders = null;
+            this.verbosity = verbosity;
+            this.W = W;
             if (W % 2 == 0)
             {
                 throw new ArgumentException("W must be an odd number (to eliminate centering difficulty)");
             }
 
-            HalfWidth = (W - 1) / 2;
+            this.MinVal = MinVal;
+            this.MaxVal = MaxVal;
+
+            this.Periodic = Periodic;
+            this.ClipInput = ClipInput;
+
+
+            this.HalfWidth = (W - 1) / 2;
 
             // For non-periodic inputs, padding is the number of bits "outside" the range,
             // on each side. I.e. the representation of minval is centered on some bit, and
@@ -80,15 +97,15 @@ namespace NeoCortexApi.Encoders
                     throw new ArgumentException("maxVal must be > minVal");
                 }
 
-                RangeInternal = MaxVal - MinVal;
+                this.RangeInternal = (float)(this.MaxVal - this.MinVal);
             }
 
             // There are three different ways of thinking about the representation. Handle
             // each case here.
-            InitEncoder(W, MinVal, MaxVal, N, Radius, Resolution);
+            this.InitEncoder(W, MinVal, MaxVal, N, Radius, Resolution);
 
-            //nInternal represents the output _area excluding the possible padding on each side
-            NInternal = N - 2 * Padding;
+            //NInternal represents the output _area excluding the possible padding on each side
+            this.NInternal = this.N - 2 * this.Padding;
 
             if (Name == null)
             {
@@ -114,6 +131,7 @@ namespace NeoCortexApi.Encoders
             }
             // Initialized bucketValues to null.
             this.bucketValues = null;
+
 
 
         }
@@ -151,11 +169,11 @@ namespace NeoCortexApi.Encoders
             {
                 if (radius != 0)
                 {
-                    Resolution = Radius / w;
+                    Resolution = (float)(this.Radius) / W;
                 }
                 else if (resolution != 0)
                 {
-                    Radius = Resolution * w;
+                    Radius = Resolution * W;
                 }
                 else
                 {
@@ -172,13 +190,42 @@ namespace NeoCortexApi.Encoders
                     Range = RangeInternal + Resolution;
                 }
 
-                double nFloat = w * (Range / Radius) + 2 * Padding;
+                double nFloat = W * (this.Range / this.Radius) + 2 * this.Padding;
                 N = (int)(nFloat);
             }
 
 
 
         }
+
+        public void RecalcParams()
+        {
+            RangeInternal = (float)(this.MaxVal - this.MinVal);
+
+            if (!Periodic)
+            {
+               
+                Resolution = RangeInternal / (N - W);
+            }
+            else
+            {
+                
+                Resolution = (float)RangeInternal / this.N;
+            }
+            Radius = W * Resolution;
+
+            if (Periodic)
+            {
+                Range = RangeInternal;
+            }
+            else
+            {
+                Radius = this.RangeInternal * this.Resolution;
+            }
+            string Name = "[" + MinVal + ":" + MaxVal + "]";
+        }
+
+
 
 
         /// <summary>
@@ -199,9 +246,11 @@ namespace NeoCortexApi.Encoders
                 {
                     if (ClipInput && !Periodic)
                     {
-                        Debug.WriteLine("Clipped input " + Name + "=" + input + " to minval " + MinVal);
-
-                        input = MinVal;
+                        if (this.verbosity > 0)
+                        {
+                            Debug.WriteLine("Clipped input " + Name + "=" + input + " to minval " + MinVal);
+                            input = MinVal;
+                        }
                     }
                     else
                     {
@@ -210,22 +259,24 @@ namespace NeoCortexApi.Encoders
                 }
             }
 
-            if (Periodic)
+            if (this.Periodic)
             {
-                if (input >= MaxVal)
+                if (input >= this.MaxVal)
                 {
                     throw new ArgumentException($"Input ({input}) greater than periodic range ({MinVal} - {MaxVal}");
                 }
             }
             else
             {
-                if (input > MaxVal)
+                if (input > this.MaxVal)
                 {
                     if (ClipInput)
                     {
-
-                        Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");
-                        input = MaxVal;
+                        if (this.verbosity >= 0)
+                        {
+                            Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");
+                            input = MaxVal;
+                        }
                     }
                     else
                     {
@@ -237,14 +288,17 @@ namespace NeoCortexApi.Encoders
             int centerbin;
             if (Periodic)
             {
-                centerbin = (int)((input - MinVal) * NInternal / Range + Padding);
+                centerbin = (int)((input - this.MinVal) * this.NInternal / this.Range + this.Padding);
             }
             else
             {
-                centerbin = ((int)(((input - MinVal) + Resolution / 2) / Resolution)) + Padding;
+                centerbin = ((int)(((input - this.MinVal) + this.Resolution / 2) / this.Resolution)) + this.Padding;
             }
+            // We use the first bit to be set in the encoded output as the bucket index
 
-            return centerbin - HalfWidth;
+            int minbin = centerbin - this.HalfWidth;
+
+            return minbin;
         }
 
 
@@ -254,7 +308,7 @@ namespace NeoCortexApi.Encoders
         /// <param name="inputData">The data to be encoded. Must be of type double.</param>
         /// <param name="bucketIndex">The bucket index.</param>
         /// <returns></returns>
-        public int? GetBucketIndex(object inputData)
+       /* public int? GetBucketIndex(object inputData)
         {
             double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
             if (input == double.NaN)
@@ -266,7 +320,7 @@ namespace NeoCortexApi.Encoders
 
             return bucketVal; 
         }
-
+       */
 
         /// <summary>
         /// Encodes the given scalar value as SDR as defined by HTM.
@@ -336,104 +390,130 @@ namespace NeoCortexApi.Encoders
         ///  Vinay
         int bucketIdx;
 
-        public new int GetBucketIndices(object inputData)
+        public int? GetBucketIndex(double input)
         {
-            double input = 0.0; // assign a default value
-            if (inputData is double && double.IsNaN((double)inputData))
+            if (input is double && double.IsNaN((double)input))
             {
-                input = SENTINEL_VALUE_FOR_MISSING_DATA;
+                input = double.NaN;
             }
-            else
-            {
-                // handle the case where inputData is not a double or not NaN
-                throw new ArgumentException("Input data type not supported");
-            }
-            if (input == SENTINEL_VALUE_FOR_MISSING_DATA)
-            {
-                return 0;
-            }
-            // rest of the code
 
-            var minbin = this.GetFirstOnBit(input)[0];
-            // For periodic encoders, the bucket index is the index of the center bit
-            if (Periodic)
+            if (input == double.NaN)
             {
-                bucketIdx = minbin + HalfWidth;
-                if (bucketIdx < 0)
+                return null;
+            }
+
+          
+
+            minbin = this.GetFirstOnBit(input) ?? 0;
+            int? bucketVal = GetFirstOnBit(input);
+            // For periodic encoders, the bucket index is the index of the center bit
+            if (this.Periodic)
+            {
+                bucketVal = minbin + this.HalfWidth;
+                if (bucketVal < 0)
                 {
-                    bucketIdx += N;
+                    bucketVal += this.N;
                 }
                 else
                 {
                     /// for non-periodic encoders, the bucket index is the index of the left bit
-                    bucketIdx = minbin;
+                    bucketVal = minbin;
                 }
-                return bucketIdx;
+                return bucketVal;
             }
             return 0;
         }
 
-        public int EncodeIntoArray(int input, double[] output, int n)
-        {
-            return EncodeIntoArray(input, output, n, topbins);
-        }
 
-        public int EncodeIntoArray(int input, double[] output, int n, int topbins)
+
+        public int EncodeIntoArray(int input, double[] output, int n, bool learn = true)
         {
 
-            if (input != 0)
+            if (input != 0 && !typeof(System.IConvertible).IsAssignableFrom(input.GetType()))
             {
                 throw new ArgumentException("Expected a scalar input but got input of type " + input.GetType().Name);
             }
 
-            if (!Double.IsNaN(input))
+            if ((!Double.IsNaN(input)) && float.IsNaN((float)input))
             {
                 input = 0;
-                bucketIdx = (int)GetFirstOnBit(input);
             }
+            bucketVal = (int)GetFirstOnBit(input);
 
-            if (bucketIdx == 0)
+            if (bucketVal == 0)
             {
-                output = null;
-
-            }
-            else
-            {
-                /// # The bucket index is the index of the first bit to set in the output             
-                for (int i = 0; i < n; i++)
+                // None is returned for missing value
+                for (int i = 0; i < this.N; i++)
                 {
                     output[i] = 0;
                 }
-                minbin = bucketIdx;
-                maxbin = minbin + 2 * halfwidth;
+                // TODO: should all 1s, or random SDR be returned instead?
             }
 
-            if (Periodic)
+            else
             {
-                if (axbin >= n)
+                // The bucket index is the index of the first bit to set in the output
+                for (int i = 0; i < this.N; i++)
                 {
-                    bottombins = maxbin - n + 1;
-                    output[bottombins] = 1;
-                    maxbin = this.N - 1;
-
-
+                    output[i] = 0;
                 }
 
+                int minbin = (int)bucketVal;
+                int maxbin = minbin + 2 * HalfWidth;
 
-
-
-                if (minbin < 0)
+                if (this.Periodic)
                 {
-                    topbins = -minbin;
-                    for (int i = n - topbins; i < n; i++)
+                    // Handle the edges by computing wrap-around
+                    if (maxbin >= this.N)
                     {
-                        output[i] = 1;
+                        int bottombins = maxbin - this.N + 1;
+                        for (int i = 0; i < bottombins; i++)
+                        {
+                            output[i] = 1;
+                        }
+                        maxbin = this.N - 1;
                     }
-                    minbin = 0;
+
+                    if (minbin < 0)
+                    {
+                        int topbins = -minbin;
+                        for (int i = this.N - topbins; i < this.N; i++)
+                        {
+                            output[i] = 1;
+                        }
+                        minbin = 0;
+                    }
                 }
+
+                Debug.Assert(minbin >= 0);
+                Debug.Assert(maxbin < this.N);
+
+                // Set the output (except for periodic wraparound)
+                for (int i = minbin; i <= maxbin; i++)
+                {
+                    output[i] = 1;
+                }
+            }
+            // Debug the decode() method
+            if (verbosity >= 2)
+            {
+                Console.WriteLine();
+                Console.WriteLine("input: " + input);
+                Console.WriteLine("range: " + MinVal + " - " + MaxVal);
+                Console.WriteLine("n: " + this.N + " w: " + this.W + " resolution: " + this.Resolution +
+                                  " radius: " + this.Radius + " periodic: " + this.Periodic);
+                Console.Write("output: ");
+                PPrint(output);
+                Console.WriteLine("input desc: " + DecodedToStr(Decode(output)));
             }
             return 0;
+
         }
+        
+
+
+
+
 
         private int[] tmpOutput;
 
@@ -555,7 +635,7 @@ namespace NeoCortexApi.Encoders
                 int runLen = run[1];
                 int left, right;
 
-                if (runLen <= w)
+                if (runLen <= W)
                 {
                     left = right = runStart + runLen / 2;
                 }
@@ -576,8 +656,8 @@ namespace NeoCortexApi.Encoders
                 else
                 {
                     // Convert to input space.
-                    inMin = (left - this.Padding) * this.Range / this.nInternal + this.MinVal;
-                    inMax = (right - this.Padding) * this.Range / this.nInternal + this.MinVal;
+                    inMin = (left - this.Padding) * this.Range / this.NInternal + this.MinVal;
+                    inMax = (right - this.Padding) * this.Range / this.NInternal + this.MinVal;
                 }
 
                 // Handle Wape-around if periodic 
@@ -627,11 +707,11 @@ namespace NeoCortexApi.Encoders
             // Return result
             if (parentFieldName != "")
             {
-                String fieldName = String.Format("%s.%s", parentFieldName, this.name);
+                String fieldName = String.Format("%s.%s", parentFieldName, this.Name);
             }
             else
             {
-                String fieldName = (string)name;
+                String fieldName = (string)Name;
             }
 
             NewStruct newStruct1 = new NewStruct(new Dictionary<object, object> {
@@ -668,25 +748,25 @@ namespace NeoCortexApi.Encoders
         //     category (bucket) where each row contains the encoded output for that
         //     category.
         //     
-        private object _topDownMappingM = null;
-        private int bottombins;
-        private int minbin;
-        private int maxbin;
-        private int axbin;
-        private object start;
-        private int runLen;
-        private int w;
-        private int left;
-        private double inMin;
-        private double inMax;
-        private int right;
-        private object name;
-        private object fieldName;
-        private object _topDownValues;
-        private object tmpoutput;
-        private int topbins;
-        private int n;
-        private int verbosity=0;
+        //private object _topDownMappingM = null;
+        //private int bottombins;
+        //private int minbin;
+        //private int maxbin;
+        //private int axbin;
+        //private object start;
+        //private int runLen;
+        //private int w;
+       // private int left;
+        //private double inMin;
+       // private double inMax;
+       // private int right;
+       // private object name;
+        //private object fieldName;
+        //private object _topDownValues;
+        //private object tmpoutput;
+        //private int topbins;
+        //private int n;
+       
       
 
         public object Get_topDownValues()
@@ -717,8 +797,8 @@ namespace NeoCortexApi.Encoders
                 }
                 // Each row represents an encoded output pattern
                 int numCategories = ((object[])this._topDownValues).Length;
-                int[,] topDownMappingM = new int[numCategories, n];
-                double[] outputSpace = new double[this.n];
+                int[,] topDownMappingM = new int[numCategories, N];
+                double[] outputSpace = new double[this.N];
 
                 for (int i = 0; i < numCategories; i++)
                 {
@@ -726,7 +806,7 @@ namespace NeoCortexApi.Encoders
                     value = Math.Max(value, this.MinVal);
                     value = Math.Min(value, this.MaxVal);
                     this.EncodeIntoArray((int)value, outputSpace, 0);
-                    for (int j = 0; j < this.n; j++)
+                    for (int j = 0; j < this.N; j++)
                     {
                         topDownMappingM[i, j] = (int)outputSpace[j];
                     }
@@ -870,12 +950,12 @@ namespace NeoCortexApi.Encoders
             var @string = "ScalarEncoder:";
             @string += $" min: {this.MinVal}";
             @string += $" min: {this.MaxVal}";
-            @string += $" min: {this.w}";
+            @string += $" min: {this.W}";
             @string += $" min: {this.N}";
             @string += $" min: {this.Resolution}";
             @string += $" min: {this.Radius}";
             @string += $" min: {this.Periodic}";
-            @string += $" min: {this.nInternal}";
+            @string += $" min: {this.NInternal}";
             @string += $" min: {this.rangeInternal}";
             @string += $" min: {this.Padding}";
             return @string;
