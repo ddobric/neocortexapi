@@ -286,6 +286,47 @@ namespace NeoCortexApi.Encoders
             return retVal;
         }
 
+        public List<EncoderResult> GetBucketInfo(List<int> buckets)
+        {
+            // Fall back topdown compute
+            if (Encoders == null)
+            {
+                throw new InvalidOperationException("Must be implemented in sub-class");
+            }
+
+            // Concatenate the results from bucketInfo on each child encoder
+            List<EncoderResult> retVals = new List<EncoderResult>();
+            int bucketOffset = 0;
+            for (int i = 0; i < Encoders.Count; i++)
+            {
+                IEncoder encoder = Encoders[i].encoder;
+                int offset = Encoders[i].offset;
+                Name = Encoders[i].Name;
+                //(string name, IEncoder encoder, int offset) = Encoders[i];
+
+                int nextBucketOffset;
+                if (encoder.Encoders != null)
+                {
+                    nextBucketOffset = bucketOffset + encoder.Encoders.Length;
+                }
+                else
+                {
+                    nextBucketOffset = bucketOffset + 1;
+                }
+
+                List<int> bucketIndices = buckets.GetRange(bucketOffset, nextBucketOffset - bucketOffset);
+                List<EncoderResult> values = encoder.GetBucketInfo(bucketIndices);
+
+                retVals.AddRange(values);
+
+                bucketOffset = nextBucketOffset;
+            }
+
+            return retVals;
+        }
+
+
+
 
 
 
@@ -331,8 +372,8 @@ namespace NeoCortexApi.Encoders
                 for (int i = 0; i < Encoders.Count; i++)
                 {
                     // Get the encoder and the encoded output
-                    var (Name, Encoder, offset) = Encoders[i];
-                    var nextOffset = i < encoders.Count - 1 ? Encoders[i + 1].offset : width;
+                    var (Name, Encode, offset) = Encoders[i];
+                    var nextOffset = i < Encoders.Count - 1 ? Encoders[i + 1].offset : Width;
                     var fieldOutput = new BitArray(encoded.Cast<bool>().Skip(offset).Take(nextOffset - offset).ToArray());
                     var (subFieldsDict, subFieldsOrder) = encoder.Decode(fieldOutput, parentName);
 
@@ -510,4 +551,6 @@ namespace NeoCortexApi.Encoders
       
 
     }
+
+    
 }
