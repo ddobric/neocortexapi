@@ -7,9 +7,14 @@ https://serokell.io/blog/knn-algorithm-in-ml
 https://www.datacamp.com/tutorial/k-nearest-neighbor-classification-scikit-learn
 https://www.tutorialspoint.com/scikit_learn/scikit_learn_kneighbors_classifier.htm
 
+Working on the Voting principle of KNN Algorithm
+https://core.ac.uk/download/pdf/51406242.pdf
+https://towardsdatascience.com/everything-you-ever-wanted-to-know-about-k-nearest-neighbors-dab986e21b60
+
 
 Videos
 https://www.youtube.com/watch?v=HVXime0nQeI
 https://www.youtube.com/watch?v=UqYde-LULfs
 https://www.youtube.com/watch?v=4HKqjENq9OU&t=1470s (After watching this video, we got an idea regarding what to take the value of 'K (Nearest Neighbour)'. It is explained that the value
 									of k is approximately equal to the Length of our data set)
+
