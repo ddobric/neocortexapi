@@ -25,15 +25,15 @@ namespace KNN
                  int N = data.Length;
                  double[] distances = new double[N];
                  for (int i = 0; i < N; ++i)
-                     distances[i] = DistFunc(item, data[i]);
+                     distances[i] = DistFunc(item, data[i]); */
 
-                 // 2. Get ordering
-                 int[] ordering = new int[N];
+        // 2. Get ordering
+        int[] ordering = new int[N];
                  for (int i = 0; i < N; ++i)
                      ordering[i] = i;
                  double[] distancesCopy = new double[N];
                  Array.Copy(distances, distancesCopy, distances.Length);
-                 Array.Sort(distancesCopy, ordering); */
+                 Array.Sort(distancesCopy, ordering); 
 
                  // 3. Show info for k-nearest
                  double[] kNearestDists = new double[k];
