@@ -714,9 +714,9 @@ namespace NeoCortexApi.Encoders
             }
 
             var result = new Dictionary<string, Tuple<List<double[]>, List<string>>>();
-            result.Add(fieldName, new Tuple<List<double[]>, List<string>>(ranges, new List<string>() { fieldName }));
-
-            return  result;
+            List<double[]> doubleRanges = ranges.Select(r => r.Select(x => (double)x).ToArray()).ToList();
+            result.Add(fieldName, new Tuple<List<double[]>, List<string>>(doubleRanges, new List<string>() { fieldName }));
+            return result;
 
         }
 
@@ -792,7 +792,7 @@ namespace NeoCortexApi.Encoders
                     _topDownValues = Enumerable.Range(minval, numValues)
                                                 .Select(x => x + resolution / 2.0).ToArray();
                 }
-
+                  
                 int numCategories = _topDownValues.Length;
                 _topDownMappingM = new int[numCategories][];
                 for (int i = 0; i < numCategories; i++)
