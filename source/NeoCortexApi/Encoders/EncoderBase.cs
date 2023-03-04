@@ -332,6 +332,7 @@ namespace NeoCortexApi.Encoders
             int bucketOffset = 0;
             for (int i = 0; i < Encoders.Count; i++)
             {
+
                 IEncoder encoder = Encoders[i].encoder;
                 int offset = Encoders[i].offset;
                 Name = Encoders[i].Name;
@@ -340,7 +341,8 @@ namespace NeoCortexApi.Encoders
                 int nextBucketOffset;
                 if (encoder.Encoders != null)
                 {
-                    nextBucketOffset = bucketOffset + encoder.Encoders.Length;
+                    nextBucketOffset = bucketOffset + ((Array)encoder.Encoders).Length;
+
                 }
                 else
                 {
@@ -358,17 +360,7 @@ namespace NeoCortexApi.Encoders
             return retVals;
         }
         public abstract void EncodeIntoArray(object inputData, double[] output);
-        public double[] Encode(object inputData)
-        {
-            // Create a new double array of length `Width` initialized to 0
-            double[] output = new double[GetWidth()];
-
-            // Call the `EncodeIntoArray` method to populate the `output` array
-            EncodeIntoArray(inputData, output);
-
-            // Return the `output` array
-            return output;
-        }
+       
 
         public int GetWidth()
         {
