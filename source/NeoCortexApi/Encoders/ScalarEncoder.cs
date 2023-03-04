@@ -716,7 +716,8 @@ namespace NeoCortexApi.Encoders
             var result = new Dictionary<string, Tuple<List<double[]>, List<string>>>();
             List<double[]> doubleRanges = ranges.Select(r => r.Select(x => (double)x).ToArray()).ToList();
             result.Add(fieldName, new Tuple<List<double[]>, List<string>>(doubleRanges, new List<string>() { fieldName }));
-            return result;
+            int Result=Convert.ToInt32(result);
+            return Result;
 
         }
 
