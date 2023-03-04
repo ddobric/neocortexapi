@@ -48,7 +48,7 @@ namespace KNN
                      kNearestDists[i] = distances[idx];
                  }
 
-                /* // 4. Vote
+                 // 4. Vote
                  double[] votes = new double[c];  // one per class
                  double[] wts = MakeWeights(k, kNearestDists);
                  Console.WriteLine("\nWeights (inverse technique): ");
