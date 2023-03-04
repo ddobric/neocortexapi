@@ -108,8 +108,8 @@ namespace UnitTestsProject
         /// This unit tests creates two areas X and Y and it creates one SDR in each area.
         /// Both SDRs represent tha set of active cells that will be associated with each other.
         /// </summary>
-        /// <param name="numCells">NUmber of cells in the Y area, that will learn associationas.</param>
-        /// <param name="numActCellsPct">Number of active cells in percent in the area Y.</param>
+        /// <param name="numCells">A total number of cells in the Y area, that might learn associationas.</param>
+        /// <param name="numActCellsPct">A number of active cells in percent in the area Y that will learn associations.</param>
         [TestMethod]
         [TestCategory("NAA")]
         [DataRow(100, 0.02)]
@@ -172,7 +172,7 @@ namespace UnitTestsProject
             List<long[]> destSdrsY = new List<long[]>();
 
             //
-            // Create populations that will be associated.
+            // Create populations that will be associated X->Y.
             for (int i = 0; i < 100; i++)
             {
                 srcSdrsInX.Add(UnitTestHelpers.CreateRandomSdr(1024, 0.02));
@@ -183,10 +183,12 @@ namespace UnitTestsProject
             // Step trough all populations.
             for (int n = 0; n < srcSdrsInX.Count; n++)
             {
-                Debug.WriteLine(naa.TraceState());
-
+                Debug.WriteLine($"-------------- Learning Pattern {n} in areay Y. ----------------");
+               
                 areaX.ActiveCellsIndicies = srcSdrsInX[n];
                 areaY.ActiveCellsIndicies = destSdrsY[n];
+
+                Debug.WriteLine(naa.TraceState());
 
                 //
                 // We train the same association between X and Y 10 times.
