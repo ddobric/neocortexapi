@@ -67,15 +67,15 @@ namespace UnitTestsProject
             Cell[] burstingCells = { cn.GetCell(4), cn.GetCell(5) };
 
             DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(burstingCells[0]);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(81), 0.3);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.5);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.5);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.5);
+            cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(8), 0.5);
 
             DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(burstingCells[1]);
-            Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.7);
-            Synapse as2 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[1], 0.7);
-            Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.7);
+            Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.5);
+            Synapse as2 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[1], 0.5);
+            Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.5);
 
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
