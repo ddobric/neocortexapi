@@ -215,6 +215,48 @@ namespace NeoCortexApiSample
             PredictNextElement(predictor, list3);
         }
 
+
+        private static Dictionary<string, List<double>> GetSubsequenceFromLocalTextFile()
+        {
+            Dictionary<string, List<double>> subsequences = new Dictionary<string, List<double>>();
+            using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input.txt"))
+            {
+                int temp1 = 0;
+
+                List<double> inputList = new();
+                while (!reader.EndOfStream)
+                {
+                    var row = reader.ReadLine();
+                    // splitting multiple input subsequences with semi-colon
+                    var numbers = row.Split(',');
+                    Console.WriteLine(numbers[temp1]);
+
+                    //assigning each number to the variable
+                    foreach (var variable in numbers)
+                    {
+
+                        if (!digit.Contains(';'))
+                        {
+
+                            inputList.Add(Convert.ToDouble(variable));
+                        }
+                        else
+                        {
+                            // temp 1 used to indentify sequence number
+                            temp1++;
+
+                            sequences.Add("Sequence" + temp1, inputList);
+                            break;
+
+                        }
+
+                    }
+
+                }
+            }
+            return subsequences;
+        }
+
         private static void PredictNextElement(Predictor predictor, double[] list)
         {
             Debug.WriteLine("------------------------------");
