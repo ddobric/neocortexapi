@@ -3,6 +3,7 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using Org.BouncyCastle.Ocsp;
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NeoCortexApiSample
 {
@@ -33,7 +35,7 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            // RunMultiSimpleSequenceLearningExperiment();
+            //RunMultiSimpleSequenceLearningExperiment();
             //RunMultiSequenceLearningExperiment();
 
             // new RunPredictionMultiSequenceExperiment() 
@@ -49,7 +51,9 @@ namespace NeoCortexApiSample
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            sequences = GetInputFromTextFile();
+            //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
+            sequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
+
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
@@ -79,6 +83,7 @@ namespace NeoCortexApiSample
         }
 
 
+
         //method to add input sequences through external text files
 
         private static Dictionary<string, List<double>> GetInputFromTextFile()
@@ -92,21 +97,20 @@ namespace NeoCortexApiSample
                 {
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
-                    Console.WriteLine(numbers[temp]);
+                    Console.WriteLine(row);
 
-                    foreach (var digit in numbers)
+
+                    foreach (var digit in numbers)  //assigning each number to the digit variable
                     {
-                        // semicolon act as termination between two sequences
+                        // splitting multiple input sequences with semi-colon
                         if (!digit.Contains(';'))
                         {
-                            //digit is converting to double
                             inputList.Add(Convert.ToDouble(digit));
                         }
                         else
                         {
                             temp++;
-                            //temp defined to identify sequence number
-                            sequences.Add("Sequence" + temp, inputList);
+                            sequences.Add("Sequence: " + temp, inputList);
                             break;
 
                         }
@@ -117,6 +121,45 @@ namespace NeoCortexApiSample
             return sequences;
         }
 
+        /* Method to read the data from CSV file for comparing which file type is having less CPU utilization */
+
+        private static Dictionary<string, List<double>> GetInputFromCsvFile(string filePath)
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                int temp = 0;
+                List<double> inputList = new List<double>();
+                while (!reader.EndOfStream)
+                {
+                    var row = reader.ReadLine();
+                    var numbers = row.Split(',');
+                    Console.WriteLine(row);
+
+                    foreach (var digit in numbers)
+                    {
+                        if (double.TryParse(digit, out double number))
+                        {
+                            inputList.Add(number);
+                        }
+                        else
+                        {
+                            temp++;
+                            sequences.Add("Sequence: " + temp, inputList);
+                            inputList = new List<double>();
+                            break;
+                        }
+                    }
+                }
+                if (inputList.Count > 0)
+                {
+                    temp++;
+                    sequences.Add("Sequence: " + temp, inputList);
+                }
+            }
+            return sequences;
+        }
 
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -171,46 +214,6 @@ namespace NeoCortexApiSample
             predictor.Reset();
             PredictNextElement(predictor, list3);
         }
-
-        private static Dictionary<string, List<double>> GetSubsequenceFromLocalTextFile()
-        {
-            Dictionary<string, List<double>> subsequences = new Dictionary<string, List<double>>();
-            using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input.txt"))
-            {
-                int temp1 = 0;
-
-                List<double> inputList = new();
-                while (!reader.EndOfStream)
-                {
-                    var row = reader.ReadLine();
-                    var numbers = row.Split(',');
-                    Console.WriteLine(numbers[temp1]);
-
-                    foreach (var variable in numbers)
-                    {
-                        
-                        if (!digit.Contains(';'))
-                        {
-                           
-                            inputList.Add(Convert.ToDouble(variable));
-                        }
-                        else
-                        {
-                            temp1++;
-                            
-                            sequences.Add("Sequence" + temp1, inputList);
-                            break;
-
-                        }
-
-                    }
-
-                }
-            }
-            return subsequences;
-        }
-
-
 
         private static void PredictNextElement(Predictor predictor, double[] list)
         {
