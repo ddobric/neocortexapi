@@ -332,10 +332,11 @@ namespace NeoCortexApi.Encoders
             int bucketOffset = 0;
             for (int i = 0; i < Encoders.Count; i++)
             {
-
-                IEncoder encoder = Encoders[i].encoder;
-                int offset = Encoders[i].offset;
-                Name = Encoders[i].Name;
+                string s = Convert.ToString(i);
+                EncoderInfo encoderInfo = Encoders[s];
+                IEncoder encoder = (IEncoder)encoderInfo.encoder;
+                int offset = encoderInfo.offset;
+                string name = encoderInfo.Name;
                 //(string name, IEncoder encoder, int offset) = Encoders[i];
 
                 int nextBucketOffset;
@@ -578,17 +579,18 @@ namespace NeoCortexApi.Encoders
         // Define the Encoders property as a dictionary of tuples
         public Dictionary<string, (object encoder, int offset)> Encoders { get; set; }
 
+        private class EncoderInfo
+        {
+            internal IEncoder encoder;
+            internal int offset;
 
+            public string Name { get; internal set; }
 
-       
-
-
-
-
-
-
-      
-
+            public static implicit operator EncoderInfo((object encoder, int offset) v)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 
     
