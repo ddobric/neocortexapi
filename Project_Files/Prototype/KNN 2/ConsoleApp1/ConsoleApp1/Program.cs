@@ -3,9 +3,9 @@ namespace KNN
 {
     class KNNProgram
     {
-        static void Main(string[] args)
+        /*static void Main(string[] args)
         {
-            /*     Console.WriteLine("Begin weighted k-NN classification demo ");
+                 Console.WriteLine("Begin weighted k-NN classification demo ");
                  Console.WriteLine("Normalized income, education data: ");
                  Console.WriteLine("[id =  0, 0.32, 0.43, class = 0]");
                  Console.WriteLine(" . . . ");
@@ -19,7 +19,7 @@ namespace KNN
                  Console.ReadLine();
              }
 
-            /* static void Analyze(double[] item, double[][] data, int k, int c)
+            static void Analyze(double[] item, double[][] data, int k, int c)
              {
                  // 1. Compute all distances
                  int N = data.Length;
@@ -33,7 +33,7 @@ namespace KNN
                      ordering[i] = i;
                  double[] distancesCopy = new double[N];
                  Array.Copy(distances, distancesCopy, distances.Length);
-                 Array.Sort(distancesCopy, ordering);
+                 Array.Sort(distancesCopy, ordering); */
 
                  // 3. Show info for k-nearest
                  double[] kNearestDists = new double[k];
@@ -48,7 +48,7 @@ namespace KNN
                      kNearestDists[i] = distances[idx];
                  }
 
-                 // 4. Vote
+                /* // 4. Vote
                  double[] votes = new double[c];  // one per class
                  double[] wts = MakeWeights(k, kNearestDists);
                  Console.WriteLine("\nWeights (inverse technique): ");
@@ -66,7 +66,7 @@ namespace KNN
                      votes[i].ToString("F4"));
              } // Analyze
 
-             static double[] MakeWeights(int k, double[] distances)
+            /* static double[] MakeWeights(int k, double[] distances)
              {
                  // Inverse technique
                  double[] result = new double[k];  // one per neighbor
@@ -94,4 +94,3 @@ namespace KNN
 
         }
     }
-}
