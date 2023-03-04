@@ -1,4 +1,5 @@
-﻿using NeoCortexApi;
+﻿using GemBox.Spreadsheet.Drawing;
+using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using Org.BouncyCastle.Ocsp;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NeoCortexApiSample
 {
@@ -52,6 +54,12 @@ namespace NeoCortexApiSample
 
             sequences = GetInputFromTextFile();
 
+            foreach (KeyValuePair<string, List<double>> kvp in sequences)
+            {
+                //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+                Console.WriteLine(string.Format("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
+            }
+
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
@@ -89,7 +97,8 @@ namespace NeoCortexApiSample
             {
                 int temp = 0;
                 List<double> inputList = new();
-                var list1;
+                // for 10 input sequences
+                string[] list1 = new string[10];
 
                 while (!reader.EndOfStream)
                 {
@@ -104,31 +113,16 @@ namespace NeoCortexApiSample
                         }
                     }
                     var numbers = all_rows.Split(',');
-                    Console.WriteLine(numbers[temp]);
+                    //Console.WriteLine(numbers[temp]);
                     //string[] splittedFile = Regex.Split(all_rows, "(?<=\r\n)");
 
+                    foreach (var sequence in list1)
+                    {
+                        inputList.Add(Convert.ToDouble(sequence));
+                        temp++;
+                        sequences.Add("Sequence" + temp, inputList);
+                    }
 
-                    foreach (var digit in numbers)
-                        {
-                            // splitting multiple input sequences with semi-colon
-                            // if (!digit.Contains(';'))
-                            //{
-                            //inputList.Add(Convert.ToDouble(digit));
-                            //}
-                            // changing logic for splitting of sequences logic from semi-colon to square bracket
-                            if (!digit.Contains(']') && !digit.Contains('['))
-                            {
-                                inputList.Add(Convert.ToDouble(digit));
-                            }
-                            else
-                            {
-                                temp++;
-                                sequences.Add("Sequence" + temp, inputList);
-                             break;
-
-                            }
-
-                        }
                     
                 }
             }
