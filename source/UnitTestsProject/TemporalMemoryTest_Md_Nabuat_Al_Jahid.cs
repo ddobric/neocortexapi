@@ -31,6 +31,7 @@ namespace UnitTestsProject
             return retVal;
         }
 
+
         private HtmConfig GetDefaultTMParameters()
         {
             HtmConfig htmConfig = new HtmConfig(new int[] { 32 }, new int[] { 32 })
