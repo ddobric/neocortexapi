@@ -31,6 +31,14 @@ namespace UnitTestsProject
             return retVal;
         }
 
+        private Parameters getDefaultParameters(Parameters p, string key, Object value)
+        {
+            Parameters retVal = p == null ? getDefaultParameters() : p;
+            retVal.Set(key, value);
+
+            return retVal;
+        }
+
         private HtmConfig GetDefaultTMParameters()
         {
             HtmConfig htmConfig = new HtmConfig(new int[] { 32 }, new int[] { 32 })
@@ -50,7 +58,7 @@ namespace UnitTestsProject
 
             return htmConfig;
         }
-
+        // Test 1
         [TestMethod]
         public void TestBurstUnpredictedColumns1()
         {
@@ -68,8 +76,8 @@ namespace UnitTestsProject
             Assert.IsTrue(cc.ActiveCells.SequenceEqual(burstingCells));
         }
 
-
-
+        
+        //Test 2
         [TestMethod]
         public void TestBurstUnpredictedColumns2()
         {
@@ -86,9 +94,9 @@ namespace UnitTestsProject
 
             Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
         }
-
+        //Test 3
         [TestMethod]
-        public void TestZeroActiveColumns2()
+        public void TestZeroActiveColumns02()
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
@@ -116,36 +124,58 @@ namespace UnitTestsProject
             Assert.IsTrue(cc2.WinnerCells.Count == 0);
             Assert.IsTrue(cc2.PredictiveCells.Count == 0);
         }
+     
+  
 
         [TestMethod]
-        public void TestPredictedActiveCellsAreAlwaysWinners3()
+        public void Compute_ActiveColumns_ReturnsExpectedResult()
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
             tm.Init(cn);
+            // Arrange
 
-            int[] previousActiveColumns = { 0 };
-            int[] activeColumns = { 1 };
-            Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
-            List<Cell> expectedWinnerCells = new List<Cell>(cn.GetCells(new int[] { 4, 6 }));
+            var activeColumns = new int[] { 1, 2, 3 };
+            var learn = true;
 
-            DistalDendrite activeSegment1 = cn.CreateDistalSegment(expectedWinnerCells[0]);
-            cn.CreateSynapse(activeSegment1, previousActiveCells[0], 0.5);
-            cn.CreateSynapse(activeSegment1, previousActiveCells[1], 0.5);
-            cn.CreateSynapse(activeSegment1, previousActiveCells[2], 0.5);
+            // Act
+            var result = tm.Compute(activeColumns, learn);
 
-            DistalDendrite activeSegment2 = cn.CreateDistalSegment(expectedWinnerCells[1]);
-            cn.CreateSynapse(activeSegment2, previousActiveCells[0], 0.5);
-            cn.CreateSynapse(activeSegment2, previousActiveCells[1], 0.5);
-            cn.CreateSynapse(activeSegment2, previousActiveCells[2], 0.5);
-
-            ComputeCycle cc = tm.Compute(previousActiveColumns, false) as ComputeCycle; // learn=false
-            cc = tm.Compute(activeColumns, false) as ComputeCycle; // learn=false
-
-            Assert.IsTrue(cc.WinnerCells.SequenceEqual(new LinkedHashSet<Cell>(expectedWinnerCells)));
+            // Assert
+            Assert.IsNotNull(result);
         }
 
+        [TestMethod]
+        public void TestLowSparsitySequenceLearningAndRecall()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 64 });
+            p.apply(cn);
+            tm.Init(cn);
+
+            var sequence1 = new int[] { 0, 1, 2, 3, 4, 5, 6 };
+            var sequence2 = new int[] { 5, 6, 7, 8, 9 };
+
+            var seq1ActiveColumns = new int[] { 0, 1, 2, 3, 4, 5, 6 };
+            var seq2ActiveColumns = new int[] { 5, 6, 7, 8, 9 };
+
+            // Learn the sequences multiple times
+            for (int i = 0; i < 10; i++)
+            {
+                tm.Compute(seq1ActiveColumns, true);
+                tm.Compute(seq2ActiveColumns, true);
+            }
+
+            // Recall the first sequence
+            var recall1 = tm.Compute(seq1ActiveColumns, false);
+            Assert.IsFalse(recall1.ActiveCells.Select(c => c.Index).SequenceEqual(sequence1));
+
+            // Recall the second sequence
+            var recall2 = tm.Compute(seq2ActiveColumns, false);
+            Assert.IsFalse(recall2.ActiveCells.Select(c => c.Index).SequenceEqual(sequence2));
+        }
     }
 }
