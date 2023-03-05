@@ -491,6 +491,251 @@ namespace NeoCortexApi.Classifiers
             return same.Count();
         }
 
+        // TODO: Traces Print, reduce methods
 
+        /// <summary>
+        /// Calculate correlations from every saved SDRs of 2 selected Labels in to a 2D double matrix 
+        /// </summary>
+        /// <param name="label1">selected label 1</param>
+        /// <param name="label2">selected label 2</param>
+        /// <returns></returns>
+        public double[,] TraceCrossSimilarity(TIN label1, TIN label2, bool visualize = false)
+        {
+            var entry1 = m_AllInputs[label1];
+            var entry2 = m_AllInputs[label2];
+            int dim1 = entry1.Count;
+            int dim2 = entry2.Count;
+
+            double[,] similarityMat = new double[dim1, dim2];
+
+            for (int i = 0; i < dim1; i += 1)
+            {
+                for (int j = 0; j < dim2; j += 1)
+                {
+                    similarityMat[i, j] = MathHelpers.CalcArraySimilarity(entry1[i], entry2[j]);
+                }
+            }
+
+            if (visualize)
+            {
+                Debug.WriteLine($"Saved SDRs of {label1}(rows)");
+                Debug.WriteLine(NeoCortexApi.Helpers.StringifySdr(m_AllInputs[label1]));
+                Debug.WriteLine("\n");
+
+                Debug.WriteLine($"Saved SDRs of {label2}(columns)");
+                Debug.WriteLine(NeoCortexApi.Helpers.StringifySdr(m_AllInputs[label2]));
+                Debug.WriteLine("\n");
+
+                Debug.WriteLine($"Correlation table of {label1}(row) and {label2}(column):");
+                for (int i = 0; i < dim1; i += 1)
+                {
+                    for (int j = 0; j < dim2; j += 1)
+                    {
+                        Debug.Write(String.Format("{0, -10}", Math.Round(similarityMat[i, j], 4).ToString()));
+                    }
+                    Debug.WriteLine("\n");
+                }
+            }
+
+            return similarityMat;
+        }
+
+        /// <summary>
+        /// Calculate correlations from every saved SDRs of the selected Label with itself in to a 2D double matrix 
+        /// </summary>
+        /// <param name="label">selected label</param>
+        /// <returns></returns>
+        public double[,] TraceAutoSimilarity(TIN label, bool visualize = false)
+        {
+            return TraceCrossSimilarity(label,label, visualize);
+        }
+
+        /// <summary>
+        /// Get the Max, Min and average value from the computed correlation matrix
+        /// </summary>
+        /// <param name="correlationMat2D"></param>
+        /// <returns></returns>
+        public Dictionary<string, double> GetCorrelationStat(double[,] correlationMat2D)
+        {
+            Dictionary<string, double> res = new Dictionary<string, double>();
+
+            double maxVal = 0;
+            double minVal = 1000;
+            double sum = 0;
+            double count = 0;
+            for (int i = 0; i < correlationMat2D.GetLength(0);i+=1)
+            {
+                for(int j = 0; j < correlationMat2D.GetLength(1); j++)
+                {
+                    if(correlationMat2D[i,j] > maxVal)
+                    {
+                        maxVal = correlationMat2D[i, j];
+                    }
+                    if (correlationMat2D[i, j] < minVal)
+                    {
+                        minVal = correlationMat2D[i, j];
+                    }
+                    sum+=correlationMat2D[i,j];
+                    count++;
+                }
+            }
+
+            res.Add("Max", Math.Round(maxVal,4));
+            res.Add("Min", Math.Round(minVal,4));
+            res.Add("Average", Math.Round(sum / count,4));
+
+            return res;
+        }
+
+        /// <summary>
+        /// extension of the TraceCorrelationTwoLabel to get Correlation data of 2 specified labels Lists
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<(TIN, TIN), Dictionary<string, double>> TraceCorrelation(List<TIN> labels1, List<TIN> labels2)
+        {
+            Dictionary<(TIN, TIN), Dictionary<string, double>> correlationInfoAll = new Dictionary<(TIN, TIN), Dictionary<string, double>>();
+
+            foreach (var label1 in labels1)
+            {
+                foreach (var label2 in labels2)
+                {
+                    var res = GetCorrelationStat(TraceCrossSimilarity(label1, label2));
+                    correlationInfoAll.Add((label1, label2), res);
+                }
+            }
+            return correlationInfoAll;
+        }
+
+        /// <summary>
+        /// extension of the TraceCorrelationTwoLabel to get all Correlation data
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<(TIN, TIN), Dictionary<string, double>> TraceCorrelation()
+        {
+            return TraceCorrelation(m_AllInputs.Keys.ToList<TIN>(), m_AllInputs.Keys.ToList<TIN>());
+        }
+
+        /// <summary>
+        /// extension of the TraceCorrelationTwoLabel to get auto Correlation data of one list of labels
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<(TIN, TIN), Dictionary<string, double>> TraceCorrelation(List<TIN> labels)
+        {
+            return TraceCorrelation(labels,labels);
+        }
+
+        /// <summary>
+        /// output the correlation data matrix from TraceCorrelation of a List of labels with another label list to csv format 
+        /// </summary>
+        /// <returns></returns>
+        public List<string> RenderCorrelationMatrixToCSVFormat(List<TIN> labels1, List<TIN> labels2)
+        {
+            var correlationInfoAll = TraceCorrelation(labels1, labels2);
+            List<string> output = new List<string>();
+            string header = " ";
+            foreach (var key in labels2)
+                header += $";{key.ToString()}";
+            output.Add(header);
+
+            var rows = new List<string>();
+
+            List<string> entities = new List<string> { "Min", "Average", "Max" };
+
+            foreach (var label1 in labels1)
+            {
+                List<string> rowForm = new List<string>();
+
+                for (int i = 0; i < 3; i += 1)
+                {
+                    rowForm.Add("");
+                    if (i == 1)
+                    {
+                        rowForm[i] += label1;
+                    }
+                    else
+                    {
+                        rowForm[i] += " ";
+                    }
+                    foreach (var label2 in labels2)
+                    {
+                        rowForm[i] += $";{entities[i]}: {correlationInfoAll[(label1, label2)][entities[i]]}";
+                    }
+                }
+                rows.AddRange(rowForm);
+            }
+            output.AddRange(rows);
+            return output;
+        }
+
+        /// <summary>
+        /// output the correlation data matrix from TraceCorrelation of all label in m_AllInputs with each other to csv format 
+        /// </summary>
+        /// <returns></returns>
+        public List<string> RenderCorrelationMatrixToCSVFormat()
+        {
+            return RenderCorrelationMatrixToCSVFormat(m_AllInputs.Keys.ToList<TIN>(), m_AllInputs.Keys.ToList<TIN>());
+        }
+
+        /// <summary>
+        /// output the correlation data matrix from TraceCorrelation of a List of labels with itself to csv format 
+        /// </summary>
+        /// <returns></returns>
+        public List<string> RenderCorrelationMatrixToCSVFormat(List<TIN> labels)
+        {
+            return RenderCorrelationMatrixToCSVFormat(labels,labels);
+        }
+
+        /// <summary>
+        /// Print correlation table from 2 label lists
+        /// </summary>
+        /// <param name="labels1"></param>
+        /// <param name="labels2"></param>
+        public void TraceSimilarities(List<TIN> labels1, List<TIN> labels2)
+        {
+            var tableData = RenderCorrelationMatrixToCSVFormat(labels1, labels2);
+            List<string[]> allEntries = new List<string[]>();
+            int countToLine = 3; // for writing a line every 3 line of max min average
+            int offsetIndex = 0; // this is for printting a line after the first header line
+            int cellLength = 19;
+            string dashLine = "";
+            int lineLength = (cellLength+1) * tableData[0].Split(";").Length + 1;
+            for (int i = 0; i < lineLength;i+=1)
+            {
+                dashLine += "-";
+            }
+            Debug.WriteLine(dashLine);
+            foreach (var t in tableData)
+            {
+                var oneLine = t.Split(";");
+                allEntries.Add(oneLine);
+                Debug.Write("| ");
+                foreach (var cell in oneLine)
+                { 
+                    Debug.Write(string.Format("{0," + -cellLength + "}|", cell));
+                }
+                Debug.Write("\n");
+                if (offsetIndex % countToLine == 0)
+                {
+                    Debug.WriteLine(dashLine);
+                }
+                offsetIndex++;
+            }
+        }
+
+        /// <summary>
+        /// Print correlation table from 1 label list with itself
+        /// </summary>
+        public void TraceSimilarities(List<TIN> labels)
+        {
+            TraceSimilarities(labels, labels);
+        }
+
+        /// <summary>
+        /// Print correlation table from all labels in m_AllInputs
+        /// </summary>
+        public void TraceSimilarities()
+        {
+            TraceSimilarities(m_AllInputs.Keys.ToList<TIN>(), m_AllInputs.Keys.ToList<TIN>());
+        }
     }
 }
