@@ -91,6 +91,11 @@ namespace UnitTestsProject
             Assert.IsNotNull(result);
         }
 
+        /// <summary>
+        /// TestActiveCellCount: Verify that the number of active cells in the 
+        /// output of Temporal Memory Algorithm is less than or equal to the maximum 
+        /// number of active cells allowed per column.
+        /// </summary>
         [TestMethod]
         public void TestActiveCellCount()
         {
@@ -106,6 +111,42 @@ namespace UnitTestsProject
 
             Assert.IsTrue(activeCells.Count <= 5);
         }
+
+        /// <summary>
+        /// Test if the Temporal Memory can successfully learn and recall patterns of 
+        /// sequences with a high sparsity rate.
+        /// </summary>
+        [TestMethod]
+        public void TestHighSparsitySequenceLearningAndRecall()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 64 });
+            p.apply(cn);
+            tm.Init(cn);
+
+            var sequence1 = new int[] { 0, 10, 20, 30, 40, 50, 60 };
+            var sequence2 = new int[] { 5, 15, 25, 35, 45, 55 };
+
+            var seq1ActiveColumns = new int[] { 0, 10, 20, 30, 40, 50, 60 };
+            var seq2ActiveColumns = new int[] { 5, 15, 25, 35, 45, 55 };
+
+            // Learn the sequences multiple times
+            for (int i = 0; i < 10; i++)
+            {
+                tm.Compute(seq1ActiveColumns, true);
+                tm.Compute(seq2ActiveColumns, true);
+            }
+
+            // Recall the first sequence
+            var recall1 = tm.Compute(seq1ActiveColumns, false);
+            Assert.IsFalse(recall1.ActiveCells.Select(c => c.Index).SequenceEqual(sequence1));
+
+            // Recall the second sequence
+            var recall2 = tm.Compute(seq2ActiveColumns, false);
+            Assert.IsFalse(recall2.ActiveCells.Select(c => c.Index).SequenceEqual(sequence2));
+        }
+
 
     }
 }
