@@ -63,11 +63,19 @@ namespace NeoCortexApi
             {
                 CurrActiveCells = new ConcurrentDictionary<long, Cell>();
 
-                int indx = 0;
-              
-                foreach (var item in value)
+                foreach (var cellIndex in value)
                 {
-                    CurrActiveCells.TryAdd(item, new Cell(-1, indx++));
+                    Cell cell;
+
+                    if (!AllCellsSparse.TryGetValue(cellIndex, out cell))
+                    {
+                        cell = new Cell(-1, (int)cellIndex);
+
+                        AllCellsSparse.TryAdd(cellIndex, cell);                       
+                    }
+
+                    CurrActiveCells.TryAdd(cellIndex, cell);
+                    
                 }
             }
         }

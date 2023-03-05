@@ -164,7 +164,7 @@ namespace NeoCortexApi.Entities
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.Append($"\tseg {this.SegmentIndex} cell:{this.ParentCell.Index}, Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}, [Permanences: {sbPerms}]");
+            sb.Append($"\tcell:{this.ParentCell.Index}/seg {this.SegmentIndex}, Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}, [Permanences: {sbPerms}]");
                      
             return sb.ToString();
 
