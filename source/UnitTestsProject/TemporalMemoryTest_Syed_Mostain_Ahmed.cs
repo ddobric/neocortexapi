@@ -87,8 +87,24 @@ namespace UnitTestsProject
             var externalPredictiveInputsWinners = new int[] { 7, 8, 9 };
 
             var result = tm.Compute(activeColumns, learn, externalPredictiveInputsActive, externalPredictiveInputsWinners);
-
+            Console.WriteLine(result);
             Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void TestActiveCellCount()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 5);
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0 };
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+            var activeCells = cc.ActiveCells;
+
+            Assert.IsTrue(activeCells.Count <= 5);
         }
 
     }
