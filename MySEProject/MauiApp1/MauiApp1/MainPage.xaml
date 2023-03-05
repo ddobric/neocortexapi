@@ -5,43 +5,60 @@
              xmlns:viewmodel="clr-namespace:MauiApp1.ViewModel"
              x:DataType="viewmodel:MainViewModel">
 
-    <Grid RowDefinitions="100, Auto, *"
-          ColumnDefinitions=".25*,.25*,.25*, .25*"
-          Padding="10"
-          RowSpacing="10"
-          ColumnSpacing="10">
+    <ScrollView>
+        <Grid RowDefinitions="100, Auto, Auto, *, Auto"
+              ColumnDefinitions=".25*,.25*,.25*, .25*"
+              Padding="10"
+              RowSpacing="10"
+              ColumnSpacing="10">
 
-        <Image Grid.ColumnSpan="4"
-               Source="sdr_represent.png"
-               BackgroundColor="Transparent"/>
+            <Image x:Name="myImage"
+                   Grid.Column="1"
+                   Grid.Row="0"
+                   Grid.ColumnSpan="2"
+                   Source="sdr_represent.png"
+                   BackgroundColor="Transparent"/>
 
-        <TableView Intent="Settings"
-                   Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2">
-            <TableRoot>
-                <TableSection>
-                    <EntryCell Label="Graph name"
+            <TableView Intent="Settings"
+                   Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+                <TableRoot>
+                    <TableSection>
+                        <EntryCell Label="Graph name"
                        Placeholder="graph name" />
-                    <EntryCell Label="Max cycles"
+                        <EntryCell Label="Max cycles"
                        Placeholder="max cycles" />
-                    <EntryCell Label="Highlight touch"
-                       Placeholder="Hhghlight touch" />
-                    <EntryCell Label="Axis"
+                        <EntryCell Label="Highlight touch"
+                       Placeholder="Highlight touch" />
+                        <EntryCell Label="Axis"
                        Placeholder="axis" />
-                    <EntryCell Label="X_axis title"
+                        <EntryCell Label="X_axis title"
                        Placeholder="x_axis title" />
-                    <EntryCell Label="Y_axis title"
+                        <EntryCell Label="Y_axis title"
                        Placeholder="y_axis title" />
-                    <EntryCell Label="Min range of cell"
+                        <EntryCell Label="Min range of cell"
                        Placeholder="min range of cell" />
-                    <EntryCell Label="Max range of cell"
+                        <EntryCell Label="Max range of cell"
                        Placeholder="max range of cell" />
-                    <EntryCell Label="Subplot title"
+                        <EntryCell Label="Subplot title"
                        Placeholder="subplot title" />
-                    <EntryCell Label="Figure name"
+                        <EntryCell Label="Figure name"
                        Placeholder="figure name" />
-                </TableSection>
-            </TableRoot>
-        </TableView>
-    </Grid>
+                    </TableSection>
+                </TableRoot>
+            </TableView>
 
+            <Button Text="Choose a txt file"
+                    BackgroundColor="Beige"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Clicked="OncouterClicked"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"/>
+
+            <Label x:Name="myLabel"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="3"/>
+        </Grid>
+    </ScrollView>
 </ContentPage>
