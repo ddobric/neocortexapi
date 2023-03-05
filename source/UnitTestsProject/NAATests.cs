@@ -148,17 +148,24 @@ namespace UnitTestsProject
 
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="numCells"></param>
+        /// <param name="numActCellsPct"></param>
         [TestMethod]
         [TestCategory("NAA")]
-        [DataRow(100, 0.1)]
-        [DataRow(100, 0.04)]
-        [DataRow(200, 0.01)]
-        [DataRow(100, 0.05)]
-        [DataRow(500, 0.01)]
-        public void AssociateOverlappingPopulationsTest(int numCells, double numActCellsPct)
+   
+        public void CircularAssociationTest()
         {
+            int numCells = 100;
+            double numActCellsPct = 0.03;
+
             var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
 
+            // We set here the threshold to 5.
+            // We will use 5 active cells and want to activate the segment if all 5 cells are connected.
+            cfg.ActivationThreshold = 5;
             cfg.MaxNewSynapseCount = 5;
 
             CorticalArea areaX = new CorticalArea(1, "X", 1024);
@@ -167,19 +174,17 @@ namespace UnitTestsProject
 
             Naa naa = new Naa(cfg, areaY);
 
-            // Random SDRs in X area, that will be associated with random SDRs from Y area.
+            long[] l = new long[] { 1, 2 };
+
+            // Create specific SDRs in X area, that will be associated with the single SDR from Y area.
             List<long[]> srcSdrsInX = new List<long[]>();
+            srcSdrsInX.Add(new long[] { 10,20,30,40,50,60});
+            srcSdrsInX.Add(new long[] { 100, 110, 120, 130, 140, 150 });
+            srcSdrsInX.Add(new long[] { 200, 210, 220, 230, 240, 250 });
+            srcSdrsInX.Add(new long[] { 300, 310, 320, 330, 340, 350 });
 
-            // Random SDRs in Y area, that will be associated with random SDRs from Y area.
-            List<long[]> destSdrsY = new List<long[]>();
-
-            //
-            // Create two populations that will be associated X->Y.
-            for (int i = 0; i < 2; i++)
-            {
-                srcSdrsInX.Add(UnitTestHelpers.CreateRandomSdr(1024, 0.02));
-                destSdrsY.Add(UnitTestHelpers.CreateRandomSdr(numCells, numActCellsPct));
-            }
+            // Create a single SDR. All SDRs from X will be associated with this single SDR in Y
+            long[] destSdrY = new long[] { 0, 1, 2  };
 
             //
             // Step trough all populations.
@@ -188,7 +193,7 @@ namespace UnitTestsProject
                 Debug.WriteLine($"-------------- Learning Pattern {n} in areay Y. ----------------");
 
                 areaX.ActiveCellsIndicies = srcSdrsInX[n];
-                areaY.ActiveCellsIndicies = destSdrsY[n];
+                areaY.ActiveCellsIndicies = destSdrY;
 
                 Debug.WriteLine(naa.TraceState());
 
