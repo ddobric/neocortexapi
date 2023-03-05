@@ -16,16 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{7D17894D-95EC-4D16-B6C5-4A6CBBE07E2F}"
-	ProjectSection(SolutionItems) = preProject
-		nuget\DotNetActors.1.0.3.nupkg = nuget\DotNetActors.1.0.3.nupkg
-		nuget\imagebinarizer.1.0.0.nupkg = nuget\imagebinarizer.1.0.0.nupkg
-		nuget\LearningApi.1.3.1.nupkg = nuget\LearningApi.1.3.1.nupkg
-		nuget\NeoCortexApi.1.0.9.snupkg = nuget\NeoCortexApi.1.0.9.snupkg
-		nuget\NeuralNet.MLPerceptron.1.2.2.nupkg = nuget\NeuralNet.MLPerceptron.1.2.2.nupkg
-		nuget\NeuralNetworks.Core.1.2.1.nupkg = nuget\NeuralNetworks.Core.1.2.1.nupkg
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexArrayLib", "NeoCortexArrayLib\NeoCortexArrayLib.csproj", "{A7F4E797-E60F-470E-96F6-B9ECD3A67451}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexEntities", "NeoCortexEntities\NeoCortexEntities.csproj", "{F2693439-77AF-420C-B42F-9FD5BBEC5482}"
@@ -51,7 +41,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Experiments", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmImageEncoder", "ImageEncoder\HtmImageEncoder.csproj", "{60C4DA9F-1D93-4556-A793-02240E08ADA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridCell", "GridCell\GridCell.csproj", "{7FC7C1D5-9EC1-4873-981A-AE58C399E920}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApiPersistenceSample", "Samples\NeoCortexApiPersistenceSample\NeoCortexApiPersistenceSample.csproj", "{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{9475B9AE-7942-4398-BAA1-4074C030B294}"
+	ProjectSection(SolutionItems) = preProject
+		nuget\DotNetActors.1.0.3.nupkg = nuget\DotNetActors.1.0.3.nupkg
+		nuget\NeuralNet.MLPerceptron.1.2.2.nupkg = nuget\NeuralNet.MLPerceptron.1.2.2.nupkg
+		nuget\NeuralNetworks.Core.1.2.1.nupkg = nuget\NeuralNetworks.Core.1.2.1.nupkg
+		nuget\readme.md = nuget\readme.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridCell", "GridCell\GridCell.csproj", "{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,10 +103,14 @@ Global
 		{60C4DA9F-1D93-4556-A793-02240E08ADA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60C4DA9F-1D93-4556-A793-02240E08ADA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60C4DA9F-1D93-4556-A793-02240E08ADA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7FC7C1D5-9EC1-4873-981A-AE58C399E920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FC7C1D5-9EC1-4873-981A-AE58C399E920}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7FC7C1D5-9EC1-4873-981A-AE58C399E920}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7FC7C1D5-9EC1-4873-981A-AE58C399E920}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,6 +118,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6} = {D9879A38-CCF8-4440-B939-D066196AC775}
 		{15375C28-1424-4A29-B2AF-11ED92F6134C} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
+		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71185BAD-1342-4836-BCDA-6EC97118F92D}

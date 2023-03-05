@@ -468,7 +468,7 @@ namespace NeoCortexApi
         /// If the permamence is below EPSILON, synapse is destroyed.
         /// </summary>
         /// <param name="conn"></param>
-        /// <param name="segment">The segment to adapt.</param>
+        /// <param name="segment">The segment to adapt. The typically belongs to this areas Y, where associating cells belong to area X.</param>
         /// <param name="associatingActiveCells">List of active cells in the current cycle that will be associated with the segment.</param>
         public void AdaptSegment(Segment segment, ICollection<Cell> associatingActiveCells)
         {
