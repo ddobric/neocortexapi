@@ -146,10 +146,15 @@ namespace NeoCortexApi
 
         public ComputeCycle Compute(CorticalArea[] associatedAreas, bool learn)
         {
+            // This makes sure that always a batch of synapses is created in the learning step until MaxSynapsesPerSegment is reached.
+            if (this._cfg.MaxNewSynapseCount >= _cfg.MaxSynapsesPerSegment)
+                throw new ArgumentException("MaxNewSynapseCount must be less than MaxSynapsesPerSegment.");
+
             foreach (var area in associatedAreas)
             {
-                //if (!_cycleResults.ContainsKey(_area.Name))
-                //    _cycleResults.Add(_area.Name, new ComputeCycle());
+                // This makes sure that every active cell will be synaptically connected during learning. With this no information lose will happen.
+                if (this._cfg.MaxSynapsesPerSegment < associatedArea.ActiveCells.Count)
+                    throw new ArgumentException("associatedArea.ActiveCells.Count must be less than MaxSynapsesPerSegment.");
 
                 ActivateCells(area, learn: learn);
 
@@ -159,23 +164,8 @@ namespace NeoCortexApi
             return null;
         }
 
-        private static bool isValidated = false;
-
         protected virtual void ActivateCells(CorticalArea associatedArea, bool learn)
         {
-            if (!isValidated)
-            {
-                // This makes sure that always a batch of synapses is created in the learning step until MaxSynapsesPerSegment is reached.
-                if (this._cfg.MaxNewSynapseCount >= _cfg.MaxSynapsesPerSegment)
-                    throw new ArgumentException("MaxNewSynapseCount must be less than MaxSynapsesPerSegment.");
-
-                // This makes sure that every active cell will be synaptically connected during learning. With this no information lose will happen.
-                if (this._cfg.MaxSynapsesPerSegment < associatedArea.ActiveCells.Count)
-                    throw new ArgumentException("associatedArea.ActiveCells.Count must be less than MaxSynapsesPerSegment.");
-
-                isValidated = true;
-            }
-
             int numSynapses = Math.Min(this._cfg.MaxNewSynapseCount, Math.Min(this._cfg.MaxSynapsesPerSegment, associatedArea.ActiveCells.Count));
 
             ComputeCycle newComputeCycle = new ComputeCycle
@@ -293,21 +283,6 @@ namespace NeoCortexApi
             foreach (var inactiveSeg in inactiveSegments)
             {
                 FormNewSynapses(associatedArea, inactiveSeg);
-
-                //Cell segOwnerCell = inactiveSeg.ParentCell;
-
-                ////if(segOwnerCell)
-                ////
-                //// Maximal number of segments per cell should not be exceeded.
-                //int currNumSegments = distalOrApical ? segOwnerCell.DistalDendrites.Count : segOwnerCell.ApicalDendrites.Count;
-
-                //if (currNumSegments >= _cfg.MaxSegmentsPerCell)
-                //    continue;
-
-                //// This is why we substract number of winner cells from the MaxNewSynapseCount.
-                //int numSynapses = Math.Min(this._cfg.MaxNewSynapseCount, Math.Min(this._cfg.MaxSynapsesPerSegment, associatedArea.ActiveCells.Count));
-
-                //CreateSegmentAtCell(associatedArea, inactiveSeg.ParentCell, numSynapses);
             }
 
             //
