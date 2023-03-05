@@ -41,7 +41,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApi.Experiments", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmImageEncoder", "ImageEncoder\HtmImageEncoder.csproj", "{60C4DA9F-1D93-4556-A793-02240E08ADA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridCell", "GridCell\GridCell.csproj", "{7FC7C1D5-9EC1-4873-981A-AE58C399E920}"
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApiPersistenceSample", "Samples\NeoCortexApiPersistenceSample\NeoCortexApiPersistenceSample.csproj", "{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{9475B9AE-7942-4398-BAA1-4074C030B294}"
@@ -51,6 +50,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{9475B9AE
 		nuget\NeuralNetworks.Core.1.2.1.nupkg = nuget\NeuralNetworks.Core.1.2.1.nupkg
 		nuget\readme.md = nuget\readme.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridCell", "GridCell\GridCell.csproj", "{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,14 +103,14 @@ Global
 		{60C4DA9F-1D93-4556-A793-02240E08ADA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60C4DA9F-1D93-4556-A793-02240E08ADA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60C4DA9F-1D93-4556-A793-02240E08ADA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7FC7C1D5-9EC1-4873-981A-AE58C399E920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FC7C1D5-9EC1-4873-981A-AE58C399E920}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7FC7C1D5-9EC1-4873-981A-AE58C399E920}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7FC7C1D5-9EC1-4873-981A-AE58C399E920}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

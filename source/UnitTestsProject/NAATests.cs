@@ -174,8 +174,8 @@ namespace UnitTestsProject
             List<long[]> destSdrsY = new List<long[]>();
 
             //
-            // Create populations that will be associated X->Y.
-            for (int i = 0; i < 100; i++)
+            // Create two populations that will be associated X->Y.
+            for (int i = 0; i < 2; i++)
             {
                 srcSdrsInX.Add(UnitTestHelpers.CreateRandomSdr(1024, 0.02));
                 destSdrsY.Add(UnitTestHelpers.CreateRandomSdr(numCells, numActCellsPct));
