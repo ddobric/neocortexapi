@@ -168,8 +168,8 @@ namespace NeoCortexApi.Network
 
             if (obj is CortexLayer<object, object> layer)
             {
-                HtmSerializer ser = new HtmSerializer();
-                
+                /*
+                HtmSerializer ser = new HtmSerializer();               
 
                 foreach (var modulePair in layer.HtmModules)
                 {
@@ -189,16 +189,16 @@ namespace NeoCortexApi.Network
                     }
 
                 }
+                */
                 
-                /*  
-                    var model_en = "Model_en.txt";
-                    StreamWriter sw_en = new StreamWriter(model_en);
-                    var en = layer.HtmModules["encoder"];
-                    if (en is EncoderBase encoder)
-                    {
-                        encoder.Serialize(en, null, sw_en);
-                    }                    
-                    sw_en.Close();
+                var model_en = "Model_en.txt";
+                StreamWriter sw_en = new StreamWriter(model_en);
+                var en = layer.HtmModules["encoder"];
+                if (en is EncoderBase encoder)
+                {
+                    encoder.Serialize(en, null, sw_en);
+                }                    
+                sw_en.Close();
                 
 
                 
@@ -221,7 +221,7 @@ namespace NeoCortexApi.Network
                     tmem.Serialize(tmem, null, sw_tm);
                 }             
                 sw_tm.Close();
-                */
+                
             }
             
         }
