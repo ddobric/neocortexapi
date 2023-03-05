@@ -4,16 +4,16 @@
 - The objects inside the Predictor should be labeled as ISerializable so that we can use the ISerializable interface to serialize those objects.
 - The method which is used to serialize the connection can be called as below:
 
-		```
+```
 		predictor.connections.Serialize(predictor.connections, null, sw_con);
-		```
+```
 
-	+ predictor is the output of the multiSequences training method which includes connections, cortexLayer, and the HtmClassifier instances.
-	+ By using predictor.connections we can get the connections from the predictor.
-	+ Serialize method which is already implemented within the connections class can be then call to serialize the object of connections class.
-	+ Serialize method of connections have three input arguments: connections.Serialize( object obj, string name, StreamWriter sw).
++ Predictor is the output of the multiSequences training method which includes connections, cortexLayer, and the HtmClassifier instances.
++ By using predictor.connections we can get the connections from the predictor.
++ Serialize method which is already implemented within the connections class can be then call to serialize the object of connections class.
++ Serialize method of connections have three input arguments: connections.Serialize( object obj, string name, StreamWriter sw).
 
-		```
+```
 	public void Serialize(object obj, string name, StreamWriter sw)
         {
             if (obj is Connections connections)
@@ -161,19 +161,19 @@
             //conn.Cells = cells.ToArray();
             return conn;
         }
-		```
+```
 
 - From here we have to implement the Serialize method for the Cortexlayer which have three layers inside CortexLayer( encoder, spatialpooler, temporalmemory).
 - The encoder used in this project is the ScalarEncoder, we can yield the encoder from the cortexLayer:
 
-		```
+```
 		var en = layer.HtmModules["encoder"];
-		```
+```
 
 - Since the ScalarEncoder is inherited the EncoderBase, so that we can use the serialize method which is already implemented for the class EncoderBase to serialize the ScarlarEncoder.
 - However, not all the properties of the class EncoderBase are serialized. The method below shows how to serialize the ScalarEncoder instance with in the cortexlayer.
 
-		```
+```
 	public void Serialize(object obj, string name, StreamWriter sw)
         {
             if (obj is EncoderBase encoder)
@@ -200,32 +200,32 @@
                 HtmSerializer.SerializeObject(encoder, name, sw, ignoreMembers: excludeMembers);
             }    
         }
-		```
+```
 
 - To serialize the SpatialPooler instance in the CortexLayer, we need first to get its value from the layer. The coder below shows how to do that.
 
-		```
+```
 		var sp = layer.HtmModules["sp"];
-		```
+```
 
 - The Serialize method is then used to serialize it, which is implemented within the class SpatialPooler:
 
-		```
+```
 	public void Serialize(object obj, string name, StreamWriter sw)
         {
             HtmSerializer.SerializeObject(obj, name, sw);
         }
-		```
+```
 
 - Same as other two objects, we have to get the TemporalMemory instance from the CortexLayer:
 
-		```
+```
 		var tm = (TemporalMemory)layer.HtmModules["tm"];
-		```
+```
 
 - The serialize method which is implemented in the class TemporalMemory is then called to serialize it:
 
-		```
+```
 	public void Serialize(object obj, string name, StreamWriter sw)
         {
             var ignoreMembers = new List<string>
@@ -239,7 +239,7 @@
         {
             return HtmSerializer.DeserializeObject<T>(sr, name);
         }
-		```
+```
 
 - After all the layers of the CortexLayer are serialized, we then have to serialize the HtmClassifier. (This is the other group's topic)
 
@@ -248,13 +248,13 @@
 - Now we need to retrieve those objects from the text files (deserialize methods). The goal is to implement the Deserialize method for the class Predictor that can retrieves its objects from the text files.
 - Firstly, the connections can be easily de-serialize by calling the method Deserialize of class Connections:
 
-		```
+```
 		var con = Connections.Deserialize<Connections>(sr_con, null);
-		```
+```
 
 - The Deserialize method which is implemented in the class Connections is defined as below:
 	
-		```
+```
 	public static object Deserialize<T>(StreamReader sr, string name)
         {
             var ignoreMembers = new List<string>
@@ -356,34 +356,34 @@
             //conn.Cells = cells.ToArray();
             return conn;
         }
-		``` 
+``` 
  
 - The second object of class Predictor is the CortexLayer that means we need to implement the Deserialize method for the class CortexLayer that can serialize all of the layers with in the CortexLayer.
 - The encoder can be deserialize by calling the Deserialize method which is implemented in the class EncoderBase. 
 
-		```
+```
 		var encoder = ScalarEncoder.Deserialize<ScalarEncoder>(sr_en, null);
-		```
+```
 
 - The EncoderBase.Deserialize method is defined:
 
-		```
+```
 	public static object Deserialize<T>(StreamReader sr, string name)
         {
             var excludeMembers = new List<string> { nameof(EncoderBase.Properties) };
             return HtmSerializer.DeserializeObject<T>(sr, name, excludeMembers);
         }
-		```
+```
 
 - The SpatialPooler object can be deserialize by calling the Deserialize method which is implemented in the class SpatialPooler.
 
-		```
+```
 		var sp = SpatialPooler.Deserialize<SpatialPooler>(sr_sp, null);
-		```
+```
 
 - The SpatialPooler.Serialize method is defined:
 
-		```
+```
 	public static object Deserialize<T>(StreamReader sr, string propName)
         {
          
@@ -397,33 +397,33 @@
             return sp;
            
         }
-		```
+```
 
 - The TemporalMemory object can be retrieved by calling the Deserialize method which is implememted in the class TemporalMemory.
 
-		```
+```
 		var tm = TemporalMemory.Deserialize<TemporalMemoryMT>(sr_tm, null);
-		```
+```
 
 - The TemporalMemory.Deserialize method is defined as below:
 
-		```
+```
 	public static object Deserialize<T>(StreamReader sr, string name)
         {
             return HtmSerializer.DeserializeObject<T>(sr, name);
         }
-		```
+```
 
 - After we have all the layers of the CortexLayer, we need to reconstruct the CortexLayer
 - First the CortexLayer could be initialized:
 
-		```
+```
 		CortexLayer<object, object> layer = new CortexLayer<object, object>("L");
-		```
+```
 
 - Then we can in turn add the layers to the CortexLayer as below:
 
-		```
+```
 	layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
         layer.HtmModules.Add("sp", (SpatialPooler)sp);
         layer.HtmModules.Add("tm", (TemporalMemory)tm);
@@ -432,8 +432,8 @@
 - The instance of class HtmClassifier should be deserialize by calling the Deserialize method which is implemented in the class HtmClassifier. However, it is the other group's topic so we will update it later.
 - After, we retrieved all the objects of class Predictor, we can reconstruct it. The code below is then called to do so:
 
-		```
+```
 		Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, (HtmClassifier) cls);
             	return predictor;
-		```
+```
 - The predictor is then returned, so that we could use it for the next training.
