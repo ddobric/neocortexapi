@@ -1,4 +1,5 @@
-﻿using NeoCortexApi;
+﻿using GemBox.Spreadsheet.Drawing;
+using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using Org.BouncyCastle.Ocsp;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -46,7 +48,7 @@ namespace NeoCortexApiSample
 
         private static void RunPredictionMultiSequenceExperiment()
         {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            Dictionary<string, List<double>> sequences = new ();
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
@@ -55,17 +57,23 @@ namespace NeoCortexApiSample
             sequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
 
 
+            foreach (KeyValuePair<string, List<double>> kvp in sequences)
+            {
+                //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+                Console.WriteLine(string.Format("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
+            }
+
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            List<Double> InputSeq = new();
+            MultiSequenceLearning experiment = new ();
 
             // to get list of double values needed in later code changes
             //foreach (List<Double> entry in sequences.Values)
             //{
+            //List<Double> InputSeq = new();
             //   InputSeq = entry;
             //    Console.WriteLine(InputSeq);
             //}
@@ -82,40 +90,44 @@ namespace NeoCortexApiSample
             PredictNextElement(predictor, list1);
         }
 
-        
+
 
         //method to add input sequences through external text files
 
         private static Dictionary<string, List<double>> GetInputFromTextFile()
         {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            using (StreamReader reader = new StreamReader(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
+            Dictionary<string, List<double>> sequences = new();
+            using (StreamReader reader = new StreamReader(@"D:\FUAS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
             {
                 int temp = 0;
                 List<double> inputList = new();
+                // for 10 input sequences
+                string[] list1 = new string[10];
+
                 while (!reader.EndOfStream)
                 {
-                    var row = reader.ReadLine();
-                    var numbers = row.Split(',');
-                    Console.WriteLine(row);
 
+                    var all_rows = reader.ReadToEnd();
 
-                    foreach (var digit in numbers)  //assigning each number to the digit variable
+                    for (int i = 0; i <= all_rows.Length; i++)
                     {
-                        // splitting multiple input sequences with semi-colon
-                        if (!digit.Contains(';'))
+                        if (all_rows.Contains("\r\n"))
                         {
-                            inputList.Add(Convert.ToDouble(digit));
+                            list1 = Regex.Split(all_rows, "(?<=\r\n)");
                         }
-                        else
-                        {
-                            temp++;
-                            sequences.Add("Sequence: " + temp, inputList);
-                            break;
-
-                        }
-
                     }
+                    var numbers = all_rows.Split(',');
+                    //Console.WriteLine(numbers[temp]);
+                    //string[] splittedFile = Regex.Split(all_rows, "(?<=\r\n)");
+
+                    foreach (var sequence in list1)
+                    {
+                        inputList.Add(Convert.ToDouble(sequence));
+                        temp++;
+                        sequences.Add("Sequence" + temp, inputList);
+                    }
+
+
                 }
             }
             return sequences;
