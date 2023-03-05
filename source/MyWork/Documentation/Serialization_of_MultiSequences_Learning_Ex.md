@@ -427,7 +427,8 @@
 	layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
         layer.HtmModules.Add("sp", (SpatialPooler)sp);
         layer.HtmModules.Add("tm", (TemporalMemory)tm);
-		```
+```
+
 - The Deserialize method which is implemented in the class CortexLayer will then return the instance of class CortexLayer which contains the three object that have been retrieved from the text files.
 - The instance of class HtmClassifier should be deserialize by calling the Deserialize method which is implemented in the class HtmClassifier. However, it is the other group's topic so we will update it later.
 - After, we retrieved all the objects of class Predictor, we can reconstruct it. The code below is then called to do so:
@@ -436,4 +437,5 @@
 		Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, (HtmClassifier) cls);
             	return predictor;
 ```
+
 - The predictor is then returned, so that we could use it for the next training.
