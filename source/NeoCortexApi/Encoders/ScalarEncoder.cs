@@ -160,6 +160,13 @@ namespace NeoCortexApi.Encoders
             }
         }
 
+
+        /// <summary>
+        /// Gets the index of the first non-zero bit.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>Null in a case of an error.</returns>
+        /// <exception cref="ArgumentException"></exception>
         protected int? GetFirstOnBit(double input)
         {
             if (input == double.NaN)
@@ -220,8 +227,29 @@ namespace NeoCortexApi.Encoders
             return centerbin - HalfWidth;
         }
 
+
         /// <summary>
-        /// The Encode
+        /// Gets the bucket index of the given value.
+        /// </summary>
+        /// <param name="inputData">The data to be encoded. Must be of type double.</param>
+        /// <param name="bucketIndex">The bucket index.</param>
+        /// <returns></returns>
+        public int? GetBucketIndex(object inputData)
+        {
+            double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
+            if (input == double.NaN)
+            {
+                return null;
+            }
+
+            int? bucketVal = GetFirstOnBit(input);
+
+            return bucketVal; 
+        }
+
+
+        /// <summary>
+        /// Encodes the given scalar value as SDR as defined by HTM.
         /// </summary>
         /// <param name="inputData">The inputData<see cref="object"/></param>
         /// <returns>The <see cref="int[]"/></returns>
@@ -264,21 +292,10 @@ namespace NeoCortexApi.Encoders
                 ArrayUtils.SetIndexesTo(output, ArrayUtils.Range(minbin, maxbin + 1), 1);
             }
 
-            // Added guard against immense string concatenation
-            //if (LOGGER.isTraceEnabled())
-            //{
-            //    LOGGER.trace("");
-            //    LOGGER.trace("input: " + input);
-            //    LOGGER.trace("range: " + getMinVal() + " - " + getMaxVal());
-            //    LOGGER.trace("n:" + getN() + "w:" + getW() + "resolution:" + getResolution() +
-            //                    "radius:" + getRadius() + "periodic:" + isPeriodic());
-            //    LOGGER.trace("output: " + Arrays.toString(output));
-            //    LOGGER.trace("input desc: " + decode(output, ""));
-            //}
-
             // Output 1-D array of same length resulted in parameter N    
             return output;
         }
+
 
         /// <summary>
         /// This method enables running in the network.

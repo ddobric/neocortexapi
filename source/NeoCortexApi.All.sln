@@ -58,6 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SequenceLearningExperiment"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmImageEncoder", "ImageEncoder\HtmImageEncoder.csproj", "{18560247-0A1A-4B91-AE90-B8949B9EDDFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridCell", "GridCell\GridCell.csproj", "{F2046867-6B12-4D98-9AA7-E5F0009A1300}"
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApiPersistenceSample", "Samples\NeoCortexApiPersistenceSample\NeoCortexApiPersistenceSample.csproj", "{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}"
 EndProject
 Global
@@ -114,6 +115,10 @@ Global
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18560247-0A1A-4B91-AE90-B8949B9EDDFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2046867-6B12-4D98-9AA7-E5F0009A1300}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2046867-6B12-4D98-9AA7-E5F0009A1300}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2046867-6B12-4D98-9AA7-E5F0009A1300}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2046867-6B12-4D98-9AA7-E5F0009A1300}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B07D7B1-7437-4101-9B6D-DF2F0F78E73B}.Release|Any CPU.ActiveCfg = Release|Any CPU

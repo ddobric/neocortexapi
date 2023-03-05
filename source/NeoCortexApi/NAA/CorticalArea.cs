@@ -23,10 +23,20 @@ namespace NeoCortexApi
         /// <summary>
         /// Map of active cells and their indexes in the virtual sparse array.
         /// </summary>
-        private ConcurrentDictionary<long, Cell> Cells { get; set; } = new ConcurrentDictionary<long, Cell>();
+        private ConcurrentDictionary<long, Cell> CurrActiveCells { get; set; } = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
-        /// The name of the _area.
+        /// Sparse map of cells that have been involved in learning. Their indexes in the virtual sparse array.
+        /// </summary>
+        private ConcurrentDictionary<long, Cell> AllCellsSparse { get; set; } = new ConcurrentDictionary<long, Cell>();
+
+        /// <summary>
+        /// The index of the area.
+        /// </summary>
+        //public int Index { get; set; }
+
+        /// <summary>
+        /// The name of the _area. It must be unique in the application.
         /// </summary>
         public string Name { get; private set; }
 
@@ -37,7 +47,7 @@ namespace NeoCortexApi
         {
             get
             {
-                var actCells = Cells.Values;
+                var actCells = CurrActiveCells.Values;
 
                 return actCells;
             }
@@ -47,35 +57,64 @@ namespace NeoCortexApi
         {
             get
             {
-                return Cells.Keys.ToArray();
+                return CurrActiveCells.Keys.ToArray();
             }
             set
             {
-                Cells = new ConcurrentDictionary<long, Cell>();
+                CurrActiveCells = new ConcurrentDictionary<long, Cell>();
 
-                int indx = 0;
-
-                foreach (var item in value)
+                foreach (var cellIndex in value)
                 {
-                    Cells.TryAdd(item, new Cell(0, indx++, _numCells, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell));
+                    Cell cell;
+
+                    if (!AllCellsSparse.TryGetValue(cellIndex, out cell))
+                    {
+                        cell = new Cell(-1, (int)cellIndex);
+
+                        AllCellsSparse.TryAdd(cellIndex, cell);                       
+                    }
+
+                    CurrActiveCells.TryAdd(cellIndex, cell);
+                    
                 }
             }
-        } 
+        }
 
 
+        /// <summary>
+        /// Gets the number of outgoing synapses of all active cells.
+        /// </summary>
+        public int NumOutgoingSynapses
+        {
+            get
+            {
+                return this.ActiveCells.SelectMany(el => el.ReceptorSynapses).Count();
+            }
+        }
 
-        public CorticalArea(string name, int numCells)
+        /// <summary>
+        /// Gets the number of incoming synapses at apical segments.
+        /// </summary>
+        public int NumIncomingApicalSynapses
+        {
+            get
+            {
+                return this.ActiveCells.SelectMany(cell => cell.ApicalDendrites).SelectMany(aSeg => aSeg.Synapses).Count();                
+            }
+        }
+
+        public CorticalArea(int index, string name, int numCells)
         {
             this.Name = name;
 
             this._numCells = numCells;
 
-            Cells = new ConcurrentDictionary<long, Cell>();
+            CurrActiveCells = new ConcurrentDictionary<long, Cell>();
         }
 
         public override string ToString()
         {
-            return $"{Name} - Cells: {_numCells} - Active Cells : {Cells.Count}";
+            return $"{Name} - Cells: {_numCells} - Active Cells : {CurrActiveCells.Count}";
         }
               
     }
