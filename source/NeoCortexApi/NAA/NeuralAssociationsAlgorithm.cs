@@ -153,7 +153,7 @@ namespace NeoCortexApi
             foreach (var area in associatedAreas)
             {
                 // This makes sure that every active cell will be synaptically connected during learning. With this no information lose will happen.
-                if (this._cfg.MaxSynapsesPerSegment < associatedArea.ActiveCells.Count)
+                if (this._cfg.MaxSynapsesPerSegment < area.ActiveCells.Count)
                     throw new ArgumentException("associatedArea.ActiveCells.Count must be less than MaxSynapsesPerSegment.");
 
                 ActivateCells(area, learn: learn);
