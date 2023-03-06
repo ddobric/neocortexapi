@@ -468,11 +468,11 @@ namespace NeoCortexApi
         /// If the permamence is below EPSILON, synapse is destroyed.
         /// </summary>
         /// <param name="conn"></param>
-        /// <param name="segment">The segment to adapt.</param>
-        /// <param name="prevActiveCells">List of active cells in the current cycle (calculated in the previous cycle).</param>
-        public void AdaptSegment(Segment segment, ICollection<Cell> prevActiveCells)
+        /// <param name="segment">The segment to adapt. The typically belongs to this areas Y, where associating cells belong to area X.</param>
+        /// <param name="associatingActiveCells">List of active cells in the current cycle that will be associated with the segment.</param>
+        public void AdaptSegment(Segment segment, ICollection<Cell> associatingActiveCells)
         {
-            // Destroying a synapse modifies the set that we're iterating through.
+            // The list of synapses that will be destroyed.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
             foreach (Synapse presynapticCellSynapse in segment.Synapses)
@@ -481,7 +481,7 @@ namespace NeoCortexApi
 
                 //
                 // If synapse's presynaptic cell was active in the previous cycle then streng it.
-                if (prevActiveCells.Contains(presynapticCellSynapse.GetPresynapticCell()))
+                if (associatingActiveCells.Contains(presynapticCellSynapse.GetPresynapticCell()))
                 {
                     permanence += this._cfg.PermanenceIncrement;
                 }
@@ -541,7 +541,7 @@ namespace NeoCortexApi
         {
             if (segment.GetType() == typeof(ApicalDendrite))
                 KillSegment<ApicalDendrite>(segment as ApicalDendrite, segment.ParentCell.ApicalDendrites);
-            if (segment.GetType() == typeof(DistalDendrite))
+            else if (segment.GetType() == typeof(DistalDendrite))
                 KillSegment<DistalDendrite>(segment as DistalDendrite, segment.ParentCell.DistalDendrites);
             else
                 throw new ArgumentException($"Unsuproted segment type: {segment.GetType().Name}");

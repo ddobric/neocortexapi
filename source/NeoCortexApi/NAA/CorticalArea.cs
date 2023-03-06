@@ -23,7 +23,12 @@ namespace NeoCortexApi
         /// <summary>
         /// Map of active cells and their indexes in the virtual sparse array.
         /// </summary>
-        private ConcurrentDictionary<long, Cell> Cells { get; set; } = new ConcurrentDictionary<long, Cell>();
+        private ConcurrentDictionary<long, Cell> CurrActiveCells { get; set; } = new ConcurrentDictionary<long, Cell>();
+
+        /// <summary>
+        /// Sparse map of cells that have been involved in learning. Their indexes in the virtual sparse array.
+        /// </summary>
+        private ConcurrentDictionary<long, Cell> AllCellsSparse { get; set; } = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
         /// The index of the area.
@@ -42,7 +47,7 @@ namespace NeoCortexApi
         {
             get
             {
-                var actCells = Cells.Values;
+                var actCells = CurrActiveCells.Values;
 
                 return actCells;
             }
@@ -52,17 +57,25 @@ namespace NeoCortexApi
         {
             get
             {
-                return Cells.Keys.ToArray();
+                return CurrActiveCells.Keys.ToArray();
             }
             set
             {
-                Cells = new ConcurrentDictionary<long, Cell>();
+                CurrActiveCells = new ConcurrentDictionary<long, Cell>();
 
-                int indx = 0;
-              
-                foreach (var item in value)
+                foreach (var cellIndex in value)
                 {
-                    Cells.TryAdd(item, new Cell(-1, indx++));
+                    Cell cell;
+
+                    if (!AllCellsSparse.TryGetValue(cellIndex, out cell))
+                    {
+                        cell = new Cell(-1, (int)cellIndex);
+
+                        AllCellsSparse.TryAdd(cellIndex, cell);                       
+                    }
+
+                    CurrActiveCells.TryAdd(cellIndex, cell);
+                    
                 }
             }
         }
@@ -96,12 +109,12 @@ namespace NeoCortexApi
 
             this._numCells = numCells;
 
-            Cells = new ConcurrentDictionary<long, Cell>();
+            CurrActiveCells = new ConcurrentDictionary<long, Cell>();
         }
 
         public override string ToString()
         {
-            return $"{Name} - Cells: {_numCells} - Active Cells : {Cells.Count}";
+            return $"{Name} - Cells: {_numCells} - Active Cells : {CurrActiveCells.Count}";
         }
               
     }
