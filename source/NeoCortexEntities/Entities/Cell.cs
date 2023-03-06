@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -22,12 +23,6 @@ namespace NeoCortexApi.Entities
         /// Index of the cell.
         /// </summary>
         public int Index { get; set; }
-
-        /// <summary>
-        /// The mini-column or cortical column, which owns this cell.
-        /// Used by <see cref="nameof(NeuralAssociationsAlgorithm)." />
-        /// </summary>
-        public string ParentAreaName { get; set; }
 
         /// <summary>
         /// Optional. The mini-column, which owns this cell.
@@ -62,7 +57,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public Cell()
         {
-
+            this.ParentColumnIndex = -1;
         }
 
         /// <summary>
@@ -78,11 +73,22 @@ namespace NeoCortexApi.Entities
             this.ParentColumnIndex = parentColumnIndx;
 
             this.Index = parentColumnIndx * numCellsPerColumn + colSeq;
-
-            //this.CellId = cellId;
         }
 
-      
+
+        /// <summary>
+        /// Creates the cell
+        /// </summary>
+        /// <param name="parentIndex">The index of the area that owns the cell. This can be a mini-column or a <see cref="CorticalArea"/></param>
+        /// <param name="index">The index of the cell inside the given area.</param>
+        public Cell(int parentIndex, int index)
+        {
+            this.ParentColumnIndex = parentIndex;
+
+            this.Index = index;
+        }
+
+
         /// <summary>
         /// Gets the hashcode of the cell.
         /// </summary>
@@ -94,7 +100,7 @@ namespace NeoCortexApi.Entities
             result = prime * result + ParentColumnIndex;
             result = prime * result + Index;
 
-            return result;        
+            return result;
         }
 
         /// <summary>
@@ -143,9 +149,30 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Cell: Indx={this.Index}, [{this.ParentColumnIndex}]";
+            return $"Parent={this.ParentColumnIndex} - Index={this.Index}";
         }
 
+
+
+        /// <summary>
+        /// Trace dendrites and synapses.
+        /// </summary>
+        /// <returns></returns>
+        public string TraceCell()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append($"Cell {this.Index} ");
+
+            sb.AppendLine($"\tApical Segments {this.ApicalDendrites.Count}");
+
+            foreach (var seg in this.ApicalDendrites)
+            {
+                sb.AppendLine(seg.ToString());
+            }
+            
+            return sb.ToString();
+        }
 
         /// <summary>
         /// Compares two cells.
@@ -246,8 +273,8 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var ignoreMembers = new List<string> 
-            { 
+            var ignoreMembers = new List<string>
+            {
                 nameof(Cell.ReceptorSynapses),
                 nameof(m_Hashcode)
             };

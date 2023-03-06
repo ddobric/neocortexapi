@@ -544,7 +544,7 @@ namespace NeoCortexApi
             {
                 // Debug.Write($"B.({matchingSegments.Count})");
 
-                DistalDendrite maxPotentialSeg = GetSegmentwithHighesPotential(matchingSegments, prevActiveCells);
+                DistalDendrite maxPotentialSeg = GetSegmentWithHighestPotential(matchingSegments, prevActiveCells);
 
                 leastUsedOrMaxPotentialCell = maxPotentialSeg.ParentCell;
 
@@ -589,7 +589,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="matchingSegments"></param>
         /// <returns></returns>
-        private DistalDendrite GetSegmentwithHighesPotential(List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells)
+        private DistalDendrite GetSegmentWithHighestPotential(List<DistalDendrite> matchingSegments, ICollection<Cell> prevActiveCells)
         {
             DistalDendrite maxSeg = matchingSegments[0];
 
@@ -675,6 +675,7 @@ namespace NeoCortexApi
                     leastUsedCells.Add(cell);
                 }
             }
+
             random = new Random();
             int i = random.Next(leastUsedCells.Count);
             return leastUsedCells[i];

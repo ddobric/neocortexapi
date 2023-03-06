@@ -61,6 +61,7 @@ namespace NeoCortexApi.Encoders
             return outArray;
         }
 
+        
         public int[] Compute(string inputData, bool learn)
         {
             return Encode(inputData);

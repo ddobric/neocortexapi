@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace NeoCortexApi.Network
 {
-    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT>
+    public class CortexLayer<TIN, TOUT> : IHtmModule<TIN, TOUT>, ISerializable
     {
         #region Properties
 
@@ -152,6 +154,27 @@ namespace NeoCortexApi.Network
         public bool Equals(IHtmModule other)
         {
             return this.Equals((object)other);
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            //foreach (var modulePair in this.HtmModules)
+            //{
+            //    ISerializable serializableModule = modulePair.Value as ISerializable;
+            //    if (serializableModule != null)
+            //    { 
+                
+            //    }
+            //       // serializableModule.Serialize(todo);
+            //       //else
+            //            // throw new Exception()
+            //}
+            throw new NotImplementedException();
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            throw new NotImplementedException();
         }
         #region Private Methods
 

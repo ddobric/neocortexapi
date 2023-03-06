@@ -573,6 +573,9 @@ namespace NeoCortexApi
         /// <returns>The segment with mot synapses.</returns>
         public static Segment GetSegmentWithHighesPotential(IList<Segment> matchingSegments)
         {
+            if (matchingSegments.Count == 0)
+                return null;
+
             Segment maxSeg = matchingSegments[0];
 
             for (int i = 1; i < matchingSegments.Count; i++)

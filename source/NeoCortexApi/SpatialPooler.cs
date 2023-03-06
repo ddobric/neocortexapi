@@ -611,11 +611,14 @@ namespace NeoCortexApi
 
             double[] permChanges = new double[conn.HtmConfig.NumInputs];
 
-            // First we initialize all permChanges to minimum decrement values,
-            // which are used in a case of none-connections to input.
+            // First we initialize all permChanges to minimum decrement values SynPermInactiveDec.
             ArrayUtils.InitArray(permChanges, -1 * conn.HtmConfig.SynPermInactiveDec);
 
             // Then we set SynPermActiveInc to all connected synapses.
+            // With this, all mini-columns connected to the currently active input neurons will increment 
+            // their permanence by SynPermActiveInc. In contrast, all other synapses that are not connected
+            // to active neurons will be decremented by SynPermInactiveDec.
+            // This is some kind of natural punishing mechanism, which can be compared to backpropagation of error.
             ArrayUtils.SetIndexesTo(permChanges, actInputIndexes.ToArray(), conn.HtmConfig.SynPermActiveInc);
 
             for (int i = 0; i < activeColumns.Length; i++)
@@ -751,7 +754,7 @@ namespace NeoCortexApi
             // In that case the density is calculated from inhibition radius.
             if (density <= 0)
             {
-                // inhibition area can be higher than num of all columns, if 
+                // inhibition _area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
                 inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.ColumnDimensions.Length);
