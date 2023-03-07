@@ -66,7 +66,7 @@ namespace KNN
                      votes[i].ToString("F4"));
              } // Analyze
 
-            /* static double[] MakeWeights(int k, double[] distances)
+             static double[] MakeWeights(int k, double[] distances)
              {
                  // Inverse technique
                  double[] result = new double[k];  // one per neighbor
