@@ -48,7 +48,7 @@ namespace NeoCortexApiSample
 
         private static void RunPredictionMultiSequenceExperiment()
         {
-            Dictionary<string, List<double>> sequences = new ();
+            Dictionary<string, List<double>> sequences = new();
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
@@ -68,7 +68,7 @@ namespace NeoCortexApiSample
 
             //
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new ();
+            MultiSequenceLearning experiment = new();
 
             // to get list of double values needed in later code changes
             //foreach (List<Double> entry in sequences.Values)
@@ -138,7 +138,7 @@ namespace NeoCortexApiSample
         private static Dictionary<string, List<double>> GetInputFromCsvFile(string filePath)
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-           
+
             using (StreamReader reader = new StreamReader(filePath))
             {
                 int temp = 0;
@@ -226,6 +226,33 @@ namespace NeoCortexApiSample
             predictor.Reset();
             PredictNextElement(predictor, list3);
         }
+
+
+        // Method to read subsequences input from text files
+        public List<List<double>> GetSubSequencesInputFromTextFiles()
+        {
+            var SubSequences = new List<List<double>>();
+            var TestSubSequences = new List<double>();
+
+            using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input"))
+            {
+
+
+                while (!reader.EndOfStream)
+                {
+                    var row = reader.ReadLine();
+                    var numbers = row.Split(',');
+
+                    foreach (var digit in numbers)
+                    {
+                        TestSubSequences.Add(Convert.ToDouble(digit));
+                    }
+                    SubSequences.Add(TestSubSequences);
+                }
+            }
+            return SubSequences;
+        }
+
 
         private static void PredictNextElement(Predictor predictor, double[] list)
         {
