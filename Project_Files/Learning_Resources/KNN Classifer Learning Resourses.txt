@@ -9,6 +9,7 @@ https://www.tutorialspoint.com/scikit_learn/scikit_learn_kneighbors_classifier.h
 https://learn.microsoft.com/en-us/archive/msdn-magazine/2017/december/test-run-understanding-k-nn-classification-using-csharp
 https://github.com/martian1231/KNNFromScratch
 https://visualstudiomagazine.com/articles/2022/05/19/weighted-k-nn-classification.aspx
+https://www.frontiersin.org/articles/10.3389/fncom.2017.00111/full
 
 Videos
 https://www.youtube.com/watch?v=HVXime0nQeI
