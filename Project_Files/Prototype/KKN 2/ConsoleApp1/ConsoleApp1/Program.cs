@@ -27,7 +27,7 @@ namespace KNN
                  for (int i = 0; i < N; ++i)
                      distances[i] = DistFunc(item, data[i]); */
 
-        // 2. Get ordering
+        /// 2. Get ordering
         int[] ordering = new int[N];
                  for (int i = 0; i < N; ++i)
                      ordering[i] = i;
