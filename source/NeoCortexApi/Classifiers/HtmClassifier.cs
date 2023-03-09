@@ -737,5 +737,30 @@ namespace NeoCortexApi.Classifiers
         {
             TraceSimilarities(m_AllInputs.Keys.ToList<TIN>(), m_AllInputs.Keys.ToList<TIN>());
         }
+
+        #region Serialization
+        /// <summary>
+        /// Implement Serialization for HtmClassifer
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name"></param>
+        /// <param name="sw"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            //Serialization code below.
+            if (obj is HtmClassifier<TIN, TOUT> cls)
+            {
+                /*
+                 HtmSerializer ser = new HtmSerializer();
+                ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
+                ser.SerializeValue(maxRecordedElements, sw);
+                ser.SerializeDictionaryValue(m_AllInputs, sw);
+                ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
+                */
+                HtmSerializer.Serialize(cls, null, sw);
+            }
+        }
+        #endregion
     }
 }

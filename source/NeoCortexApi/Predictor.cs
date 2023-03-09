@@ -78,8 +78,12 @@ namespace NeoCortexApi
                 var model_layer = "Model_layer.txt";
                 StreamWriter sw_layer = new StreamWriter(model_layer);
                 predictor.layer.Serialize(predictor.layer, null, sw_layer);
-                
-                //this.classifier.Ser
+                sw_layer.Close();
+
+                var model_cls = "Model_cls.txt";
+                StreamWriter sw_cls = new StreamWriter(model_cls);               
+                predictor.classifier.Serialize(predictor.classifier, null, sw_cls);
+               
             }
 
         }
