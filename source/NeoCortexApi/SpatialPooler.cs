@@ -36,7 +36,7 @@ namespace NeoCortexApi
         /// <summary>
         /// The instance of the <see cref="HomeostaticPlasticityController"/>.
         /// </summary>
-        private HomeostaticPlasticityController m_HomeoPlastAct;
+        public HomeostaticPlasticityController m_HomeoPlastAct;
 
         public string Name { get; set; }
 

@@ -376,6 +376,8 @@ namespace NeoCortexApiSample
 
         public Predictor RunTraining(Predictor predictor, Dictionary<string, List<double>> sequences)
         {
+            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
+
             int inputBits = 100;
 
             Stopwatch sw = new Stopwatch();
@@ -387,7 +389,6 @@ namespace NeoCortexApiSample
             HtmClassifier<string, ComputeCycle> cls = predictor.classifier;
             CortexLayer<object, object> layer1 = predictor.layer;
 
-            // The model is first unstable. 
             bool isInStableState = false;
 
             // Get the number of unique inputs in the sequences dictionary.
@@ -406,9 +407,23 @@ namespace NeoCortexApiSample
 
             int maxCycles = 3500;
 
-            //
-            // Training SP to get stable. New-born stage.
-            //
+            sp.SetOnStableStatusChanged(((isStable, numPatterns, actColAvg, seenInputs) =>
+            {
+                // Event should only be fired when entering the stable state.
+                // Ideal SP should never enter unstable state after stable state.
+                if (isStable == false)
+                {
+                    Debug.WriteLine($"INSTABLE STATE");
+                    // This should usually not happen.
+                    isInStableState = false;
+                }
+                else
+                {
+                    Debug.WriteLine($"STABLE STATE");
+                    // Here you can perform any action if required.
+                    isInStableState = true;
+                }
+            }));
 
             for (int i = 0; i < maxCycles && isInStableState == false; i++)
             {
@@ -437,9 +452,6 @@ namespace NeoCortexApiSample
 
             // Clear all learned patterns in the classifier.
             cls.ClearState();
-
-            // We activate here the Temporal Memory algorithm.
-            layer1.HtmModules.Add("tm", tm);
 
             //
             // Loop over all sequences.

@@ -48,22 +48,26 @@ namespace NeoCortexApiSample
         
             
             //Prototype for building the prediction engine.
-            //MultiSequenceLearning experiment = new MultiSequenceLearning();
-            //var predictor = experiment.Run(sequences);
+            MultiSequenceLearning experiment = new MultiSequenceLearning();
+            Console.WriteLine("Running the First training...!");
+            var predictor = experiment.Run(sequences);
 
-            //predictor.Save(predictor);
-           
+            Console.WriteLine("Saving the trained model...!");
+            predictor.Save(predictor);
+
+            Console.WriteLine("Loading the model for the next training...!");
             var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
 
-            /*
+            
             Dictionary<string, List<double>> sequences2 = new Dictionary<string, List<double>>();
        
 
             sequences2.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
             sequences2.Add("S2", new List<double>(new double[] { 18.0, 11.0, 12.0, 19.0, 10.0, 17.0, 15.0 }));
 
+            Console.WriteLine("Running the Second Training...!");
             var predictor2 = experiment.RunTraining(load_pre, sequences2);
-            */
+            Console.WriteLine("Second training has finished!");
         }
 
 
