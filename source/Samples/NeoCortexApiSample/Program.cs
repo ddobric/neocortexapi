@@ -48,12 +48,12 @@ namespace NeoCortexApiSample
         
             
             //Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
+            //MultiSequenceLearning experiment = new MultiSequenceLearning();
+            //var predictor = experiment.Run(sequences);
 
-            predictor.Save(predictor);
+            //predictor.Save(predictor);
            
-            //var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
+            var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
 
             /*
             Dictionary<string, List<double>> sequences2 = new Dictionary<string, List<double>>();

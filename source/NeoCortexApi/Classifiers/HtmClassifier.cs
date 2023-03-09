@@ -15,7 +15,7 @@ namespace NeoCortexApi.Classifiers
     /// <summary>
     /// Defines the predicting input.
     /// </summary>
-    public class ClassifierResult<TIN>
+    public class ClassifierResult<TIN> 
     {
         /// <summary>
         /// The predicted input value.
@@ -39,7 +39,7 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     /// <typeparam name="TIN"></typeparam>
     /// <typeparam name="TOUT"></typeparam>
-    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
+    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT> , ISerializable
     {
         private int maxRecordedElements = 10;
 
@@ -762,5 +762,10 @@ namespace NeoCortexApi.Classifiers
             }
         }
         #endregion
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            return HtmSerializer.DeserializeObject<T>(sr, name);
+        }
     }
 }

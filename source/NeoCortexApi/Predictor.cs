@@ -92,14 +92,18 @@ namespace NeoCortexApi
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             var model_con = "Model_con.txt";
-
             StreamReader sr_con = new StreamReader(model_con);
             var con = Connections.Deserialize<Connections>(sr_con, null);
             sr_con.Close();
 
+            var model_cls = "Model_cls.txt";
+            StreamReader sr_cls = new StreamReader(model_cls);
+            var cls = HtmClassifier<string, ComputeCycle>.Deserialize<HtmClassifier<string, ComputeCycle>>(sr_cls, null);
+
             var layer = CortexLayer<object, object>.Deserialize<T>(null);
 
-            Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, null);
+            
+            Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, (HtmClassifier<string, ComputeCycle>)cls);
             return predictor;
         }
 
