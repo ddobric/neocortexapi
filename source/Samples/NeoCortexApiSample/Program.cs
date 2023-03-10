@@ -56,9 +56,12 @@ namespace NeoCortexApiSample
             var predictor = experiment.Run(sequences);
 
             // Save the first trained model
+            var model_pre = "Model1.txt";
+            StreamWriter sw = new StreamWriter(model_pre);  
             Console.WriteLine("Saving the trained model...!");
-            //predictor.Save(predictor);
+            predictor.Save(predictor, sw);
             
+            /*
             // Load the trained model from the text files
             Console.WriteLine("Loading the model for the next training...!");
             var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
@@ -73,7 +76,7 @@ namespace NeoCortexApiSample
             Console.WriteLine("Running the Second Training...!");
             var predictor2 = experiment.RunTraining(load_pre, sequences2);
             Console.WriteLine("Second training has finished!");
-            
+            */
         }
 
 

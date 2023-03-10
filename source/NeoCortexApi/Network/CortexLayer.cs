@@ -168,9 +168,9 @@ namespace NeoCortexApi.Network
 
             if (obj is CortexLayer<object, object> layer)
             {
-                /*
+                
                 HtmSerializer ser = new HtmSerializer();               
-
+                /*
                 foreach (var modulePair in layer.HtmModules)
                 {
                     ISerializable serializableModule = modulePair.Value as ISerializable;
@@ -191,36 +191,42 @@ namespace NeoCortexApi.Network
                 }
                 */
                 
-                var model_en = "Model_en.txt";
-                StreamWriter sw_en = new StreamWriter(model_en);
+                //var model_en = "Model_en.txt";
+                //StreamWriter sw_en = new StreamWriter(model_en);
                 var en = layer.HtmModules["encoder"];
                 if (en is EncoderBase encoder)
                 {
-                    encoder.Serialize(en, null, sw_en);
+                    ser.SerializeBegin(nameof(EncoderBase), sw);
+                    encoder.Serialize(en, null, sw);
+                    ser.SerializeEnd(nameof(EncoderBase), sw);
                 }                    
-                sw_en.Close();
+                //sw_en.Close();
                 
 
                 
-                var model_sp = "Model_sp.txt";
-                StreamWriter sw_sp = new StreamWriter(model_sp);
+                //var model_sp = "Model_sp.txt";
+                //StreamWriter sw_sp = new StreamWriter(model_sp);
                 var sp = layer.HtmModules["sp"];
                 if (sp is SpatialPooler spMT)
                 {
-                    spMT.Serialize(spMT, null, sw_sp);
+                    ser.SerializeBegin(nameof(SpatialPooler), sw);
+                    spMT.Serialize(spMT, null, sw);
+                    ser.SerializeEnd(nameof(SpatialPooler), sw);
                 }
-                sw_sp.Close();
+                //sw_sp.Close();
                 
 
                 
-                var model_tm = "Model_tm.txt";
-                StreamWriter sw_tm = new StreamWriter(model_tm);
+                //var model_tm = "Model_tm.txt";
+                //StreamWriter sw_tm = new StreamWriter(model_tm);
                 var tm = (TemporalMemory)layer.HtmModules["tm"];
                 if (tm is TemporalMemory tmem)
                 {
-                    tmem.Serialize(tmem, null, sw_tm);
+                    ser.SerializeBegin(nameof(TemporalMemory), sw);
+                    tmem.Serialize(tmem, null, sw);
+                    ser.SerializeEnd(nameof(TemporalMemory), sw);
                 }             
-                sw_tm.Close();
+                //sw_tm.Close();
                 
             }
             

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime;
 using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 
 namespace NeoCortexApi
@@ -75,7 +76,7 @@ namespace NeoCortexApi
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             if (obj is Predictor predictor)
-            {
+            {   /*
                 var model_con = "Model_con.txt";
                 StreamWriter sw_con = new StreamWriter(model_con);
                 predictor.connections.Serialize(predictor.connections, null, sw_con);
@@ -90,7 +91,21 @@ namespace NeoCortexApi
                 StreamWriter sw_cls = new StreamWriter(model_cls);
                 var cls = predictor.classifier;
                 cls.Serialize(cls, null, sw_cls);
-               
+                */
+                HtmSerializer ser = new HtmSerializer();
+
+                ser.SerializeBegin(nameof(Connections), sw);
+                predictor.connections.Serialize(predictor.connections, null, sw);
+                ser.SerializeEnd(nameof(Connections), sw);
+
+                ser.SerializeBegin(nameof(CortexLayer<Object, Object>), sw);
+                predictor.layer.Serialize(predictor.layer, null, sw);
+                ser.SerializeEnd(nameof(Connections), sw);
+
+                ser.SerializeBegin(nameof(HtmClassifier<string, ComputeCycle>), sw);
+                predictor.classifier.Serialize(predictor.classifier, null, sw);
+                ser.SerializeEnd(nameof(Connections), sw);
+
             }
 
         }
@@ -103,7 +118,7 @@ namespace NeoCortexApi
         /// <param name="name"></param>
         /// <returns></returns>
         public static object Deserialize<T>(StreamReader sr, string name)
-        {
+        {   
             var model_con = "Model_con.txt";
             StreamReader sr_con = new StreamReader(model_con);
             var con = Connections.Deserialize<Connections>(sr_con, null);
@@ -114,8 +129,18 @@ namespace NeoCortexApi
             var cls = HtmClassifier<string, ComputeCycle>.Deserialize<HtmClassifier<string, ComputeCycle>>(sr_cls, null);
 
             var layer = CortexLayer<object, object>.Deserialize<T>(null);
+            /*
 
-            
+            while (sr.Peek() > 0)
+            {
+                HtmSerializer ser = new HtmSerializer();
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(Connections)))
+                {
+                    var con = Connections.Deserialize<Connections>(sr, null);
+                }
+            }
+            */
             Predictor predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, (HtmClassifier<string, ComputeCycle>)cls);
             return predictor;
         }
