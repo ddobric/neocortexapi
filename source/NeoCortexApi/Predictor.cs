@@ -66,6 +66,12 @@ namespace NeoCortexApi
             return predictedInputValues;
         }
 
+        /// <summary>
+        /// Method used to serialize the Predictor object 
+        /// </summary>
+        /// <param name="obj">The Predictor instance</param>
+        /// <param name="name"></param>
+        /// <param name="sw">StreamWritter</param>
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             if (obj is Predictor predictor)
@@ -89,7 +95,13 @@ namespace NeoCortexApi
 
         }
 
-
+        /// <summary>
+        /// Method used to de-serialize the Predictor
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sr"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             var model_con = "Model_con.txt";
@@ -108,9 +120,23 @@ namespace NeoCortexApi
             return predictor;
         }
 
-        public void Save(Predictor obj)
+        /// <summary>
+        /// Save Predictor model
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="sw"></param>
+        public void Save(Predictor obj, StreamWriter sw)
         {
-            this.Serialize(obj, null, null);
+            this.Serialize(obj, null, sw);
+        }
+
+        /// <summary>
+        /// Load Predictor model
+        /// </summary>
+        /// <param name="sr"></param>
+        public void Load(StreamReader sr)
+        {
+            Predictor.Deserialize<Predictor>(sr, null);
         }
     }
 }

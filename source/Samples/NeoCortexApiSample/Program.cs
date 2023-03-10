@@ -57,7 +57,7 @@ namespace NeoCortexApiSample
 
             // Save the first trained model
             Console.WriteLine("Saving the trained model...!");
-            predictor.Save(predictor);
+            //predictor.Save(predictor);
             
             // Load the trained model from the text files
             Console.WriteLine("Loading the model for the next training...!");

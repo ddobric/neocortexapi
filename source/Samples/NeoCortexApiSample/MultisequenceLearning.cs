@@ -374,6 +374,13 @@ namespace NeoCortexApiSample
             return $"{sequence}_{key}";
         }
 
+        /// <summary>
+        /// Method for MultiSequenceTraining when the previous trained model is available 
+        /// </summary>
+        /// <param name="predictor"></param>
+        /// <param name="sequences">List of Sequences</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public Predictor RunTraining(Predictor predictor, Dictionary<string, List<double>> sequences)
         {
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
