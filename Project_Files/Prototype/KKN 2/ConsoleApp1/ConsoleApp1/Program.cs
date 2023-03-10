@@ -3,7 +3,7 @@ namespace KNN
 {
     class KNNProgram
     {
-        /*static void Main(string[] args)
+        static void Main(string[] args)
         {
                  Console.WriteLine("Begin weighted k-NN classification demo ");
                  Console.WriteLine("Normalized income, education data: ");
