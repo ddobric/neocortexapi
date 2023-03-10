@@ -749,17 +749,25 @@ namespace NeoCortexApi.Classifiers
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             //Serialization code below.
-            if (obj is HtmClassifier<TIN, TOUT> cls)
-            {
                 /*
-                 HtmSerializer ser = new HtmSerializer();
+                HtmSerializer ser = new HtmSerializer();
                 ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
                 ser.SerializeValue(maxRecordedElements, sw);
                 ser.SerializeDictionaryValue(m_AllInputs, sw);
                 ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
                 */
-                HtmSerializer.Serialize(cls, null, sw);
+            if (obj is HtmClassifier<TIN, TOUT> cls)
+            {
+                var ignoreMembers = new List<string>
+                {
+                    nameof(cls.inputSequence),
+                    nameof(cls.inputSequenceMap)
+
+                };
+
+                HtmSerializer.SerializeObject(cls, name, sw, ignoreMembers);
             }
+                
         }
         #endregion
 

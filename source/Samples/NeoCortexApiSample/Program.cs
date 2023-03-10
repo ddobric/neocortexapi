@@ -54,7 +54,7 @@ namespace NeoCortexApiSample
 
             Console.WriteLine("Saving the trained model...!");
             predictor.Save(predictor);
-
+            /*
             Console.WriteLine("Loading the model for the next training...!");
             var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
 
@@ -68,6 +68,7 @@ namespace NeoCortexApiSample
             Console.WriteLine("Running the Second Training...!");
             var predictor2 = experiment.RunTraining(load_pre, sequences2);
             Console.WriteLine("Second training has finished!");
+            */
         }
 
 
