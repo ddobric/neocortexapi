@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="MauiApp1.MainPage"
              xmlns:viewmodel="clr-namespace:MauiApp1.ViewModel"
@@ -23,26 +22,36 @@
                    Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
                 <TableRoot>
                     <TableSection>
-                        <EntryCell Label="Graph name"
-                       Placeholder="graph name" />
-                        <EntryCell Label="Max cycles"
-                       Placeholder="max cycles" />
-                        <EntryCell Label="Highlight touch"
-                       Placeholder="Highlight touch" />
-                        <EntryCell Label="Axis"
-                       Placeholder="axis" />
-                        <EntryCell Label="X_axis title"
-                       Placeholder="x_axis title" />
-                        <EntryCell Label="Y_axis title"
-                       Placeholder="y_axis title" />
-                        <EntryCell Label="Min range of cell"
-                       Placeholder="min range of cell" />
-                        <EntryCell Label="Max range of cell"
-                       Placeholder="max range of cell" />
-                        <EntryCell Label="Subplot title"
-                       Placeholder="subplot title" />
-                        <EntryCell Label="Figure name"
-                       Placeholder="figure name" />
+                        <EntryCell x:Name="graphNameEntry"
+                                   Label="Graph name"
+                                   Placeholder="graph name" />
+                        <EntryCell x:Name="maxCyclesEntry"
+                                   Label="Max cycles"
+                                   Placeholder="max cycles" />
+                        <EntryCell x:Name="highlightTouchEntry"
+                                   Label="Highlight touch"
+                                   Placeholder="Highlight touch" />
+                        <EntryCell x:Name="axisEntry"
+                                   Label="Axis"
+                                   Placeholder="axis" />
+                        <EntryCell x:Name="xAxisTitleEntry"
+                                   Label="X_axis title"
+                                   Placeholder="x_axis title" />
+                        <EntryCell x:Name="yAxisTitleEntry"
+                                   Label="Y_axis title"
+                                   Placeholder="y_axis title" />
+                        <EntryCell x:Name="minRangeEntry"
+                                   Label="Min range of cell"
+                                   Placeholder="min range of cell" />
+                        <EntryCell x:Name="maxRangeEntry"
+                                   Label="Max range of cell"
+                                   Placeholder="max range of cell" />
+                        <EntryCell x:Name="subplotTitleEntry"
+                                   Label="Subplot title"
+                                   Placeholder="subplot title" />
+                        <EntryCell x:Name="figureNameEntry"
+                                   Label="Figure name"
+                                   Placeholder="figure name" />
                     </TableSection>
                 </TableRoot>
             </TableView>
@@ -59,6 +68,10 @@
                     Grid.Row="3"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"/>
+            
+            <Button Text="Submit" Clicked="OnSubmitClicked" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" />
+
+            <Label x:Name="resultLabel" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"/>
         </Grid>
     </ScrollView>
 </ContentPage>

@@ -53,4 +53,34 @@ public partial class MainPage : ContentPage
         myLabel.Text = fileContents;
 
     }
+
+    private void OnSubmitClicked(object sender, EventArgs e)
+    {
+        string graphName = graphNameEntry.Text;
+        string maxCycles = maxCyclesEntry.Text;
+        string highlightTouch = highlightTouchEntry.Text;
+        string axis = axisEntry.Text;
+        string xAxisTitle = xAxisTitleEntry.Text;
+        string yAxisTitle = yAxisTitleEntry.Text;
+        string minRange = minRangeEntry.Text;
+        string maxRange = maxRangeEntry.Text;
+        string subplotTitle = subplotTitleEntry.Text;
+        string figureName = figureNameEntry.Text;
+        string result = "Graph Name: " + graphName + "\n" +
+                "Max Cycles: " + maxCycles + "\n" +
+                "Highlight Touch: " + highlightTouch + "\n" +
+                "Axis: " + axis + "\n" +
+                "X Axis Title: " + xAxisTitle + "\n" +
+                "Y Axis Title: " + yAxisTitle + "\n" +
+                "Min Range: " + minRange + "\n" +
+                "Max Range: " + maxRange + "\n" +
+                "Subplot Title: " + subplotTitle + "\n" +
+                "Figure Name: " + figureName;
+
+        resultLabel.Text = result;
+
+    }
+
 }
+
+
