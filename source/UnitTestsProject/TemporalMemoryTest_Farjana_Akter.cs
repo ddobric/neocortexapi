@@ -177,5 +177,40 @@ namespace UnitTestsProject
             var recall2 = tm.Compute(seq2ActiveColumns, false);
             Assert.IsFalse(recall2.ActiveCells.Select(c => c.Index).SequenceEqual(sequence2));
         }
+
+        /// <summary>
+        /// Test the update of synapse permanence when matching segments are found
+        /// </summary>
+        [TestMethod]
+        public void TestSynapsePermanenceUpdateWhenMatchingSegmentsFound()
+        {
+            TemporalMemory tm = new TemporalMemory(); // TM class object
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08); // Used Permanence decrement parameter 
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] previousActiveColumns = { 0 };
+            int[] activeColumns = { 1 };
+            Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
+            Cell[] activeCells = { cn.GetCell(4), cn.GetCell(5) };
+
+            DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(activeCells[0]);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
+            cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(81), 0.3);
+
+            DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(activeCells[1]);
+            Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.3);
+            Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.3);
+
+            tm.Compute(previousActiveColumns, true);
+            tm.Compute(activeColumns, true);
+
+            // synapse permanence of matching synapses should be updated
+            Assert.AreEqual(0.3, as1.Permanence, 0.01);
+            Assert.AreEqual(0.3, is1.Permanence, 0.01);
+        }
     }
 }
