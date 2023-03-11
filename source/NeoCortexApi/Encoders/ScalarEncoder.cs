@@ -234,6 +234,7 @@ namespace NeoCortexApi.Encoders
         /// <param name="inputData">The data to be encoded. Must be of type double.</param>
         /// <param name="bucketIndex">The bucket index.</param>
         /// <returns></returns>
+        /// Understanding the new method to get the bucket index.
         public int? GetBucketIndex(object inputData)
         {
             double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
