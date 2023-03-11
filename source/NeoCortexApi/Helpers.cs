@@ -434,6 +434,12 @@ namespace NeoCortexApi
             return sb.ToString() + results;
         }
 
+        /// <summary>
+        /// Gets the cells from Apical Segment inside the population that are synaptically connected from the population defined by sourceCells.
+        /// </summary>
+        /// <param name="sourceCells"></param>
+        /// <param name="destinationCells"></param>
+        /// <returns></returns>
         public static List<Cell> GetApicalConnectedCells(IList<Cell> sourceCells, IList<Cell> destinationCells)
         {
             List<Cell> cennectedCells = new List<Cell>();
@@ -446,6 +452,14 @@ namespace NeoCortexApi
             return cennectedCells;
         }
 
+
+
+        /// <summary>
+        /// Gets the cells from Distal Segment inside the population that are synaptically connected from the population defined by sourceCells.
+        /// </summary>
+        /// <param name="sourceCells"></param>
+        /// <param name="destinationCells"></param>
+        /// <returns></returns>
         public static List<Cell> GetDistalConnectedCells(IList<Cell> sourceCells, IList<Cell> destinationCells)
         {
             List<Cell> cennectedCells = new List<Cell>();
