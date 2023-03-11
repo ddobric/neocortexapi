@@ -458,6 +458,14 @@ namespace NeoCortexApi
             return cennectedCells;
         }
 
+
+
+        /// <summary>
+        /// Gets the cells from Apical Segment inside the population that are synaptically connected from the cell.
+        /// </summary>
+        /// <param name="cell">Cell from X that connets to the populatiopn in Y</param>
+        /// <param name="population"></param>
+        /// <returns>Cpnnetced cells from the population.</returns>
         public static List<Cell> GetApicalConnectedCells(Cell cell, IList<Cell> population)
         {
             List<Cell> connectedCells = new List<Cell>();
@@ -469,46 +477,60 @@ namespace NeoCortexApi
             intersected.ForEach((s) => connectedCells.Add(population.FirstOrDefault(c => c.ApicalDendrites.Count(d => d.SegmentIndex == s.SegmentIndex && c.Index == s.SegmentParentCellIndex)>0)));
 
 
-            foreach (var syn in cell.ReceptorSynapses)
-            {
-                foreach (var popCell in population)
-                {
-                    foreach (var seg in popCell.ApicalDendrites)
-                    {
-                        foreach (var popSyn in seg.Synapses)
-                        {
-                            if (popSyn == syn)
-                            { 
-                                connectedCells.Add(popCell);
-                            }
-                        }
-                    }
-                }
-            }
+            //foreach (var syn in cell.ReceptorSynapses)
+            //{
+            //    foreach (var popCell in population)
+            //    {
+            //        foreach (var seg in popCell.ApicalDendrites)
+            //        {
+            //            foreach (var popSyn in seg.Synapses)
+            //            {
+            //                if (popSyn == syn)
+            //                { 
+            //                    connectedCells.Add(popCell);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             return connectedCells;
         }
 
+
+        /// <summary>
+        /// Gets the cells from Distal Segment inside the population that are synaptically connected from the cell.
+        /// </summary>
+        /// <param name="cell">Cell from X that connets to the populatiopn in Y</param>
+        /// <param name="population"></param>
+        /// <returns>Cpnnetced cells from the population.</returns>
         public static List<Cell> GetDistalConnectedCells(Cell cell, IList<Cell> population)
-        {
+        {          
             List<Cell> connectedCells = new List<Cell>();
 
-            foreach (var syn in cell.ReceptorSynapses)
-            {
-                foreach (var popCell in population)
-                {
-                    foreach (var seg in popCell.DistalDendrites)
-                    {
-                        foreach (var popSyn in seg.Synapses)
-                        {
-                            if (popSyn == syn)
-                            {
-                                connectedCells.Add(popCell);
-                            }
-                        }
-                    }
-                }
-            }
+            var populationSynapses = population.SelectMany(c => c.DistalDendrites.SelectMany(s => s.Synapses)).ToList();
+
+            var intersected = cell.ReceptorSynapses.Intersect(populationSynapses).ToList();
+
+            intersected.ForEach((s) => connectedCells.Add(population.FirstOrDefault(c => c.DistalDendrites.Count(d => d.SegmentIndex == s.SegmentIndex && c.Index == s.SegmentParentCellIndex) == 1)));
+
+
+            //foreach (var syn in cell.ReceptorSynapses)
+            //{
+            //    foreach (var popCell in population)
+            //    {
+            //        foreach (var seg in popCell.DistalDendrites)
+            //        {
+            //            foreach (var popSyn in seg.Synapses)
+            //            {
+            //                if (popSyn == syn)
+            //                {
+            //                    connectedCells.Add(popCell);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             return connectedCells;
         }
