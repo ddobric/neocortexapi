@@ -6,6 +6,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi
@@ -461,6 +462,13 @@ namespace NeoCortexApi
         {
             List<Cell> connectedCells = new List<Cell>();
 
+            var populationSynapses = population.SelectMany(c=>c.ApicalDendrites.SelectMany(s=>s.Synapses)).ToList();
+
+            var intersected = cell.ReceptorSynapses.Intersect(populationSynapses).ToList();
+
+            intersected.ForEach((s) => connectedCells.Add(population.FirstOrDefault(c => c.ApicalDendrites.Count(d => d.SegmentIndex == s.SegmentIndex && c.Index == s.SegmentParentCellIndex)>0)));
+
+
             foreach (var syn in cell.ReceptorSynapses)
             {
                 foreach (var popCell in population)
@@ -489,7 +497,7 @@ namespace NeoCortexApi
             {
                 foreach (var popCell in population)
                 {
-                    foreach (var seg in popCell.ApicalDendrites)
+                    foreach (var seg in popCell.DistalDendrites)
                     {
                         foreach (var popSyn in seg.Synapses)
                         {
