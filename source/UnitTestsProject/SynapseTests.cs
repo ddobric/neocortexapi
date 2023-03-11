@@ -72,7 +72,9 @@ namespace UnitTestsProject
             c0.ReceptorSynapses.Add(s10.Synapses[0]);
 
             var connectedCells = Helpers.GetDistalConnectedCells(c0, population);
+            Assert.AreEqual(0, connectedCells.Count);
 
+            connectedCells = Helpers.GetApicalConnectedCells(c0, population);
             Assert.AreEqual(1, connectedCells.Count);
             Assert.IsTrue(connectedCells[0].Equals(population[0]));
         }
