@@ -9,13 +9,13 @@ namespace NeoCortexApi.Classifiers
 {
     public class ClassificationAndDistance : IComparable<ClassificationAndDistance>
     {
-        public string _classification;
-        public double _distance;
+        public string Classification { get; }
+        public double Distance { get; }
 
         public ClassificationAndDistance(string classification, double distance)
         {
-            _classification = classification;
-            _distance = distance;
+            Classification = classification;
+            Distance = distance;
         }
 
         /// <summary>
@@ -25,9 +25,9 @@ namespace NeoCortexApi.Classifiers
         /// <returns></returns>
         public int CompareTo(ClassificationAndDistance other)
         {
-            if (_distance < other._distance)
+            if (Distance < other.Distance)
                 return -1;
-            else if (_distance > other._distance)
+            else if (Distance > other.Distance)
                 return +1;
             else
                 return 0;
@@ -65,7 +65,6 @@ namespace NeoCortexApi.Classifiers
     {
         private int _nNeighbors;
         private Dictionary<string, int[][]> _model = new Dictionary<string, int[][]>();
-        private Dictionary<int[], dynamic> _coordinateReference = new Dictionary<int[], dynamic>();
 
         KNeighborsClassifier(int nNeighbors = 5)
         {
@@ -207,16 +206,16 @@ namespace NeoCortexApi.Classifiers
                 for (i = 0; i < _nNeighbors; i++)
                 {
                     // Returns the Classification of [(ClassificationAndDistance 1), ...]
-                    if (votes.ContainsKey(coordinates.Value[i]._classification))
-                        votes[coordinates.Value[i]._classification] += 1;
+                    if (votes.ContainsKey(coordinates.Value[i].Classification))
+                        votes[coordinates.Value[i].Classification] += 1;
                     else
-                        votes[coordinates.Value[i]._classification] = 0;
+                        votes[coordinates.Value[i].Classification] = 0;
                 }
-                
+
                 // Handles if a variable contains the same value multiple times.
-                for (; coordinates.Value[i]._distance <= coordinates.Value[i + 1]._distance; i++)
-                    votes[coordinates.Value[i]._classification] += 1;
-                
+                for (; coordinates.Value[i].Distance <= coordinates.Value[i + 1].Distance; i++)
+                    votes[coordinates.Value[i].Classification] += 1;
+
                 var classificationType = votes.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
                 classification[coordinates.Key] = classificationType;
             }
@@ -247,9 +246,9 @@ namespace NeoCortexApi.Classifiers
 
             foreach (var coordinates in mappedElements)
                 coordinates.Value.Sort();
-            
+
             var classificationType = Voting(mappedElements).Values.Max();
-            
+
             Console.WriteLine($"Verdict is: {classificationType}");
         }
 
