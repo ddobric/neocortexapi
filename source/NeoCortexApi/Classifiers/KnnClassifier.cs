@@ -18,6 +18,11 @@ namespace NeoCortexApi.Classifiers
             _distance = distance;
         }
 
+        /// <summary>
+        ///     Implementation of the Method for sorting itself.
+        /// </summary>
+        /// <param name="other">Past object of the implementation for comparison</param>
+        /// <returns></returns>
         public int CompareTo(ClassificationAndDistance other)
         {
             if (_distance < other._distance)
@@ -58,7 +63,7 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     public class KNeighborsClassifier
     {
-        private int _nNeighbors;;
+        private int _nNeighbors;
         private Dictionary<string, int[][]> _model = new Dictionary<string, int[][]>();
         private Dictionary<int[], dynamic> _coordinateReference = new Dictionary<int[], dynamic>();
 
@@ -179,20 +184,44 @@ namespace NeoCortexApi.Classifiers
         /// <param name="table">
         ///     Takes in the tabular data of all the comparison points and gives the verdict on the maximum occurrence.
         ///     {
-        ///         (2, 3): [(ClassificationAndDistance 1), (ClassificationAndDistance 2)]
-        ///         (2, 0): [(ClassificationAndDistance 1), (ClassificationAndDistance 2)]
+        ///         (2, 3): [(ClassificationAndDistance 1), (ClassificationAndDistance 2), ...],
+        ///         (2, 0): [(ClassificationAndDistance 1), (ClassificationAndDistance 2), ...],
+        ///         ...
         ///     }
         /// </param>
         /// <returns>
-        ///     |0 0 A B|
-        ///     |C 0 A 0| = Unclassified Matrix
-        ///     |A B 0 0|
+        ///     Returns a mapping of coordinates to classification.
+        ///     {
+        ///         (2, 3): A,
+        ///         (2, 0): B,
+        ///         ...
+        ///     }
         /// </returns>
-        char[][] Voting(Dictionary<int[], List<ClassificationAndDistance>> table)
+        Dictionary<int[], string> Voting(Dictionary<int[], List<ClassificationAndDistance>> table)
         {
+            var votes = new Dictionary<string, int>();
+            var classification = new Dictionary<int[], string>();
             foreach (var coordinates in table)
             {
+                int i;
+                for (i = 0; i < _nNeighbors; i++)
+                {
+                    // Returns the Classification of [(ClassificationAndDistance 1), ...]
+                    if (votes.ContainsKey(coordinates.Value[i]._classification))
+                        votes[coordinates.Value[i]._classification] += 1;
+                    else
+                        votes[coordinates.Value[i]._classification] = 0;
+                }
+                
+                // Handles if a variable contains the same value multiple times.
+                for (; coordinates.Value[i]._distance <= coordinates.Value[i + 1]._distance; i++)
+                    votes[coordinates.Value[i]._classification] += 1;
+                
+                var classificationType = votes.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+                classification[coordinates.Key] = classificationType;
             }
+
+            return classification;
         }
 
         /// <summary>
@@ -218,6 +247,10 @@ namespace NeoCortexApi.Classifiers
 
             foreach (var coordinates in mappedElements)
                 coordinates.Value.Sort();
+            
+            var classificationType = Voting(mappedElements).Values.Max();
+            
+            Console.WriteLine($"Verdict is: {classificationType}");
         }
 
         void Learn(object x, string[] tags)
