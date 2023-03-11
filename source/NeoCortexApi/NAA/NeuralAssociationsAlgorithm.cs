@@ -41,47 +41,47 @@ namespace NeoCortexApi
         /// <summary>
         /// Get Active Apical Segments of currentlly active cells in the area.
         /// </summary>
-        public List<ApicalDendrite> ActiveApicalSegments
+        public List<ApicalDendrite> GetActiveApicalSegments(IList<Cell> activeCells)
         {
-            get
+
+            List<ApicalDendrite> actSegs = new List<ApicalDendrite>();
+
+            foreach (var cell in this._area.ActiveCells)
             {
-                List<ApicalDendrite> actSegs = new List<ApicalDendrite>();
+               // cell.ApicalDendrites.Where(s => s.Synapses.Where(ss => activeCells.Contains(ss.SourceCell)))
 
-                foreach (var cell in this._area.ActiveCells)
+                foreach (var seg in cell.ApicalDendrites)
                 {
-                    foreach (var seg in cell.ApicalDendrites)
-                    {
-                        if (seg.NumConnectedSynapses >= _cfg.ActivationThreshold)
-                            actSegs.Add(seg);
-                    }
+                    //if(seg.ParentCell)
+                    if (seg.NumConnectedSynapses >= _cfg.ActivationThreshold)
+                        actSegs.Add(seg);
                 }
-
-                return actSegs;
             }
+
+            return actSegs;
+
         }
+
 
         /// <summary>
         /// Get Matchin Apical Segments of currentlly active cells in the area.
         /// Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
         /// more connected synapses than _cfg.MinThreshold.
         /// </summary>
-        public List<ApicalDendrite> MatchingApicalSegments
+        public List<ApicalDendrite> GetMatchingApicalSegments()
         {
-            get
+            List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
+
+            foreach (var cell in this._area.ActiveCells)
             {
-                List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
-
-                foreach (var cell in this._area.ActiveCells)
+                foreach (var seg in cell.ApicalDendrites)
                 {
-                    foreach (var seg in cell.ApicalDendrites)
-                    {
-                        if (seg.Synapses.Count >= _cfg.MinThreshold && seg.NumConnectedSynapses < _cfg.ActivationThreshold)
-                            matchSegs.Add(seg);
-                    }
+                    if (seg.Synapses.Count >= _cfg.MinThreshold && seg.NumConnectedSynapses < _cfg.ActivationThreshold)
+                        matchSegs.Add(seg);
                 }
-
-                return matchSegs;
             }
+
+            return matchSegs;
         }
 
 
@@ -176,7 +176,7 @@ namespace NeoCortexApi
             AdaptActiveSegments(associatedArea, learn);
 
             // In HTM instead of associatedArea.ActiveCells, WinnerCells are used.
-            // Because there is curretnly no temporal dependency in the NAA
+            // Because there is currenly no temporal dependency in the NAA.
             AdaptMatchingSegments(associatedArea, learn);
 
             AdaptIncativeSegments(associatedArea, learn);
@@ -203,7 +203,7 @@ namespace NeoCortexApi
             if (learn == false)
                 return;
 
-            Segment[] activeSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : ActiveApicalSegments.ToArray();
+            Segment[] activeSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : GetActiveApicalSegments(null).ToArray();
 
             foreach (Segment segment in activeSegments)
             {
@@ -239,7 +239,7 @@ namespace NeoCortexApi
             // In previous cycle they are depolarized.
             //List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
 
-            Segment[] matchingSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : MatchingApicalSegments.ToArray();
+            Segment[] matchingSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : GetMatchingApicalSegments().ToArray();
 
             foreach (var matchSeg in matchingSegments)
             {
@@ -462,7 +462,8 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    permanence -= this._cfg.PermanenceDecrement;
+                    //Forgetting by using this rule in NAA is no supported.
+                    // permanence -= this._cfg.PermanenceDecrement; 
                 }
 
                 // Keep permanence within min/max bounds
@@ -636,7 +637,7 @@ namespace NeoCortexApi
         {
             double energy = 0;
 
-            foreach (var seg in this.ActiveApicalSegments)
+            foreach (var seg in this.GetActiveApicalSegments(null))
             {
                 seg.Synapses.ForEach(s => energy += s.Permanence);
             }
@@ -655,8 +656,8 @@ namespace NeoCortexApi
 
             sb.AppendLine($"Iteration {_iteration}");
 
-            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {ActiveApicalSegments.Count}");
-            sb.AppendLine($"Matching Apical Segments: {MatchingApicalSegments.Count}");
+            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {GetActiveApicalSegments(null).Count}");
+            sb.AppendLine($"Matching Apical Segments: {GetMatchingApicalSegments().Count}");
             sb.AppendLine($"Inactive Apical Segments: {InactiveApicalSegments.Count}");
             sb.AppendLine($"Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}.");
             sb.AppendLine($"Synaptic Energy = {GetApicalSynapticEnergy()}");

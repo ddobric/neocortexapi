@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace NeoCortexApi
 
         #region TraceSDR
 
-        
+
         /// <summary>
         /// Creates string representation from one dimensional value. 
         /// </summary>
@@ -430,6 +431,78 @@ namespace NeoCortexApi
             var results = Helpers.RenderSimilarityMatrix(inpVals, similarities);
 
             return sb.ToString() + results;
+        }
+
+        public static List<Cell> GetApicalConnectedCells(IList<Cell> sourceCells, IList<Cell> destinationCells)
+        {
+            List<Cell> cennectedCells = new List<Cell>();
+
+            foreach (var cell in sourceCells)
+            {
+                cennectedCells.AddRange(GetApicalConnectedCells(cell, destinationCells));
+            }
+
+            return cennectedCells;
+        }
+
+        public static List<Cell> GetDistalConnectedCells(IList<Cell> sourceCells, IList<Cell> destinationCells)
+        {
+            List<Cell> cennectedCells = new List<Cell>();
+
+            foreach (var cell in sourceCells)
+            {
+                cennectedCells.AddRange(GetDistalConnectedCells(cell, destinationCells));
+            }
+
+            return cennectedCells;
+        }
+
+        public static List<Cell> GetApicalConnectedCells(Cell cell, IList<Cell> population)
+        {
+            List<Cell> connectedCells = new List<Cell>();
+
+            foreach (var syn in cell.ReceptorSynapses)
+            {
+                foreach (var popCell in population)
+                {
+                    foreach (var seg in popCell.ApicalDendrites)
+                    {
+                        foreach (var popSyn in seg.Synapses)
+                        {
+                            if (popSyn == syn)
+                            { 
+                                connectedCells.Add(popCell);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return connectedCells;
+        }
+
+        public static List<Cell> GetDistalConnectedCells(Cell cell, IList<Cell> population)
+        {
+            List<Cell> connectedCells = new List<Cell>();
+
+            foreach (var syn in cell.ReceptorSynapses)
+            {
+                foreach (var popCell in population)
+                {
+                    foreach (var seg in popCell.ApicalDendrites)
+                    {
+                        foreach (var popSyn in seg.Synapses)
+                        {
+                            if (popSyn == syn)
+                            {
+                                connectedCells.Add(popCell);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return connectedCells;
         }
     }
 }
