@@ -40,7 +40,6 @@
 	<ItemGroup>
 		<Compile Remove="AkkaDictTests.cs" />
 		<Compile Remove="EncoderTests\SensorTests.cs" />
-		<Compile Remove="TemporalMemoryTest_md_shamsir_doha.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
