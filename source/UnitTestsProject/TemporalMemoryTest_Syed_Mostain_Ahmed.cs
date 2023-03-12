@@ -283,7 +283,7 @@ namespace UnitTestsProject
         /// the output of Temporal Memory Algorithm.
         /// </summary>
         [TestMethod]
-        public void TestNoOverlapInActiveCells1()
+        public void TestNoOverlapInActiveCells()
         {
             // Setup Temporal Memory
             TemporalMemory tm = new TemporalMemory();
@@ -327,7 +327,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] activeColumns = { 4, 5, 4, 5, 6 }; // Contains duplicates
-            Cell[] burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, });
+            Cell[] burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4});
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
