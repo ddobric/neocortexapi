@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using System;
@@ -168,15 +169,15 @@ namespace NeoCortexApi.Network
 
             if (obj is CortexLayer<object, object> layer)
             {
-                
-                HtmSerializer ser = new HtmSerializer();               
-                /*
+                HtmSerializer ser = new HtmSerializer();
+
                 foreach (var modulePair in layer.HtmModules)
                 {
                     ISerializable serializableModule = modulePair.Value as ISerializable;
                     string ObjType = serializableModule.GetType().Name;
                     if (serializableModule != null)
-                    {                   
+                    {
+                        
                         ser.SerializeBegin(ObjType, sw);
 
                         serializableModule.Serialize(serializableModule, null, sw);
@@ -189,17 +190,18 @@ namespace NeoCortexApi.Network
                     }
 
                 }
-                */
                 
+                
+                /*
                 //var model_en = "Model_en.txt";
                 //StreamWriter sw_en = new StreamWriter(model_en);
                 var en = layer.HtmModules["encoder"];
-                if (en is EncoderBase encoder)
+                if (en is ScalarEncoder encoder)
                 {
-                    ser.SerializeBegin(nameof(EncoderBase), sw);
+                    ser.SerializeBegin(nameof(ScalarEncoder), sw);
                     encoder.Serialize(en, null, sw);
-                    ser.SerializeEnd(nameof(EncoderBase), sw);
-                }                    
+                    ser.SerializeEnd(nameof(ScalarEncoder), sw);
+                }                 
                 //sw_en.Close();
                 
 
@@ -227,14 +229,14 @@ namespace NeoCortexApi.Network
                     ser.SerializeEnd(nameof(TemporalMemory), sw);
                 }             
                 //sw_tm.Close();
-                
+                */
             }
             
         }
 
         public static object Deserialize<T>(StreamReader sr)
         {
-
+            /*
             var model_en = "Model_en.txt";
             var model_tm = "Model_tm.txt";
             var model_sp = "Model_sp.txt";
@@ -261,7 +263,35 @@ namespace NeoCortexApi.Network
             layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
             layer.HtmModules.Add("sp", (SpatialPooler)sp);
             layer.HtmModules.Add("tm", (TemporalMemory)tm);
-            
+            */
+
+            HtmSerializer ser = new HtmSerializer();
+            CortexLayer<object, object> layer = new CortexLayer<object, object>("L");
+
+            while (sr.Peek() >0)
+            {
+                
+                string data = sr.ReadLine();
+                
+                if (data == ser.ReadBegin(nameof(ScalarEncoder)))
+                {                
+                    var encoder = ScalarEncoder.Deserialize<ScalarEncoder>(sr, null);
+                    layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
+                }
+                
+                if (data == ser.ReadBegin(nameof(SpatialPooler)))
+                {
+                    var sp = SpatialPooler.Deserialize<SpatialPooler>(sr, null);
+                    layer.HtmModules.Add("sp", (SpatialPoolerMT)sp);
+                }
+                
+
+                if (data == ser.ReadBegin(nameof(HtmClassifier<string, ComputeCycle>)))
+                {
+                    var tm = TemporalMemory.Deserialize<TemporalMemoryMT>(sr, null);
+                    layer.HtmModules.Add("tm", (TemporalMemoryMT)tm);
+                }
+            }
             return layer;
         }
         #region Private Methods

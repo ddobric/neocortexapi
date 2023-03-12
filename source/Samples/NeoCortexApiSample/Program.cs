@@ -41,6 +41,7 @@ namespace NeoCortexApiSample
 
         private static void RunMultiSequenceLearningExperimentSerialization()
         {
+            
             // Create the first List of sequences for the first Training
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
@@ -56,16 +57,16 @@ namespace NeoCortexApiSample
             var predictor = experiment.Run(sequences);
 
             // Save the first trained model
-            var model_pre = "Model1.txt";
-            StreamWriter sw = new StreamWriter(model_pre);  
+      
             Console.WriteLine("Saving the trained model...!");
-            predictor.Save(predictor, sw);
+            Predictor.Save("Model.txt", predictor);
             
-            /*
+            
             // Load the trained model from the text files
-            Console.WriteLine("Loading the model for the next training...!");
-            var load_pre = (Predictor)Predictor.Deserialize<Predictor>(null, null);
+            //Console.WriteLine("Loading the model for the next training...!");
+            //var load_pre = Predictor.Load<Predictor>("Model.txt");
 
+            /*
             // Create the second List of sequences for the next Training
             Dictionary<string, List<double>> sequences2 = new Dictionary<string, List<double>>();
        
