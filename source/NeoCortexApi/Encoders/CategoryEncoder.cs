@@ -22,6 +22,7 @@ namespace NeoCortexApi.Encoders
 
 
             // Assig the value of width
+            //Which should prvide a more accurate value of Scalar Encoder Buckets
 
 
             if (settings.TryGetValue("W", out object width) && (int)width > 0)
