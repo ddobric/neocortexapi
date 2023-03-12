@@ -59,14 +59,14 @@ namespace NeoCortexApiSample
             // Save the first trained model
       
             Console.WriteLine("Saving the trained model...!");
-            Predictor.Save("Model.txt", predictor);
+            Predictor.Save(null, predictor);
             
             
             // Load the trained model from the text files
             //Console.WriteLine("Loading the model for the next training...!");
-            //var load_pre = Predictor.Load<Predictor>("Model.txt");
+            var load_pre = Predictor.Load<Predictor>(null);
 
-            /*
+            
             // Create the second List of sequences for the next Training
             Dictionary<string, List<double>> sequences2 = new Dictionary<string, List<double>>();
        
@@ -77,7 +77,7 @@ namespace NeoCortexApiSample
             Console.WriteLine("Running the Second Training...!");
             var predictor2 = experiment.RunTraining(load_pre, sequences2);
             Console.WriteLine("Second training has finished!");
-            */
+            
         }
 
 

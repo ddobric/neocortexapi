@@ -82,10 +82,10 @@ namespace NeoCortexApi
                 predictor.connections.Serialize(predictor.connections, null, sw_con);
                 sw_con.Close();
 
-                var model_layer = "Model_layer.txt";
-                StreamWriter sw_layer = new StreamWriter(model_layer);
-                predictor.layer.Serialize(predictor.layer, null, sw_layer);
-                sw_layer.Close();
+                //var model_layer = "Model_layer.txt";
+                //StreamWriter sw_layer = new StreamWriter(model_layer);
+                predictor.layer.Serialize(predictor.layer, null, null);
+                //sw_layer.Close();
 
                 var model_cls = "Model_cls.txt";
                 StreamWriter sw_cls = new StreamWriter(model_cls);
@@ -131,8 +131,14 @@ namespace NeoCortexApi
             var cls = HtmClassifier<string, ComputeCycle>.Deserialize<HtmClassifier<string, ComputeCycle>>(sr_cls, null);
             sr_cls.Close();
 
-            var layer = CortexLayer<object, object>.Deserialize<T>(null);
+            var model_layer = "Model_layer.txt";
+            StreamReader sr_layer = new StreamReader(model_layer);
+            var layer = CortexLayer<object, object>.Deserialize<T>(null, null);
 
+
+            var predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, (HtmClassifier<string, ComputeCycle>)cls);
+
+            return predictor;
 
             /*
             HtmSerializer ser = new HtmSerializer();
@@ -143,7 +149,7 @@ namespace NeoCortexApi
                 
                 var data = sr.ReadLine();
                 
-                
+                /*
                 if (data == ser.ReadBegin(nameof(Connections)))
                 {
                     
@@ -161,18 +167,18 @@ namespace NeoCortexApi
                     
                 }               
                 
-            
+                
                 if (data == ser.ReadBegin(nameof(HtmClassifier<string, ComputeCycle>)))
                 {
                     var cls = HtmClassifier<string, ComputeCycle>.Deserialize<HtmClassifier<string, ComputeCycle>>(sr, null);
                     predictor.classifier = (HtmClassifier<string, ComputeCycle>)cls;                    
                 }
-                        
+                
             }
             sr.Close();
             */
-            var predictor = new Predictor((CortexLayer<object, object>)layer, (Connections)con, (HtmClassifier<string, ComputeCycle>)cls);
-            return predictor;
+            
+            
         }
 
         /// <summary>
@@ -184,9 +190,9 @@ namespace NeoCortexApi
         {           
             if (obj is Predictor predictor)
             {
-                HtmSerializer.Reset();
-                StreamWriter sw = new StreamWriter(fileName);
-                predictor.Serialize(obj, null, sw);
+                //HtmSerializer.Reset();
+                //StreamWriter sw = new StreamWriter(fileName);
+                predictor.Serialize(obj, null, null);
             }
         }
 
@@ -196,9 +202,9 @@ namespace NeoCortexApi
         /// <param name="sr"></param>
         public static T Load<T>(string fileName)
         {
-            HtmSerializer.Reset();
-            using StreamReader sr = new StreamReader(fileName);
-            return (T)Deserialize<T>(sr, null);
+            //HtmSerializer.Reset();
+            //using StreamReader sr = new StreamReader(fileName);
+            return (T)Deserialize<T>(null, null);
         }
     }
 }

@@ -164,13 +164,20 @@ namespace NeoCortexApi.Network
             return this.Equals((object)other);
         }
 
+        /// <summary>
+        /// Serialize the CortexLayer
+        /// </summary>
+        /// <param name="obj">CortexLayer</param>
+        /// <param name="name">currently not used</param>
+        /// <param name="sw">StreamWritter</param>
         public void Serialize(object obj, string name, StreamWriter sw)
         {
 
             if (obj is CortexLayer<object, object> layer)
             {
+                
                 HtmSerializer ser = new HtmSerializer();
-
+                /*
                 foreach (var modulePair in layer.HtmModules)
                 {
                     ISerializable serializableModule = modulePair.Value as ISerializable;
@@ -190,53 +197,60 @@ namespace NeoCortexApi.Network
                     }
 
                 }
+                */
                 
                 
-                /*
-                //var model_en = "Model_en.txt";
-                //StreamWriter sw_en = new StreamWriter(model_en);
+                var model_en = "Model_en.txt";
+                StreamWriter sw_en = new StreamWriter(model_en);
                 var en = layer.HtmModules["encoder"];
                 if (en is ScalarEncoder encoder)
                 {
-                    ser.SerializeBegin(nameof(ScalarEncoder), sw);
-                    encoder.Serialize(en, null, sw);
-                    ser.SerializeEnd(nameof(ScalarEncoder), sw);
+                    ser.SerializeBegin(nameof(ScalarEncoder), sw_en);
+                    encoder.Serialize(en, null, sw_en);
+                    ser.SerializeEnd(nameof(ScalarEncoder), sw_en);
                 }                 
-                //sw_en.Close();
+                sw_en.Close();
                 
 
                 
-                //var model_sp = "Model_sp.txt";
-                //StreamWriter sw_sp = new StreamWriter(model_sp);
+                var model_sp = "Model_sp.txt";
+                StreamWriter sw_sp = new StreamWriter(model_sp);
                 var sp = layer.HtmModules["sp"];
                 if (sp is SpatialPooler spMT)
                 {
-                    ser.SerializeBegin(nameof(SpatialPooler), sw);
-                    spMT.Serialize(spMT, null, sw);
-                    ser.SerializeEnd(nameof(SpatialPooler), sw);
+                    ser.SerializeBegin(nameof(SpatialPooler), sw_sp);
+                    spMT.Serialize(spMT, null, sw_sp);
+                    ser.SerializeEnd(nameof(SpatialPooler), sw_sp);
                 }
-                //sw_sp.Close();
+                sw_sp.Close();
                 
 
                 
-                //var model_tm = "Model_tm.txt";
-                //StreamWriter sw_tm = new StreamWriter(model_tm);
+                var model_tm = "Model_tm.txt";
+                StreamWriter sw_tm = new StreamWriter(model_tm);
                 var tm = (TemporalMemory)layer.HtmModules["tm"];
                 if (tm is TemporalMemory tmem)
                 {
-                    ser.SerializeBegin(nameof(TemporalMemory), sw);
-                    tmem.Serialize(tmem, null, sw);
-                    ser.SerializeEnd(nameof(TemporalMemory), sw);
+                    ser.SerializeBegin(nameof(TemporalMemory), sw_tm);
+                    tmem.Serialize(tmem, null, sw_tm);
+                    ser.SerializeEnd(nameof(TemporalMemory), sw_tm);
                 }             
-                //sw_tm.Close();
-                */
+                sw_tm.Close();
+                
             }
             
         }
 
-        public static object Deserialize<T>(StreamReader sr)
+        /// <summary>
+        /// De-serialize the CortexLayer from three text files
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sr"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static object Deserialize<T>(StreamReader sr, string name)
         {
-            /*
+            
             var model_en = "Model_en.txt";
             var model_tm = "Model_tm.txt";
             var model_sp = "Model_sp.txt";
@@ -249,13 +263,13 @@ namespace NeoCortexApi.Network
 
             
             StreamReader sr_sp = new StreamReader(model_sp);
-            var sp = SpatialPooler.Deserialize<SpatialPooler>(sr_sp, null);
+            var sp = SpatialPooler.Deserialize<SpatialPoolerMT>(sr_sp, null);
             sr_sp.Close();
             
 
             
             StreamReader sr_tm = new StreamReader(model_tm);
-            var tm = TemporalMemory.Deserialize<TemporalMemoryMT>(sr_tm, null);
+            var tm = TemporalMemory.Deserialize<TemporalMemory>(sr_tm, null);
             sr_tm.Close();           
             
 
@@ -263,7 +277,9 @@ namespace NeoCortexApi.Network
             layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
             layer.HtmModules.Add("sp", (SpatialPooler)sp);
             layer.HtmModules.Add("tm", (TemporalMemory)tm);
-            */
+
+            return layer;
+            /*
 
             HtmSerializer ser = new HtmSerializer();
             CortexLayer<object, object> layer = new CortexLayer<object, object>("L");
@@ -273,26 +289,29 @@ namespace NeoCortexApi.Network
                 
                 string data = sr.ReadLine();
                 
+
                 if (data == ser.ReadBegin(nameof(ScalarEncoder)))
                 {                
-                    var encoder = ScalarEncoder.Deserialize<ScalarEncoder>(sr, null);
+                    var encoder = EncoderBase.Deserialize<EncoderBase>(sr, null);
                     layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
                 }
                 
-                if (data == ser.ReadBegin(nameof(SpatialPooler)))
+
+                if (data == ser.ReadBegin(nameof(SpatialPoolerMT)))
                 {
-                    var sp = SpatialPooler.Deserialize<SpatialPooler>(sr, null);
+                    var sp = SpatialPooler.Deserialize<SpatialPoolerMT>(sr, null);
                     layer.HtmModules.Add("sp", (SpatialPoolerMT)sp);
                 }
-                
 
-                if (data == ser.ReadBegin(nameof(HtmClassifier<string, ComputeCycle>)))
+
+                if (data == ser.ReadBegin(nameof(TemporalMemory)))
                 {
-                    var tm = TemporalMemory.Deserialize<TemporalMemoryMT>(sr, null);
-                    layer.HtmModules.Add("tm", (TemporalMemoryMT)tm);
+                    var tm = TemporalMemory.Deserialize<TemporalMemory>(sr, null);
+                    layer.HtmModules.Add("tm", (TemporalMemory)tm);
                 }
             }
-            return layer;
+            
+            */
         }
         #region Private Methods
 
