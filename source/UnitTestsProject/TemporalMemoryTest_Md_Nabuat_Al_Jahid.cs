@@ -10,7 +10,7 @@ using System.Linq;
 namespace UnitTestsProject
 {
     [TestClass]
-    public class TemporalMemoryTest2
+    public class TemporalMemoryTest2_Md_Nabuat_Al_Jahid
     {
         private Parameters getDefaultParameters()
         {
@@ -51,6 +51,32 @@ namespace UnitTestsProject
             return htmConfig;
         }
 
+        [TestMethod]
+        public void TestPunishPredictedColumn()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+           /* int[] activeColumns = { 0 };
+            var burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4 });
+
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            List<DistalDendrite> activeSegments;
+
+            List<DistalDendrite> matchingSegments;
+
+            ICollection<Cell> prevActiveCells;
+
+            ICollection<Cell> prevWinnerCells;
+
+            double predictedSegmentDecrement;
+           */
+
+        }
 
     }
 }
