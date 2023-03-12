@@ -52,39 +52,25 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("Prod")]
-        public void TestNoChangeToNonSelectedMatchingSegmentsInBurstingColumn2()
+        public void TestWinnerCells_top()
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.02);
+            Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 3);
             p.apply(cn);
             tm.Init(cn);
 
-            int[] previousActiveColumns = { 0 };
-            int[] activeColumns = { 1 };
-            Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(6), cn.GetCell(9), cn.GetCell(3) };
-            Cell[] burstingCells = { cn.GetCell(4), cn.GetCell(5) };
+            int[] zeroColumns = { };
+            int[] activeColumns = { 0 };
 
-            DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(burstingCells[0]);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(81), 0.3);
-
-            DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(burstingCells[1]);
-            Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.7);
-            Synapse as2 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[1], 0.7);
-            Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.7);
-
-            tm.Compute(previousActiveColumns, true);
+            Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(2), cn.GetCell(1), cn.GetCell(2) };
+            tm.Compute(zeroColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(0.3, as1.Permanence, 0.02);
-            Assert.AreEqual(0.3, as2.Permanence, 0.02);
-            Assert.AreEqual(0.3, is1.Permanence, 0.02);
+            Assert.AreEqual(0, cn.NumSegments(), 0);
+        }
 
-            [TestMethod]
+        [TestMethod]
        
         public void TestPredictedActiveCellsAreAlwaysWinners2()
         {
