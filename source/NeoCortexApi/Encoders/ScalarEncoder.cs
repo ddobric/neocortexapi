@@ -235,6 +235,7 @@ namespace NeoCortexApi.Encoders
         /// <param name="bucketIndex">The bucket index.</param>
         /// <returns></returns>
         /// Understanding the new method to get the bucket index.
+        /// Now Try to Implement Buckets Code While usinf Professor Hint
         public int? GetBucketIndex(object inputData)
         {
             double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
