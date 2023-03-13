@@ -1,4 +1,4 @@
-﻿using GemBox.Spreadsheet.Drawing;
+﻿using ExcelDataReader;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -53,9 +52,9 @@ namespace NeoCortexApiSample
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            sequences = GetInputFromTextFile();   //uncomment this to read values from text file
+            //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
             //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
-
+            sequences = GetInputFromExcelFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.xlsx");
 
             foreach (KeyValuePair<string, List<double>> kvp in sequences)
             {
@@ -178,6 +177,53 @@ namespace NeoCortexApiSample
                     sequences.Add("Sequence: " + temp, inputList);
                 }
             }
+            return sequences;
+        }
+
+
+        /* This code detects empty cell at the end of the row and it takes input from excel*/
+
+        private static Dictionary<string, List<double>> GetInputFromExcelFile(string filePath)
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    int temp = 0;
+
+                    while (reader.Read())
+                    {
+                        List<double> inputList = new List<double>();
+                        bool rowHasData = false;
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            string digit = reader.GetValue(i)?.ToString();
+
+                            if (string.IsNullOrWhiteSpace(digit))
+                            {
+                                // Skip over empty cells
+                                continue;
+                            }
+
+                            if (double.TryParse(digit, out double number))
+                            {
+                                inputList.Add(number);
+                                rowHasData = true;
+                            }
+                        }
+
+                        if (rowHasData)
+                        {
+                            temp++;
+                            sequences.Add("Sequence: " + temp, inputList);
+                        }
+                    }
+                }
+            }
+
             return sequences;
         }
 
