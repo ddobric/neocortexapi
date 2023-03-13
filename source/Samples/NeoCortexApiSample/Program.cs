@@ -1,4 +1,4 @@
-﻿using GemBox.Spreadsheet.Drawing;
+using ExcelDataReader;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
@@ -53,9 +53,10 @@ namespace NeoCortexApiSample
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            sequences = GetInputFromTextFile();   //uncomment this to read values from text file
-            //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
 
+            //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
+            //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
+            sequences = GetInputFromExcelFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.xlsx");
 
             foreach (KeyValuePair<string, List<double>> kvp in sequences)
             {
@@ -182,6 +183,53 @@ namespace NeoCortexApiSample
         }
 
 
+        /* This code detects empty cell at the end of the row and it takes input from excel*/
+
+        private static Dictionary<string, List<double>> GetInputFromExcelFile(string filePath)
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    int temp = 0;
+
+                    while (reader.Read())
+                    {
+                        List<double> inputList = new List<double>();
+                        bool rowHasData = false;
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            string digit = reader.GetValue(i)?.ToString();
+
+                            if (string.IsNullOrWhiteSpace(digit))
+                            {
+                                // Skip over empty cells
+                                continue;
+                            }
+
+                            if (double.TryParse(digit, out double number))
+                            {
+                                inputList.Add(number);
+                                rowHasData = true;
+                            }
+                        }
+
+                        if (rowHasData)
+                        {
+                            temp++;
+                            sequences.Add("Sequence: " + temp, inputList);
+                        }
+                    }
+                }
+            }
+
+            return sequences;
+        }
+
+
         private static void RunMultiSimpleSequenceLearningExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
@@ -234,10 +282,10 @@ namespace NeoCortexApiSample
 
             predictor.Reset();
             //PredictNextElement(predictor, list3);
-        }
 
 
-        // Method to read subsequences input from text files
+
+        /* Method to read subsequences input from text files */
         public static List<List<double>> GetSubSequencesInputFromTextFiles()
         {
             var SubSequences = new List<List<double>>();
@@ -261,6 +309,7 @@ namespace NeoCortexApiSample
             }
             return SubSequences;
         }
+
 
 
         private static void PredictNextElement(Predictor predictor, List<double> list)
