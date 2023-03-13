@@ -1,4 +1,5 @@
-﻿using NeoCortexApi;
+﻿using ExcelDataReader;
+using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using Org.BouncyCastle.Ocsp;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace NeoCortexApiSample
 {
@@ -52,8 +54,8 @@ namespace NeoCortexApiSample
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
             //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
-            sequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
-
+            //sequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
+            sequences = GetInputFromExcelFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.xlsx");
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
@@ -82,7 +84,7 @@ namespace NeoCortexApiSample
             PredictNextElement(predictor, list1);
         }
 
-        
+
 
         //method to add input sequences through external text files
 
@@ -122,11 +124,11 @@ namespace NeoCortexApiSample
         }
 
         /* Method to read the data from CSV file for comparing which file type is having less CPU utilization */
-        
+
         private static Dictionary<string, List<double>> GetInputFromCsvFile(string filePath)
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-           
+
             using (StreamReader reader = new StreamReader(filePath))
             {
                 int temp = 0;
@@ -136,13 +138,13 @@ namespace NeoCortexApiSample
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
                     Console.WriteLine(row);
-                    Console.WriteLine(row.Length); 
+                    Console.WriteLine("Row Length: " + row.Length);
                     foreach (var digit in numbers)
                     {
-                        
+
                         if (double.TryParse(digit, out double number))
                         {
-                           
+
                             inputList.Add(number);
                         }
 
@@ -155,7 +157,7 @@ namespace NeoCortexApiSample
                         }
                     }
 
-                    
+
                 }
                 if (inputList.Count > 0)
                 {
@@ -164,10 +166,57 @@ namespace NeoCortexApiSample
                 }
             }
             return sequences;
-        } 
-        
+        }
 
-       
+        /* This code detects empty cell at the end of the row and it takes input from excel*/
+
+        private static Dictionary<string, List<double>> GetInputFromExcelFile(string filePath)
+        {
+            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    int temp = 0;
+
+                    while (reader.Read())
+                    {
+                        List<double> inputList = new List<double>();
+                        bool rowHasData = false;
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            string digit = reader.GetValue(i)?.ToString();
+
+                            if (string.IsNullOrWhiteSpace(digit))
+                            {
+                                // Skip over empty cells
+                                continue;
+                            }
+
+                            if (double.TryParse(digit, out double number))
+                            {
+                                inputList.Add(number);
+                                rowHasData = true;
+                            }
+                        }
+
+                        if (rowHasData)
+                        {
+                            temp++;
+                            sequences.Add("Sequence: " + temp, inputList);
+                        }
+                    }
+                }
+            }
+
+            return sequences;
+        }
+
+
+
+
 
 
         private static void RunMultiSimpleSequenceLearningExperiment()
