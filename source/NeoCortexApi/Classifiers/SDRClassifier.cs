@@ -1,8 +1,10 @@
 using NeoCortexApi.Entities;
 using NeoCortexApi.Exception;
 using NeoCortexApi.Utility;
+using NeoCortexApi.Encoders;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace NeoCortexApi.Classifiers
 {
@@ -62,6 +64,14 @@ namespace NeoCortexApi.Classifiers
             patternNzHistory = new List<Tuple<int, object>>();
             weightMatrix = new FlexComRowMatrix<object>();
             bucketEntries = new Dictionary<int, List<object>>();
+        }
+
+        /// <summary>
+        /// Function to fetch bucket index from encoders and store it in our dictionary
+        /// </summary>summary>
+        private void getBucketEntries()
+        {
+            bucketEntries = GetBucketIndex(Dictionary<int, List<object>>);
         }
 
         /// <summary>
