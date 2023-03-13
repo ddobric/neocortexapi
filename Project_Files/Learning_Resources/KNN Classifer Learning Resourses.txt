@@ -6,10 +6,14 @@ https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsCl
 https://serokell.io/blog/knn-algorithm-in-ml
 https://www.datacamp.com/tutorial/k-nearest-neighbor-classification-scikit-learn
 https://www.tutorialspoint.com/scikit_learn/scikit_learn_kneighbors_classifier.htm
-
+https://learn.microsoft.com/en-us/archive/msdn-magazine/2017/december/test-run-understanding-k-nn-classification-using-csharp
+https://github.com/martian1231/KNNFromScratch
+https://visualstudiomagazine.com/articles/2022/05/19/weighted-k-nn-classification.aspx
+https://www.frontiersin.org/articles/10.3389/fncom.2017.00111/full
 
 Videos
 https://www.youtube.com/watch?v=HVXime0nQeI
 https://www.youtube.com/watch?v=UqYde-LULfs
 https://www.youtube.com/watch?v=4HKqjENq9OU&t=1470s (After watching this video, we got an idea regarding what to take the value of 'K (Nearest Neighbour)'. It is explained that the value
 									of k is approximately equal to the Length of our data set)
+https://www.youtube.com/watch?v=HYrXogLj7vg&t=1572s
