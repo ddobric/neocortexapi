@@ -196,6 +196,7 @@ namespace NeoCortexApi.Classifiers
         ///         ...
         ///     }
         /// </returns>
+<<<<<<< HEAD
         Dictionary<int[], string> Voting(Dictionary<int[], List<ClassificationAndDistance>> table)
         {
             var votes = new Dictionary<string, int>();
@@ -221,6 +222,11 @@ namespace NeoCortexApi.Classifiers
             }
 
             return classification;
+=======
+        string Voting(Dictionary<string, dynamic> Table)
+        {
+            return "";
+>>>>>>> 2227660390ba1df9ad1aec3bc3ae50d33514fae6
         }
 
         /// <summary>
