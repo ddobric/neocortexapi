@@ -53,8 +53,8 @@ namespace NeoCortexApiSample
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
-            sequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
+            sequences = GetInputFromTextFile();   //uncomment this to read values from text file
+            //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
 
 
             foreach (KeyValuePair<string, List<double>> kvp in sequences)
@@ -79,15 +79,23 @@ namespace NeoCortexApiSample
             //}
 
             var predictor = experiment.Run(sequences);
+            List<List<double>> testSequences = new();
+            testSequences = GetSubSequencesInputFromTextFiles();
+
+            predictor.Reset();
+            foreach (var numberList in testSequences)
+            {
+                PredictNextElement(predictor, numberList);
+            }
+
 
             //
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
-            var list1 = new double[] { 0.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 20.0, 23.0 };
+            //var list1 = new double[] { 0.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 20.0, 23.0 };
 
-            predictor.Reset();
-            PredictNextElement(predictor, list1);
+
         }
 
 
@@ -191,7 +199,8 @@ namespace NeoCortexApiSample
         /*<summary>
         This example demonstrates how to learn two sequences and how to use the prediction mechanism.
         First, two sequences are learned.
-        Second, three short sequences with three elements each are created und used for prediction.The predictor used by experiment privides to the HTM every element of every predicting sequence.
+        Second, three short sequences with three elements each are created und used for prediction.
+        The predictor used by experiment privides to the HTM every element of every predicting sequence.
         The predictor tries to predict the next element.
         </summary>*/
         private static void RunMultiSequenceLearningExperiment()
@@ -218,18 +227,18 @@ namespace NeoCortexApiSample
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
             predictor.Reset();
-            PredictNextElement(predictor, list1);
+            //PredictNextElement(predictor, list1);
 
             predictor.Reset();
-            PredictNextElement(predictor, list2);
+            //PredictNextElement(predictor, list2);
 
             predictor.Reset();
-            PredictNextElement(predictor, list3);
+            //PredictNextElement(predictor, list3);
         }
 
 
         // Method to read subsequences input from text files
-        public List<List<double>> GetSubSequencesInputFromTextFiles()
+        public static List<List<double>> GetSubSequencesInputFromTextFiles()
         {
             var SubSequences = new List<List<double>>();
             var TestSubSequences = new List<double>();
@@ -254,7 +263,7 @@ namespace NeoCortexApiSample
         }
 
 
-        private static void PredictNextElement(Predictor predictor, double[] list)
+        private static void PredictNextElement(Predictor predictor, List<double> list)
         {
             Debug.WriteLine("------------------------------");
 
