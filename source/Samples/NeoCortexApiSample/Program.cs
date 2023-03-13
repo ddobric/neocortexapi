@@ -1,4 +1,4 @@
-﻿using ExcelDataReader;
+using ExcelDataReader;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -51,6 +52,7 @@ namespace NeoCortexApiSample
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
+
 
             //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
             //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
@@ -280,10 +282,10 @@ namespace NeoCortexApiSample
 
             predictor.Reset();
             //PredictNextElement(predictor, list3);
-        }
 
 
-        // Method to read subsequences input from text files
+
+        /* Method to read subsequences input from text files */
         public static List<List<double>> GetSubSequencesInputFromTextFiles()
         {
             var SubSequences = new List<List<double>>();
@@ -307,6 +309,7 @@ namespace NeoCortexApiSample
             }
             return SubSequences;
         }
+
 
 
         private static void PredictNextElement(Predictor predictor, List<double> list)
