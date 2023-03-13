@@ -25,7 +25,7 @@ namespace NeoCortexApi.Classifiers
         /// <returns></returns>
         public int CompareTo(ClassificationAndDistance other)
         {
-            if (Distance < other.Distance)
+            if (Distance < other.Distance)  
                 return -1;
             else if (Distance > other.Distance)
                 return +1;
@@ -66,7 +66,7 @@ namespace NeoCortexApi.Classifiers
         private int _nNeighbors;
         private Dictionary<string, int[][]> _model = new Dictionary<string, int[][]>();
 
-        KNeighborsClassifier(int nNeighbors = 5)
+        KNeighborsClassifier(int nNeighbors = 7)
         {
             Debug.Assert(nNeighbors % 2 != 0);
             _nNeighbors = nNeighbors;
