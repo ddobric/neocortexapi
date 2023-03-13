@@ -1,4 +1,4 @@
-﻿using ExcelDataReader;
+﻿using GemBox.Spreadsheet.Drawing;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
@@ -10,10 +10,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-
 
 namespace NeoCortexApiSample
 {
@@ -48,40 +48,54 @@ namespace NeoCortexApiSample
 
         private static void RunPredictionMultiSequenceExperiment()
         {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
+            Dictionary<string, List<double>> sequences = new();
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
-            //sequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
-            sequences = GetInputFromExcelFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.xlsx");
+            sequences = GetInputFromTextFile();   //uncomment this to read values from text file
+            //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
+
+
+            foreach (KeyValuePair<string, List<double>> kvp in sequences)
+            {
+                //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+                Console.WriteLine(string.Format("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
+            }
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            List<Double> InputSeq = new();
+            MultiSequenceLearning experiment = new();
 
             // to get list of double values needed in later code changes
             //foreach (List<Double> entry in sequences.Values)
             //{
+            //List<Double> InputSeq = new();
             //   InputSeq = entry;
             //    Console.WriteLine(InputSeq);
             //}
 
             var predictor = experiment.Run(sequences);
+            List<List<double>> testSequences = new();
+            testSequences = GetSubSequencesInputFromTextFiles();
+
+            predictor.Reset();
+            foreach (var numberList in testSequences)
+            {
+                PredictNextElement(predictor, numberList);
+            }
+
 
             //
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
-            var list1 = new double[] { 0.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 20.0, 23.0 };
+            //var list1 = new double[] { 0.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 20.0, 23.0 };
 
-            predictor.Reset();
-            PredictNextElement(predictor, list1);
+
         }
 
 
@@ -90,34 +104,38 @@ namespace NeoCortexApiSample
 
         private static Dictionary<string, List<double>> GetInputFromTextFile()
         {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            using (StreamReader reader = new StreamReader(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
+            Dictionary<string, List<double>> sequences = new();
+            using (StreamReader reader = new StreamReader(@"D:\FUAS\Software_Engineering\MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.txt"))
             {
                 int temp = 0;
                 List<double> inputList = new();
+                // for 10 input sequences
+                string[] list1 = new string[10];
+
                 while (!reader.EndOfStream)
                 {
-                    var row = reader.ReadLine();
-                    var numbers = row.Split(',');
-                    Console.WriteLine(row);
 
+                    var all_rows = reader.ReadToEnd();
 
-                    foreach (var digit in numbers)  //assigning each number to the digit variable
+                    for (int i = 0; i <= all_rows.Length; i++)
                     {
-                        // splitting multiple input sequences with semi-colon
-                        if (!digit.Contains(';'))
+                        if (all_rows.Contains("\r\n"))
                         {
-                            inputList.Add(Convert.ToDouble(digit));
+                            list1 = Regex.Split(all_rows, "(?<=\r\n)");
                         }
-                        else
-                        {
-                            temp++;
-                            sequences.Add("Sequence: " + temp, inputList);
-                            break;
-
-                        }
-
                     }
+                    var numbers = all_rows.Split(',');
+                    //Console.WriteLine(numbers[temp]);
+                    //string[] splittedFile = Regex.Split(all_rows, "(?<=\r\n)");
+
+                    foreach (var sequence in list1)
+                    {
+                        inputList.Add(Convert.ToDouble(sequence));
+                        temp++;
+                        sequences.Add("Sequence" + temp, inputList);
+                    }
+
+
                 }
             }
             return sequences;
@@ -138,16 +156,13 @@ namespace NeoCortexApiSample
                     var row = reader.ReadLine();
                     var numbers = row.Split(',');
                     Console.WriteLine(row);
-                    Console.WriteLine("Row Length: " + row.Length);
+
                     foreach (var digit in numbers)
                     {
-
                         if (double.TryParse(digit, out double number))
                         {
-
                             inputList.Add(number);
                         }
-
                         else
                         {
                             temp++;
@@ -156,8 +171,6 @@ namespace NeoCortexApiSample
                             break;
                         }
                     }
-
-
                 }
                 if (inputList.Count > 0)
                 {
@@ -167,56 +180,6 @@ namespace NeoCortexApiSample
             }
             return sequences;
         }
-
-        /* This code detects empty cell at the end of the row and it takes input from excel*/
-
-        private static Dictionary<string, List<double>> GetInputFromExcelFile(string filePath)
-        {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    int temp = 0;
-
-                    while (reader.Read())
-                    {
-                        List<double> inputList = new List<double>();
-                        bool rowHasData = false;
-
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            string digit = reader.GetValue(i)?.ToString();
-
-                            if (string.IsNullOrWhiteSpace(digit))
-                            {
-                                // Skip over empty cells
-                                continue;
-                            }
-
-                            if (double.TryParse(digit, out double number))
-                            {
-                                inputList.Add(number);
-                                rowHasData = true;
-                            }
-                        }
-
-                        if (rowHasData)
-                        {
-                            temp++;
-                            sequences.Add("Sequence: " + temp, inputList);
-                        }
-                    }
-                }
-            }
-
-            return sequences;
-        }
-
-
-
-
 
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -236,7 +199,8 @@ namespace NeoCortexApiSample
         /*<summary>
         This example demonstrates how to learn two sequences and how to use the prediction mechanism.
         First, two sequences are learned.
-        Second, three short sequences with three elements each are created und used for prediction.The predictor used by experiment privides to the HTM every element of every predicting sequence.
+        Second, three short sequences with three elements each are created und used for prediction.
+        The predictor used by experiment privides to the HTM every element of every predicting sequence.
         The predictor tries to predict the next element.
         </summary>*/
         private static void RunMultiSequenceLearningExperiment()
@@ -263,16 +227,43 @@ namespace NeoCortexApiSample
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
             predictor.Reset();
-            PredictNextElement(predictor, list1);
+            //PredictNextElement(predictor, list1);
 
             predictor.Reset();
-            PredictNextElement(predictor, list2);
+            //PredictNextElement(predictor, list2);
 
             predictor.Reset();
-            PredictNextElement(predictor, list3);
+            //PredictNextElement(predictor, list3);
         }
 
-        private static void PredictNextElement(Predictor predictor, double[] list)
+
+        // Method to read subsequences input from text files
+        public static List<List<double>> GetSubSequencesInputFromTextFiles()
+        {
+            var SubSequences = new List<List<double>>();
+            var TestSubSequences = new List<double>();
+
+            using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input"))
+            {
+
+
+                while (!reader.EndOfStream)
+                {
+                    var row = reader.ReadLine();
+                    var numbers = row.Split(',');
+
+                    foreach (var digit in numbers)
+                    {
+                        TestSubSequences.Add(Convert.ToDouble(digit));
+                    }
+                    SubSequences.Add(TestSubSequences);
+                }
+            }
+            return SubSequences;
+        }
+
+
+        private static void PredictNextElement(Predictor predictor, List<double> list)
         {
             Debug.WriteLine("------------------------------");
 
