@@ -4,7 +4,7 @@
              xmlns:viewmodel="clr-namespace:MauiApp1.ViewModel"
              x:DataType="viewmodel:MainViewModel">
 
-    <ScrollView>
+    <ScrollView Background="Black">
         <Grid RowDefinitions="100, Auto, Auto, *, Auto"
               ColumnDefinitions=".25*,.25*,.25*, .25*"
               Padding="10"
@@ -18,8 +18,9 @@
                    Source="sdr_represent.png"
                    BackgroundColor="Transparent"/>
 
-            <TableView Intent="Settings"
-                   Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+            <TableView Intent="Settings" BackgroundColor="Black"
+                   Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                    >
                 <TableRoot>
                     <TableSection>
                         <EntryCell x:Name="graphNameEntry"
@@ -58,8 +59,8 @@
 
             <Button Text="Choose a txt file"
                     BackgroundColor="Beige"
-                    Grid.Row="2"
-                    Grid.Column="1"
+                    Grid.Row="2" Grid.Column="1"
+                    Grid.ColumnSpan="1"
                     Clicked="OncouterClicked"
                     VerticalOptions="Center"
                     HorizontalOptions="Center"/>
@@ -69,9 +70,14 @@
                     Grid.Column="1"
                     Grid.ColumnSpan="3"/>
             
-            <Button Text="Submit" Clicked="OnSubmitClicked" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" />
+            <Button Text="Submit"
+                    Grid.Row="2" Grid.Column="2" 
+                    Grid.ColumnSpan="1" 
+                    Background="Beige"
+                    Clicked="OnSubmitClicked"/>
 
-            <Label x:Name="resultLabel" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"/>
+            <Label x:Name="resultLabel" Grid.Row="5" 
+                   Grid.Column="1" Grid.ColumnSpan="3"/>
         </Grid>
     </ScrollView>
 </ContentPage>

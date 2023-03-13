@@ -7,28 +7,16 @@ using System.IO;
 using Microsoft.Maui.Controls;
 using Microsoft.VisualBasic;
 
+
 namespace MauiApp1;
 
 public partial class MainPage : ContentPage
 {
-
     public MainPage(MainViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;
-        //// Read the contents of the input text file
-        //string filePath = "A:\\SoftwareProject\\Team_VMAUI\\MySEProject\\MauiApp1\\MauiApp1\\sampleOne.txt";
-        //string fileContents = File.ReadAllText(filePath);
-
-        //// Display the file contents in a Label control
-        //Label fileLabel = new Label
-        //{
-        //    Text = fileContents
-        //};
-
-        //Content = fileLabel;
     }
-
     private async void OncouterClicked(object sender, EventArgs e)
     {
         var result = await FilePicker.PickAsync(new PickOptions
@@ -54,7 +42,7 @@ public partial class MainPage : ContentPage
 
     }
 
-    private void OnSubmitClicked(object sender, EventArgs e)
+    private async void OnSubmitClicked(object sender, EventArgs e)
     {
         string graphName = graphNameEntry.Text;
         string maxCycles = maxCyclesEntry.Text;
@@ -78,7 +66,6 @@ public partial class MainPage : ContentPage
                 "Figure Name: " + figureName;
 
         resultLabel.Text = result;
-
     }
 
 }
