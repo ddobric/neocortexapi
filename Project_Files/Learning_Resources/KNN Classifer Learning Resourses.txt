@@ -6,6 +6,7 @@ https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsCl
 https://serokell.io/blog/knn-algorithm-in-ml
 https://www.datacamp.com/tutorial/k-nearest-neighbor-classification-scikit-learn
 https://www.tutorialspoint.com/scikit_learn/scikit_learn_kneighbors_classifier.htm
+https://ieeexplore.ieee.org/document/1265868
 
 
 Videos

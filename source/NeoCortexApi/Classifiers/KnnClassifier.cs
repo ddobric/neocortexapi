@@ -226,10 +226,9 @@ namespace NeoCortexApi.Classifiers
         ///     |C 0 A 0| = Unclassified Matrix
         ///     |A B 0 0|
         /// </returns>
-        char[][] Voting(Dictionary<string, dynamic> Table)
+        string Voting(Dictionary<string, dynamic> Table)
         {
-            //TODO: Implementation!!!
-            return null;
+            return "";
         }
 
         /// <summary>
