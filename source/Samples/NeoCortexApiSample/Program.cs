@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
+//using static NeoCortexApiSample.ScalarEncoder
 
 namespace NeoCortexApiSample
 {
