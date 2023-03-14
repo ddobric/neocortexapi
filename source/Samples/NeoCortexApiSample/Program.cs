@@ -283,6 +283,7 @@ namespace NeoCortexApiSample
             predictor.Reset();
             //PredictNextElement(predictor, list3);
 
+        }
 
 
         /* Method to read subsequences input from text files */
