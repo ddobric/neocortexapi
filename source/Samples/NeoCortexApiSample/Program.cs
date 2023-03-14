@@ -120,7 +120,8 @@ namespace NeoCortexApiSample
                     {
                         if (all_rows.Contains("\r\n"))
                         {
-                            list1 = Regex.Split(all_rows, "(?<=\r\n)");
+                            list1 = System.Text.RegularExpressions.Regex.Split(all_rows, "(?<=\r\n)");
+                            //list1 = Regex.Split(all_rows, "(?<=\r\n)");
                         }
                     }
                     var numbers = all_rows.Split(',');
