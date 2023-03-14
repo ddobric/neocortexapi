@@ -125,7 +125,7 @@ namespace NeoCortexApi.Classifiers
         /// </param>
         private void Learn(List<object> classification)
         {
-            int bucketIdx = (int)classification[0]; // gives bucket index
+            int bucketIdx = (int)GetBucketIndex(classification[0]); // gives bucket index
             object actValue = classification[1];// gives actual value in the bucket
             if (bucketIdx > maxBucketIdx)
             {
