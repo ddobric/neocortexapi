@@ -296,7 +296,7 @@ namespace NeoCortexApiSample
                 var SubSequences = new List<List<double>>();
                 var TestSubSequences = new List<double>();
 
-                using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input"))
+                using (StreamReader reader = new StreamReader(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input.txt"))
                 {
 
 
