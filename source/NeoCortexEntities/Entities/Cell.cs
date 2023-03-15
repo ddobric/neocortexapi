@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -17,7 +18,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// If the cell has a meaning like a Grand-Mather cell, the meaning value is set.
         /// </summary>
-        public string Label { get; set; }
+        //public string Label { get; set; }
 
         /// <summary>
         /// Index of the cell.
@@ -25,7 +26,7 @@ namespace NeoCortexApi.Entities
         public int Index { get; set; }
 
         /// <summary>
-        /// Optional. The mini-column, which owns this cell.
+        /// The mini-column index or the area identifier, which owns this cell.
         /// A cell can be owned by area explicitely if mini-columns are not used.
         /// </summary>
         public int ParentColumnIndex { get; set; }
@@ -88,7 +89,6 @@ namespace NeoCortexApi.Entities
             this.Index = index;
         }
 
-
         /// <summary>
         /// Gets the hashcode of the cell.
         /// </summary>
@@ -99,6 +99,7 @@ namespace NeoCortexApi.Entities
             int result = 1;
             result = prime * result + ParentColumnIndex;
             result = prime * result + Index;
+            result = result * ParentColumnIndex;
 
             return result;
         }
@@ -298,6 +299,8 @@ namespace NeoCortexApi.Entities
             //}
             return cell;
         }
+
+      
         #endregion
     }
 }

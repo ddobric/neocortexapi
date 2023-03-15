@@ -1,51 +1,82 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NeoCortexApi;
+using NeoCortexApi.Entities;
+using System.Net.Http.Headers;
+using Naa = NeoCortexApi.NeuralAssociationAlgorithm;
+using System.Diagnostics;
+
 
 namespace UnitTestsProject
 {
     /// <summary>
-    /// Tests related to synapse.
+    /// UnitTests for the Cell.
     /// </summary>
     [TestClass]
     public class SynapseTests
     {
-        /// <summary>
-        /// Test equal method.
-        /// </summary>
         [TestMethod]
-        public void CompareSynapse()
+        [TestCategory("Prod")]
+        public void SynapseCompareTest()
         {
+            Cell c1 = new Cell(0, 0);
+            Cell c2 = new Cell(0, 1);
 
-            Cell cell1 = new Cell(parentColumnIndx: 1, colSeq: 1, numCellsPerColumn: 10, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
-            Cell cell2 = new Cell(parentColumnIndx: 8, colSeq: 36, numCellsPerColumn: 46, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
-            Cell cell3 = new Cell(parentColumnIndx: 9, colSeq: 10, numCellsPerColumn: 10, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
+            Synapse s1 = new Synapse(c1, 0, 0, 0, "a1", 1.0);
 
-            DistalDendrite distalDendrite = new DistalDendrite(parentCell: cell1, flatIdx: 1, lastUsedIteration: 2, ordinal: 10, synapsePermConnected: 0.5, numInputs: 10);
-            cell1.DistalDendrites.Add(distalDendrite);
+            Synapse s2 = new Synapse(c1, 0, 0, 0, "a1", 1.0);
 
-            Synapse synapse1 = new Synapse(presynapticCell: cell1, distalSegmentIndex: distalDendrite.SegmentIndex, synapseIndex: 23, permanence: 1.0);
-            cell2.ReceptorSynapses.Add(synapse1);
+            Synapse s3 = new Synapse(c1, 0, 0, 0, "a2", 1.0);
 
-            Synapse synapse2 = new Synapse(presynapticCell: cell1, distalSegmentIndex: distalDendrite.SegmentIndex, synapseIndex: 23, permanence: 1.0);
-            cell2.ReceptorSynapses.Add(synapse2);
+            Synapse s4 = new Synapse(c1, 0, 1, 0, "a1", 1.0);
 
-            Synapse synapse3 = new Synapse(presynapticCell: cell3, distalSegmentIndex: distalDendrite.SegmentIndex, synapseIndex: 23, permanence: 1.0);
-            cell2.ReceptorSynapses.Add(synapse3);
+            Synapse s5 = new Synapse(c1, 0, 0, 1, "a1", 1.0);
 
-            //Not same by reference
-            Assert.IsFalse(synapse1 == synapse2);
-            Assert.IsFalse(synapse1 == synapse3);
+            Synapse s6 = new Synapse(c1, 0, 0, 0, "a1", 0.2);
 
-            //column1 and column2 are same by value
-            Assert.IsTrue(synapse1.Equals(synapse2));
-            Assert.IsTrue(synapse1.SourceCell.Equals(synapse2.SourceCell));
+            Assert.AreEqual(s2, s2);
 
-            //column1 and column3 are NOT same by value (different column index)
-            Assert.IsFalse(synapse1.Equals(synapse3));
+            Assert.AreNotEqual(s2, s3);
 
+            Assert.AreNotEqual(s1, s4);
+
+            Assert.AreNotEqual(s1, s5);
+
+            Assert.AreNotEqual(s1, s6);
+        }
+
+        [TestMethod]
+        // [TestCategory("Prod")]
+        public void SynapseConnectionTest()
+        {
+            Cell c0 = new Cell(0, 0);
+
+            List<Cell> population = new List<Cell> { /* c10 */new Cell(1, 0), /* c11 */ new Cell(1, 1), /* c12 */ new Cell(1, 2) };
+
+            ApicalDendrite s10 = new ApicalDendrite(population[0], 0, 0, 0, 0.5, -1);
+            ApicalDendrite s11 = new ApicalDendrite(population[1], 1, 0, 1, 0.5, -1);
+            ApicalDendrite s12 = new ApicalDendrite(population[2], 2, 0, 2, 0.5, -1);
+
+            s10.ParentCell.ApicalDendrites.Add(s10);
+            s11.ParentCell.ApicalDendrites.Add(s11);
+            s12.ParentCell.ApicalDendrites.Add(s12);
+
+            //
+            // Connects the c0 with c10
+            s10.Synapses.Add(new Synapse(c0, 0, s10.SegmentIndex, s10.ParentCell.Index, "Y", 0.6));
+            
+            c0.ReceptorSynapses.Add(s10.Synapses[0]);
+
+            var connectedCells = Helpers.GetDistalConnectedCells(c0, population);
+            Assert.AreEqual(0, connectedCells.Count);
+
+            connectedCells = Helpers.GetApicalConnectedCells(c0, population);
+            Assert.AreEqual(1, connectedCells.Count);
+            Assert.IsTrue(connectedCells[0].Equals(population[0]));
         }
     }
 }
