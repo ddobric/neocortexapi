@@ -173,6 +173,7 @@ namespace NeoCortexApi.Encoders
         /// It cats bits at the beginning with negative position and at th eend after last bit.
         /// This happens only if Periodic is set on false.
         /// </summary>
+        /// Analyze the code
         public bool ClipInput { get => (bool)this["ClipInput"]; set => this["ClipInput"] = (bool)value; }
 
         public int Padding { get => (int)this["Padding"]; set => this["Padding"] = value; }
