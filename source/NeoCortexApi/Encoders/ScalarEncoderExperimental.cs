@@ -137,6 +137,7 @@ namespace NeoCortexApi.Encoders
             // *Resolution and Radius in case *No. of Bits* are provided 
             // *Resolution and No. of Bits in case *Radius* is provided 
             // *Radius and No. of Bits in case *Resolution* is provided
+            // Here we calculate the value of radius and resolution
 
             if (N != 0)
             {
