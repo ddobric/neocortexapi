@@ -215,6 +215,13 @@ namespace NeoCortexApi.Encoders
         /// </remarks>
         public abstract int[] Encode(object inputData);
 
+        /// <summary>
+        /// The Encode
+        /// </summary>
+        /// <param name="inputData">The inputData<see cref="object"/></param>
+        /// <returns>The <see cref="int[]"/></returns>
+        //public abstract int[] Encode(object inputData);
+
         public IModuleData Compute(int[] input, bool learn)
         {
             var result = Encode(input);

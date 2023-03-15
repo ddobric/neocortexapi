@@ -36,10 +36,9 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Represents the default constructor
         /// </summary>
-        public SdrClassifier()
+        public SdrClassifier() : this(0.001)
         {
-            alpha = 0.001;
-            InitializeEntries();
+         
         }
 
         /// <summary>
@@ -352,6 +351,11 @@ namespace NeoCortexApi.Classifiers
         }
 
         public void Learn(TIN input, Cell[] output)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
         {
             throw new NotImplementedException();
         }

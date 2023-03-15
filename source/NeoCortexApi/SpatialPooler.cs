@@ -611,11 +611,14 @@ namespace NeoCortexApi
 
             double[] permChanges = new double[conn.HtmConfig.NumInputs];
 
-            // First we initialize all permChanges to minimum decrement values,
-            // which are used in a case of none-connections to input.
+            // First we initialize all permChanges to minimum decrement values SynPermInactiveDec.
             ArrayUtils.InitArray(permChanges, -1 * conn.HtmConfig.SynPermInactiveDec);
 
             // Then we set SynPermActiveInc to all connected synapses.
+            // With this, all mini-columns connected to the currently active input neurons will increment 
+            // their permanence by SynPermActiveInc. In contrast, all other synapses that are not connected
+            // to active neurons will be decremented by SynPermInactiveDec.
+            // This is some kind of natural punishing mechanism, which can be compared to backpropagation of error.
             ArrayUtils.SetIndexesTo(permChanges, actInputIndexes.ToArray(), conn.HtmConfig.SynPermActiveInc);
 
             for (int i = 0; i < activeColumns.Length; i++)
