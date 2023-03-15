@@ -61,6 +61,6 @@ Dobric, Pech, Ghita, Wennekers 2022. Springer Nature Computer Science Journal
 On the Importance of the Newborn Stage When Learning Patterns with the Spatial Pooler. https://rdcu.be/cIcoc. doi:10.1007/s42979-022-01066-4
 
 # Contribute
-If your want to contribute on this project please contact us by opening an issue. 
+If your want to contribute on this project please contact us by opening an issue.. 
 
 
