@@ -56,7 +56,7 @@ namespace NeoCortexApiSample
 
             //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
             //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
-            sequences = GetInputFromExcelFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.xlsx");
+            sequences = GetInputFromExcelFile();
 
             foreach (KeyValuePair<string, List<double>> kvp in sequences)
             {
@@ -186,8 +186,9 @@ namespace NeoCortexApiSample
 
         /* This code detects empty cell at the end of the row and it takes input from excel*/
 
-        private static Dictionary<string, List<double>> GetInputFromExcelFile(string filePath)
+        private static Dictionary<string, List<double>> GetInputFromExcelFile()
         {
+            string filePath = Path.Combine(Environment.CurrentDirectory, "input1.xlsx");
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
