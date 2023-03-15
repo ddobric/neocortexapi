@@ -122,7 +122,8 @@ namespace NeoCortexApiSample
                     {
                         if (all_rows.Contains("\r\n"))
                         {
-                            list1 = Regex.Split(all_rows, "(?<=\r\n)");
+                            list1 = System.Text.RegularExpressions.Regex.Split(all_rows, "(?<=\r\n)");
+                            //list1 = Regex.Split(all_rows, "(?<=\r\n)");
                         }
                     }
                     var numbers = all_rows.Split(',');
@@ -219,6 +220,9 @@ namespace NeoCortexApiSample
 
                         if (rowHasData)
                         {
+                            
+                            Console.Write("Sequence " + temp + " : " );
+                            Console.WriteLine(string.Join(" ", inputList));
                             temp++;
                             sequences.Add("Sequence: " + temp, inputList);
                         }
@@ -282,61 +286,61 @@ namespace NeoCortexApiSample
 
             predictor.Reset();
             //PredictNextElement(predictor, list3);
-
         }
 
 
-        /* Method to read subsequences input from text files */
-        public static List<List<double>> GetSubSequencesInputFromTextFiles()
-        {
-            var SubSequences = new List<List<double>>();
-            var TestSubSequences = new List<double>();
+            /* Method to read subsequences input from text files */
 
-            using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input"))
+            public static List<List<double>> GetSubSequencesInputFromTextFiles()
             {
+                var SubSequences = new List<List<double>>();
+                var TestSubSequences = new List<double>();
 
-
-                while (!reader.EndOfStream)
+                using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input"))
                 {
-                    var row = reader.ReadLine();
-                    var numbers = row.Split(',');
 
-                    foreach (var digit in numbers)
+
+                    while (!reader.EndOfStream)
                     {
-                        TestSubSequences.Add(Convert.ToDouble(digit));
+                        var row = reader.ReadLine();
+                        var numbers = row.Split(',');
+
+                        foreach (var digit in numbers)
+                        {
+                            TestSubSequences.Add(Convert.ToDouble(digit));
+                        }
+                        SubSequences.Add(TestSubSequences);
                     }
-                    SubSequences.Add(TestSubSequences);
                 }
-            }
-            return SubSequences;
-        }
-
-
-
-        private static void PredictNextElement(Predictor predictor, List<double> list)
-        {
-            Debug.WriteLine("------------------------------");
-
-            foreach (var item in list)
-            {
-                var res = predictor.Predict(item);
-
-                if (res.Count > 0)
-                {
-                    foreach (var pred in res)
-                    {
-                        Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
-                    }
-
-                    var tokens = res.First().PredictedInput.Split('_');
-                    var tokens2 = res.First().PredictedInput.Split('-');
-                    Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
-                }
-                else
-                    Debug.WriteLine("Nothing predicted :(");
+                return SubSequences;
             }
 
-            Debug.WriteLine("------------------------------");
+
+
+            private static void PredictNextElement(Predictor predictor, List<double> list)
+            {
+                Debug.WriteLine("------------------------------");
+
+                foreach (var item in list)
+                {
+                    var res = predictor.Predict(item);
+
+                    if (res.Count > 0)
+                    {
+                        foreach (var pred in res)
+                        {
+                            Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                        }
+
+                        var tokens = res.First().PredictedInput.Split('_');
+                        var tokens2 = res.First().PredictedInput.Split('-');
+                        Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                    }
+                    else
+                        Debug.WriteLine("Nothing predicted :(");
+                }
+
+                Debug.WriteLine("------------------------------");
+            }
         }
     }
-}
