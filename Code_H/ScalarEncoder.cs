@@ -129,6 +129,18 @@ namespace NeoCortexApi.Encoders
                         Range = RangeInternal + Resolution;
                     }
                 }
+  {
+                if ((MinVal % ((int)MinVal)) > 0 ||
+                    (MaxVal % ((int)MaxVal)) > 0)
+                {
+                    Name = "[" + MinVal + ":" + MaxVal + "]";
+                }
+                else
+                {
+                    Name = "[" + (int)MinVal + ":" + (int)MaxVal + "]";
+                }
+            }
+
             }
             else
             {
