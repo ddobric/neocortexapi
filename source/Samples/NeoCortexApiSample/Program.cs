@@ -57,7 +57,6 @@ namespace NeoCortexApiSample
             //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
             //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
             sequences = GetInputFromExcelFile();
-            GetSubSequencesInputFromExcelFile();
 
             foreach (KeyValuePair<string, List<double>> kvp in sequences)
             {
@@ -194,6 +193,7 @@ namespace NeoCortexApiSample
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
+                Console.WriteLine("Inside GetInputFromExcelFile Method");
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     int temp = 0;
