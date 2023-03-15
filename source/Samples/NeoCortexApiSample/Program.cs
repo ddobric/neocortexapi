@@ -56,7 +56,8 @@ namespace NeoCortexApiSample
 
             //sequences = GetInputFromTextFile();   //uncomment this to read values from text file
             //ssequences = GetInputFromCsvFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.csv");
-            sequences = GetInputFromExcelFile(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\input1.xlsx");
+            sequences = GetInputFromExcelFile();
+            GetSubSequencesInputFromExcelFile();
 
             foreach (KeyValuePair<string, List<double>> kvp in sequences)
             {
@@ -81,8 +82,8 @@ namespace NeoCortexApiSample
 
             var predictor = experiment.Run(sequences);
             List<List<double>> testSequences = new();
-            testSequences = GetSubSequencesInputFromTextFiles();
-
+            //testSequences = GetSubSequencesInputFromTextFiles();
+            testSequences = GetSubSequencesInputFromExcelFile();
             predictor.Reset();
             foreach (var numberList in testSequences)
             {
@@ -122,7 +123,8 @@ namespace NeoCortexApiSample
                     {
                         if (all_rows.Contains("\r\n"))
                         {
-                            list1 = Regex.Split(all_rows, "(?<=\r\n)");
+                            list1 = System.Text.RegularExpressions.Regex.Split(all_rows, "(?<=\r\n)");
+                            //list1 = Regex.Split(all_rows, "(?<=\r\n)");
                         }
                     }
                     var numbers = all_rows.Split(',');
@@ -185,8 +187,9 @@ namespace NeoCortexApiSample
 
         /* This code detects empty cell at the end of the row and it takes input from excel*/
 
-        private static Dictionary<string, List<double>> GetInputFromExcelFile(string filePath)
+        private static Dictionary<string, List<double>> GetInputFromExcelFile()
         {
+            string filePath = Path.Combine(Environment.CurrentDirectory, "input1.xlsx");
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
@@ -219,6 +222,9 @@ namespace NeoCortexApiSample
 
                         if (rowHasData)
                         {
+
+                            Console.Write("Sequence " + temp + " : ");
+                            Console.WriteLine(string.Join(" ", inputList));
                             temp++;
                             sequences.Add("Sequence: " + temp, inputList);
                         }
@@ -282,60 +288,92 @@ namespace NeoCortexApiSample
 
             predictor.Reset();
             //PredictNextElement(predictor, list3);
+        }
 
 
+        /* Method to read subsequences input from text files */
 
-            /* Method to read subsequences input from text files */
-            public static List<List<double>> GetSubSequencesInputFromTextFiles()
+        public static List<List<double>> GetSubSequencesInputFromTextFiles()
+        {
+            var SubSequences = new List<List<double>>();
+            var TestSubSequences = new List<double>();
+
+            using (StreamReader reader = new StreamReader(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input.txt"))
             {
-                var SubSequences = new List<List<double>>();
-                var TestSubSequences = new List<double>();
 
-                using (StreamReader reader = new StreamReader(@"D:\Software_Engineering\Neocortex_MSL\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input1.txt"))
+
+                while (!reader.EndOfStream)
                 {
+                    var row = reader.ReadLine();
+                    var numbers = row.Split(',');
 
-
-                    while (!reader.EndOfStream)
+                    foreach (var digit in numbers)
                     {
-                        var row = reader.ReadLine();
-                        var numbers = row.Split(',');
+                        TestSubSequences.Add(Convert.ToDouble(digit));
+                    }
+                    SubSequences.Add(TestSubSequences);
+                }
+            }
+            return SubSequences;
+        }
 
-                        foreach (var digit in numbers)
+
+
+        /* This method takes the input from Excel file */
+
+        public static List<List<double>> GetSubSequencesInputFromExcelFile()
+        {
+            var SubSequences = new List<List<double>>();
+
+            using (var stream = File.Open("Subsequence_input.xlsx", FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    while (reader.Read())
+                    {
+                        var TestSubSequences = new List<double>();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            TestSubSequences.Add(Convert.ToDouble(digit));
+                            TestSubSequences.Add(reader.GetDouble(i));
                         }
+
                         SubSequences.Add(TestSubSequences);
                     }
                 }
-                return SubSequences;
             }
 
+            return SubSequences;
+        }
 
 
-            private static void PredictNextElement(Predictor predictor, List<double> list)
+
+
+
+        private static void PredictNextElement(Predictor predictor, List<double> list)
+        {
+            Debug.WriteLine("------------------------------");
+
+            foreach (var item in list)
             {
-                Debug.WriteLine("------------------------------");
+                var res = predictor.Predict(item);
 
-                foreach (var item in list)
+                if (res.Count > 0)
                 {
-                    var res = predictor.Predict(item);
-
-                    if (res.Count > 0)
+                    foreach (var pred in res)
                     {
-                        foreach (var pred in res)
-                        {
-                            Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
-                        }
-
-                        var tokens = res.First().PredictedInput.Split('_');
-                        var tokens2 = res.First().PredictedInput.Split('-');
-                        Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                        Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
                     }
-                    else
-                        Debug.WriteLine("Nothing predicted :(");
-                }
 
-                Debug.WriteLine("------------------------------");
+                    var tokens = res.First().PredictedInput.Split('_');
+                    var tokens2 = res.First().PredictedInput.Split('-');
+                    Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                }
+                else
+                    Debug.WriteLine("Nothing predicted :(");
             }
+
+            Debug.WriteLine("------------------------------");
         }
     }
+}
