@@ -67,6 +67,7 @@ namespace NeoCortexApi
            this.connections.Serialize(obj, name, sw);
             //this.layer.Serialize(??);
             //this.classifier.Ser
+            //checking push
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
