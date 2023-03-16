@@ -52,15 +52,12 @@ namespace NeoCortexApi.Classifiers
     ///     calculated and compared to the known matrices. Whence a comparison is made by using the shortest nNeighbors
     ///     to each unclassified coordinate and assigns the classification keys A, B, C by considering the most amount
     ///     classifications closest to that point.
-    ///
-    ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance  Classification
-    ///              2                  3                 3                  2             1.65          A
-    ///              6                  5                 3                  2             3.65          B
-    ///              4                  5                 3                  2             1.23          A
-    ///              3                  7                 3                  2             2.23          C
+    ///     
     ///
     ///     In this case A is highest occurence hence A for the coordinate (3, 2).
     /// </summary>
+    /// Insted of Matrix Trying to build the struture for serialize dataset
+   
     public class KNeighborsClassifier
     {
         private int _nNeighbors;
@@ -196,7 +193,6 @@ namespace NeoCortexApi.Classifiers
         ///         ...
         ///     }
         /// </returns>
-<<<<<<< HEAD
         Dictionary<int[], string> Voting(Dictionary<int[], List<ClassificationAndDistance>> table)
         {
             var votes = new Dictionary<string, int>();
@@ -222,11 +218,6 @@ namespace NeoCortexApi.Classifiers
             }
 
             return classification;
-=======
-        string Voting(Dictionary<string, dynamic> Table)
-        {
-            return "";
->>>>>>> 2227660390ba1df9ad1aec3bc3ae50d33514fae6
         }
 
         /// <summary>
