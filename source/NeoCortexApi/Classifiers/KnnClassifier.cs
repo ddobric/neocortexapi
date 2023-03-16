@@ -5,9 +5,9 @@ using System.Linq;
 using NeoCortexApi.Encoders;
 
 
-namespace NeoCortexApi.Classifiers
+namespace NeoCortexApi.KNNClassifiers
 {
-    public class ClassificationAndDistance : IComparable<ClassificationAndDistance>
+ /*   public class ClassificationAndDistance : IComparable<ClassificationAndDistance>
     {
         public string Classification { get; }
         public double Distance { get; }
@@ -32,7 +32,7 @@ namespace NeoCortexApi.Classifiers
             else
                 return 0;
         }
-    }
+    }*/
 
     /// <summary>
     ///     This KNN classifier takes an input as a 2D array of on: 1, off: 0 which is provided for classification.
@@ -58,8 +58,51 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     /// Insted of Matrix Trying to build the struture for serialize dataset
    
-    public class KNeighborsClassifier
+
+    public class KNNClassifier
     {
+        static void Main(string[] args)
+        {
+
+            // Define the lables for predication of binary classification
+            int[][] trainingData = LoadTrainingData();
+            // Lables are assigned for train dataset
+            int[] labels = { 0, 1, 0, 1, 1, 0 };
+            Console.WriteLine(labels);
+
+            // Parameter K: Define the K value for predication
+            KNNClassifier knn = new KNNClassifier(k: 4);
+            Console.WriteLine($"The Value of K is : {knn}");
+
+            // Train classifier on training data
+            knn.Train(trainingData, labels);
+
+            // Adding the test data sequecnce for the predication
+            int[] testData = { 1,3,4,5,5,1 };
+            Console.WriteLine($"The Test Dataset is given as : {testData}");
+
+            // Predicting the label for test data sequnce 
+            int predictedLabel = knn.Predict(testData);
+
+            Console.WriteLine($"The Predicted label: {predictedLabel}");
+        }
+
+        //Loading the test data in static manner later we can insert CSV or Notepad file as TM OR SP data 
+        static int[][] LoadTrainingData()
+        {
+            // training data
+            Int[][] trainingData = new int[6][];
+            trainingData[0] = new int[] { 1, 3, 4, 5, 5, 1 };
+            trainingData[1] = new int[] { 1, 3, 4, 5, 5, 1 };
+            trainingData[2] = new int[] { 1, 3, 4, 5, 5, 1 };
+            trainingData[3] = new int[] { 1, 3, 4, 5, 5, 1 };
+            trainingData[4] = new int[] { 1, 3, 4, 5, 5, 1 };
+            trainingData[5] = new int[] { 1, 3, 4, 5, 5, 1 };
+            return trainingData;
+        }
+    }
+
+/*    {
         private int _nNeighbors;
         private Dictionary<string, int[][]> _model = new Dictionary<string, int[][]>();
 
