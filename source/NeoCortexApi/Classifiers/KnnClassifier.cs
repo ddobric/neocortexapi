@@ -19,7 +19,7 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        ///     Implementation of the Method for sorting itself.
+        ///   Implementation of the Method for sorting itself.
         /// </summary>
         /// <param name="other">Past object of the implementation for comparison</param>
         /// <returns></returns>
@@ -66,7 +66,7 @@ namespace NeoCortexApi.Classifiers
         private int _nNeighbors;
         private Dictionary<string, int[][]> _model = new Dictionary<string, int[][]>();
 
-        KNeighborsClassifier(int nNeighbors = 7)
+        KNeighborsClassifier(int nNeighbors = 3)
         {
             Debug.Assert(nNeighbors % 2 != 0);
             _nNeighbors = nNeighbors;
