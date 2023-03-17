@@ -87,7 +87,8 @@ namespace NeoCortexApi.KNNClassifiers
             Console.WriteLine($"The Predicted label: {predictedLabel}");
         }
 
-        //Loading the test data in static manner later we can insert CSV or Notepad file as TM OR SP data 
+        //Loading the test data in static manner
+        //Trying to rewrite to read the CSV or Notepad file as TM OR SP data 
         static int[][] LoadTrainingData()
         {
             // training data
@@ -101,6 +102,71 @@ namespace NeoCortexApi.KNNClassifiers
             return trainingData;
         }
     }
+
+    class KNNClassifier
+    {
+        //Define the value of K training data and Labels
+        private int k;
+        private double[][] trainingData;
+        private int[] labels;
+
+        //Setting the value of K 
+        public KNNClassifier(int k)
+        {
+            this.k = k;
+        }
+        //Working on the train Datset and its labels
+        public void Train(double[][] trainingData, int[] labels)
+        {
+            this.trainingData = trainingData;
+            this.labels = labels;
+        }
+        //All the predication related calculations and calculating the distance of all the points 
+        public int Predict(double[] testData)
+        {
+            // Calculate distances from test data to each training data point
+            List<Tuple<double, int>> distances = new List<Tuple<double, int>>();
+            for (int i = 0; i < trainingData.Length; i++)
+            {
+                double distance = Distance(testData, trainingData[i]);
+                Console.WriteLine(distance);
+                distances.Add(Tuple.Create(distance, labels[i]));
+
+            }
+
+            // Sort distances by ascending order depending on the value of K
+            distances.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+
+
+            // Get the k nearest neighbors
+            List<int> neighbors = new List<int>();
+            for (int i = 0; i < k; i++)
+            {
+                neighbors.Add(distances[i].Item2);
+            }
+
+            // Predict label based on majority vote of neighbors
+            int[] labelCounts = new int[2]; // Assuming binary classification
+            foreach (int label in neighbors)
+            {
+                labelCounts[label]++;
+            }
+            return labelCounts[1] > labelCounts[0] ? 1 : 0; // Return the label with the highest count
+        }
+
+        private double Distance(double[] a, double[] b)
+        {
+            double sum = 0.0;
+            for (int i = 0; i < a.Length; i++)
+            {
+                double diff = a[i] - b[i];
+                sum += diff * diff;
+            }
+            return Math.Sqrt(sum);
+        }
+    }
+}
+
 
 /*    {
         private int _nNeighbors;
@@ -295,5 +361,5 @@ namespace NeoCortexApi.KNNClassifiers
         void Learn(object x, string[] tags)
         {
         }
-    }
+    }*/
 }
