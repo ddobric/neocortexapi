@@ -103,6 +103,13 @@ namespace NeoCortexApi.Encoders
                     throw new ArgumentException("Input Value should be equal to MinVal or greater than MinVal");
                 }
             }
+
+{
+                if (input < MinVal)
+                {
+                    throw new ArgumentException("Input Value should be equal to MinVal or greater than MinVal");
+                }
+            }
             else if (Periodic)
             {
                 if (input > MaxVal)
@@ -164,6 +171,11 @@ namespace NeoCortexApi.Encoders
                 {
                     Radius = Resolution * W;
                 }
+
+ {
+                RangeInternal = (MaxVal - MinVal);
+
+            }
                 else
                 {
                     throw new ArgumentException("One of n, radius, resolution must be specified for a ScalarEncoder");
