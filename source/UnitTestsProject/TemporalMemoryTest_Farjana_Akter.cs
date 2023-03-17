@@ -233,5 +233,27 @@ namespace UnitTestsProject
             Assert.AreEqual(23, s1.GetPresynapticCell().Index);
             Assert.AreEqual(0.5, s1.Permanence);
         }
+        /// <summary>
+        /// Testing if the TemporalMemory class initializes correctly with a custom number of cells per column
+        /// </summary>
+        [TestMethod]
+        public void TestCellsPerColumn()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
+            p.Set(KEY.CELLS_PER_COLUMN, 16); // Set custom number of cells per column
+            p.apply(cn);
+            tm.Init(cn);
+
+            int cnt = 0;
+            foreach (var item in cn.GetColumns())
+            {
+                cnt += item.Cells.Length;
+            }
+
+            Assert.AreEqual(64 * 64 * 16, cnt);
+        }
     }
 }
