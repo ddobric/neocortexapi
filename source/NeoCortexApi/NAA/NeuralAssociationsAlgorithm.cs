@@ -41,47 +41,47 @@ namespace NeoCortexApi
         /// <summary>
         /// Get Active Apical Segments of currentlly active cells in the area.
         /// </summary>
-        public List<ApicalDendrite> ActiveApicalSegments
+        public List<ApicalDendrite> GetActiveApicalSegments(IList<Cell> activeCells)
         {
-            get
+
+            List<ApicalDendrite> actSegs = new List<ApicalDendrite>();
+
+            foreach (var cell in this._area.ActiveCells)
             {
-                List<ApicalDendrite> actSegs = new List<ApicalDendrite>();
+               // cell.ApicalDendrites.Where(s => s.Synapses.Where(ss => activeCells.Contains(ss.SourceCell)))
 
-                foreach (var cell in this._area.ActiveCells)
+                foreach (var seg in cell.ApicalDendrites)
                 {
-                    foreach (var seg in cell.ApicalDendrites)
-                    {
-                        if (seg.NumConnectedSynapses >= _cfg.ActivationThreshold)
-                            actSegs.Add(seg);
-                    }
+                    //if(seg.ParentCell)
+                    if (seg.NumConnectedSynapses >= _cfg.ActivationThreshold)
+                        actSegs.Add(seg);
                 }
-
-                return actSegs;
             }
+
+            return actSegs;
+
         }
+
 
         /// <summary>
         /// Get Matchin Apical Segments of currentlly active cells in the area.
         /// Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
         /// more connected synapses than _cfg.MinThreshold.
         /// </summary>
-        public List<ApicalDendrite> MatchingApicalSegments
+        public List<ApicalDendrite> GetMatchingApicalSegments()
         {
-            get
+            List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
+
+            foreach (var cell in this._area.ActiveCells)
             {
-                List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
-
-                foreach (var cell in this._area.ActiveCells)
+                foreach (var seg in cell.ApicalDendrites)
                 {
-                    foreach (var seg in cell.ApicalDendrites)
-                    {
-                        if (seg.Synapses.Count >= _cfg.MinThreshold && seg.NumConnectedSynapses < _cfg.ActivationThreshold)
-                            matchSegs.Add(seg);
-                    }
+                    if (seg.Synapses.Count >= _cfg.MinThreshold && seg.NumConnectedSynapses < _cfg.ActivationThreshold)
+                        matchSegs.Add(seg);
                 }
-
-                return matchSegs;
             }
+
+            return matchSegs;
         }
 
 
@@ -146,10 +146,15 @@ namespace NeoCortexApi
 
         public ComputeCycle Compute(CorticalArea[] associatedAreas, bool learn)
         {
+            // This makes sure that always a batch of synapses is created in the learning step until MaxSynapsesPerSegment is reached.
+            if (this._cfg.MaxNewSynapseCount >= _cfg.MaxSynapsesPerSegment)
+                throw new ArgumentException("MaxNewSynapseCount must be less than MaxSynapsesPerSegment.");
+
             foreach (var area in associatedAreas)
             {
-                //if (!_cycleResults.ContainsKey(_area.Name))
-                //    _cycleResults.Add(_area.Name, new ComputeCycle());
+                // This makes sure that every active cell will be synaptically connected during learning. With this no information lose will happen.
+                if (this._cfg.MaxSynapsesPerSegment < area.ActiveCells.Count)
+                    throw new ArgumentException("associatedArea.ActiveCells.Count must be less than MaxSynapsesPerSegment.");
 
                 ActivateCells(area, learn: learn);
 
@@ -159,23 +164,8 @@ namespace NeoCortexApi
             return null;
         }
 
-        private static bool isValidated = false;
-
         protected virtual void ActivateCells(CorticalArea associatedArea, bool learn)
         {
-            if (!isValidated)
-            {
-                // This makes sure that always a batch of synapses is created in the learning step until MaxSynapsesPerSegment is reached.
-                if (this._cfg.MaxNewSynapseCount >= _cfg.MaxSynapsesPerSegment)
-                    throw new ArgumentException("MaxNewSynapseCount must be less than MaxSynapsesPerSegment.");
-
-                // This makes sure that every active cell will be synaptically connected during learning. With this no information lose will happen.
-                if (this._cfg.MaxSynapsesPerSegment < associatedArea.ActiveCells.Count)
-                    throw new ArgumentException("associatedArea.ActiveCells.Count must be less than MaxSynapsesPerSegment.");
-
-                isValidated = true;
-            }
-
             int numSynapses = Math.Min(this._cfg.MaxNewSynapseCount, Math.Min(this._cfg.MaxSynapsesPerSegment, associatedArea.ActiveCells.Count));
 
             ComputeCycle newComputeCycle = new ComputeCycle
@@ -186,7 +176,7 @@ namespace NeoCortexApi
             AdaptActiveSegments(associatedArea, learn);
 
             // In HTM instead of associatedArea.ActiveCells, WinnerCells are used.
-            // Because there is curretnly no temporal dependency in the NAA
+            // Because there is currenly no temporal dependency in the NAA.
             AdaptMatchingSegments(associatedArea, learn);
 
             AdaptIncativeSegments(associatedArea, learn);
@@ -213,7 +203,7 @@ namespace NeoCortexApi
             if (learn == false)
                 return;
 
-            Segment[] activeSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : ActiveApicalSegments.ToArray();
+            Segment[] activeSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : GetActiveApicalSegments(null).ToArray();
 
             foreach (Segment segment in activeSegments)
             {
@@ -249,7 +239,7 @@ namespace NeoCortexApi
             // In previous cycle they are depolarized.
             //List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
 
-            Segment[] matchingSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : MatchingApicalSegments.ToArray();
+            Segment[] matchingSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : GetMatchingApicalSegments().ToArray();
 
             foreach (var matchSeg in matchingSegments)
             {
@@ -293,21 +283,6 @@ namespace NeoCortexApi
             foreach (var inactiveSeg in inactiveSegments)
             {
                 FormNewSynapses(associatedArea, inactiveSeg);
-
-                //Cell segOwnerCell = inactiveSeg.ParentCell;
-
-                ////if(segOwnerCell)
-                ////
-                //// Maximal number of segments per cell should not be exceeded.
-                //int currNumSegments = distalOrApical ? segOwnerCell.DistalDendrites.Count : segOwnerCell.ApicalDendrites.Count;
-
-                //if (currNumSegments >= _cfg.MaxSegmentsPerCell)
-                //    continue;
-
-                //// This is why we substract number of winner cells from the MaxNewSynapseCount.
-                //int numSynapses = Math.Min(this._cfg.MaxNewSynapseCount, Math.Min(this._cfg.MaxSynapsesPerSegment, associatedArea.ActiveCells.Count));
-
-                //CreateSegmentAtCell(associatedArea, inactiveSeg.ParentCell, numSynapses);
             }
 
             //
@@ -487,7 +462,8 @@ namespace NeoCortexApi
                 }
                 else
                 {
-                    permanence -= this._cfg.PermanenceDecrement;
+                    //Forgetting by using this rule in NAA is no supported.
+                    // permanence -= this._cfg.PermanenceDecrement; 
                 }
 
                 // Keep permanence within min/max bounds
@@ -661,7 +637,7 @@ namespace NeoCortexApi
         {
             double energy = 0;
 
-            foreach (var seg in this.ActiveApicalSegments)
+            foreach (var seg in this.GetActiveApicalSegments(null))
             {
                 seg.Synapses.ForEach(s => energy += s.Permanence);
             }
@@ -680,8 +656,8 @@ namespace NeoCortexApi
 
             sb.AppendLine($"Iteration {_iteration}");
 
-            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {ActiveApicalSegments.Count}");
-            sb.AppendLine($"Matching Apical Segments: {MatchingApicalSegments.Count}");
+            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {GetActiveApicalSegments(null).Count}");
+            sb.AppendLine($"Matching Apical Segments: {GetMatchingApicalSegments().Count}");
             sb.AppendLine($"Inactive Apical Segments: {InactiveApicalSegments.Count}");
             sb.AppendLine($"Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}.");
             sb.AppendLine($"Synaptic Energy = {GetApicalSynapticEnergy()}");
