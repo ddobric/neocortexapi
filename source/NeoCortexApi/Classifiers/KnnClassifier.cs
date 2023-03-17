@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using NeoCortexApi.Encoders;
 
 
 namespace NeoCortexApi.Classifiers
@@ -25,12 +24,7 @@ namespace NeoCortexApi.Classifiers
         /// <returns></returns>
         public int CompareTo(ClassificationAndDistance other)
         {
-            if (Distance < other.Distance)
-                return -1;
-            else if (Distance > other.Distance)
-                return +1;
-            else
-                return 0;
+            return Distance.CompareTo(other.Distance);
         }
     }
 
@@ -52,13 +46,11 @@ namespace NeoCortexApi.Classifiers
     ///     calculated and compared to the known matrices. Whence a comparison is made by using the shortest nNeighbors
     ///     to each unclassified coordinate and assigns the classification keys A, B, C by considering the most amount
     ///     classifications closest to that point.
-    ///
-    ///          Classified Row   Classified Col   Unclassified Row   Unclassified Col   Distance  Classification
-    ///              2                  3                 3                  2             1.65          A
-    ///              6                  5                 3                  2             3.65          B
-    ///              4                  5                 3                  2             1.23          A
-    ///              3                  7                 3                  2             2.23          C
-    ///
+    ///     {
+    ///         (2, 3): A,
+    ///         (2, 0): B,
+    ///         ...
+    ///     }
     ///     In this case A is highest occurence hence A for the coordinate (3, 2).
     /// </summary>
     public class KNeighborsClassifier
@@ -246,8 +238,11 @@ namespace NeoCortexApi.Classifiers
 
             foreach (var coordinates in mappedElements)
                 coordinates.Value.Sort();
-
-            var classificationType = Voting(mappedElements).Values.Max();
+            
+            var classificationType = Voting(mappedElements).Values
+                .GroupBy(s => s)
+                .OrderByDescending(s => s.Count())
+                .First().Key;
 
             Console.WriteLine($"Verdict is: {classificationType}");
         }
