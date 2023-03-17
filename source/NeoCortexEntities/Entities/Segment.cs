@@ -77,7 +77,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="index">Index of segment.</param>
-        /// <param name="numInputs">Number of input neorn cells.</param>
+        /// <param name="numInputs">Number of input cells.</param>
         public Segment(int index, long lastUsedIteration, double synapsePermConnected, int numInputs)
         {
             this.NumInputs = numInputs;
