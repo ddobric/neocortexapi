@@ -6,6 +6,7 @@ using NeoCortexApi.Encoders;
 
 
 namespace NeoCortexApi.KNNClassifiers
+///namespace KNNClassifier
 {
  /*   public class ClassificationAndDistance : IComparable<ClassificationAndDistance>
     {
@@ -59,7 +60,7 @@ namespace NeoCortexApi.KNNClassifiers
     /// Insted of Matrix Trying to build the struture for serialize dataset
    
 
-    public class KNNClassifier
+    class KNNClassifier
     {
         static void Main(string[] args)
         {
@@ -69,6 +70,19 @@ namespace NeoCortexApi.KNNClassifiers
             // Lables are assigned for train dataset
             int[] labels = { 0, 1, 0, 1, 1, 0 };
             Console.WriteLine(labels);
+
+            /*
+            var values = labels.Distinct();
+
+            foreach (var item in values)
+            {
+                Debug.WriteLine(item.ToString());
+            }
+            */
+
+
+
+
 
             // Parameter K: Define the K value for predication
             KNNClassifier knn = new KNNClassifier(k: 4);
@@ -361,5 +375,6 @@ namespace NeoCortexApi.KNNClassifiers
         void Learn(object x, string[] tags)
         {
         }
-    }*/
+    }
 }
+*/
