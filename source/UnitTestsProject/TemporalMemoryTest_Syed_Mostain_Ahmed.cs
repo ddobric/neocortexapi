@@ -92,7 +92,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestAddingNewSynapseToDistalSegment()
         {
-            // Arrange
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
@@ -109,9 +109,14 @@ namespace UnitTestsProject
             Assert.AreEqual(0.9, s1.Permanence);
         }
 
+        /// <summary>
+        /// TestRemovingSynapseFromDistalSegment: testing the removal of 
+        /// Synapses from distal segments
+        /// </summary>
         [TestMethod]
         public void TestRemovingSynapseFromDistalSegment()
         {
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
@@ -132,9 +137,14 @@ namespace UnitTestsProject
             Assert.IsTrue(dd.Synapses.Contains(s2));
         }
 
+        /// <summary>
+        /// TestUpdatingPermanenceOfSynapse: Verify if the algorithm can update
+        /// the Permanence value of the Synapse.
+        /// </summary>
         [TestMethod]
         public void TestUpdatingPermanenceOfSynapse()
         {
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
@@ -162,6 +172,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestActiveCellCount()
         {
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 5);
@@ -181,6 +192,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
         {
+            // Initialize
             TemporalMemory tm = new TemporalMemory(); // TM class object
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
@@ -212,6 +224,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestBurstPredictedColumns()
         {
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
@@ -246,7 +259,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestNoOverlapInActiveCells()
         {
-            // Setup Temporal Memory
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
@@ -301,6 +314,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestColumnDimensions()
         {
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
@@ -321,6 +335,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestTemporalMemoryComputeReturnsWinnerCells()
         {
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
