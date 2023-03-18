@@ -81,6 +81,24 @@ namespace UnitTestsProject
                 //Assert
                 Assert.AreEqual(0.7, s1.Permanence, 0.1);
             }
+        [TestMethod]
+        public void TestTemporalMemoryComputeReturnsWinnerCells()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
+            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 2);
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0, 1, 2, 3 };
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
+            Assert.AreEqual(4, winnerCells.Count);
+            Assert.AreEqual(0, winnerCells[0].Index);
+            Assert.AreEqual(2, winnerCells[1].Index);
+        }
 
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
         {
