@@ -81,10 +81,34 @@ namespace UnitTestsProject
                 //Assert
                 Assert.AreEqual(0.7, s1.Permanence, 0.1);
             }
-        
-        
 
-                [TestMethod]
+        public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0 };
+            Cell[] activeCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
+
+            DistalDendrite dd = cn.CreateDistalSegment(activeCells[0]);
+            cn.CreateSynapse(dd, cn.GetCell(4), 0.3);
+            cn.CreateSynapse(dd, cn.GetCell(5), 0.3);
+
+            tm.Compute(activeColumns, true);
+
+          
+            Assert.AreEqual(1, activeCells[0].DistalDendrites.Count);
+
+            DistalDendrite newSegment = activeCells[0].DistalDendrites[0] as DistalDendrite;
+
+            Assert.IsNotNull(newSegment);
+            Assert.AreEqual(2, newSegment.Synapses.Count);
+        }
+
+        [TestMethod]
         public void TestWinnerCells_top()
         {
             TemporalMemory tm = new TemporalMemory();
