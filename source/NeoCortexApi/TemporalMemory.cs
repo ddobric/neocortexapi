@@ -84,7 +84,7 @@ namespace NeoCortexApi
         /// Calculation takes two parts:
         /// <list type="number">
         /// <item>Calculation of the cells, which become active in the current cycle.</item>
-        /// <item>Calculation of dendrite segments which becom active in the current cycle.</item>
+        /// <item>Calculation of dendrite segments which become active in the current cycle.</item>
         /// </list>
         /// </summary>
         /// <param name="activeColumns"></param>
@@ -102,7 +102,7 @@ namespace NeoCortexApi
         /// Calculation takes two parts:
         /// <list type="number">
         /// <item>Calculation of the cells, which become active in the current cycle.</item>
-        /// <item>Calculation of dendrite segments which becom active in the current cycle.</item>
+        /// <item>Calculation of dendrite segments which become active in the current cycle.</item>
         /// </list>
         /// </summary>
         /// <param name="activeColumns"></param>

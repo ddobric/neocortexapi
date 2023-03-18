@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Microsoft.Azure.Documents.Spatial;
+using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -86,66 +89,69 @@ namespace UnitTestsProject
             return retVal;
         }
 
-        //[TestMethod]
-        //public void Compute_ExternalPredictiveInputsActive_ReturnsExpectedResult2()
-        //{
-        //    // Arrange
-        //    TemporalMemory tm = new TemporalMemory();
-        //    Connections cn = new Connections();
-        //    Parameters p = getDefaultParameters();
-        //    p.apply(cn);
-        //    tm.Init(cn);
-
-        //    int[] activeColumns = { 1, 2, 3 };
-        //    bool learn = true;
-        //    int[] externalPredictiveInputsActive = { 4, 5, 6 };
-        //    int[] externalPredictiveInputsWinners = { 7, 8, 9 };
-
-        //    // Act
-        //    ComputeCycle result = tm.Compute(activeColumns, learn, externalPredictiveInputsActive, externalPredictiveInputsWinners) as ComputeCycle;
-
-        //    // Assert
-        //    // Check that the result is not null
-        //    Assert.IsNotNull(result);
-
-        //    // Check that the list of active cells contains all the expected cells
-        //    int[] expectedActiveCells = activeColumns.Concat(externalPredictiveInputsActive).ToArray();
-        //    TestContext.WriteLine(string.Join(',', expectedActiveCells));
-        //    TestContext.WriteLine(string.Join(',', result.ActiveCells.Select(c => c.Index).ToArray()));
-        //    //CollectionAssert.AreEquivalent(expectedActiveCells, result.ActiveCells.Select(c => c.Index).ToArray());
-
-        //    // Check that the list of winner cells contains all the expected cells
-        //    int[] expectedWinnerCells = activeColumns.Concat(externalPredictiveInputsWinners).ToArray();
-        //    CollectionAssert.AreEquivalent(expectedWinnerCells, result.WinnerCells.Select(c => c.Index).ToArray());
-
-        //    // Check that the list of predictive cells contains all the expected cells
-        //    int[] expectedPredictiveCells = activeColumns.Concat(externalPredictiveInputsActive).Concat(externalPredictiveInputsWinners).Distinct().ToArray();
-        //    CollectionAssert.AreEquivalent(expectedPredictiveCells, result.PredictiveCells.Select(c => c.Index).ToArray());
-        //}
-
-
         [TestMethod]
-        public void Compute_ExternalPredictiveInputsActive_ReturnsExpectedResult()
+        public void TestAddingNewSynapseToDistalSegment()
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
+            Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
             tm.Init(cn);
 
-            var activeColumns = new int[] { 1, 2, 3 };
-            var learn = true;
-            var externalPredictiveInputsActive = new int[] { 4, 5, 6 };
-            var externalPredictiveInputsWinners = new int[] { 7, 8, 9 };
+            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
 
-            var result = tm.Compute(activeColumns, learn, externalPredictiveInputsActive, externalPredictiveInputsWinners);
-            TestContext.WriteLine(string.Join(",", result.ActiveCells.Select(c => c.Index)));
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.ActiveCells.Any(c => c.Index == 4));
-            Assert.IsTrue(result.ActiveCells.Any(c => c.Index == 5));
-            Assert.IsTrue(result.ActiveCells.Any(c => c.Index == 6));
-            Assert.IsTrue(result.ActiveCells.Any(c => c.Index == 7));
-            Assert.IsTrue(result.ActiveCells.Any(c => c.Index == 8));
+            // Act
+            Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.9);
+
+            // Assert
+            Assert.IsTrue(dd.Synapses.Contains(s1));
+            Assert.AreEqual(0.9, s1.Permanence);
+        }
+
+        [TestMethod]
+        public void TestRemovingSynapseFromDistalSegment()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
+            Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.9);
+            Synapse s2 = cn.CreateSynapse(dd, cn.GetCell(42), 0.8);
+
+            Assert.AreEqual(2, dd.Synapses.Count);
+
+            // remove s1
+            dd.KillSynapse(s1);
+
+            Assert.AreEqual(1, dd.Synapses.Count);
+            Assert.IsFalse(dd.Synapses.Contains(s1));
+            Assert.IsTrue(dd.Synapses.Contains(s2));
+        }
+
+        [TestMethod]
+        public void TestUpdatingPermanenceOfSynapse()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+
+            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
+            Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.5);
+
+            // Increment permanence
+            s1.Permanence += cn.HtmConfig.PermanenceIncrement;
+            Assert.AreEqual(0.6, s1.Permanence, 0.1);
+
+            // Decrement permanence
+            s1.Permanence -= cn.HtmConfig.PermanenceDecrement;
+            Assert.AreEqual(0.5, s1.Permanence, 0.1);
         }
 
         /// <summary>
@@ -167,51 +173,6 @@ namespace UnitTestsProject
             var activeCells = cc.ActiveCells;
 
             Assert.IsTrue(activeCells.Count <= 5);
-        }
-
-        /// <summary>
-        /// Test if the Temporal Memory can successfully learn and recall patterns of 
-        /// sequences with a high sparsity rate.
-        /// </summary>
-        [TestMethod]
-        public void TestHighSparsitySequenceLearningAndRecall()
-        {
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 4 });
-            p.apply(cn);
-            tm.Init(cn);
-
-            //var sequence1 = new int[] { 0, 10, 20, 30, 40, 50, 60 };
-            //var sequence2 = new int[] { 5, 15, 25, 35, 45, 55 };
-
-            //var seq1ActiveColumns = new int[] { 0, 10, 20, 30, 40, 50, 60 };
-            //var seq2ActiveColumns = new int[] { 5, 15, 25, 35, 45, 55 };
-
-            var sequence1 = new int[] { 0, 1, 2, 3 };
-            var sequence2 = new int[] { 4, 5, 6, 7 };
-
-            var seq1ActiveColumns = new int[] { 0 };
-            var seq2ActiveColumns = new int[] { 1 };
-
-            // Learn the sequences multiple times
-            for (int i = 0; i < 10; i++)
-            {
-                tm.Compute(seq1ActiveColumns, true);
-                tm.Compute(seq2ActiveColumns, true);
-            }
-
-            // Recall the first sequence
-            var recall1 = tm.Compute(seq1ActiveColumns, false);
-            TestContext.WriteLine("recall1 ===>>>>> "+string.Join(",", recall1.ActiveCells.Select(c => c.Index)));
-            TestContext.WriteLine("sequence1  >>>>>>>>>>>>  " + string.Join(",", sequence1));
-            Assert.IsTrue(recall1.ActiveCells.Select(c => c.Index).SequenceEqual(sequence1));
-
-            // Recall the second sequence
-            var recall2 = tm.Compute(seq2ActiveColumns, false);
-            TestContext.WriteLine("recall2 ===>>>>> " + string.Join(",", recall2.ActiveCells));
-            TestContext.WriteLine("sequence1 ==>>>>> " + string.Join(",", sequence2));
-            Assert.IsTrue(recall2.ActiveCells.Select(c => c.Index).SequenceEqual(sequence2));
         }
 
         /// <summary>
@@ -327,12 +288,53 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] activeColumns = { 4, 5, 4, 5, 6 }; // Contains duplicates
-            Cell[] burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4});
+            Cell[] burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4 });
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
         }
 
+        /// <summary>
+        /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
+        /// </summary>
+        [TestMethod]
+        public void TestColumnDimensions()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32, 64 }); // Set custom column dimensions
+            p.Set(KEY.CELLS_PER_COLUMN, 32);
+            p.apply(cn);
+            tm.Init(cn);
+
+            int cnt = 0;
+            foreach (var item in cn.GetColumns())
+            {
+                cnt += item.Cells.Length;
+            }
+
+            Assert.AreEqual(32 * 64 * 32, cnt);
+        }
+
+        [TestMethod]
+        public void TestTemporalMemoryComputeReturnsWinnerCells()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
+            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 2);
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0, 1, 2, 3 };
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
+            Assert.AreEqual(4, winnerCells.Count);
+            Assert.AreEqual(0, winnerCells[0].Index);
+            Assert.AreEqual(2, winnerCells[1].Index);
+        }
     }
 }
