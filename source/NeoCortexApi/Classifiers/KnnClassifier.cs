@@ -203,7 +203,7 @@ namespace NeoCortexApi.Classifiers
             foreach (var coordinates in table)
             {
                 int i;
-                for (i = 0; i < _nNeighbors; i++)
+                for (i = 0; i < _nNeighbors; i+=1)
                 {
                     // Returns the Classification of [(ClassificationAndDistance 1), ...]
                     if (votes.ContainsKey(coordinates.Value[i].Classification))
