@@ -198,7 +198,7 @@ namespace NeoCortexApi.Classifiers
         /// </returns>
         Dictionary<int[], string> Voting(Dictionary<int[], List<ClassificationAndDistance>> table)
         {
-            var vote = new Dictionary<string, int>();
+            var votes = new Dictionary<string, int>();
             var classification = new Dictionary<int[], string>();
             foreach (var coordinates in table)
             {
@@ -206,17 +206,17 @@ namespace NeoCortexApi.Classifiers
                 for (i = 0; i < _nNeighbors; i+=1)
                 {
                     // Returns the Classification of [(ClassificationAndDistance 1), ...]
-                    if (vote.ContainsKey(coordinates.Value[i].Classification))
-                        vote[coordinates.Value[i].Classification] += 1;
+                    if (votes.ContainsKey(coordinates.Value[i].Classification))
+                        votes[coordinates.Value[i].Classification] += 1;
                     else
-                        vote[coordinates.Value[i].Classification] = 0;
+                        votes[coordinates.Value[i].Classification] = 0;
                 }
 
                 // Handles if a variable contains the same value multiple times.
                 for (; coordinates.Value[i].Distance <= coordinates.Value[i + 1].Distance; i++)
-                    vote[coordinates.Value[i].Classification] += 1;
+                    votes[coordinates.Value[i].Classification] += 1;
 
-                var classificationType = vote.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+                var classificationType = votes.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
                 classification[coordinates.Key] = classificationType;
             }
 
