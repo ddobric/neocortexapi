@@ -100,6 +100,25 @@ namespace UnitTestsProject
             Assert.AreEqual(2, winnerCells[1].Index);
         }
 
+        [TestMethod]
+        public void TestIncreasePermanenceOfActiveSynapses()
+        {
+            // Arrange
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.MIN_THRESHOLD, 2);
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] previousActiveColumns = { 0, 1, 2 };
+            int[] activeColumns = { 1, 2, 3 };
+
+            // Activate some cells
+            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
+            List<Cell> prevActiveCells = new List<Cell>(cc.ActiveCells);
+            Assert.AreEqual(12, prevActiveCells.Count); }
+
+
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
         {
             TemporalMemory tm = new TemporalMemory();
