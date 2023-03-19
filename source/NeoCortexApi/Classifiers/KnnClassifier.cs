@@ -225,7 +225,7 @@ namespace NeoCortexApi.Classifiers
 
         /// <summary>
         ///     This function takes in the unclassified matrix and assigns a classification verdict. i.e:
-        ///     A = 30%, B = 30%, C = 40%
+        ///  A = 30%, B = 30%, C = 40%
         /// </summary>
         /// <param name="unclassifiedMatrix">
         ///     |0 0 1 1|
