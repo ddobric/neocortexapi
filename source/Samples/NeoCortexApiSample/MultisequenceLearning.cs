@@ -23,6 +23,7 @@ namespace NeoCortexApiSample
         public Predictor Run(Dictionary<string, List<double>> sequences)
         {
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
+            Console.WriteLine("Execution is in Main Run() method");
 
             int inputBits = 100;
             int numColumns = 1024;
@@ -69,7 +70,7 @@ namespace NeoCortexApiSample
             };
 
             EncoderBase encoder = new ScalarEncoder(settings);
-
+            Console.WriteLine("Calling RunExperiment Method");
             return RunExperiment(inputBits, cfg, encoder, sequences);
         }
 
@@ -88,6 +89,7 @@ namespace NeoCortexApiSample
             bool isInStableState = false;
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            Console.WriteLine("Inside RunExperiment() method");
 
             var numUniqueInputs = GetNumberOfInputs(sequences);
 
@@ -134,6 +136,8 @@ namespace NeoCortexApiSample
             var lastPredictedValues = new List<string>(new string[] { "0" });
 
             int maxCycles = 3500;
+
+            Console.WriteLine($"Print last predicted values = {lastPredictedValues}");
 
             //
             // Training SP to get stable. New-born stage.
@@ -309,12 +313,12 @@ namespace NeoCortexApiSample
         private int GetNumberOfInputs(Dictionary<string, List<double>> sequences)
         {
             int num = 0;
-
             foreach (var inputs in sequences)
             {
                 //num += inputs.Value.Distinct().Count();
                 num += inputs.Value.Count;
             }
+            Console.WriteLine($"Inside GetNumberOfInputs method and Printing the number of inputs = {num}");
 
             return num;
         }
