@@ -18,15 +18,23 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int Ordinal { get => m_Ordinal; set => m_Ordinal = value; }
 
+#pragma warning disable CS1729 // 'Segment' does not contain a constructor that takes 4 arguments
         public ApicalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, lastUsedIteration, synapsePermConnected, numInputs)
+#pragma warning restore CS1729 // 'Segment' does not contain a constructor that takes 4 arguments
         {
+#pragma warning disable CS1061 // 'ApicalDendrite' does not contain a definition for 'ParentCell' and no accessible extension method 'ParentCell' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
             this.ParentCell = parentCell;
+#pragma warning restore CS1061 // 'ApicalDendrite' does not contain a definition for 'ParentCell' and no accessible extension method 'ParentCell' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
             this.m_Ordinal = ordinal;
         }
 
+#pragma warning disable CS1729 // 'Segment' does not contain a constructor that takes 4 arguments
         public ApicalDendrite(Cell parentCell, int index, double synapsePermConnected) : base(index, 0, synapsePermConnected, -1)
+#pragma warning restore CS1729 // 'Segment' does not contain a constructor that takes 4 arguments
         {
+#pragma warning disable CS1061 // 'ApicalDendrite' does not contain a definition for 'ParentCell' and no accessible extension method 'ParentCell' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
             this.ParentCell = parentCell;
+#pragma warning restore CS1061 // 'ApicalDendrite' does not contain a definition for 'ParentCell' and no accessible extension method 'ParentCell' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
             this.m_Ordinal = index;
         }
 
@@ -60,21 +68,33 @@ namespace NeoCortexApi.Entities
                 return false;
 
             ApicalDendrite other = (ApicalDendrite)obj;
+#pragma warning disable CS0103 // The name 'ParentCell' does not exist in the current context
             if (ParentCell == null)
             {
+#pragma warning disable CS1061 // 'ApicalDendrite' does not contain a definition for 'ParentCell' and no accessible extension method 'ParentCell' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
                 if (other.ParentCell != null)
                     return false;
+#pragma warning restore CS1061 // 'ApicalDendrite' does not contain a definition for 'ParentCell' and no accessible extension method 'ParentCell' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
             }
+#pragma warning restore CS0103 // The name 'ParentCell' does not exist in the current context
             // We check here the cell id only! The cell as parent must be correctlly created to avoid having different cells with the same id.
             // If we would use here ParenCell.Equals method, that method would cause a cicular invoke of this.Equals etc.
             //else if (ParentCell.CellId != other.ParentCell.CellId)
             //    return false;
+#pragma warning disable CS1061 // 'ApicalDendrite' does not contain a definition for 'LastUsedIteration' and no accessible extension method 'LastUsedIteration' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0103 // The name 'LastUsedIteration' does not exist in the current context
             if (LastUsedIteration != other.LastUsedIteration)
                 return false;
+#pragma warning restore CS0103 // The name 'LastUsedIteration' does not exist in the current context
+#pragma warning restore CS1061 // 'ApicalDendrite' does not contain a definition for 'LastUsedIteration' and no accessible extension method 'LastUsedIteration' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
             if (m_Ordinal != other.m_Ordinal)
                 return false;
+#pragma warning disable CS1061 // 'ApicalDendrite' does not contain a definition for 'LastUsedIteration' and no accessible extension method 'LastUsedIteration' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0103 // The name 'LastUsedIteration' does not exist in the current context
             if (LastUsedIteration != other.LastUsedIteration)
                 return false;
+#pragma warning restore CS0103 // The name 'LastUsedIteration' does not exist in the current context
+#pragma warning restore CS1061 // 'ApicalDendrite' does not contain a definition for 'LastUsedIteration' and no accessible extension method 'LastUsedIteration' accepting a first argument of type 'ApicalDendrite' could be found (are you missing a using directive or an assembly reference?)
             if (Ordinal != other.Ordinal)
                 return false;
             if (SegmentIndex != obj.SegmentIndex)

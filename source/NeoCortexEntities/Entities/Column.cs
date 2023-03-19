@@ -1,43 +1,38 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Utility;
-using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Text;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
+using System.Linq;
+using System.Diagnostics;
+using NeoCortexEntities.NeuroVisualizer;
 
 namespace NeoCortexApi.Entities
 {
+
+   
     /// <summary>
     /// Implementation of the mini-column.
     /// </summary>
-    public class Column : IEquatable<Column>, IComparable<Column>, ISerializable
+    /// <remarks>
+    /// Authors of the JAVA implementation:Chetan Surpur, David Ray
+    /// </remarks>
+    public class Column : IEquatable<Column>, IComparable<Column>
     {
         public AbstractSparseBinaryMatrix connectedInputCounter;
 
-        /// <summary>
-        /// TODO: There is no need for this matrix. It should be removed. All required synapses atr no in the Proximal Dendrite Segment => Pool.
-        /// </summary>
         public AbstractSparseBinaryMatrix ConnectedInputCounterMatrix { get { return connectedInputCounter; } set { connectedInputCounter = value; } }
 
-        public int[] ConnectedInputBits
-        {
-            get
-            {
-                if (connectedInputCounter != null)
-                    return (int[])this.connectedInputCounter.GetSlice(0);
-                else
-                    return new int[0];
-            }
-        }
+        public int[] ConnectedInputBits { get => (int[])this.connectedInputCounter.GetSlice(0); }
 
         /// <summary>
         /// Column index
         /// </summary>
         public int Index { get; set; }
-
+            
         /// <summary>
         /// Dendrites connected to <see cref="SpatialPooler"/> input neural cells.
         /// </summary>
@@ -47,6 +42,15 @@ namespace NeoCortexApi.Entities
         /// All cells of the column.
         /// </summary>
         public Cell[] Cells { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int CellId { get; }
+
+        //private ReadOnlyCollection<Cell> cellList;
+
+        private readonly int hashcode;
 
         public Column()
         {
@@ -64,11 +68,13 @@ namespace NeoCortexApi.Entities
         {
             this.Index = colIndx;
 
+            this.hashcode = GetHashCode();
+
             Cells = new Cell[numCells];
 
             for (int i = 0; i < numCells; i++)
             {
-                Cells[i] = new Cell(this.Index, i, this.GetNumCellsPerColumn(), CellActivity.ActiveCell);
+                Cells[i] = new Cell(this.Index, i, this.GetNumCellsPerColumn(), this.CellId, CellActivity.ActiveCell);
             }
 
             // We keep tracking of this column only
@@ -90,7 +96,7 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Returns the <see cref="Cell"/> with the least number of <see cref="Segment"/>s.
+        /// Returns the <see cref="Cell"/> with the least number of <see cref="DistalDendrite"/>s.
         /// </summary>
         /// <param name="c">the connections state of the temporal memory</param>
         /// <param name="random"></param>
@@ -102,9 +108,7 @@ namespace NeoCortexApi.Entities
 
             foreach (var cell in Cells)
             {
-                //DD
-                //int numSegments = cell.GetSegments(c).Count;
-                int numSegments = cell.DistalDendrites.Count;
+                int numSegments = cell.GetSegments(c).Count;
                 //int numSegments = cell.Segments.Count;
 
                 if (numSegments < minNumSegments)
@@ -125,14 +129,15 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
-        /// Creates connections between mini-columns and input neurons.
+        /// Creates connections between columns and inputs.
         /// </summary>
         /// <param name="htmConfig"></param>
-        /// <param name="inputVectorIndexes">Sensory cells providing spatial input that will be learned by SP.</param>
-        /// <param name="startSynapseIndex">Starting index.</param>
+        /// <param name="inputVectorIndexes"></param>
+        /// <param name="startSynapseIndex"></param>
         /// <returns></returns>
         public Pool CreatePotentialPool(HtmConfig htmConfig, int[] inputVectorIndexes, int startSynapseIndex)
         {
+            //var pool = ProximalDendrite.createPool(c, inputVectorIndexes);
             this.ProximalDendrite.Synapses.Clear();
 
             var pool = new Pool(inputVectorIndexes.Length, htmConfig.NumInputs);
@@ -141,27 +146,26 @@ namespace NeoCortexApi.Entities
 
             for (int i = 0; i < inputVectorIndexes.Length; i++)
             {
-                var synapse = this.ProximalDendrite.CreateSynapse(startSynapseIndex + i, inputVectorIndexes[i]);
-
-                // All permanences are at the begining set to 0.
+                //var cnt = c.getProximalSynapseCount();
+                //var synapse = createSynapse(c, c.getSynapses(this), null, this.RFPool, synCount, inputIndexes[i]);
+                var synapse = this.ProximalDendrite.CreateSynapse(null, startSynapseIndex + i, inputVectorIndexes[i]);
                 this.SetPermanence(synapse, htmConfig.SynPermConnected, 0);
+                //c.setProximalSynapseCount(cnt + 1);
             }
+
+            //var mem = c.getMemory();
+
+            //mem.set(this.Index, this);
+
+            //c.getPotentialPools().set(this.Index, pool);
 
             return pool;
         }
 
-        /// <summary>
-        /// Used by SpatialPooler when learning spatial patterns. Spatial patterns are learned by synapses between 
-        /// proximal dendrite segment and input neurons.
-        /// </summary>
-        /// <param name="synapse"></param>
-        /// <param name="synPermConnected">The synapse is the connected oneif its permanence value is greather than this threshold.</param>
-        /// <param name="perm">The permanence value of the synapse.</param>
-        private void SetPermanence(Synapse synapse, double synPermConnected, double perm)
+        public void SetPermanence(Synapse synapse, double synPermConnected, double perm)
         {
             synapse.Permanence = perm;
 
-            //
             // On proximal dendrite which has no presynaptic cell
             if (synapse.SourceCell == null)
             {
@@ -177,34 +181,71 @@ namespace NeoCortexApi.Entities
         /// <param name="perms">the floating point degree of connectedness</param>
         public void SetPermanences(HtmConfig htmConfig, double[] perms)
         {
+            //var connCounts = c.getConnectedCounts();
+
             this.ProximalDendrite.RFPool.ResetConnections();
 
             // Every column contians a single row at index 0.
-            this.ConnectedInputCounterMatrix.ClearStatistics(0);
+            this.ConnectedInputCounterMatrix.ClearStatistics(0 /*this.Index*/);
 
-            foreach (Synapse synapse in this.ProximalDendrite.Synapses)
+            foreach (Synapse s in this.ProximalDendrite.Synapses)
             {
-                this.SetPermanence(synapse, htmConfig.SynPermConnected, perms[synapse.InputIndex]);
+                this.SetPermanence(s, htmConfig.SynPermConnected, perms[s.InputIndex]);
 
-                if (perms[synapse.InputIndex] >= htmConfig.SynPermConnected)
+                if (perms[s.InputIndex] >= htmConfig.SynPermConnected)
                 {
-                    this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, synapse.InputIndex);
+                    this.ConnectedInputCounterMatrix.set(1, 0 /*this.Index*/, s.InputIndex);
                 }
-            }
+            }           
         }
 
+        /**
+         * Sets the permanences on the {@link ProximalDendrite} {@link Synapse}s
+         * 
+         * @param c				the {@link Connections} memory object
+         * @param permanences	floating point degree of connectedness
+         */
+        //public void setProximalPermanences(Connections c, double[] permanences)
+        //{
+        //    ProximalDendrite.setPermanences(c, permanences);
+        //}
 
+        // TODO better parameters documentation
+        /**
+         * 
+         * 
+         * @param c				the {@link Connections} memory object
+         * @param permanences	
+         */
         /// <summary>
         /// Sets the permanences on the <see cref="ProximalDendrite"/> <see cref="Synapse"/>s
         /// </summary>
         /// <param name="htmConfig"></param>
         /// <param name="permanences">floating point degree of connectedness</param>
         /// <param name="inputVectorIndexes"></param>
-        public void SetProximalPermanencesSparse(HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
+        public void setProximalPermanencesSparse(HtmConfig htmConfig, double[] permanences, int[] inputVectorIndexes)
         {
             this.ProximalDendrite.SetPermanences(this.ConnectedInputCounterMatrix, htmConfig, permanences, inputVectorIndexes);
         }
 
+        // TODO better parameters documentation
+        /**
+        * This method updates the permanence matrix with a column's new permanence
+        * values. The column is identified by its index, which reflects the row in
+        * the matrix, and the permanence is given in 'sparse' form, (i.e. an array
+        * whose members are associated with specific indexes). It is in
+        * charge of implementing 'clipping' - ensuring that the permanence values are
+        * always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
+        * all permanence values below 'synPermTrimThreshold'. Every method wishing
+        * to modify the permanence matrix should do so through this method.
+        * 
+        * @param c                 the {@link Connections} which is the memory model.
+        * @param perm              An array of permanence values for a column. The array is
+        *                          "sparse", i.e. it contains an entry for each input bit, even
+        *                          if the permanence value is 0.
+        * @param column            The column in the permanence, potential and connectivity matrices
+        * @param raisePerm         a boolean value indicating whether the permanence values
+        */
         /// <summary>
         /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
         /// the matrix, and the permanence is given in 'sparse' form, (i.e. an array whose members are associated with specific indexes). It is in charge of 
@@ -213,105 +254,41 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="htmConfig"></param>
         /// <param name="perm">An array of permanence values for a column. The array is "sparse", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
-        /// <param name="maskPotential">Indexes of potential connections to input neurons.</param>
+        /// <param name="maskPotential"></param>
         /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
         public void UpdatePermanencesForColumnSparse(HtmConfig htmConfig, double[] perm, int[] maskPotential, bool raisePerm)
         {
             if (raisePerm)
             {
-                HtmCompute.RaisePermanenceToThreshold(htmConfig, perm);
+                HtmCompute.RaisePermanenceToThresholdSparse(htmConfig, perm);
             }
 
-            // All values less than SynPermTrimThreshold will be set to zero.
             ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
-            
-            ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
-
-            SetProximalPermanencesSparse(htmConfig, perm, maskPotential);
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            setProximalPermanencesSparse(htmConfig, perm, maskPotential);
         }
 
-        /// <summary>
-        /// Trace synapse permanences.
-        /// </summary>
-        /// <returns></returns>
-        public string Trace()
-        {
-            double permSum = 0.0;
-
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var syn in this.ProximalDendrite.Synapses)
-            {
-                sb.AppendLine($"{syn.InputIndex} - {syn.Permanence}");
-                permSum += syn.Permanence;
-            }
-
-            sb.AppendLine($"Col: {this.Index}\t Synapses: {this.ProximalDendrite.Synapses.Count} \t PermSum: {permSum}");
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Gets the min,max and avg permanence of all connected synapses.
-        /// </summary>
-        /// <returns></returns>
-        public HtmStatistics GetStatistics(HtmConfig config)
-        {
-            double permSum = 0.0;
-
-            double max = 0.0;
-
-            double min = 2.0;
-
-            int connectedSynapses = 0;
-
-            foreach (var syn in this.ProximalDendrite.Synapses.Where(s => s.Permanence > config.SynPermConnected))
-            {
-                permSum += syn.Permanence;
-
-                if (syn.Permanence < min)
-                    min = syn.Permanence;
-
-                if (syn.Permanence > max)
-                    max = syn.Permanence;
-
-                connectedSynapses++;
-            }
-
-            return new HtmStatistics
-            {
-                SynapticActivity = (double)connectedSynapses / (double)this.ProximalDendrite.Synapses.Count,
-                AvgPermanence = permSum / connectedSynapses,
-                MinPermanence = min,
-                MaxPermanence = max,
-                ConnectedSynapses = connectedSynapses,
-                Synapses = this.ProximalDendrite.Synapses.Count
-            };
-        }
 
         /// <summary>
         /// Calculates the overlapp of the column.
         /// </summary>
         /// <param name="inputVector"></param>
-        /// <param name="stimulusThreshold">Overlap will be 0 if it is less than this value.</param>
-        /// <returns>The overlap of the column. 0 if it is less than stimulus threshold.</returns>
-        public int CalcMiniColumnOverlap(int[] inputVector, double stimulusThreshold)
+        /// <param name="stimulusThreshold"></param>
+        /// <returns></returns>
+        public int GetColumnOverlapp(int[] inputVector, double stimulusThreshold)
         {
             int result = 0;
 
-            // Gets the synapse map  between this column and the input vector.
-            int[] synMap = (int[])this.connectedInputCounter.GetSlice(0);
+            // Gets the synapse mapping between column-i with input vector.
+            int[] slice = (int[])this.connectedInputCounter.GetSlice(0);
 
-            //
-            // Step through all synapses between the mini-column and input vector.
-            for (int inpBitIndx = 0; inpBitIndx < synMap.Length; inpBitIndx++)
+            // Go through all connections (synapses) between column and input vector.
+            for (int inpBit = 0; inpBit < slice.Length; inpBit++)
             {
-                // Result (overlap) is 1 if input bit is 1 and the mini-column is connected.
-                result += (inputVector[inpBitIndx] * synMap[inpBitIndx]);
-
-                //
-                // After the overlap is calculated, we set it on 0 if it is under stimulus threshold.
-                if (inpBitIndx == synMap.Length - 1)
+                // Result (overlapp) is 1 if 
+                result += (inputVector[inpBit] * slice[inpBit]);
+                //TODO: check if this is needed!
+                if (inpBit == slice.Length - 1)
                 {
                     // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
                     // If the overlap (num of connected synapses to TRUE input) is greather than stimulusThreshold then result remains as calculated.
@@ -320,14 +297,14 @@ namespace NeoCortexApi.Entities
                 }
             }
 
+            //Debug.WriteLine($"Col {this.Index} - o = {result} - onces: {slice.Count(i=>i == 1)}");
+           // Debug.WriteLine(StringifyVector(slice));
+           // Debug.WriteLine("");
+
             return result;
         }
 
-        /// <summary>
-        /// Creates the string representation of the given vector.
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
+
         public static string StringifyVector(int[] vector)
         {
             StringBuilder sb = new StringBuilder();
@@ -355,6 +332,18 @@ namespace NeoCortexApi.Entities
         }
 
 
+        /**
+         * {@inheritDoc}
+         * @param otherColumn     the {@code Column} to compare to
+         * @return
+         */
+        //@Override
+        //public int compareTo(Column otherColumn)
+        //    {
+        //        return boxedIndex(otherColumn.boxedIndex);
+        //    }
+
+
         private readonly int m_Hashcode;
 
 
@@ -370,13 +359,6 @@ namespace NeoCortexApi.Entities
             return m_Hashcode;
         }
 
-        public override bool Equals(object obj)
-        {
-            var col = obj as Column;
-            if (col == null)
-                return false;
-            return this.Equals(col);
-        }
         public bool Equals(Column obj)
         {
             if (this == obj)
@@ -384,39 +366,10 @@ namespace NeoCortexApi.Entities
             if (obj == null)
                 return false;
 
-            if (connectedInputCounter == null)
-            {
-                if (obj.connectedInputCounter != null)
-                    return false;
-            }
-            else if (!connectedInputCounter.Equals(obj.connectedInputCounter))
-                return false;
-            if (ConnectedInputCounterMatrix == null)
-            {
-                if (obj.ConnectedInputCounterMatrix != null)
-                    return false;
-            }
-            else if (!ConnectedInputCounterMatrix.Equals(obj.ConnectedInputCounterMatrix))
-                return false;
-            if (ProximalDendrite == null)
-            {
-                if (obj.ProximalDendrite != null)
-                    return false;
-            }
-            else if (!ProximalDendrite.Equals(obj.ProximalDendrite))
-                return false;
-            if (obj.Cells != null && Cells != null)
-            {
-
-                if (!obj.Cells.ElementsEqual(Cells))
-                    return false;
-            }
             if (Index != obj.Index)
                 return false;
-           // if (CellId != obj.CellId)
-              //  return false;
-
-            return true;
+            else
+                return true;
         }
 
         public int CompareTo(Column other)
@@ -436,113 +389,6 @@ namespace NeoCortexApi.Entities
         public override string ToString()
         {
             return $"Column: Indx:{this.Index}, Cells:{this.Cells.Length}";
-        }
-        public void Serialize(StreamWriter writer)
-        {
-            HtmSerializer ser = new HtmSerializer();
-
-            ser.SerializeBegin(nameof(Column), writer);
-
-            //ser.SerializeValue(this.CellId, writer);
-            ser.SerializeValue(this.Index, writer);
-
-
-            if (this.connectedInputCounter != null)
-            {
-                this.connectedInputCounter.Serialize(writer);
-            }
-
-            if (this.ConnectedInputCounterMatrix != null)
-            {
-                this.ConnectedInputCounterMatrix.Serialize(writer);
-            }
-
-            if (this.ProximalDendrite != null)
-            {
-                this.ProximalDendrite.Serialize(writer);
-            }
-            ser.SerializeValue(this.Cells, writer);
-            ser.SerializeEnd(nameof(Column), writer);
-        }
-        public static Column Deserialize(StreamReader sr)
-        {
-            Column column = new Column();
-
-            HtmSerializer ser = new HtmSerializer();
-
-
-            while (!sr.EndOfStream)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Column)) || data == ser.ValueDelimiter)
-                {
-                    continue;
-                }
-                else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
-                {
-                    column.connectedInputCounter = SparseBinaryMatrix.Deserialize(sr);
-                }
-                //else if (data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
-                //{
-                //    column.ConnectedInputCounterMatrix = SparseBinaryMatrix.Deserialize(sr);
-                //}
-                else if (data == ser.ReadBegin(nameof(ProximalDendrite)))
-                {
-                    column.ProximalDendrite = ProximalDendrite.Deserialize(sr);
-                }
-                else if (data == ser.ReadBegin(nameof(Cell)))
-                {
-                    column.Cells = ser.DeserializeCellArray(data, sr);
-                }
-                else if (data == ser.ReadEnd(nameof(Column)))
-                {
-                    break;
-                }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                {
-                                   // column.CellId = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    column.Index = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
-
-                        }
-                    }
-                }
-            }
-            return column;
-        }
-
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            var column = obj as Column;
-            if (column != null)
-            {
-                var ignoreMembers = new List<string>
-                {
-                    nameof(Column.connectedInputCounter),
-                    nameof(Column.Cells),
-                    nameof(Column.m_Hashcode)
-                };
-                HtmSerializer.SerializeObject(column, name, sw, ignoreMembers);
-            }
-        }
-
-        public static object Deserialize<T>(StreamReader sr, string name)
-        {
-            return HtmSerializer.DeserializeObject<Column>(sr, name);
         }
     }
 }

@@ -1,12 +1,16 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Text;
+using System.Threading.Tasks;
+using NeoCortexApi.Entities;
 using System.Linq;
-
+using System.Diagnostics;
+using NeoCortexApi.Utility;
+using NeoCortexApi.DistributedCompute;
+using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi
 {
@@ -30,9 +34,9 @@ namespace NeoCortexApi
 
             this.distMemConfig = distMem;
 
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.Memory;
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
 
-            c.Memory = mem == null ? mem = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: distMem.ColumnDictionary) : mem;
+            c.HtmConfig.Memory = mem == null ? mem = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: distMem.ColumnDictionary) : mem;
 
             c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
@@ -42,7 +46,7 @@ namespace NeoCortexApi
 
             //Calculate numInputs and numColumns
             int numInputs = c.HtmConfig.InputMatrix.GetMaxIndex() + 1;
-            int numColumns = c.Memory.GetMaxIndex() + 1;
+            int numColumns = c.HtmConfig.Memory.GetMaxIndex() + 1;
             if (numColumns <= 0)
             {
                 throw new ArgumentException("Invalid number of columns: " + numColumns);
@@ -57,14 +61,14 @@ namespace NeoCortexApi
             if (distMem != null)
             {
                 //var distHtmCla = distMem.ColumnDictionary as HtmSparseIntDictionary<Column>;
-                var distHtmCla = distMem.ColumnDictionary;// as ActorSbDistributedDictionaryBase<Column>;
+                var distHtmCla = distMem.ColumnDictionary as ActorSbDistributedDictionaryBase<Column>;
 
-                distHtmCla.htmConfig = c.HtmConfig;
+                distHtmCla.HtmConfig = c.HtmConfig;
             }
 
             //
             // Fill the sparse matrix with column objects
-            //var _numCells = c.getCellsPerColumn();
+            //var numCells = c.getCellsPerColumn();
 
             // var partitions = mem.GetPartitions();
 
@@ -72,7 +76,7 @@ namespace NeoCortexApi
             List<KeyPair> colList = new List<KeyPair>();
             for (int i = 0; i < numColumns; i++)
             {
-                //colList.Add(new KeyPair() { Key = i, Value = new Column(_numCells, i, c.getSynPermConnected(), c.NumInputs) });
+                //colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.getSynPermConnected(), c.NumInputs) });
                 colList.Add(new KeyPair() { Key = i, Value = c.HtmConfig });
             }
 
@@ -101,8 +105,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Implements multinode initialization of pooler.
-        /// It creates the pool of potentially connected synapses on ProximalDendrite segment.
+        /// Implements muticore initialization of pooler.
         /// </summary>
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)
@@ -205,7 +208,7 @@ namespace NeoCortexApi
             //    colList.Add(new KeyPair() { Key = i, Value = data.Column });
             //}
 
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.Memory;
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
 
             //if (mem.IsRemotelyDistributed)
             //{
@@ -258,7 +261,7 @@ namespace NeoCortexApi
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.InitArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
+            ArrayUtils.FillArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
@@ -267,13 +270,13 @@ namespace NeoCortexApi
             remoteHtm.AdaptSynapsesDist(inputVector, permChanges, activeColumns);
         }
 
-        public override void BoostColsWithLowOverlap(Connections c)
+        public override void BumpUpWeakColumns(Connections c)
         {
             IHtmDistCalculus remoteHtm = this.distMemConfig.ColumnDictionary as IHtmDistCalculus;
             if (remoteHtm == null)
                 throw new ArgumentException("disMemConfig is not of type IRemotelyDistributed!");
 
-            var weakColumns = c.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
+            var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
             if (weakColumns.Length > 0)
                 remoteHtm.BumpUpWeakColumnsDist(weakColumns);
         }

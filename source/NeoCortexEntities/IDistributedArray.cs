@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -72,11 +71,5 @@ namespace NeoCortexApi.Entities
         /// <param name="rowIndex"></param>
         /// <param name="newVal"></param>
         void SetRowValuesTo(int rowIndex, object newVal);
-
-        public virtual void Serialize(StreamWriter writer)
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }

@@ -41,7 +41,9 @@ namespace NeoCortexApi
         /// <summary>
         /// Get Active Apical Segments of currentlly active cells in the area.
         /// </summary>
+#pragma warning disable CS0246 // The type or namespace name 'ApicalDendrite' could not be found (are you missing a using directive or an assembly reference?)
         public List<ApicalDendrite> GetActiveApicalSegments(IList<Cell> activeCells)
+#pragma warning restore CS0246 // The type or namespace name 'ApicalDendrite' could not be found (are you missing a using directive or an assembly reference?)
         {
 
             List<ApicalDendrite> actSegs = new List<ApicalDendrite>();
@@ -68,7 +70,9 @@ namespace NeoCortexApi
         /// Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
         /// more connected synapses than _cfg.MinThreshold.
         /// </summary>
+#pragma warning disable CS0246 // The type or namespace name 'ApicalDendrite' could not be found (are you missing a using directive or an assembly reference?)
         public List<ApicalDendrite> GetMatchingApicalSegments()
+#pragma warning restore CS0246 // The type or namespace name 'ApicalDendrite' could not be found (are you missing a using directive or an assembly reference?)
         {
             List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
 
@@ -107,7 +111,9 @@ namespace NeoCortexApi
         /// <summary>
         /// Get Inactive Apical Segments of currentlly active cells in the area.
         /// </summary>
+#pragma warning disable CS0246 // The type or namespace name 'ApicalDendrite' could not be found (are you missing a using directive or an assembly reference?)
         public List<ApicalDendrite> InactiveApicalSegments
+#pragma warning restore CS0246 // The type or namespace name 'ApicalDendrite' could not be found (are you missing a using directive or an assembly reference?)
         {
             get
             {
@@ -400,7 +406,9 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="segmentParentCell">the Cell to which a segment is added.</param>
         /// <returns>the newly created segment or a reused segment.</returns>
+#pragma warning disable CS0246 // The type or namespace name 'ApicalDendrite' could not be found (are you missing a using directive or an assembly reference?)
         public ApicalDendrite CreateApicalSegment(Cell segmentParentCell)
+#pragma warning restore CS0246 // The type or namespace name 'ApicalDendrite' could not be found (are you missing a using directive or an assembly reference?)
         {
             //
             // If there are more inactiveSegments than maximal allowed number of inactiveSegments per cell,

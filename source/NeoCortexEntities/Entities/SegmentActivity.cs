@@ -3,18 +3,19 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
     /// <summary>
     /// Stores the calculus of a temporal cycle.
     /// </summary>
+    //[Serializable]
     public class SegmentActivity
     {
         /// <summary>
         /// Contains the index of segments with number of synapses with permanence higher than threshold 
-        /// <see cref="connectedPermanence"/>, which makes synapse connected.
+        /// ( <see cref="connectedPermanence"/>connectedPermanence), which makes synapse active.
         /// Dictionary[segment index, number of active synapses].
         /// </summary>
         public Dictionary<int, int> ActiveSynapses = new Dictionary<int, int>();
@@ -35,27 +36,10 @@ namespace NeoCortexApi.Entities
 
         }
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <returns></returns>
-        public bool Equals(SegmentActivity obj)
-        {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-
-            if (ActiveSynapses.SequenceEqual(obj.ActiveSynapses) && PotentialSynapses.SequenceEqual(obj.PotentialSynapses))
-                return true;
-            else
-                return false;
-        }
-
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer ser = new HtmSerializer();
+            HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(SegmentActivity), writer);
 
@@ -63,46 +47,6 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.PotentialSynapses, writer);
 
             ser.SerializeEnd(nameof(SegmentActivity), writer);
-        }
-
-        public static SegmentActivity Deserialize(StreamReader sr)
-        {
-            SegmentActivity segment = new SegmentActivity();
-
-            HtmSerializer ser = new HtmSerializer();
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == ser.LineDelimiter || data == ser.ReadBegin(nameof(SegmentActivity)) || data == ser.ReadEnd(nameof(SegmentActivity)))
-                { }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                {
-
-                                    segment.ActiveSynapses = ser.ReadDictionaryIIValue(str[i]);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    segment.PotentialSynapses = ser.ReadDictionaryIIValue(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
-
-                        }
-                    }
-                }
-            }
-
-            return segment;
         }
         #endregion
 

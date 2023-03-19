@@ -1,19 +1,21 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
+﻿using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using NeoCortexApi.DistributedComputeLib;
+
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
+using System.Drawing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Drawing.Imaging;
 
 namespace NeoCortexApi.Experiments
 {
     /// <summary>
     /// Project work: https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2019-2020/tree/PRD1/PRD1%20Group%20SE%20Project(WS-2019)/NoiseTestSpatialPooler
-    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.10_ValdatingMemorizingCapabilitesOfSpatialPooler.pdf
     /// </summary>
     [TestClass]
     public class SpatialPoolerMemorizingExperiment

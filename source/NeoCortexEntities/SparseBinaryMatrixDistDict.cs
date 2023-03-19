@@ -2,12 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 #if USE_AKKA
 
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
-using System.IO;
+
 
 namespace NeoCortexApi.Entities
 {
@@ -17,13 +18,13 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// Author cogmission
     /// </remarks>
-    public class SparseBinaryMatrix : AbstractSparseBinaryMatrix/*, ISerializable*/
+    public class SparseBinaryMatrix : AbstractSparseBinaryMatrix
     {
         /// <summary>
         /// Holds the matrix with connections between columns and inputs.
         /// </summary>
         public IDistributedArray backingArray;
-        
+
 
         public SparseBinaryMatrix()
         {
@@ -280,115 +281,6 @@ namespace NeoCortexApi.Entities
         {
             throw new NotImplementedException();
         }
-        public override bool Equals(object obj)
-        {
-            var matrix = obj as SparseBinaryMatrix;
-            if (matrix == null)
-                return false;
-            return this.Equals(matrix);
-        }
-        public bool Equals(SparseBinaryMatrix obj)
-        {
-            if (this == obj)
-                return true;
-
-            if (obj == null)
-                return false;
-
-            if (backingArray == null)
-            {
-                if (obj.backingArray != null)
-                    return false;
-            }
-            else if (!backingArray.Equals(obj.backingArray))
-                return false;
-
-            if (ModuleTopology == null)
-            {
-                if (obj.ModuleTopology != null)
-                    return false;
-            }
-            else if (!ModuleTopology.Equals(obj.ModuleTopology))
-                return false;
-            if (!this.trueCounts.SequenceEqual(obj.trueCounts))
-                return false;
-
-            return true;
-        }
-        #region Serialization
-        public override void Serialize(StreamWriter writer)
-        {
-            HtmSerializer ser = new HtmSerializer();
-
-            ser.SerializeBegin(nameof(SparseBinaryMatrix), writer);
-
-            ser.SerializeValue(this.trueCounts, writer);
-            
-            if(this.ModuleTopology != null)
-            { this.ModuleTopology.Serialize(writer); }
-            
-            if (this.backingArray != null)
-            { this.backingArray.Serialize(writer); }
-
-            ser.SerializeEnd(nameof(SparseBinaryMatrix), writer);
-        }
-        public static SparseBinaryMatrix Deserialize(StreamReader sr)
-        {
-            SparseBinaryMatrix sparse = new SparseBinaryMatrix();
-            HtmSerializer ser = new HtmSerializer();
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
-                {
-                    continue;
-                }
-                else if (data == ser.ReadBegin(nameof(InMemoryArray)))
-                {
-                    sparse.backingArray = InMemoryArray.Deserialize(sr);
-                }
-                else if (data == ser.ReadBegin(nameof(HtmModuleTopology)))
-                {
-                    sparse.ModuleTopology = HtmModuleTopology.Deserialize(sr);
-                }
-                else if (data == ser.ReadEnd(nameof(SparseBinaryMatrix)))
-                {
-                    break;
-                }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                {
-                                    sparse.trueCounts = ser.ReadArrayInt(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
-
-                        }
-                    }
-                }
-            }
-            return sparse;
-        }
-
-        //public new void Serialize(object obj, string name, StreamWriter sw)
-        //{
-        //    HtmSerializer2.SerializeObject(obj, name, sw);
-        //}
-
-        //public static new object Deserialize(StreamReader sr, string name)
-        //{
-        //    return HtmSerializer2.DeserializeObject<SparseBinaryMatrix>(sr, name);
-        //}
-
-        #endregion
     }
 }
 #endif

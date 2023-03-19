@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -46,7 +49,7 @@ namespace NeoCortexApi.Entities
             this.m_CurrentValue = lower;
         }
 
-
+        
         /// <summary>
         /// Moves iterator to the next value and returns the current value.
         /// </summary>
@@ -76,7 +79,7 @@ namespace NeoCortexApi.Entities
         /**
          * {@inheritDoc}
          */
-
+        
         public bool HasNext() { return m_CurrentValue < upper - 1; }
 
         /// <summary>

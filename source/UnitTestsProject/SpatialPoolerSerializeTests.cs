@@ -1,11 +1,18 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using NeoCortexApi.Utility;
+using NeoCortex;
+using Newtonsoft.Json;
+
+using Newtonsoft.Json.Serialization;
 
 namespace UnitTestsProject
 {
@@ -100,7 +107,7 @@ namespace UnitTestsProject
 
         // Assert.IsTrue(ser.SequenceEqual(des));
 
-
+       
         //}
 
 
@@ -217,7 +224,7 @@ namespace UnitTestsProject
 
             var x = new { DistalSegments = distalSegments };
 
-            HtmSerializerOld ser = new HtmSerializerOld();
+            HtmSerializer ser = new HtmSerializer();
             ser.Serialize(x, "distalsegment.json");
         }
 

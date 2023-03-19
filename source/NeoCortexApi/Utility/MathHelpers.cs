@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 
 namespace NeoCortexApi.Utility
@@ -82,13 +83,20 @@ namespace NeoCortexApi.Utility
             return hammingDistance;
         }
 
+        public static bool Match(int[] originArray, int[] comparingArray, float thresholdPct)
+        {
+            var res = GetHammingDistance(originArray, comparingArray, true);
+            return true;
+
+        }
+
+
         /// <summary>
         /// Calculates how many elements of the array are same in percents. This method is useful to compare 
-        /// two arays that contains indicies of active columns. Please note that arrays must not contain elements with the same index.
-        /// This method does not validate this for performance resons.
+        /// two arays that contains indicies of active columns.
         /// </summary>
-        /// <param name="originArray">Indexes of non-zero bits in the SDR.</param>
-        /// <param name="comparingArray">Indexes of non-zero bits in the SDR.</param>
+        /// <param name="originArray">Indexes</param>
+        /// <param name="comparingArray">Indexes</param>
         /// <returns>Similarity between arrays 0.0-1.0</returns>
         public static double CalcArraySimilarity(int[] originArray, int[] comparingArray)
         {
@@ -110,65 +118,5 @@ namespace NeoCortexApi.Utility
             }
         }
 
-
-        /// <summary>
-        /// Calculates the similarity matrix from the list of SDRs (arrays). 
-        /// It compares all given SDRs and calculate their similarity.
-        /// </summary>
-        /// <param name="actBitsIndexes">Dictionary of all output SDRs defined as indicies of active bits,</param>
-        public static double[,] CalculateSimilarityMatrix(Dictionary<string, int[]> actBitsIndexes)
-        {
-            double[,] res = new double[actBitsIndexes.Count, actBitsIndexes.Count];
-
-            var keyArray = actBitsIndexes.Keys.ToArray();
-
-            for (int i = 0; i < keyArray.Length; i++)
-            {
-                var key1 = keyArray[i];
-
-                for (int j = 0; j < keyArray.Length; j++)
-                {
-                    var key2 = keyArray[j];
-
-                    int[] sdr1 = actBitsIndexes.GetValueOrDefault<string, int[]>(key1);
-                    int[] sdr2 = actBitsIndexes.GetValueOrDefault<string, int[]>(key2);
-
-                    double similarity = MathHelpers.CalcArraySimilarity(sdr1, sdr2);
-
-                    res[i, j] = similarity;
-                }
-            }
-
-            return res;
-        }
-
-        /// <summary>
-        /// Calculates the memory of the SDR.
-        /// </summary>
-        /// <param name="w">The number of non-zero bits used to encode the value.</param>
-        /// <param name="n">The total number of bits.</param>
-        /// <returns>The number of possible patterns that can be encoded.</returns>
-        public static double SdrMem(int w, int n)
-        {
-            return Factorial(n) / (Factorial(w) * (Factorial(n - w)));
-        }
-
-
-        /// <summary>
-        /// Calculates the factorial of n.
-        /// </summary>
-        /// <param name="n">The value to calculate the factorial.</param>
-        /// <returns></returns>
-        public static double Factorial(int n)
-        {
-            double fact = 1;
-            for (int i = 1; i <= n; i++)
-            {
-                fact *= i;
-            }
-
-            return fact;
-        }
     }
 }
-

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Daenet.ImageBinarizerLib;
-using Daenet.ImageBinarizerLib.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
@@ -12,6 +9,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Drawing;
+using NeoCortex;
+using NeoCortexApi.Network;
+using System.Linq;
+using LearningFoundation.ImageBinarizer;
 
 namespace UnitTestsProject
 {
@@ -360,13 +362,14 @@ namespace UnitTestsProject
         /// <returns></returns>
         private static string BinarizeImage(string mnistImage, int imageSize, string testName)
         {
-            string binaryImage = $"{testName}.txt";
+            string binaryImage;
+
+            Binarizer imageBinarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
+            binaryImage = $"{testName}.txt";
             if (File.Exists(binaryImage))
                 File.Delete(binaryImage);
 
-            ImageBinarizer imageBinarizer = new ImageBinarizer(new BinarizerParams { RedThreshold = 200, GreenThreshold = 200, BlueThreshold = 200, ImageWidth = imageSize, ImageHeight = imageSize, InputImagePath = mnistImage, OutputImagePath = binaryImage });
-
-            imageBinarizer.Run();
+            imageBinarizer.CreateBinary(mnistImage, binaryImage);
 
             return binaryImage;
         }
@@ -380,9 +383,11 @@ namespace UnitTestsProject
         [DataRow("TestFiles\\digit1.png", "digit1_binarized.txt")]
         public void BinarizeImageTest(String sourcePath, String destinationPath)
         {
-            ImageBinarizer imageBinarizer = new ImageBinarizer(new BinarizerParams { RedThreshold = 200, GreenThreshold = 200, BlueThreshold = 200, ImageWidth = 100, ImageHeight = 100, InputImagePath = sourcePath, OutputImagePath = destinationPath});
+            Binarizer imageBinarizer = new Binarizer(200, 200, 200, 32, 32);
 
-            imageBinarizer.Run();
+            imageBinarizer.CreateBinary(sourcePath, destinationPath);
+
+            string res = imageBinarizer.GetBinary(sourcePath);
         }
 
         /// <summary>
@@ -391,7 +396,7 @@ namespace UnitTestsProject
         /// </summary>
         [TestMethod]
         [DataRow("TestDigit\\digit1_binary_32bit.txt")]
-        public void ReadCsvFileTest(String sourcePath)
+        public List<int> ReadCsvFileTest(String sourcePath)
         {
             string fileContent = File.ReadAllText(sourcePath);
             string[] integerStrings = fileContent.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -405,7 +410,7 @@ namespace UnitTestsProject
                     intList.Add(int.Parse(sub[j].ToString()));
                 }
             }
-
+            return intList;
         }
 
 

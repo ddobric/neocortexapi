@@ -1,8 +1,14 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+#pragma warning disable CS0246 // The type or namespace name 'AkkaSb' could not be found (are you missing a using directive or an assembly reference?)
 using AkkaSb.Net;
+#pragma warning restore CS0246 // The type or namespace name 'AkkaSb' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0234 // The type or namespace name 'Extensions' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?)
 using Microsoft.Extensions.Logging;
+#pragma warning restore CS0234 // The type or namespace name 'Extensions' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?)
+#pragma warning disable CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using NeoCortexApi.Entities;
+#pragma warning restore CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Concurrent;
@@ -14,13 +20,19 @@ using System.Threading.Tasks;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
+#pragma warning disable CS0246 // The type or namespace name 'ActorBase' could not be found (are you missing a using directive or an assembly reference?)
     public class HtmActor : ActorBase
+#pragma warning restore CS0246 // The type or namespace name 'ActorBase' could not be found (are you missing a using directive or an assembly reference?)
     {
         public Dictionary<object, object> Dict = new Dictionary<object, object>();
 
+#pragma warning disable CS0246 // The type or namespace name 'HtmConfig' could not be found (are you missing a using directive or an assembly reference?)
         public HtmConfig HtmConfig;
+#pragma warning restore CS0246 // The type or namespace name 'HtmConfig' could not be found (are you missing a using directive or an assembly reference?)
 
+#pragma warning disable CS0246 // The type or namespace name 'ActorId' could not be found (are you missing a using directive or an assembly reference?)
         public HtmActor(ActorId id) : base(id)
+#pragma warning restore CS0246 // The type or namespace name 'ActorId' could not be found (are you missing a using directive or an assembly reference?)
         {
             Receive<PingNodeMsg>((msg) =>
             {
@@ -200,7 +212,9 @@ namespace NeoCortexApi.DistributedComputeLib
             return avgConnectedSpan;
         }
 
+#pragma warning disable CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
         private List<KeyPair> CalculateOverlap(CalculateOverlapMsg msg)
+#pragma warning restore CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
         {
             Console.WriteLine($"Received message: '{msg.GetType().Name}'");
 
@@ -282,7 +296,9 @@ namespace NeoCortexApi.DistributedComputeLib
             return 0;
         }
 
+#pragma warning disable CS0246 // The type or namespace name 'Column' could not be found (are you missing a using directive or an assembly reference?)
         private Column GetColumn(object key)
+#pragma warning restore CS0246 // The type or namespace name 'Column' could not be found (are you missing a using directive or an assembly reference?)
         {
             if (this.Dict.ContainsKey(key.ToString()))
                 return (Column)Dict[key.ToString()];

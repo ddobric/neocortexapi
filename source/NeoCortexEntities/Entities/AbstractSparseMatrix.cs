@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -16,8 +15,13 @@ namespace NeoCortexApi.Entities
     /// at construction time and immutable - matrix fixed size data structure.
     /// </summary>
     /// <typeparam name="T"></typeparam>    
+    /// <remarks>
+    /// Authors of the JAVA implementation: David Ray, Jose Luis Martin
+    /// </remarks>
+    //[Serializable]
     public abstract class AbstractSparseMatrix<T> : AbstractFlatMatrix<T>, ISparseMatrix<T>
     {
+
         public AbstractSparseMatrix()
         {
 
@@ -43,6 +47,8 @@ namespace NeoCortexApi.Entities
 
         }
 
+        // protected <S extends AbstractSparseMatrix<T>> S set(int index, int value) { return null; }
+
         // TODO naming convention with override method
         /// <summary>
         /// Sets the object to occupy the specified index.
@@ -54,6 +60,18 @@ namespace NeoCortexApi.Entities
         {
             return null;
         }
+        //        public override AbstractFlatMatrix<T> set(int index, int value)
+        //#pragma warning restore IDE1006 // Naming Styles
+        //        { return null; }
+
+        /// <summary>
+        /// Sets the object to occupy the specified index.
+        /// </summary>
+        /// <param name="index">the index the object will occupy</param>
+        /// <param name="value">the value to be indexed.</param>
+        /// <returns></returns>
+        protected virtual AbstractSparseMatrix<T> Set(int index, double value)
+        { return null; }
 
         /// <summary>
         /// Sets the specified object to be indexed at the index computed from the specified coordinates.
@@ -85,7 +103,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="index">the index of the T to return</param>
         /// <returns>the T at the specified index.</returns>
-        public virtual T GetObject(int index)
+        public virtual T getObject(int index)
         {
             return default(T);
         }
@@ -128,48 +146,52 @@ namespace NeoCortexApi.Entities
         /// <returns>the indexed object</returns>
         protected double GetDoubleValue(int[] coordinates) { return -1.0; }
 
-        
-        /// <summary>
-        /// RETURNS NULL.   
-        /// </summary>
-        /// <returns></returns>
+        // @Override
         public override int[] GetSparseIndices()
         {
             return null;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+        //  @Override
         public override int[] Get1DIndexes()
         {
             List<int> results = new List<int>(GetMaxIndex() + 1);
-            FlattThroughDimensions(GetDimensions(), 0, new int[GetNumDimensions()], results);
+            Visit(GetDimensions(), 0, new int[GetNumDimensions()], results);
             return results.ToArray();
         }
 
         /// <summary>
         /// Recursively loops through the matrix dimensions to fill the results array with flattened computed array indexes.
         /// </summary>
-        /// <param name="dims">Dimension bounds.</param>
+        /// <param name="bounds"></param>
         /// <param name="currentDimension"></param>
         /// <param name="p"></param>
         /// <param name="results"></param>
-        private void FlattThroughDimensions(int[] dims, int currentDimension, int[] p, List<int> results)
+        private void Visit(int[] bounds, int currentDimension, int[] p, List<int> results)
         {
-            for (int i = 0; i < dims[currentDimension]; i++)
+            for (int i = 0; i < bounds[currentDimension]; i++)
             {
                 p[currentDimension] = i;
                 if (currentDimension == p.Length - 1)
                 {
                     results.Add(ComputeIndex(p));
                 }
-                else 
-                    FlattThroughDimensions(dims, currentDimension + 1, p, results);
+                else Visit(bounds, currentDimension + 1, p, results);
             }
         }
 
+
+        //public override T[] asDense(ITypeFactory<T> factory)
+        //{
+        //    throw NotImplementedException();
+
+        //    int[] dimensions = getDimensions();
+        //    T[] retVal = (T[])Array.CreateInstance(typeof(T), dimensions);
+
+        //    fill(factory, 0, dimensions, dimensions[0], (object[])(object)retVal);
+
+        //    return retVal;
+        //}
 
         /// <summary>
         /// Uses reflection to create and fill a dynamically created multidimensional array.
@@ -203,12 +225,6 @@ namespace NeoCortexApi.Entities
                 return arr;
             }
         }
-        #region Serialization
-        public virtual void Serialize(StreamWriter writer)
-        {
-            throw new NotImplementedException();
-        }
 
-        #endregion
     }
 }

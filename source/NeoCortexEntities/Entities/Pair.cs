@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -10,10 +11,10 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Creates an empty key-pair.
         /// </summary>
-
+       
         public Pair()
         {
-
+           
         }
 
         //
@@ -67,7 +68,7 @@ namespace NeoCortexApi.Entities
 
         public static bool operator !=(Pair<TKey, TValue> x, Pair<TKey, TValue> y)
         {
-            if (EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x)
+            if (EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x) 
                 && EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, y))
                 return false;
             else if (EqualityComparer<Pair<TKey, TValue>>.Default.Equals(null, x)

@@ -1,17 +1,18 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using AkkaSb.Net;
-using Microsoft.Extensions.Logging;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Text;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using NeoCortexApi.Entities;
+using System.Collections.Concurrent;
+using NeoCortexApi.Utility;
+using System.Threading;
+using AkkaSb.Net;
+using Microsoft.Extensions.Logging;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
@@ -717,12 +718,16 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <summary>
         /// Current dictionary list in enemerator.
         /// </summary>
+#pragma warning disable CS0414 // The field 'ActorSbDistributedDictionaryBase<TValue>.currentDictIndex' is assigned but its value is never used
         private int currentDictIndex = -1;
+#pragma warning restore CS0414 // The field 'ActorSbDistributedDictionaryBase<TValue>.currentDictIndex' is assigned but its value is never used
 
         /// <summary>
         /// Current index in currentdictionary
         /// </summary>
+#pragma warning disable CS0414 // The field 'ActorSbDistributedDictionaryBase<TValue>.currentIndex' is assigned but its value is never used
         private int currentIndex = -1;
+#pragma warning restore CS0414 // The field 'ActorSbDistributedDictionaryBase<TValue>.currentIndex' is assigned but its value is never used
 
         /// <summary>
         /// TODO to be added
@@ -738,8 +743,6 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Gets number of physical nodes in cluster.
         /// </summary>
         public int Nodes => throw new NotSupportedException();
-
-        public HtmConfig htmConfig { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         /// <summary>
         /// TODO to be added

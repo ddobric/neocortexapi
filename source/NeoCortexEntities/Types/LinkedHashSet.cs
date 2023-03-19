@@ -3,20 +3,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using NeoCortexApi.Entities;
 
 namespace NeoCortexApi.Types
 {
     //[Serializable]
-    public class LinkedHashSet<T> : ISet<T>, ISerializable
+    public class LinkedHashSet<T> : ISet<T>
     {
        // [field: NonSerializedAttribute()]
-        private IDictionary<T, LinkedListNode<T>> dict;
+        private readonly IDictionary<T, LinkedListNode<T>> dict;
 
        // [field: NonSerializedAttribute()]
-        private LinkedList<T> list;
+        private readonly LinkedList<T> list;
 
         public LinkedHashSet(int initialCapacity)
         {
@@ -309,34 +307,6 @@ namespace NeoCortexApi.Types
         {
             return $"{this.Count}";
         }
-
-        #region Serialization
-        public void Serialize(StreamWriter writer)
-        {
-            HtmSerializer ser = new HtmSerializer();
-
-            ser.SerializeBegin(nameof(LinkedHashSet<T>), writer);
-
-            //ser.SerializeValue(this.dict, writer);
-            //ser.SerializeValue(this.list, writer);
-
-            ser.SerializeEnd(nameof(LinkedHashSet<T>), writer);
-        }
-
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            HtmSerializer.Serialize(this.list, null, sw);
-        }
-
-        public static object Deserialize<T1>(StreamReader sr, string name)
-        {
-            if (typeof(T1) != typeof(LinkedHashSet<T>))
-                return null;
-            var list = HtmSerializer.Deserialize<List<T>>(sr, null);
-            return new LinkedHashSet<T>(list);
-        }
-        #endregion
-
     }
 
 }

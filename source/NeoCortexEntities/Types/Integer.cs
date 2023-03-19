@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -34,23 +34,11 @@ namespace NeoCortexApi.Entities
 
         public static bool operator ==(Integer x, Integer y)
         {
-            if (0 == Comparer<object>.Default.Compare(x, null) && 0 != Comparer<object>.Default.Compare(y, null))
-                return false;
-
-            if (0 != Comparer<object>.Default.Compare(x, null) && 0 == Comparer<object>.Default.Compare(y, null))
-                return false;
-
             return x.Value == y.Value;
         }
 
         public static bool operator !=(Integer x, Integer y)
         {
-            if (0 == Comparer<object>.Default.Compare(x, null) && 0 != Comparer<object>.Default.Compare(y, null))
-                return true;
-
-            if (0 != Comparer<object>.Default.Compare(x, null) && 0 == Comparer<object>.Default.Compare(y, null))
-                return true;
-
             return x.Value != y.Value;
         }
 
@@ -62,67 +50,6 @@ namespace NeoCortexApi.Entities
         public int CompareTo(Integer other)
         {
             return Comparer<int>.Default.Compare(this.Value, other.Value);
-        }
-
-        #region Serialization
-        public void Serialize(StreamWriter writer)
-        {
-            HtmSerializer ser = new HtmSerializer();
-
-            ser.SerializeBegin(nameof(Integer), writer);
-            
-            ser.SerializeValue(this.Value,writer);
-
-            ser.SerializeEnd(nameof(Integer), writer);
-        }
-
-
-        public static Integer Deserialize(StreamReader sr)
-        {
-            Integer inte = new Integer();
-
-            HtmSerializer ser = new HtmSerializer();
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Integer)))
-                {
-                    continue;
-                }
-                else if (data == ser.ReadEnd(nameof(Integer)))
-                {
-                    break;
-                }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                {
-                                    inte.Value = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
-
-                        }
-                    }
-                }
-            }
-
-            return inte;
-
-        }
-
-        #endregion
-
-        public override int GetHashCode()
-        {
-            return this.Value.GetHashCode();
         }
     }
 }

@@ -2,8 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -13,12 +11,12 @@ namespace NeoCortexApi.Entities
     /// Defines th eproximal dentritte segment. Note the segment is used during SP compute operation.
     /// TM does not use this segment.
     /// </summary>
-    public class ProximalDendrite : Segment, ISerializable
+    public class ProximalDendrite : Segment
     {
         /// <summary>
-        /// The pool of synapses in the receptive field.
+        /// The pool of synapses.
         /// </summary>
-        public Pool RFPool { get; set; }
+        public Pool RFPool {get;set; }
 
         /// <summary>
         /// 
@@ -26,35 +24,10 @@ namespace NeoCortexApi.Entities
         /// <param name="colIndx">The global index of the segment.</param>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="numInputs">Number of input neorn cells.</param>
-        public ProximalDendrite(int colIndx, double synapsePermConnected, int numInputs) : base(colIndx, -1, synapsePermConnected, numInputs)
+        public ProximalDendrite(int colIndx, double synapsePermConnected, int numInputs) : base(colIndx, synapsePermConnected, numInputs)
         {
 
         }
-
-        public ProximalDendrite()
-        {
-
-        }
-
-        /// <summary>
-        /// Creates and returns a newly created synapse with the specified source cell, permanence, and index.
-        /// </summary>       
-        /// <param name="sourceCell">This value is typically set to NULL in a case of proximal segment. This is because, proximal segments 
-        /// build synaptic connections from column to the sensory input. They do not cobbect a specific cell inside of the column.</param>
-        /// <param name="index">Sequence within gthe pool.</param>
-        /// <param name="inputIndex">The index of the sensory neuron connected by this synapse.</param>
-        /// <remarks>
-        /// <b>This method is only called for Proximal Synapses.</b> For ProximalDendrites, there are many synapses within a pool, and in that case, the index
-        /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
-        /// <returns>Instance of the new synapse.</returns>
-        /// <seealso cref="Synapse"/>
-        public Synapse CreateSynapse(int index, int inputIndex)
-        {
-            Synapse synapse = new Synapse(this.SegmentIndex, index, inputIndex);
-            this.Synapses.Add(synapse);
-            return synapse;
-        }
-
 
 
         /// <summary>
@@ -67,7 +40,7 @@ namespace NeoCortexApi.Entities
                 int[] lst = new int[this.Synapses.Count];
                 for (int i = 0; i < lst.Length; i++)
                 {
-                    lst[i] = this.Synapses[i].InputIndex;
+                    lst[i]=  this.Synapses[i].InputIndex;
                 }
 
                 return lst;
@@ -109,13 +82,30 @@ namespace NeoCortexApi.Entities
             {
                 var synapse = RFPool.GetSynapseForInput(inputIndexes[i]);
                 synapse.Permanence = perms[i];
-
+                //RFPool.setPermanence(c, RFPool.getSynapseWithInput(inputIndexes[i]), perms[i]);
                 if (perms[i] >= permConnThreshold)
                 {
+                    //c.getConnectedCounts().set(1, ParentColumnIndex, i);
                     connectedCounts.set(1, 0 /*ParentColumnIndex*/, i);
                 }
             }
         }
+
+        //public double SynPermConnected { get; set; }
+
+
+        /**
+         * Sets the input vector synapse indexes which are connected (&gt;= synPermConnected)
+         * @param c
+         * @param connectedIndexes
+         */
+        //public void setConnectedSynapsesForTest(Connections c, int[] connectedIndexes)
+        //{
+        //    //Pool pool = createPool(c, connectedIndexes);
+        //    var pool = new Pool(connectedIndexes.Length, c.NumInputs);
+        //    //c.getPotentialPools().set(index, pool);
+        //    c.getPotentialPoolsOld().set(index, pool);
+        //}
 
         /// <summary>
         /// Returns an array of synapse indexes as a dense binary array.
@@ -124,182 +114,17 @@ namespace NeoCortexApi.Entities
         public int[] GetConnectedSynapsesDense()
         {
             return this.RFPool.GetDenseConnected();
+            //return c.getPotentialPools().get(index).getDenseConnected(c);
         }
 
         /// <summary>
-        /// Returns an array of indexes of input neurons connected to this pool. 
+        /// Returns an sparse array of synapse indexes representing the connected bits.
         /// </summary>
-        /// <returns>Indexes of connected input neurons.</returns>
+        /// <returns></returns>
         public int[] GetConnectedSynapsesSparse()
         {
             return this.RFPool.GetSparsePotential();
+            //return c.getPotentialPools().get(index).getSparsePotential();
         }
-
-        public override int GetHashCode()
-        {
-            var prime = 31;
-            var result = 1;
-
-            result = prime * result + this.SegmentIndex;
-            result = prime * result + this.NumInputs;
-            result = prime * result + ((RFPool == null) ? 0 : RFPool.GetHashCode());
-            result = prime * result + ((ConnectedInputs == null) ? 0 : ConnectedInputs.GetHashCode());
-
-            return result;
-        }
-
-        public bool Equals(ProximalDendrite obj)
-        {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-
-            ProximalDendrite other = (ProximalDendrite)obj;
-
-            if (RFPool == null)
-            {
-                if (other.RFPool != null)
-                    return false;
-            }
-            else if (!RFPool.Equals(other.RFPool))
-                return false;
-
-            if (SegmentIndex != other.SegmentIndex)
-                return false;
-
-            if (Synapses == null)
-            {
-                if (other.Synapses != null)
-                    return false;
-            }
-            else if (!Synapses.ElementsEqual(other.Synapses))
-                return false;
-
-            //if (boxedIndex == null)
-            //{
-            //    if (other.boxedIndex != null)
-            //        return false;
-            //}
-            //else if (!boxedIndex.Equals(other.boxedIndex))
-            //    return false;
-
-            if (SynapsePermConnected != other.SynapsePermConnected)
-                return false;
-            if (NumInputs != other.NumInputs)
-                return false;
-
-            return true;
-        }
-        #region Serialization
-        public void Serialize(StreamWriter writer)
-        {
-            HtmSerializer ser = new HtmSerializer();
-
-            ser.SerializeBegin(nameof(ProximalDendrite), writer);
-
-            ser.SerializeValue(this.SegmentIndex, writer);
-            ser.SerializeValue(this.SynapsePermConnected, writer);
-            ser.SerializeValue(this.NumInputs, writer);
-
-            if (this.RFPool != null)
-            {
-                this.RFPool.Serialize(writer);
-            }
-
-            //if (this.boxedIndex != null)
-            //{
-            //    this.boxedIndex.Serialize(writer);
-            //}
-            ser.SerializeValue(this.Synapses, writer);
-
-            ser.SerializeEnd(nameof(ProximalDendrite), writer);
-        }
-
-        public static ProximalDendrite Deserialize(StreamReader sr)
-        {
-            ProximalDendrite proximal = new ProximalDendrite();
-
-            HtmSerializer ser = new HtmSerializer();
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(ProximalDendrite)) || (data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer.ParameterDelimiter) || data.ToCharArray()[1] == HtmSerializer.ParameterDelimiter)
-                {
-                    continue;
-                }
-                else if (data == ser.ReadBegin(nameof(Pool)))
-                {
-                    proximal.RFPool = Pool.Deserialize(sr);
-                }
-                //else if (data == ser.ReadBegin(nameof(Integer)))
-                //{
-                //    proximal.boxedIndex = Integer.Deserialize(sr);
-                //}
-                else if (data == ser.ReadBegin(nameof(Synapse)))
-                {
-                    proximal.Synapses.Add(Synapse.Deserialize(sr));
-                }
-                else if (data == ser.ReadEnd(nameof(ProximalDendrite)))
-                {
-                    break;
-                }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                {
-                                    proximal.SegmentIndex = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    proximal.SynapsePermConnected = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    proximal.NumInputs = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
-
-                        }
-                    }
-                }
-            }
-            return proximal;
-        }
-
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            var ignoreMembers = new List<string>
-            {
-                nameof(Segment.Synapses)
-            };
-            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);
-        }
-
-        public static object Deserialize<T>(StreamReader sr, string name)
-        {
-            var proximal = HtmSerializer.DeserializeObject<ProximalDendrite>(sr, name);
-            if (proximal.RFPool != null)
-            {
-                proximal.Synapses = proximal.RFPool?.m_SynapsesBySourceIndex.Select(kv => kv.Value).ToList();
-                foreach (var synapse in proximal.Synapses)
-                {
-                    synapse.SegmentIndex = proximal.SegmentIndex;
-                }
-            }
-            return proximal;
-        }
-
-        #endregion
     }
 }

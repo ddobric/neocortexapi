@@ -1,14 +1,18 @@
-﻿// Copyright (c) Damir Dobric. All rights reserved.
+﻿//#define REPAIR_STABILITY
+// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Diagnostics;
+using NeoCortexApi.DistributedComputeLib;
+using System.Collections.Concurrent;
+using System.Threading;
+using NeoCortexApi.DistributedCompute;
+using System.IO;
 
 namespace NeoCortexApi
 {
@@ -31,12 +35,14 @@ namespace NeoCortexApi
     /// Spatial Pooler algorithm. Single-threaded version.
     /// Original version by David Ray, migrated from HTM JAVA. Over time, more and more code has been changed.
     /// </summary>
-    public class SpatialPooler : IHtmAlgorithm<int[], int[]>/*, ISerializable*/
+    public class SpatialPooler : IHtmAlgorithm<int[], int[]>
     {
         /// <summary>
         /// The instance of the <see cref="HomeostaticPlasticityController"/>.
         /// </summary>
         private HomeostaticPlasticityController m_HomeoPlastAct;
+
+        public double MaxInibitionDensity { get; set; } = 0.5;
 
         public string Name { get; set; }
 
@@ -47,11 +53,6 @@ namespace NeoCortexApi
         public SpatialPooler(HomeostaticPlasticityController homeostaticPlasticityActivator = null)
         {
             m_HomeoPlastAct = homeostaticPlasticityActivator;
-        }
-
-        public SpatialPooler()
-        {
-
         }
 
         private Connections connections;
@@ -89,25 +90,28 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Initialzes mini-columns, sensory input and other required lists like duty cycles and boost factors. 
+        /// Called to initialize the structural anatomy with configured values and prepare
+        /// the anatomical entities for activation.
         /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="distMem">Optionally used if the paralle version of the SP should be used.</param>
-        public virtual void InitMatrices(Connections conn, DistributedMemory distMem)
+        /// <param name="c"></param>
+        /// <param name="distMem"></param>
+        public virtual void InitMatrices(Connections c, DistributedMemory distMem)
         {
-            if (conn.Memory == null)
-                conn.Memory = new SparseObjectMatrix<Column>(conn.HtmConfig.ColumnDimensions, dict: null);
+            //SparseObjectMatrix<Column> memory = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
+            //c.HtmConfig.Memory = memory == null ? memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null) : memory;
 
-            conn.HtmConfig.InputMatrix = new SparseBinaryMatrix(conn.HtmConfig.InputDimensions);
+            if (c.HtmConfig.Memory == null)
+                c.HtmConfig.Memory = new SparseObjectMatrix<Column>(c.HtmConfig.ColumnDimensions, dict: null);
+
+            c.HtmConfig.InputMatrix = new SparseBinaryMatrix(c.HtmConfig.InputDimensions);
 
             // Initiate the topologies
-            conn.HtmConfig.ColumnTopology = new Topology(conn.HtmConfig.ColumnDimensions);
-            conn.HtmConfig.InputTopology = new Topology(conn.HtmConfig.InputDimensions);
+            c.HtmConfig.ColumnTopology = new Topology(c.HtmConfig.ColumnDimensions);
+            c.HtmConfig.InputTopology = new Topology(c.HtmConfig.InputDimensions);
 
             //Calculate numInputs and numColumns
-            int numInputs = conn.HtmConfig.InputMatrix.GetMaxIndex() + 1;
-            int numColumns = conn.Memory.GetMaxIndex() + 1;
-
+            int numInputs = c.HtmConfig.InputMatrix.GetMaxIndex() + 1;
+            int numColumns = c.HtmConfig.Memory.GetMaxIndex() + 1;
             if (numColumns <= 0)
             {
                 throw new ArgumentException("Invalid number of columns: " + numColumns);
@@ -116,80 +120,83 @@ namespace NeoCortexApi
             {
                 throw new ArgumentException("Invalid number of inputs: " + numInputs);
             }
-
-            conn.HtmConfig.NumInputs = numInputs;
-            conn.HtmConfig.NumColumns = numColumns;
+            c.HtmConfig.NumInputs = numInputs;
+            c.HtmConfig.NumColumns = numColumns;
 
             //
             // Fill the sparse matrix with column objects
-            var numCells = conn.HtmConfig.CellsPerColumn;
+            var numCells = c.HtmConfig.CellsPerColumn;
 
             List<KeyPair> colList = new List<KeyPair>();
             for (int i = 0; i < numColumns; i++)
             {
-                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, conn.HtmConfig.SynPermConnected, conn.HtmConfig.NumInputs) });
+                colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, c.HtmConfig.SynPermConnected, c.HtmConfig.NumInputs) });
             }
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            conn.Memory.set(colList);
+            c.HtmConfig.Memory.set(colList);
+            // memory.set(colList);
 
             sw.Stop();
+            //c.setPotentialPools(new SparseObjectMatrix<Pool>(c.getMemory().getDimensions(), dict: distMem == null ? null : distMem.PoolDictionary));
+
+            //Debug.WriteLine($" Upload time: {sw.ElapsedMilliseconds}");
+
+            //c.setConnectedMatrix(new SparseBinaryMatrix(new int[] { numColumns, numInputs }));
+            //  this IS removed. Every colun maintains its own matrix.
 
             //Initialize state meta-management statistics
-            conn.HtmConfig.OverlapDutyCycles = new double[numColumns];
-            conn.HtmConfig.ActiveDutyCycles = new double[numColumns];
-            conn.HtmConfig.MinOverlapDutyCycles = new double[numColumns];
-            conn.HtmConfig.MinActiveDutyCycles = new double[numColumns];
-            conn.BoostFactors = (new double[numColumns]);
-
-            ArrayUtils.FillArray(conn.BoostFactors, 1);
+            c.HtmConfig.OverlapDutyCycles = new double[numColumns];
+            c.HtmConfig.ActiveDutyCycles = new double[numColumns];
+            c.HtmConfig.MinOverlapDutyCycles = new double[numColumns];
+            c.HtmConfig.MinActiveDutyCycles = new double[numColumns];
+            c.BoostFactors = (new double[numColumns]);
+            ArrayUtils.FillArray(c.BoostFactors, 1);
         }
 
-        public void TraceColumnPermenances(string fileName)
-        {
-            this.connections.TraceColumnPermanences(fileName);
-        }
-            
 
         /// <summary>
-        /// Implements single threaded initialization of SP.
-        /// It creates the pool of potentially connected synapses on ProximalDendrite segment.
+        /// Implements single threaded (originally based on JAVA implementation) initialization of SP.
+        /// It creates columns, initializes the pool of potentially connected synapses on ProximalDendrites and
+        /// set initial permanences for every column.
         /// </summary>
-        /// <param name="conn"></param>
-        protected virtual void ConnectAndConfigureInputs(Connections conn)
+        /// <param name="c"></param>
+        protected virtual void ConnectAndConfigureInputs(Connections c)
         {
             List<double> avgSynapsesConnected = new List<double>();
 
+            //List<KeyPair> colList = new List<KeyPair>();
+
             ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
 
-            int numColumns = conn.HtmConfig.NumColumns;
+            int numColumns = c.HtmConfig.NumColumns;
 
-            Random rnd;
-
-            if (conn.HtmConfig.Random == null)
-                rnd = new Random(42);
-            else
-                rnd = conn.HtmConfig.Random;
+            Random rnd = new Random(42);
 
             for (int i = 0; i < numColumns; i++)
             {
                 // Gets RF
-                int[] potential = HtmCompute.MapPotential(conn.HtmConfig, i, rnd);
+                int[] potential = HtmCompute.MapPotential(c.HtmConfig, i, rnd /*c.getRandom()*/);
 
-                Column column = conn.GetColumn(i);
+                Column column = c.GetColumn(i);
 
                 // This line initializes all synases in the potential pool of synapses.
                 // It creates the pool on proximal dendrite segment of the column.
                 // After initialization permancences are set to zero.
-                column.CreatePotentialPool(conn.HtmConfig, potential, -1);
+                column.CreatePotentialPool(c.HtmConfig, potential, -1);
+                //connectColumnToInputRF(c.HtmConfig, potential, column);
 
-                double[] perm = HtmCompute.InitSynapsePermanences(conn.HtmConfig, potential, rnd /*c.getRandom()*/);
+                //c.getPotentialPools().set(i, potPool);
 
-                HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, perm, column, potential, true);
+                // colList.Add(new KeyPair() { Key = i, Value = column });
 
-                avgSynapsesConnected.Add(GetAvgSpanOfConnectedSynapses(conn, i));
+                double[] perm = HtmCompute.InitSynapsePermanences(c.HtmConfig, potential, rnd /*c.getRandom()*/);
+
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, column, potential, true);
+
+                avgSynapsesConnected.Add(GetAvgSpanOfConnectedSynapses(c, i));
             }
 
             // The inhibition radius determines the size of a column's local
@@ -197,9 +204,124 @@ namespace NeoCortexApi
             // columns in its neighborhood in order to become active. This radius is
             // updated every learning round. It grows and shrinks with the average
             // number of connected synapses per column.
-            UpdateInhibitionRadius(conn, avgSynapsesConnected);
+            UpdateInhibitionRadius(c, avgSynapsesConnected);
         }
 
+        /*
+                /// <summary>
+                /// Implements muticore initialization of pooler.
+                /// </summary>
+                /// <param name="c"></param>
+                public void connectAndConfigureInputsMultiThreadedStrategy(Connections c)
+                {
+                    List<KeyPair> colList = new List<KeyPair>();
+                    ConcurrentDictionary<int, KeyPair> colList2 = new ConcurrentDictionary<int, KeyPair>();
+
+                    int numColumns = c.NumColumns;
+
+                    // Parallel implementation of initialization
+                    ParallelOptions opts = new ParallelOptions();
+                    //int synapseCounter = 0;
+
+                    Parallel.For(0, numColumns, opts, (indx) =>
+                    {
+                        int i = (int)indx;
+                        var data = new ProcessingData();
+
+                        // Gets RF
+                        data.Potential = mapPotential(c, i, c.isWrapAround());
+                        data.Column = c.getColumn(i);
+
+                        // This line initializes all synases in the potential pool of synapses.
+                        // It creates the pool on proximal dendrite segment of the column.
+                        // After initialization permancences are set to zero.
+                        connectColumnToInputRF(c, data.Potential, data.Column);
+
+                        //Interlocked.Add(ref synapseCounter, data.Column.ProximalDendrite.Synapses.Count);
+
+                        //colList.Add(new KeyPair() { Key = i, Value = column });
+
+                        data.Perm = initPermanence(c, data.Potential, data.Column);
+
+                        updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
+
+                        if (!colList2.TryAdd(i, new KeyPair() { Key = i, Value = data }))
+                        {
+
+                        }
+                    });
+
+                    //c.setProximalSynapseCount(synapseCounter);
+
+                    foreach (var item in colList2.Values)
+                    //for (int i = 0; i < numColumns; i++)
+                    {
+                        int i = (int)item.Key;
+
+                        ProcessingData data = (ProcessingData)item.Value;
+                        //ProcessingData data = new ProcessingData();
+
+                        // Debug.WriteLine(i);
+                        //data.Potential = mapPotential(c, i, c.isWrapAround());
+
+                        //var st = string.Join(",", data.Potential);
+                        //Debug.WriteLine($"{i} - [{st}]");
+
+                        //var counts = c.getConnectedCounts();
+
+                        //for (int h = 0; h < counts.getDimensions()[0]; h++)
+                        //{
+                        //    // Gets the synapse mapping between column-i with input vector.
+                        //    int[] slice = (int[])counts.getSlice(h);
+                        //    Debug.Write($"{slice.Count(y => y == 1)} - ");
+                        //}
+                        //Debug.WriteLine(" --- ");
+                        // Console.WriteLine($"{i} - [{String.Join(",", ((ProcessingData)item.Value).Potential)}]");
+
+                        // This line initializes all synases in the potential pool of synapses.
+                        // It creates the pool on proximal dendrite segment of the column.
+                        // After initialization permancences are set to zero.
+                        //var potPool = data.Column.createPotentialPool(c, data.Potential);
+                        //connectColumnToInputRF(c, data.Potential, data.Column);
+
+                        //data.Perm = initPermanence(c.getSynPermConnected(), c.getSynPermMax(),
+                        //      c.getRandom(), c.getSynPermTrimThreshold(), c, data.Potential, data.Column, c.getInitConnectedPct());
+
+                        //updatePermanencesForColumn(c, data.Perm, data.Column, data.Potential, true);
+
+                        colList.Add(new KeyPair() { Key = i, Value = data.Column });
+                    }
+
+                    SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.getMemory();
+
+                    if (mem.IsRemotelyDistributed)
+                    {
+                        // Pool is created and attached to the local instance of Column.
+                        // Here we need to update the pool on remote Column instance.
+                        mem.set(colList);
+                    }
+
+                    // The inhibition radius determines the size of a column's local
+                    // neighborhood.  A cortical column must overcome the overlap score of
+                    // columns in its neighborhood in order to become active. This radius is
+                    // updated every learning round. It grows and shrinks with the average
+                    // number of connected synapses per column.
+                    updateInhibitionRadius(c);
+                }
+        */
+
+        /// <summary>
+        /// Performs SpatialPooler compute algorithm.
+        /// </summary>
+        /// <param name="input">Input vector</param>
+        /// <param name="activeArray">The column array with computed SDR code.</param>
+        /// <param name="learn">Learn or Predict.</param>
+        /// <returns>Indicies of active columns.</returns>
+        public int[] Compute(int[] input, int[] activeArray, bool learn)
+        {
+            this.compute(input, activeArray, learn);
+            return ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+        }
 
         /// <summary>
         /// Performs SpatialPooler compute algorithm.
@@ -216,7 +338,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Performs SpatialPooler compute algorithm.
+        /// Performs SPatialPooler compute algorithm.
         /// </summary>
         /// <param name="input">Input vector</param>
         /// <param name="learn">Learn or Predict.</param>
@@ -235,6 +357,17 @@ namespace NeoCortexApi
                 return activeColumnsArr;
         }
 
+#if REPAIR_STABILITY
+        bool inRepair = false;
+
+        private int[] prevActCols = new int[0];
+
+        private int[] stableActCols = new int[0];
+
+        private double[] prevOverlaps = new double[0];
+
+        double prevSimilarity = 0.0;
+#endif
         // TODO naming convention cause problem with similar method
         /// <summary>
         /// This is the primary public method of the SpatialPooler class. This function takes a input vector and outputs the indices of the active columns.
@@ -269,15 +402,20 @@ namespace NeoCortexApi
             // Gets overlap over every single column.
             var overlaps = CalculateOverlap(this.connections, inputVector);
 
+            //var overlapsStr = Helpers.StringifyVector(overlaps);
+            //Debug.WriteLine("overlap: " + overlapsStr);
+
+            //totalOverlap = overlapActive * weightActive + overlapPredictedActive * weightPredictedActive
+
             this.connections.Overlaps = overlaps;
 
             double[] boostedOverlaps;
 
             //
-            // Here we boost calculated overlaps. This is related to Homeostatic Plasticity Mechanism.
-            // Boosting factors are calculated in the previous cycle.
+            // We perform boosting here and right after that, we will recalculate bossted factors for next cycle.
             if (learn)
             {
+                //Debug.WriteLine("Boosted Factor: " + c.BoostFactors);
                 boostedOverlaps = ArrayUtils.Multiply(this.connections.BoostFactors, overlaps);
             }
             else
@@ -285,16 +423,48 @@ namespace NeoCortexApi
                 boostedOverlaps = ArrayUtils.ToDoubleArray(overlaps);
             }
 
+            //Debug.WriteLine("BO: " + Helpers.StringifyVector(boostedOverlaps));
+
             this.connections.BoostedOverlaps = boostedOverlaps;
 
             int[] activeColumns = InhibitColumns(this.connections, boostedOverlaps);
+
+            //var indexes = ArrayUtils.IndexWhere(this.connections.BoostFactors.OrderBy(i => i).ToArray(), x => x > 1.0);
+            //Debug.WriteLine($"Boost factors: {indexes.Length} -" + Helpers.StringifyVector(indexes));
+
+#if REPAIR_STABILITY
+            // REPAIR STABILITY FEATURE
+            var similarity = MathHelpers.CalcArraySimilarity(prevActCols, activeColumns);
+            if (prevSimilarity == 100.0 && similarity < 70.0)
+            {
+                Debug.WriteLine(" O: " + Helpers.StringifyVector<double>(prevOverlaps.OrderBy(x => x).ToArray(), (indx, val) => $"{indx}-{val}"));
+                Debug.WriteLine(" O: " + Helpers.StringifyVector<double>(boostedOverlaps.OrderBy(x => x).ToArray(), (indx, val) => $"{indx}-{val}"));
+                Debug.WriteLine("prevActCols: " + Helpers.StringifyVector(prevActCols.OrderBy(x => x).ToArray()));
+                Debug.WriteLine("    ActCols: " + Helpers.StringifyVector(activeColumns.OrderBy(x => x).ToArray()));
+
+                stableActCols = prevActCols;
+
+                inRepair = true;
+            }
+
+            // REPAIR STABILITY FEATURE
+            if (similarity >= 95.0 && inRepair)
+            {
+                inRepair = false;
+                Debug.WriteLine("Entered stable state again!");
+            }
+
+            prevOverlaps = boostedOverlaps;
+            prevActCols = activeColumns;
+            prevSimilarity = similarity;
+#endif
 
             if (learn)
             {
                 AdaptSynapses(this.connections, inputVector, activeColumns);
                 UpdateDutyCycles(this.connections, overlaps, activeColumns);
-                BoostColsWithLowOverlap(this.connections);
-                BoostByActivationFrequency(this.connections);
+                BumpUpWeakColumns(this.connections);
+                UpdateBoostFactors(this.connections);
                 if (IsUpdateRound(this.connections))
                 {
                     UpdateInhibitionRadius(this.connections);
@@ -302,6 +472,14 @@ namespace NeoCortexApi
                 }
             }
 
+            // REPAIR STABILITY FEATURE
+#if REPAIR_STABILITY
+            if (inRepair)
+            {
+                Debug.WriteLine("Stable columns output..");
+                activeColumns = stableActCols;
+            }
+#endif
             ArrayUtils.FillArray(activeArray, 0);
             if (activeColumns.Length > 0)
             {
@@ -313,11 +491,6 @@ namespace NeoCortexApi
                 this.m_HomeoPlastAct.Compute(inputVector, activeArray);
 
             //Debug.WriteLine($"SP-OUT: {Helpers.StringifyVector(activeColumns.OrderBy(c=>c).ToArray())}");
-        }
-
-        public void SetOnStableStatusChanged(Action<bool, int, double, int> onStable)
-        {
-            this.m_HomeoPlastAct.OnStabilityStatusChanged = onStable;
         }
 
         /// <summary>
@@ -377,20 +550,12 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// This value is automatically calculated when the RF is created on init of the SP and in every learning cycle.
-        /// It helps to calculate the inhibition density.
-        /// The inhibition radius determines the size of a column's local neighborhood. 
-        /// A mini-column's overlap mist be highest in its neighborhood in order to become active.
-        /// </summary>
-        internal int InhibitionRadius { get; set; } = 0;
-
-        /// <summary>
         /// Updates the minimum duty cycles defining normal activity for a column. A column with activity duty cycle below this minimum threshold is boosted.
         /// </summary>
         /// <param name="c"></param>
         public void UpdateMinDutyCycles(Connections c)
         {
-            if (c.HtmConfig.GlobalInhibition || this.InhibitionRadius > c.HtmConfig.NumInputs)
+            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > c.HtmConfig.NumInputs)
             {
                 UpdateMinDutyCyclesGlobal(c);
             }
@@ -401,20 +566,19 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Updates the minimum duty cycles for SP that uses global inhibition. 
-        /// Sets the minimum duty cycles for the overlap and activation of all columns to be a percent of 
-        /// the maximum in the region, specified by MinOverlapDutyCycles and minPctActiveDutyCycle respectively. 
-        /// Functionality it is equivalent to <see cref="UpdateMinDutyCyclesLocal(Connections)"/>, 
-        /// but this function exploits the globalness of the computation to perform it in a straightforward, and more efficient manner.
+        /// Updates the minimum duty cycles in a global fashion. Sets the minimum duty cycles for the overlap and activation of all columns to be a percent of 
+        /// the maximum in the region, specified by {@link Connections#getMinOverlapDutyCycles()} and minPctActiveDutyCycle respectively. Functionality it is 
+        /// equivalent to <see cref="UpdateMinDutyCyclesLocal(Connections)"/>, but this function exploits the globalness of the computation to perform it in a 
+        /// straightforward, and more efficient manner.
         /// </summary>
         /// <param name="c"></param>
         public void UpdateMinDutyCyclesGlobal(Connections c)
         {
-            // Sets the minoverlaps to the MinPctOverlapDutyCycles * Maximal Overlap in the cortical column.
-            ArrayUtils.InitArray(c.HtmConfig.MinOverlapDutyCycles, (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
+            ArrayUtils.FillArray(c.HtmConfig.MinOverlapDutyCycles,
+                   (double)(c.HtmConfig.MinPctOverlapDutyCycles * ArrayUtils.Max(c.HtmConfig.OverlapDutyCycles)));
 
-            // Sets the mindutycycles to the MinPctActiveDutyCycles * Maximal Active Duty Cycles in the cortical column.
-            ArrayUtils.InitArray(c.HtmConfig.MinActiveDutyCycles, (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
+            ArrayUtils.FillArray(c.HtmConfig.MinActiveDutyCycles,
+                    (double)(c.HtmConfig.MinPctActiveDutyCycles * ArrayUtils.Max(c.HtmConfig.ActiveDutyCycles)));
         }
 
         /// <summary>
@@ -443,23 +607,45 @@ namespace NeoCortexApi
         public void UpdateMinDutyCyclesLocal(Connections c)
         {
             int len = c.HtmConfig.NumColumns;
+            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
+            double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
+            double minPctActiveDutyCycles = c.HtmConfig.MinPctActiveDutyCycles;
+            double[] overlapDutyCycles = c.HtmConfig.OverlapDutyCycles;
+            double minPctOverlapDutyCycles = c.HtmConfig.MinPctOverlapDutyCycles;
+
+            //Console.WriteLine($"{inhibitionRadius: inhibitionRadius}");
 
             Parallel.For(0, len, (i) =>
             {
-                int[] neighborhood = GetColumnNeighborhood(c, i, this.InhibitionRadius);
+                int[] neighborhood = GetColumnNeighborhood(c, i, inhibitionRadius);
 
-                double maxActiveDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(c.HtmConfig.ActiveDutyCycles, neighborhood));
-                double maxOverlapDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(c.HtmConfig.OverlapDutyCycles, neighborhood));
+                double maxActiveDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(activeDutyCycles, neighborhood));
+                double maxOverlapDuty = ArrayUtils.Max(ArrayUtils.ListOfValuesByIndicies(overlapDutyCycles, neighborhood));
 
-                c.HtmConfig.MinActiveDutyCycles[i] = maxActiveDuty * c.HtmConfig.MinPctActiveDutyCycles;
+                // Used for debugging of thread-safe capability.
+                //System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-                c.HtmConfig.MinOverlapDutyCycles[i] = maxOverlapDuty * c.HtmConfig.MinPctOverlapDutyCycles;
+                //sb.Append("[");
+                //for (int k = 0; k < neighborhood.Length; k++)
+                //{
+                //    sb.Append(neighborhood[k]);
+                //    sb.Append(" - ");
+                //    var x = overlapDutyCycles[k].ToString("N8");
+                //    sb.Append(x);
+                //    sb.Append(" | ");
+                //}
+                //sb.Append("]");
+
+                //Console.WriteLine($"{i} - maxOverl: {maxOverlapDuty}\t - {sb.ToString()}");
+
+                c.HtmConfig.MinActiveDutyCycles[i] = maxActiveDuty * minPctActiveDutyCycles;
+
+                c.HtmConfig.MinOverlapDutyCycles[i] = maxOverlapDuty * minPctOverlapDutyCycles;
             });
         }
-
+        
         /// <summary>
-        /// Updates the duty cycles for each column. 
-        /// The OVERLAP duty cycle is a moving average of the number of inputs which overlapped with each column.
+        /// Updates the duty cycles for each column. The OVERLAP duty cycle is a moving average of the number of inputs which overlapped with each column.
         /// The ACTIVITY duty cycles is a moving average of the frequency of activation for each column.
         /// </summary>
         /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
@@ -473,20 +659,19 @@ namespace NeoCortexApi
         public void UpdateDutyCycles(Connections c, int[] overlaps, int[] activeColumns)
         {
             // All columns with overlap are set to 1. Otherwise 0.
-            double[] overlapFrequencies = new double[c.HtmConfig.NumColumns];
+            double[] overlapArray = new double[c.HtmConfig.NumColumns];
 
             // All active columns are set on 1, otherwise 0.
-            double[] activeColFrequencies = new double[c.HtmConfig.NumColumns];
+            double[] activeArray = new double[c.HtmConfig.NumColumns];
 
             //
             // if (sourceA[i] > 0) then targetB[i] = 1;
-            // This ensures that all values in overlapCycles are set to 1, if column has some overlap.
-            ArrayUtils.GreaterThanXThanSetToYInB(overlaps, overlapFrequencies, 0, 1);
-
+            // This ensures that all values in overlapArray are set to 1, if column has some overlap.
+            ArrayUtils.GreaterThanXThanSetToYInB(overlaps, overlapArray, 0, 1);
             if (activeColumns.Length > 0)
             {
-                // After this step, all rows in activeCycles are set to 1 at the index of active column.
-                ArrayUtils.SetIndexesTo(activeColFrequencies, activeColumns, 1);
+                // After this step, all rows in activeArray are set to 1 at the index of active column.
+                ArrayUtils.SetIndexesTo(activeArray, activeColumns, 1);
             }
 
             int period = c.HtmConfig.DutyCyclePeriod;
@@ -495,15 +680,13 @@ namespace NeoCortexApi
                 period = c.SpIterationNum;
             }
 
-            c.HtmConfig.OverlapDutyCycles = CalcEventFrequency(c.HtmConfig.OverlapDutyCycles, overlapFrequencies, period);
+            c.HtmConfig.OverlapDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.OverlapDutyCycles, overlapArray, period);
 
-            c.HtmConfig.ActiveDutyCycles = CalcEventFrequency(c.HtmConfig.ActiveDutyCycles, activeColFrequencies, period);
+            c.HtmConfig.ActiveDutyCycles = UpdateDutyCyclesHelper(c, c.HtmConfig.ActiveDutyCycles, activeArray, period);
         }
 
-
+        // TODO equation documentation
         /// <summary>
-        /// Calculates the normalized counter value of the frequency of an event. 
-        /// Event can be overlap or activation of the column.
         /// Updates a duty cycle estimate with a new value. This is a helper function that is used to update several duty cycle variables in
         /// the Column class, such as: overlapDutyCucle, activeDutyCycle, minPctDutyCycleBeforeInh, minPctDutyCycleAfterInh, etc. returns
         /// the updated duty cycle. Duty cycles are updated according to the following formula: <br/>
@@ -517,11 +700,8 @@ namespace NeoCortexApi
         /// <param name="dutyCycles">An array containing one or more duty cycle values that need to be updated</param>
         /// <param name="newInput">A new numerical value used to update the duty cycle. Typically 1 or 0</param>
         /// <param name="period">The period of the duty cycle</param>
-        /// <remarks>
-        /// This looks a bit complicate. But, it is simple normalized counter that counts how many times the column was 
-        /// connected to the non-zero input bit (in a case of the overlapp) or how often the column was active (in a case of active).</remarks>
         /// <returns></returns>
-        public static double[] CalcEventFrequency(double[] dutyCycles, double[] newInput, double period)
+        public double[] UpdateDutyCyclesHelper(Connections c, double[] dutyCycles, double[] newInput, double period)
         {
             return ArrayUtils.Divide(ArrayUtils.AddOffset(ArrayUtils.Multiply(dutyCycles, period - 1), newInput), period);
         }
@@ -533,20 +713,20 @@ namespace NeoCortexApi
         /// calculations are averaged over all dimensions of inputs and columns. This value is meaningless if global inhibition is enabled.
         /// </summary>
         /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
-        /// <param name="avgCollected">Number of connected synapses.</param>
+        /// <param name="avgCollected"></param>
         public void UpdateInhibitionRadius(Connections c, List<double> avgCollected = null)
         {
             if (c.HtmConfig.GlobalInhibition)
             {
-                this.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
+                c.HtmConfig.InhibitionRadius = ArrayUtils.Max(c.HtmConfig.ColumnDimensions);
                 return;
             }
 
             if (avgCollected == null)
             {
                 avgCollected = new List<double>();
-
-                for (int i = 0; i < c.HtmConfig.NumColumns; i++)
+                int len = c.HtmConfig.NumColumns;
+                for (int i = 0; i < len; i++)
                 {
                     avgCollected.Add(GetAvgSpanOfConnectedSynapses(c, i));
                 }
@@ -558,7 +738,7 @@ namespace NeoCortexApi
             double radius = (diameter - 1) / 2.0d;
             radius = Math.Max(1, radius);
 
-            this.InhibitionRadius = (int)(radius + 0.5);
+            c.HtmConfig.InhibitionRadius = (int)(radius + 0.5);
         }
 
 
@@ -567,7 +747,7 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="c"></param>
         /// <returns>Average ratio numOfCols/numOfInputs across all dimensions.</returns>
-        internal virtual double CalcAvgColumnsPerInput(Connections c)
+        public virtual double CalcAvgColumnsPerInput(Connections c)
         {
             //int[] colDim = Array.Copy(c.getColumnDimensions(), c.getColumnDimensions().Length);
             int[] colDim = new int[c.HtmConfig.ColumnDimensions.Length];
@@ -582,6 +762,15 @@ namespace NeoCortexApi
             return ArrayUtils.Average(columnsPerInput);
         }
 
+        /**
+       * The range of connectedSynapses per column, averaged for each dimension.
+       * This value is used to calculate the inhibition radius. This variation of
+       * the function supports arbitrary column dimensions.
+       *  
+       * @param c             the {@link Connections} (spatial pooler memory)
+       * @param columnIndex   the current column for which to avg.
+       * @return
+       */
 
         /// <summary>
         /// It traverses all connected synapses of the column and calculates the span, which synapses
@@ -592,51 +781,80 @@ namespace NeoCortexApi
         /// <returns></returns>
         public virtual double GetAvgSpanOfConnectedSynapses(Connections c, int columnIndex)
         {
+            //var dims = c.getInputDimensions();
+
+            //var dimensionMultiplies = AbstractFlatMatrix<Column>.InitDimensionMultiples(dims);
+
             return HtmCompute.CalcAvgSpanOfConnectedSynapses(c.GetColumn(columnIndex), c.HtmConfig);
         }
 
+        ///// <summary>
+        ///// It traverses all connected synapses of the column and calculates the span, which synapses
+        ///// spans between all input bits. Then it calculates average of spans accross all dimensions. 
+        ///// </summary>
+        ///// <param name="c"></param>
+        ///// <param name="columnIndex"></param>
+        ///// <returns></returns>
+        //internal static double CalcAvgSpanOfConnectedSynapses(Column column, int[] inpDims, int[] dimensionMultiplies, bool isColumnMajor)
+        //{
+        //    // Gets synapses connected to input bits.(from pool of the column)
+        //    int[] connected = column.ProximalDendrite.getConnectedSynapsesSparse();
+
+        //    if (connected == null || connected.Length == 0) return 0;
+
+        //    int[] maxCoord = new int[inpDims.Length];
+        //    int[] minCoord = new int[inpDims.Length];
+        //    ArrayUtils.fillArray(maxCoord, -1);
+        //    ArrayUtils.fillArray(minCoord, ArrayUtils.max(inpDims));
+
+        //    //
+        //    // It takes all connected synapses
+        //    for (int i = 0; i < connected.Length; i++)
+        //    {
+        //        maxCoord = ArrayUtils.maxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
+        //           dimensionMultiplies , isColumnMajor, connected[i]));
+
+        //        minCoord = ArrayUtils.minBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(inpDims.Length,
+        //           dimensionMultiplies, isColumnMajor, connected[i]));
+
+        //    }
+
+        //    return ArrayUtils.average(ArrayUtils.add(ArrayUtils.subtract(maxCoord, minCoord), 1));
+        //}
 
         /// <summary>
         /// The primary method in charge of learning. Adapts the permanence values of the synapses based on the input vector, 
         /// and the chosen columns after inhibition round. Permanence values are increased for synapses connected to input bits
         /// that are turned on, and decreased for synapses connected to inputs bits that are turned off.
         /// </summary>
-        /// <param name="conn">the <see cref="Connections"/> (spatial pooler memory)</param>
+        /// <param name="c">the <see cref="Connections"/> (spatial pooler memory)</param>
         /// <param name="inputVector">a integer array that comprises the input to the spatial pooler. There exists an entry in the array for every input bit.</param>
         /// <param name="activeColumns">an array containing the indices of the columns that survived inhibition.</param>
-        public virtual void AdaptSynapses(Connections conn, int[] inputVector, int[] activeColumns)
+        public virtual void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
+
             // Get all indicies of input vector, which are set on '1'.
-            var actInputIndexes = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
+            var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[conn.HtmConfig.NumInputs];
+            double[] permChanges = new double[c.HtmConfig.NumInputs];
 
-            // First we initialize all permChanges to minimum decrement values SynPermInactiveDec.
-            ArrayUtils.InitArray(permChanges, -1 * conn.HtmConfig.SynPermInactiveDec);
+            // First we initialize all permChanges to minimum decrement values,
+            // which are used in a case of none-connections to input.
+            ArrayUtils.FillArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
 
-            // Then we set SynPermActiveInc to all connected synapses.
-            // With this, all mini-columns connected to the currently active input neurons will increment 
-            // their permanence by SynPermActiveInc. In contrast, all other synapses that are not connected
-            // to active neurons will be decremented by SynPermInactiveDec.
-            // This is some kind of natural punishing mechanism, which can be compared to backpropagation of error.
-            ArrayUtils.SetIndexesTo(permChanges, actInputIndexes.ToArray(), conn.HtmConfig.SynPermActiveInc);
+            // Then we update all connected permChanges to increment values for connected values.
+            // Permanences are set in conencted input bits to default incremental value.
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
 
             for (int i = 0; i < activeColumns.Length; i++)
             {
-                Column col = conn.GetColumn(activeColumns[i]);
-
-                Pool pool = col.ProximalDendrite.RFPool;
-
-                // Gets permanences of all synapses to all input bits.
-                double[] permanences = pool.GetDensePermanences(conn.HtmConfig.NumInputs);
-
-                // The current permanence values in 'permanences' will be raised by values in permChanges.
-                ArrayUtils.RaiseValuesBy(permChanges, permanences);
-
-                // Get indexes of input bits that are synaptically connected with this column.
+                //Pool pool = c.getPotentialPools().get(activeColumns[i]);
+                Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                double[] perm = pool.GetDensePermanences(c.HtmConfig.NumInputs);
                 int[] indexes = pool.GetSparsePotential();
-
-                HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, permanences, col, indexes, true);
+                ArrayUtils.RaiseValuesBy(permChanges, perm);
+                Column col = c.GetColumn(activeColumns[i]);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             }
 
             //Debug.WriteLine("Permance after update in adaptSynapses: " + permChangesStr);
@@ -645,28 +863,28 @@ namespace NeoCortexApi
 
         /// <summary>
         /// This method increases the permanence values of synapses of columns whose 
-        /// overlap level is too low. Such columns are identified by having an 
-        /// overlap duty cycle (activation frequency) that drops too much below those of their peers. 
-        /// The permanence values for such columns are increased. 
+        /// activity level has been too low. Such columns are identified by having an 
+        /// overlap duty cycle that drops too much below those of their peers. The 
+        /// permanence values for such columns are increased. 
         /// </summary>
         /// <param name="c"></param>
-        /// <remarks>Previously known as BumpUpWeekColumns.</remarks>
-        public virtual void BoostColsWithLowOverlap(Connections c)
+        public virtual void BumpUpWeakColumns(Connections c)
         {
-            // Get columns with too low overlap.
-            var weakColumns = c.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
+            if (c.HtmConfig.IsBumpUpWeakColumnsDisabled)
+                return;
 
+            var weakColumns = c.HtmConfig.Memory.Get1DIndexes().Where(i => c.HtmConfig.OverlapDutyCycles[i] < c.HtmConfig.MinOverlapDutyCycles[i]).ToArray();
+            
             for (int i = 0; i < weakColumns.Length; i++)
             {
                 Column col = c.GetColumn(weakColumns[i]);
-
+                //Pool pool = c.getPotentialPools().get(weakColumns[i]);
                 Pool pool = col.ProximalDendrite.RFPool;
                 double[] perm = pool.GetSparsePermanences();
                 ArrayUtils.RaiseValuesBy(c.HtmConfig.SynPermBelowStimulusInc, perm);
                 int[] indexes = pool.GetSparsePotential();
 
-                col.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, indexes, true);
-                //UpdatePermanencesForColumnSparse(c, perm, col, indexes, true);
+                UpdatePermanencesForColumnSparse(c, perm, col, indexes, true);
             }
         }
 
@@ -682,7 +900,7 @@ namespace NeoCortexApi
         /// <param name="maskPotential"></param>
         public virtual void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
         {
-            HtmCompute.BoostProximalSegment(htmConfig, perm, maskPotential);
+            HtmCompute.RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
             //if (maskPotential.Length < c.StimulusThreshold)
             //{
             //    throw new ArgumentException("This is likely due to a " +
@@ -713,10 +931,10 @@ namespace NeoCortexApi
         /// <param name="c">the <see cref="Connections"/> memory</param>
         /// <param name="perm">permanence values</param>
         /// <remarks>Note: This method services the "sparse" versions of corresponding methods</remarks>
-        //public virtual void RaisePermanenceToThresholdSparse(Connections c, double[] perm)
-        //{
-        //    HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
-        //}
+        public virtual void RaisePermanenceToThresholdSparse(Connections c, double[] perm)
+        {
+            HtmCompute.RaisePermanenceToThresholdSparse(c.HtmConfig, perm);
+        }
 
         /// <summary>
         /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index,
@@ -731,53 +949,140 @@ namespace NeoCortexApi
         /// the permanence value is 0.
         /// </param>
         /// <param name="column">The column in the permanence, potential and connectivity matrices</param>
-        /// <param name="maskPotential">Indexes of potential connections to input neurons.</param>
+        /// <param name="maskPotential"></param>
         /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
-        //public void UpdatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+        public void UpdatePermanencesForColumnSparse(Connections c, double[] perm, Column column, int[] maskPotential, bool raisePerm)
+        {
+            column.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, maskPotential, raisePerm);
+            //if (raisePerm)
+            //{
+            //    RaisePermanenceToThresholdSparse(c, perm);
+            //}
+
+            //ArrayUtils.LessOrEqualXThanSetToY(perm, c.getSynPermTrimThreshold(), 0);
+            //ArrayUtils.Clip(perm, c.getSynPermMin(), c.getSynPermMax());
+            //column.setProximalPermanencesSparse(c, perm, maskPotential);
+        }
+
+        ///**
+        // * Returns a randomly generated permanence value for a synapse that is
+        // * initialized in a connected state. The basic idea here is to initialize
+        // * permanence values very close to synPermConnected so that a small number of
+        // * learning steps could make it disconnected or connected.
+        // *
+        // * Note: experimentation was done a long time ago on the best way to initialize
+        // * permanence values, but the history for this particular scheme has been lost.
+        // * 
+        // * @return  a randomly generated permanence value
+        // */
+        //public static double initPermConnected(double synPermMax, double synPermConnected, Random rnd)
         //{
-        //    column.UpdatePermanencesForColumnSparse(c.HtmConfig, perm, maskPotential, raisePerm);
+        //    //double p = c.getSynPermConnected() + (c.getSynPermMax() - c.getSynPermConnected()) * c.random.NextDouble();
+        //    double p = synPermConnected + (synPermMax - synPermConnected) * rnd.NextDouble();
+
+        //    // Note from Python implementation on conditioning below:
+        //    // Ensure we don't have too much unnecessary precision. A full 64 bits of
+        //    // precision causes numerical stability issues across platforms and across
+        //    // implementations
+        //    p = ((int)(p * 100000)) / 100000.0d;
+        //    return p;
         //}
 
-        /// <summary>
-        /// If the <see cref="HtmConfig.LocalAreaDensity"/> is specified, then this value is used as density.
-        /// d = min(MaxInibitionDensity=0.5, NumActiveColumnsPerInhArea/[(2*InhibitionRadius + 1)**ColumnDimensions.Length]
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <returns></returns>
-        private double CalcInhibitionDensity(Connections conn)
+
+        ///// <summary>
+        ///// Returns a randomly generated permanence value for a synapses that is to be
+        ///// initialized in a non-connected state.</summary>
+        ///// <param name="synPermConnected"></param>
+        ///// <param name="rnd">Random generator to be used to generate permanence.</param>
+        ///// <returns>Permanence value.</returns>
+        //public static double initPermNonConnected(double synPermConnected, Random rnd)
+        //{
+        //    //double p = c.getSynPermConnected() * c.getRandom().NextDouble();
+        //    double p = synPermConnected * rnd.NextDouble();
+
+        //    // Note from Python implementation on conditioning below:
+        //    // Ensure we don't have too much unnecessary precision. A full 64 bits of
+        //    // precision causes numerical stability issues across platforms and across
+        //    // implementations
+        //    p = ((int)(p * 100000)) / 100000.0d;
+        //    return p;
+        //}
+
+        ///**
+        // * Initializes the permanences of a column. The method
+        // * returns a 1-D array the size of the input, where each entry in the
+        // * array represents the initial permanence value between the input bit
+        // * at the particular index in the array, and the column represented by
+        // * the 'index' parameter.
+        // * 
+        // * @param c                 the {@link Connections} which is the memory model
+        // * @param potentialPool     An array specifying the potential pool of the column.
+        // *                          Permanence values will only be generated for input bits
+        // *                          corresponding to indices for which the mask value is 1.
+        // *                          WARNING: potentialPool is sparse, not an array of "1's"
+        // * @param index             the index of the column being initialized
+        // * @param connectedPct      A value between 0 or 1 specifying the percent of the input
+        // *                          bits that might maximally start off in a connected state.
+        // *                          0.7 means, maximally 70% of potential might be connected
+        // * @return
+        // */
+        //public static double[] InitSynapsePermanences(HtmConfig htmConfig, int[] potentialPool, Random random)
+        //{
+        //    //Random random = new Random();
+        //    double[] perm = new double[htmConfig.NumInputs];
+
+        //    //foreach (int idx in column.ProximalDendrite.ConnectedInputs)
+        //    foreach (int idx in potentialPool)
+        //    {
+        //        if (random.NextDouble() <= htmConfig.InitialSynapseConnsPct)
+        //        {
+        //            perm[idx] = initPermConnected(htmConfig.SynPermMax, htmConfig.SynPermMax, random);
+        //        }
+        //        else
+        //        {
+        //            htmConfig.SynPermConnected =
+        //            perm[idx] = initPermNonConnected(htmConfig.SynPermConnected, random);
+        //        }
+
+        //        perm[idx] = perm[idx] < htmConfig.SynPermTrimThreshold ? 0 : perm[idx];
+
+        //    }
+
+        //    return perm;
+        //}
+
+
+
+
+
+        private double CalcInhibitionDensity(Connections c)
         {
-            double density = conn.HtmConfig.LocalAreaDensity;
+            double density = c.HtmConfig.LocalAreaDensity;
             double inhibitionArea;
 
-            //
             // If density is not specified then inhibition radius must be specified.
-            // In that case the density is calculated from inhibition radius.
+            // In that case we calculate density from inhibition radius.
             if (density <= 0)
             {
-                // inhibition _area can be higher than num of all columns, if 
+                // inhibition area can be higher than num of all columns, if 
                 // radius is near to number of columns of a dimension with highest number of columns.
                 // In that case we limit it to number of all columns.
-                inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.ColumnDimensions.Length);
+                inhibitionArea = Math.Pow(2 * c.HtmConfig.InhibitionRadius + 1, c.HtmConfig.ColumnDimensions.Length);
+                inhibitionArea = Math.Min(c.HtmConfig.NumColumns, inhibitionArea);
 
-                inhibitionArea = Math.Min(conn.HtmConfig.NumColumns, inhibitionArea);
+                density = c.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
 
-                // TODO; The ihibition Area is here calculated in the column dimension. However it should be calculated in th einput dimension.
-                //inhibitionArea = Math.Pow(2 * this.InhibitionRadius + 1, conn.HtmConfig.InputDimensions.Length);
-                //inhibitionArea = Math.Min(conn.HtmConfig.NumInputs, inhibitionArea);
-
-                density = conn.HtmConfig.NumActiveColumnsPerInhArea / inhibitionArea;
-
-                density = Math.Min(density, conn.HtmConfig.MaxInibitionDensity);
+                density = Math.Min(density, MaxInibitionDensity);
             }
 
             return density;
         }
 
         /// <summary>
-        /// Performs the inhibition algorithm. This method calculates the density of the inhibition and executes either clobal or local inhibition
-        /// algorithm.
+        /// Performs inhibition. This method calculates the necessary values needed to actually perform inhibition and then delegates
+        /// the task of picking the active columns to helper functions.
         /// </summary>
-        /// <param name="c">the <see cref="Connections"/> The HTM instance.</param>
+        /// <param name="c">the <see cref="Connections"/> matrix</param>
         /// <param name="initialOverlaps">
         /// an array containing the overlap score for each column. The overlap score for a column is defined as the number of synapses
         /// in a "connected state" (connected synapses) that are connected to input bits which are turned on.
@@ -788,26 +1093,28 @@ namespace NeoCortexApi
             double[] overlaps = new List<double>(initialOverlaps).ToArray();
 
             double density = CalcInhibitionDensity(c);
+            //Debug.WriteLine("Inhibition step......");
+            //Debug.WriteLine("Density: " + density);
+            //Add our fixed little bit of random noise to the scores to help break ties.
+            //ArrayUtils.d_add(overlaps, c.getTieBreaker());
 
-            if (c.HtmConfig.GlobalInhibition || this.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
+            if (c.HtmConfig.GlobalInhibition || c.HtmConfig.InhibitionRadius > ArrayUtils.Max(c.HtmConfig.ColumnDimensions))
             {
                 return InhibitColumnsGlobal(c, overlaps, density);
             }
-            else
-            {
-                return InhibitColumnsLocal(c, overlaps, density);
-            }
+            return InhibitColumnsLocal(c, overlaps, density);
             //return inhibitColumnsLocalNewApproach(c, overlaps);
         }
 
 
         /// <summary>
-        ///  Perform global inhibition. It selects top active columns with the highest overlap score in the entire region. 
-        ///  The number of selected active columns is defined by the 'density' argument.
-        ///  At most half of the columns in a local neighborhood are allowed tobe active.
+        ///  Perform global inhibition. Performing global inhibition entails picking the
+        ///  top 'numActive' columns with the highest overlap score in the entire</summary>
+        ///  region. At most half of the columns in a local neighborhood are allowed to
+        ///  be active.
         /// <param name="c">Connections (memory)</param>
         /// <param name="overlaps">An array containing the overlap score for each  column.</param>
-        /// <param name="density">Defines the number of columns that will survive the inhibition.</param>
+        /// <param name="density"> The fraction of the overlap score for a column is defined as the numbern of columns to survive inhibition.</param>
         /// <returns>We return all columns, of synapses in a "connected state" (connected synapses) that have overlap greather than stimulusThreshold.</returns>
         public virtual int[] InhibitColumnsGlobal(Connections c, double[] overlaps, double density)
         {
@@ -828,11 +1135,11 @@ namespace NeoCortexApi
 
             // Calculate difference between num of columns and num of active. Num of active is less than 
             // num of columns, because of specified density.
-            int start = sortedWinnerIndices.Length - numActive;
+            int start = sortedWinnerIndices.Count() - numActive;
 
             //
             // Here we peek columns with highest overlap
-            while (start < sortedWinnerIndices.Length)
+            while (start < sortedWinnerIndices.Count())
             {
                 int i = sortedWinnerIndices[start].Key;
                 if (overlaps[i] >= stimulusThreshold) break;
@@ -875,8 +1182,8 @@ namespace NeoCortexApi
 
             List<int> winners = new List<int>();
 
-            int inhibitionRadius = this.InhibitionRadius;
-
+            int inhibitionRadius = mem.HtmConfig.InhibitionRadius;
+            
             for (int column = 0; column < overlaps.Length; column++)
             {
                 if (overlaps[column] >= mem.HtmConfig.StimulusThreshold)
@@ -887,15 +1194,13 @@ namespace NeoCortexApi
 
                     // Filter neighbors with overlaps larger than column overlap
                     long numHigherOverlap = neighborhoodOverlaps.Count(d => d > overlaps[column]);
-
+                   
                     // density will reduce radius
                     // numActive is the number of columns that participate in the inhibition.
                     int numActive = (int)(0.5 + density * neighborhood.Length);
 
                     //
-                    // numActive is the number of maximal active columns in the neighborhood.
-                    // numHigherOverlap is the number of columns in the neighborhood that have higher overlap than the referencing column.
-                    // Column is added as a winner one if the number of higher overlapped columns
+                    // Column is added as a winner one if the number of higher overlapped columns than the actual column
                     // is less than number of active columns defined by density and radius.
                     if (numHigherOverlap < numActive)
                     {
@@ -905,7 +1210,6 @@ namespace NeoCortexApi
                 }
             }
 
-            //return winners.OrderBy(w=>w).Take((int)mem.HtmConfig.NumActiveColumnsPerInhArea).ToArray();
             return winners.ToArray();
         }
 
@@ -1058,13 +1362,16 @@ namespace NeoCortexApi
 
             double[] tieBrokenOverlaps = new List<double>(overlaps).ToArray();
 
+
+            int inhibitionRadius = c.HtmConfig.InhibitionRadius;
+
             Parallel.ForEach(overlaps, (val, b, index) =>
             {
                 // int column = i;
                 if ((int)index >= c.HtmConfig.StimulusThreshold)
                 {
                     // GETS INDEXES IN THE ARRAY FOR THE NEIGHBOURS WITHIN THE INHIBITION RADIUS.
-                    List<int> neighborhood = GetColumnNeighborhood(c, (int)index, this.InhibitionRadius).ToList();
+                    List<int> neighborhood = GetColumnNeighborhood(c, (int)index, inhibitionRadius).ToList();
 
                     // GETS THE NEIGHBOURS WITHIN THE INHI
                     // Take overlapps of neighbors
@@ -1137,13 +1444,11 @@ namespace NeoCortexApi
 
             return winners.ToArray();
         }
-
+        ///////////////////////////////////////////////
 
         /// <summary>
         /// Update the boost factors for all columns. The boost factors are used to increase the overlap of inactive columns to improve
-        /// their chances of becoming active. and hence encourage participation of more columns in the learning process. 
-        /// This is known as Homeostatc Plasticity Mechanism.
-        /// This is a line defined as: 
+        /// their chances of becoming active. and hence encourage participation of more columns in the learning process. This is a line defined as: 
         /// y = mx + b 
         /// boost = (1-maxBoost)/minDuty * activeDutyCycle + maxBoost. 
         /// Intuitively this means that columns that have been active enough have a boost factor of 1, meaning their overlap is not boosted.
@@ -1163,47 +1468,52 @@ namespace NeoCortexApi
         ///         minActiveDutyCycle
         /// </summary>
         /// <param name="c"></param>
-        /// <remarks>In PHD known as UpdateBoostFactors.</remarks>
-        public void BoostByActivationFrequency(Connections c)
+        public void UpdateBoostFactors(Connections c)
         {
             double[] activeDutyCycles = c.HtmConfig.ActiveDutyCycles;
+            //var strActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
+            //Debug.WriteLine("Active Dutycycles:" + strActiveDutyCycles);
             double[] minActiveDutyCycles = c.HtmConfig.MinActiveDutyCycles;
+            //var strMinActiveDutyCycles = Helpers.StringifyVector(activeDutyCycles);
+            //Debug.WriteLine("Min active dudycycles:" + strMinActiveDutyCycles);
+            List<int> mask = new List<int>();
+            //Indexes of values > 0
+            for (int i = 0; i < minActiveDutyCycles.Length; i++)
+            {
+                if (minActiveDutyCycles[i] > 0)
+                    mask.Add(i);
+            }
 
-            double[] boostFactors;
+            double[] boostInterim;
 
             //
             // Boost factors are NOT recalculated if minimum active duty cycles are all set on 0.
-            // The HPC will set this value in 0 if the SP enters the stable state.
-            // MinActiveDutyCycles is set in UpdateMinDutyCycles and also controlled by HomeostaticPlasticityController.
-            if (minActiveDutyCycles.Count(ma => ma > 0) == 0)
+            if (mask.Count < 1)
             {
-                boostFactors = c.BoostFactors;
+                boostInterim = c.BoostFactors;
             }
             else
             {
                 double[] oneMinusMaxBoostFact = new double[c.HtmConfig.NumColumns];
-                ArrayUtils.InitArray(oneMinusMaxBoostFact, 1 - c.HtmConfig.MaxBoost);
-                boostFactors = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
-                boostFactors = ArrayUtils.Multiply(boostFactors, activeDutyCycles, 0, 0);
-                boostFactors = ArrayUtils.AddAmount(boostFactors, c.HtmConfig.MaxBoost);
+                ArrayUtils.FillArray(oneMinusMaxBoostFact, 1 - c.HtmConfig.MaxBoost);
+                boostInterim = ArrayUtils.Divide(oneMinusMaxBoostFact, minActiveDutyCycles, 0, 0);
+                boostInterim = ArrayUtils.Multiply(boostInterim, activeDutyCycles, 0, 0);
+                boostInterim = ArrayUtils.AddAmount(boostInterim, c.HtmConfig.MaxBoost);
             }
 
-            // Filtered indexes are indexes of columns whose activeDutyCycles is larger than calculated minActiveDutyCycles of the column.
-            List<int> idxOfActiveColumns = new List<int>();
+            List<int> filteredIndexes = new List<int>();
 
             for (int i = 0; i < activeDutyCycles.Length; i++)
             {
-                if (activeDutyCycles[i] >= minActiveDutyCycles[i])
+                if (activeDutyCycles[i] > minActiveDutyCycles[i])
                 {
-                    idxOfActiveColumns.Add(i);
+                    filteredIndexes.Add(i);
                 }
             }
 
-            // Already very active columns will have boost factor 1.0. That mean their synapses on the proximal segment 
-            // will not be stimulated.
-            ArrayUtils.SetIndexesTo(boostFactors, idxOfActiveColumns.ToArray(), 1.0d);
+            ArrayUtils.SetIndexesTo(boostInterim, filteredIndexes.ToArray(), 1.0d);
 
-            c.BoostFactors = boostFactors;
+            c.BoostFactors = boostInterim;
         }
 
 
@@ -1221,14 +1531,13 @@ namespace NeoCortexApi
         public virtual int[] CalculateOverlap(Connections c, int[] inputVector)
         {
             int[] overlaps = new int[c.HtmConfig.NumColumns];
-
-            //
-            // Calculates the overlapp for each mini-column.
             for (int col = 0; col < c.HtmConfig.NumColumns; col++)
             {
-                overlaps[col] = c.GetColumn(col).CalcMiniColumnOverlap(inputVector, c.HtmConfig.StimulusThreshold);
+                overlaps[col] = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             }
-
+            //c.getConnectedCounts().rightVecSumAtNZ(inputVector, overlaps, c.StimulusThreshold);
+            //string st = string.Join(",", overlaps);
+            //Debug.WriteLine($"Overlap: {st}");
             return overlaps;
         }
 
@@ -1250,6 +1559,69 @@ namespace NeoCortexApi
             return ArrayUtils.Divide(overlaps, columnsCounts);
         }
 
+        //    /**
+        //     * Similar to _getNeighbors1D and _getNeighbors2D (Not included in this implementation), 
+        //     * this function Returns a list of indices corresponding to the neighbors of a given column. 
+        //     * Since the permanence values are stored in such a way that information about topology
+        //     * is lost. This method allows for reconstructing the topology of the inputs,
+        //     * which are flattened to one array. Given a column's index, its neighbors are
+        //     * defined as those columns that are 'radius' indices away from it in each
+        //     * dimension. The method returns a list of the flat indices of these columns.
+        //     * 
+        //     * @param c                     matrix configured to this {@code SpatialPooler}'s dimensions
+        //     *                              for transformation work.
+        //     * @param columnIndex           The index identifying a column in the permanence, potential
+        //     *                              and connectivity matrices.
+        //     * @param topology              A {@link SparseMatrix} with dimensionality info.
+        //     * @param inhibitionRadius      Indicates how far away from a given column are other
+        //     *                              columns to be considered its neighbors. In the previous 2x3
+        //     *                              example, each column with coordinates:
+        //     *                              [2+/-radius, 3+/-radius] is considered a neighbor.
+        //     * @param wrapAround            A boolean value indicating whether to consider columns at
+        //     *                              the border of a dimensions to be adjacent to columns at the
+        //     *                              other end of the dimension. For example, if the columns are
+        //     *                              laid out in one dimension, columns 1 and 10 will be
+        //     *                              considered adjacent if wrapAround is set to true:
+        //     *                              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        //     *               
+        //     * @return              a list of the flat indices of these columns
+        //     */
+        //    public TIntArrayList getNeighborsND(Connections c, int columnIndex, SparseMatrix<?> topology, int inhibitionRadius, boolean wrapAround) {
+        //        final int[] dimensions = topology.getDimensions();
+        //        int[] columnCoords = topology.computeCoordinates(columnIndex);
+        //        List<int[]> dimensionCoords = new ArrayList<>();
+        //
+        //        for(int i = 0;i < dimensions.length;i++) {
+        //            int[] range = ArrayUtils.range(columnCoords[i] - inhibitionRadius, columnCoords[i] + inhibitionRadius + 1);
+        //            int[] curRange = new int[range.length];
+        //
+        //            if(wrapAround) {
+        //                for(int j = 0;j < curRange.length;j++) {
+        //                    curRange[j] = (int)ArrayUtils.positiveRemainder(range[j], dimensions[i]);
+        //                }
+        //            }else{
+        //                final int idx = i;
+        //                curRange = ArrayUtils.retainLogicalAnd(range, 
+        //                    new Condition[] { ArrayUtils.GREATER_OR_EQUAL_0,
+        //                        new Condition.Adapter<Integer>() {
+        //                            @Override public boolean eval(int n) { return n < dimensions[idx]; }
+        //                        }
+        //                    }
+        //                );
+        //            }
+        //            dimensionCoords.add(ArrayUtils.unique(curRange));
+        //        }
+        //
+        //        List<int[]> neighborList = ArrayUtils.dimensionsToCoordinateList(dimensionCoords);
+        //        TIntArrayList neighbors = new TIntArrayList(neighborList.size());
+        //        int size = neighborList.size();
+        //        for(int i = 0;i < size;i++) {
+        //            int flatIndex = topology.computeIndex(neighborList.get(i), false);
+        //            if(flatIndex == columnIndex) continue;
+        //            neighbors.add(flatIndex);
+        //        }
+        //        return neighbors;
+        //    }
 
         /// <summary>
         /// Returns true if enough rounds have passed to warrant updates of duty cycles
@@ -1314,140 +1686,31 @@ namespace NeoCortexApi
             return result;
         }
 
-        public bool Equals(SpatialPooler obj)
-        {
-            if (this == obj)
-                return true;
-
-            if (obj == null)
-                return false;
-
-            else if (Name != obj.Name)
-                return false;
-
-            SpatialPooler other = (SpatialPooler)obj;
-
-            if (m_HomeoPlastAct == null)
-            {
-                if (other.m_HomeoPlastAct != null)
-                    return false;
-            }
-            else if (!m_HomeoPlastAct.Equals(other.m_HomeoPlastAct))
-                return false;
-
-            if (connections == null)
-            {
-                if (other.connections != null)
-                    return false;
-            }
-            else if (!connections.Equals(other.connections))
-                return false;
-
-            return true;
-
-        }
-
 
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer ser = new HtmSerializer();
+            HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(SpatialPooler), writer);
-
-            ser.SerializeValue(this.Name, writer);
 
             if (this.m_HomeoPlastAct != null)
             {
                 this.m_HomeoPlastAct.Serialize(writer);
             }
+            
+            ser.SerializeValue(this.MaxInibitionDensity, writer);
 
-            if (this.connections != null)
-            {
-                this.connections.Serialize(writer);
-            }
+            ser.SerializeValue(this.Name, writer);
+
+            this.connections.Serialize(writer);
 
             ser.SerializeEnd(nameof(SpatialPooler), writer);
         }
 
-        public static SpatialPooler Deserialize(StreamReader sr)
+        public static SpatialPooler Deserialize(StreamReader reader)
         {
             SpatialPooler sp = new SpatialPooler();
-
-            HtmSerializer ser = new HtmSerializer();
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(SpatialPooler)))
-                {
-                    continue;
-                }
-                else if (data == ser.ReadBegin(nameof(HomeostaticPlasticityController)))
-                {
-                    sp.m_HomeoPlastAct = HomeostaticPlasticityController.Deserialize(sr);
-                }
-                else if (data == ser.ReadBegin(nameof(Connections)))
-                {
-                    sp.connections = Connections.Deserialize(sr);
-                }
-                else if (data == ser.ReadEnd(nameof(SpatialPooler)))
-                {
-                    break;
-                }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                {
-                                    //sp.MaxInibitionDensity = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    sp.Name = ser.ReadStringValue(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
-
-                        }
-                    }
-                }
-            }
-
-            return sp;
-        }
-
-        public override bool Equals(object obj)
-        {
-            var sp = obj as SpatialPooler;
-            if (sp == null)
-                return false;
-            return this.Equals(sp);
-        }
-
-        public bool Equals(IHtmModule other)
-        {
-            return this.Equals((object)other);
-        }
-
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            HtmSerializer.SerializeObject(obj, name, sw);
-        }
-
-        public static object Deserialize<T>(StreamReader sr, string propName)
-        {
-            var obj = HtmSerializer.DeserializeObject<T>(sr, propName);
-
-            var sp = obj as SpatialPooler;
-            if (sp == null)
-                return obj;
-            //sp.m_HomeoPlastAct.SetConnections(sp.connections);
+            // |T|ODO
             return sp;
         }
     }

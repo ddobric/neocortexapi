@@ -2,14 +2,18 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 
 
 namespace NeoCortexApi.Experiments
@@ -19,7 +23,6 @@ namespace NeoCortexApi.Experiments
     /// Sang Nguyen phuocsangnguyen97 @gmail.com
     /// Duy Nguyen ngthanhduy7 @gmail.com
     /// https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2019-2020/tree/VNGroup/Source/MyProject
-    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.12_SpatialPooler_NoiseRobustness.pdf
     /// </summary>
     [TestClass]
 

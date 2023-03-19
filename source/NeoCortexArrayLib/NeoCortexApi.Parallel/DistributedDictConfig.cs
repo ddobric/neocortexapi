@@ -8,7 +8,9 @@ namespace NeoCortexApi.DistributedComputeLib
     /// <summary>
     /// Defines the confguration of Akka Cluster.
     /// </summary>
+#pragma warning disable CS0246 // The type or namespace name 'IHtmDistConfig' could not be found (are you missing a using directive or an assembly reference?)
     public class AkkaDistributedDictConfig : IHtmDistConfig
+#pragma warning restore CS0246 // The type or namespace name 'IHtmDistConfig' could not be found (are you missing a using directive or an assembly reference?)
     {
 
 

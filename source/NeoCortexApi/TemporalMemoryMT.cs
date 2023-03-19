@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace NeoCortexApi
@@ -44,7 +45,7 @@ namespace NeoCortexApi
             Func<Object, Column> segToCol = (segment) =>
             {
                 var colIndx = ((DistalDendrite)segment).ParentCell.ParentColumnIndex;
-                var parentCol = this.connections.Memory.GetColumn(colIndx);
+                var parentCol = this.connections.HtmConfig.Memory.GetColumn(colIndx);
                 return parentCol;
             };
 
@@ -96,7 +97,7 @@ namespace NeoCortexApi
 
                     List<Cell> cellsOwnersOfActSegs = ActivatePredictedColumn(conn, activeColumnData.ActiveSegments,
                         activeColumnData.MatchingSegments, prevActiveCells, prevWinnerCells,
-                            permanenceIncrement, permanenceDecrement, learn);
+                            permanenceIncrement, permanenceDecrement, learn, cycle.ActiveSynapses);
 
                     ComputeCycle colCycle = new ComputeCycle();
                     cycles[tuple.Key.Index] = colCycle;

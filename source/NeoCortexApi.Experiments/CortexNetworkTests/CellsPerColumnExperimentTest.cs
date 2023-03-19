@@ -1,20 +1,22 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortexApi.Classifiers;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
+using System.Globalization;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Network;
+using NeoCortexApi;
+using NeoCortexApi.Entities;
+using System.Diagnostics;
+using NeoCortexEntities.NeuroVisualizer;
+using WebSocketNeuroVisualizer;
+using System.IO;
+using NeoCortexApi.Classifiers;
 
 namespace NeoCortexApi.Experiments
 {
-    /// <summary>
-    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.4_CellsPerColumnExperiment_Paper.pdf
-    /// </summary>
     [TestClass]
     public class CellsPerColumnExperimentTest
     {
@@ -33,7 +35,6 @@ namespace NeoCortexApi.Experiments
         /// </summary>
 
         [TestMethod]
-        [TestCategory("Experiment")]
         [TestCategory("NetworkTests")]
         [DataRow(1, 30)]   //Cells =1 , iter = 30                         
         [DataRow(2, 30)] //Cells =2 , iter = 30
@@ -145,7 +146,7 @@ namespace NeoCortexApi.Experiments
                         {
                             var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
-                            cls.Learn(input, lyrOut.ActiveCells.ToArray());
+                            cls.Learn(input, lyrOut.ActiveCells.ToArray(), lyrOut.PredictiveCells.ToArray());
 
                             Debug.WriteLine($"-------------- {input} ---------------");
 
@@ -155,7 +156,7 @@ namespace NeoCortexApi.Experiments
                             Debug.WriteLine($"W: {Helpers.StringifyVector(lyrOut.WinnerCells.Select(c => c.Index).ToArray())}");
                             Debug.WriteLine($"P: {Helpers.StringifyVector(lyrOut.PredictiveCells.Select(c => c.Index).ToArray())}");
 
-                            var predictedValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray()).First().PredictedInput;
+                            var predictedValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
 
                             Debug.WriteLine($"Current Input: {input} \t| - Predicted value in previous cycle: {lastPredictedValue} \t| Predicted Input for the next cycle: {predictedValue}");
 

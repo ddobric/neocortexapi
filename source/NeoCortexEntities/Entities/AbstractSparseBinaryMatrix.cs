@@ -3,8 +3,9 @@
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text;
+using System.IO;
 
 namespace NeoCortexApi.Entities
 {
@@ -21,7 +22,7 @@ namespace NeoCortexApi.Entities
         {
 
         }
-        
+
         /// <summary>
         /// Constructs a new <see cref="AbstractSparseBinaryMatrix"/> with the specified dimensions (defaults to row major ordering)
         /// </summary>
@@ -42,7 +43,7 @@ namespace NeoCortexApi.Entities
 
             this.trueCounts = new int[dimensions[0]];
         }
-
+        
         /// <summary>
         /// Returns the slice specified by the passed in coordinates. The array is returned as an object, therefore it is the caller's
         /// responsibility to cast the array to the appropriate dimensions.
@@ -181,7 +182,7 @@ namespace NeoCortexApi.Entities
             return GetColumn(ComputeIndex(coordinates));
         }
 
-
+        
 
 #pragma warning disable IDE1006 // Naming Styles
         // public abstract Integer get(int index);
@@ -451,7 +452,7 @@ namespace NeoCortexApi.Entities
 
 
 
-        public bool Equals(AbstractSparseBinaryMatrix obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
                 return true;
@@ -459,30 +460,23 @@ namespace NeoCortexApi.Entities
                 return false;
             if ((obj.GetType() != this.GetType()))
                 return false;
-            
             AbstractSparseBinaryMatrix other = (AbstractSparseBinaryMatrix)obj;
-            if (other.trueCounts != null && trueCounts != null)
-            {
-
-                if (!other.trueCounts.SequenceEqual(trueCounts))
-                    return false;
-            }
-            
-            if (ModuleTopology == null)
-            {
-                if (obj.ModuleTopology != null)
-                    return false;
-            }
-            else if (!ModuleTopology.Equals(obj.ModuleTopology))
+            if (!Array.Equals(trueCounts, other.trueCounts))
                 return false;
-
             return true;
         }
+
         #region Serialization
-        public override void Serialize(StreamWriter writer)
+        public void Serialize(StreamWriter writer)
         {
-            throw new NotImplementedException();
-            
+            HtmSerializer2 ser = new HtmSerializer2();
+
+            ser.SerializeBegin(nameof(AbstractSparseBinaryMatrix), writer);
+
+            ser.SerializeValue(AbstractSparseBinaryMatrix.serialVersionUID, writer);
+            ser.SerializeValue(this.trueCounts, writer);
+
+            ser.SerializeEnd(nameof(AbstractSparseBinaryMatrix), writer);
         }
         #endregion
     }

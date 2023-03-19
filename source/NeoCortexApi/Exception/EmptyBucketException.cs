@@ -1,5 +1,5 @@
 using System;
-
+using Akka.Pattern;
 
 namespace NeoCortexApi.Exception
 {
@@ -8,7 +8,7 @@ namespace NeoCortexApi.Exception
         public EmptyBucketException(String message)
           : base(message)
         {
-
+            
         }
     }
 }

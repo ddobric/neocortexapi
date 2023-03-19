@@ -1,13 +1,14 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Linq;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace UnitTestsProject
@@ -88,7 +89,7 @@ namespace UnitTestsProject
         private HtmConfig SetupHtmConfigDefaultParameters()
         {
             var htmConfig = new HtmConfig(new int[] { 32, 32 }, new int[] { 64, 64 })
-            {
+            {   
                 PotentialRadius = 16,
                 PotentialPct = 0.5,
                 GlobalInhibition = false,
@@ -109,7 +110,7 @@ namespace UnitTestsProject
             return htmConfig;
         }
 
-        private void InitTestSPInstance()
+        private void initSP()
         {
             sp = new SpatialPoolerMT();
             mem = new Connections();
@@ -125,7 +126,7 @@ namespace UnitTestsProject
         {
             setupParameters();
 
-            InitTestSPInstance();
+            initSP();
 
             Assert.AreEqual(5, mem.HtmConfig.InputDimensions[0]);
             Assert.AreEqual(5, mem.HtmConfig.ColumnDimensions[0]);
@@ -468,7 +469,7 @@ namespace UnitTestsProject
             // This exact number of active columns is determined by the inhibition
             // radius, which changes based on the random synapses (i.e. weird math).
             // Force it to a known number.
-            sp.InhibitionRadius = 2;
+            cn.HtmConfig.InhibitionRadius = 2;
 
             int[] activeArray = new int[nColumns];
             sp.compute(new int[inputSize], activeArray, true);
@@ -615,7 +616,7 @@ namespace UnitTestsProject
             parameters.setMinPctActiveDutyCycles(0.001);
             parameters.setDutyCyclePeriod(1000);
             parameters.setMaxBoost(10);
-            InitTestSPInstance();
+            initSP();
 
             int[] inputVector = {
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -719,7 +720,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setColumnDimensions(new int[] { 6 });
             parameters.setInputDimensions(new int[] { 9 });
-            InitTestSPInstance();
+            initSP();
 
             // Column [2] has dutycycle=0. It means it has never learned anything.
             mem.UpdateActiveDutyCycles(new double[] { 0.5, 0.1, 0, 0.2, 0.4, 0 });
@@ -757,7 +758,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setColumnDimensions(new int[] { 4 });
             parameters.setInputDimensions(new int[] { 12 });
-            InitTestSPInstance();
+            initSP();
 
             Assert.IsTrue(1 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
             Assert.IsTrue(4 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
@@ -768,7 +769,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setColumnDimensions(new int[] { 4 });
             parameters.setInputDimensions(new int[] { 4 });
-            InitTestSPInstance();
+            initSP();
 
             Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
             Assert.IsTrue(1 == HtmCompute.MapColumn(1, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
@@ -779,7 +780,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setColumnDimensions(new int[] { 1 });
             parameters.setInputDimensions(new int[] { 1 });
-            InitTestSPInstance();
+            initSP();
 
             Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
 
@@ -787,7 +788,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setColumnDimensions(new int[] { 12, 4 });
             parameters.setInputDimensions(new int[] { 36, 12 });
-            InitTestSPInstance();
+            initSP();
 
             Assert.IsTrue(13 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
             Assert.IsTrue(49 == HtmCompute.MapColumn(4, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
@@ -799,7 +800,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setColumnDimensions(new int[] { 4, 4 });
             parameters.setInputDimensions(new int[] { 3, 5 });
-            InitTestSPInstance();
+            initSP();
 
             Assert.IsTrue(0 == HtmCompute.MapColumn(0, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
             Assert.IsTrue(4 == HtmCompute.MapColumn(3, mem.HtmConfig.ColumnModuleTopology, mem.HtmConfig.InputModuleTopology));
@@ -817,7 +818,7 @@ namespace UnitTestsProject
             parameters.setPotentialRadius(2);
             parameters.setPotentialPct(1);
             parameters.Set(KEY.WRAP_AROUND, false);
-            InitTestSPInstance();
+            initSP();
 
             Assert.AreEqual(12, mem.HtmConfig.InputDimensions[0]);
             Assert.AreEqual(4, mem.HtmConfig.ColumnDimensions[0]);
@@ -847,7 +848,7 @@ namespace UnitTestsProject
             // Test with wrapAround and potentialPct < 1
             parameters.setPotentialPct(0.5);
             parameters.Set(KEY.WRAP_AROUND, true);
-            InitTestSPInstance();
+            initSP();
 
             int[] supersetMask = new int[] { 0, 1, 2, 3, 11 };
             mask = HtmCompute.MapPotential(mem.HtmConfig, 0, mem.HtmConfig.Random);
@@ -872,7 +873,7 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { 2, 4 });
             parameters.setPotentialRadius(1);
             parameters.setPotentialPct(1);
-            InitTestSPInstance();
+            initSP();
 
             //Test without wrapAround
             mem.HtmConfig.WrapAround = false;
@@ -892,7 +893,7 @@ namespace UnitTestsProject
             trueIndices.Clear();
             maskSet.Clear();
             parameters.setPotentialRadius(2);
-            InitTestSPInstance();
+            initSP();
             trueIndices.AddRange(
                     new int[] { 0, 1, 2, 3, 11,
                         12, 13, 14, 15, 23,
@@ -928,7 +929,7 @@ namespace UnitTestsProject
             parameters.setPotentialRadius(2);
             parameters.setPotentialPct(1);
             parameters.Set(KEY.WRAP_AROUND, false);
-            InitTestSPInstance();
+            initSP();
 
             //Test without wrapAround and potentialPct = 1
             int[] expectedMask = new int[] { 0 };
@@ -974,7 +975,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setColumnDimensions(new int[] { 5 });
             parameters.setInhibitionRadius(10);
-            InitTestSPInstance();
+            initSP();
 
             SpatialPoolerMock2 mock = new SpatialPoolerMock2((density) =>
             {
@@ -1007,7 +1008,7 @@ namespace UnitTestsProject
             mem.HtmConfig.NumActiveColumnsPerInhArea = 5;
             mem.HtmConfig.LocalAreaDensity = 0.1;
             mem.HtmConfig.GlobalInhibition = true;
-            mock.InhibitionRadius = 5;
+            mem.HtmConfig.InhibitionRadius = 5;
             double trueDensity = mem.HtmConfig.LocalAreaDensity;
             //inhibitColumnsGlobal.inhibitColumns(mem, overlaps);
             mock.InhibitColumns(mem, overlaps);
@@ -1020,7 +1021,7 @@ namespace UnitTestsProject
             mem.HtmConfig.ColumnDimensions = new int[] { 50, 10 };
             //Internally calculated during init, to overwrite we put after init
             mem.HtmConfig.GlobalInhibition = false;
-            mock.InhibitionRadius = 7;
+            mem.HtmConfig.InhibitionRadius = 7;
 
             double[] tieBreaker = new double[500];
             ArrayUtils.FillArray(tieBreaker, 0);
@@ -1040,10 +1041,10 @@ namespace UnitTestsProject
             parameters.setGlobalInhibition(false);
             parameters.setLocalAreaDensity(-1);
             parameters.setNumActiveColumnsPerInhArea(3);
-            InitTestSPInstance();
+            initSP();
 
             //Internally calculated during init, to overwrite we put after init
-            mock.InhibitionRadius = 4;
+            mem.HtmConfig.InhibitionRadius = 4;
             tieBreaker = new double[1000];
             ArrayUtils.FillArray(tieBreaker, 0);
             mem.TieBreaker = tieBreaker;
@@ -1060,7 +1061,7 @@ namespace UnitTestsProject
             mem.HtmConfig.NumActiveColumnsPerInhArea = 7;
 
             //Internally calculated during init, to overwrite we put after init
-            mock.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             tieBreaker = new double[1000];
             ArrayUtils.FillArray(tieBreaker, 0);
             mem.TieBreaker = tieBreaker;
@@ -1074,88 +1075,6 @@ namespace UnitTestsProject
 
         }
 
-        /// <summary>
-        /// Creates the default config.
-        /// </summary>
-        /// <returns></returns>
-        private HtmConfig GetTestConfig(int[] inpDims, int[] colDims)
-        {
-            HtmConfig cfg = new HtmConfig(inpDims, colDims)
-            {
-                PotentialRadius = 5,
-                PotentialPct = 0.5,
-                GlobalInhibition = true,
-                LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 3,
-                SynPermActiveInc = 0.1,
-                SynPermInactiveDec = 0.01,
-                MinPctActiveDutyCycles = 1.0,
-                MinPctOverlapDutyCycles = 1.0,
-                DutyCyclePeriod = 1,
-                MaxBoost = 10,
-                Random = new ThreadSafeRandom(42),
-                RandomGenSeed = 42,
-
-            };
-
-            return cfg;
-        }
-
-        /// <summary>
-        /// It makes sure that all boost factors are set to 1 when MinPctActiveDutyCycles is set to 0.
-        /// This test ensures that ActiveDutyCycles are all set to values higher or equal zero, which is the MinPctActiveDutyCycles value 
-        /// for all columns.
-        /// </summary>
-        [TestMethod]
-        [TestCategory("UnitTest")]
-        [TestCategory("Prod")]
-        public void HpcInactivBoostTest()
-        {
-            int inpBits = 10;
-            int numCols = 5;
-
-            var cfg = GetTestConfig(new int[] { inpBits }, new int[] { numCols });
-            cfg.StimulusThreshold = 2;
-            cfg.UpdatePeriod = 1;
-
-            Connections mem = new Connections(cfg);
-
-            SpatialPoolerMT sp = new SpatialPoolerMT();
-            sp.Init(mem);
-
-            var actCols = new int[numCols];
-
-            for (int i = 0; i < 100; i++)
-            {
-                var inpVector = NeoCortexUtils.CreateRandomVector(inpBits, 90);
-
-                sp.compute(inpVector, actCols, true);
-            }
-
-            cfg.MinPctActiveDutyCycles = 0.0;
-
-            // One more compute cycle is required to setup boost factors for the next cycle.
-            sp.compute(NeoCortexUtils.CreateRandomVector(inpBits, 90), actCols, true);
-
-            for (int i = 0; i < 10000; i++)
-            {
-                var inpVector = NeoCortexUtils.CreateRandomVector(inpBits, 90);
-
-                sp.compute(inpVector, actCols, true);
-
-                // We set all MinPctActiveDutyCycles to zero and make sure that no any is changed.
-                Assert.IsTrue(mem.HtmConfig.MinActiveDutyCycles.Sum() == 0);
-
-                // This condition can be found in UpdateBoostFactors. If satisfied all columns boosts will be set to 1.0
-                // In that case no boost will happen. This condition is used by HomeostaticPlasticityController, to turn off boosting.
-                Assert.IsTrue(mem.HtmConfig.ActiveDutyCycles.Count(c => c >= 0) == mem.HtmConfig.ActiveDutyCycles.Length);
-
-                // This is the same asser as the previous one All boost factors must be 1.0 when MinPctActiveDutyCycles is 0.0
-                Assert.IsTrue(mem.BoostFactors.Sum() == mem.BoostFactors.Length);
-            }
-        }
-
-
         [TestMethod]
         [TestCategory("UnitTest")]
         [TestCategory("Prod")]
@@ -1166,81 +1085,61 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { 5 });
             parameters.setMaxBoost(10.0);
             parameters.setRandom(new ThreadSafeRandom(42));
-            InitTestSPInstance();
+            initSP();
 
             mem.HtmConfig.NumColumns = 6;
 
             double[] minActiveDutyCycles = new double[6];
-            ArrayUtils.InitArray(minActiveDutyCycles, 0.000001D);
+            ArrayUtils.FillArray(minActiveDutyCycles, 0.000001D);
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
 
             double[] activeDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
 
             double[] trueBoostFactors = new double[] { 1, 1, 1, 1, 1, 1 };
-            sp.BoostByActivationFrequency(mem);
+            sp.UpdateBoostFactors(mem);
             double[] boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
 
-
+            ////////////////
             minActiveDutyCycles = new double[] { 0.1, 0.3, 0.02, 0.04, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(mem.BoostFactors, 0);
-            sp.BoostByActivationFrequency(mem);
+            sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
 
+            ////////////////
             minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             activeDutyCycles = new double[] { 0.01, 0.02, 0.002, 0.003, 0.07, 0.012 };
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
             trueBoostFactors = new double[] { 9.1, 9.1, 9.1, 9.1, 9.1, 9.1 };
-            sp.BoostByActivationFrequency(mem);
+            sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
 
-
+            ////////////////
             minActiveDutyCycles = new double[] { 0.1, 0.2, 0.02, 0.03, 0.7, 0.12 };
             mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
             ArrayUtils.FillArray(activeDutyCycles, 0);
             mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
-            ArrayUtils.InitArray(trueBoostFactors, 10.0);
-            sp.BoostByActivationFrequency(mem);
+            ArrayUtils.FillArray(trueBoostFactors, 10.0);
+            sp.UpdateBoostFactors(mem);
             boostFactors = mem.BoostFactors;
             for (int i = 0; i < boostFactors.Length; i++)
             {
                 Assert.IsTrue(Math.Abs(trueBoostFactors[i] - boostFactors[i]) <= 0.1D);
             }
-
-
-            //
-            // Here we make sure that boost factors are not changed if all minActiveDutyCycles are zero.
-            //
-            minActiveDutyCycles = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-            mem.HtmConfig.MinActiveDutyCycles = minActiveDutyCycles;
-
-            ArrayUtils.InitArray(mem.BoostFactors, 1.0);
-
-            var originalBoostFactors = new double[mem.BoostFactors.Length];
-
-            Array.Copy(mem.BoostFactors, originalBoostFactors, mem.BoostFactors.Length);
-
-            ArrayUtils.FillArray(activeDutyCycles, 1);
-
-            mem.HtmConfig.ActiveDutyCycles = activeDutyCycles;
-
-            sp.BoostByActivationFrequency(mem);
-
-            Assert.IsTrue(mem.BoostFactors.SequenceEqual(originalBoostFactors));
         }
 
         [TestMethod]
@@ -1249,14 +1148,14 @@ namespace UnitTestsProject
         public void testUpdateInhibitionRadius()
         {
             setupParameters();
-            InitTestSPInstance();
+            initSP();
 
             //Test global inhibition case
             mem.HtmConfig.GlobalInhibition = true;
             mem.HtmConfig.ColumnDimensions = new int[] { 57, 31, 2 };
             // If global inhibition is set, then all columns in the row are inhibited.
             sp.UpdateInhibitionRadius(mem);
-            Assert.IsTrue(57 == sp.InhibitionRadius);
+            Assert.IsTrue(57 == mem.HtmConfig.InhibitionRadius);
 
             ////////////
             SpatialPoolerMock3 mock = new SpatialPoolerMock3(3, 4);
@@ -1277,7 +1176,7 @@ namespace UnitTestsProject
             mem.HtmConfig.GlobalInhibition = false;
             sp = mock;
             sp.UpdateInhibitionRadius(mem);
-            Assert.IsTrue(6 == sp.InhibitionRadius);
+            Assert.IsTrue(6 == mem.HtmConfig.InhibitionRadius);
 
             //////////////
 
@@ -1299,7 +1198,7 @@ namespace UnitTestsProject
             mem.HtmConfig.GlobalInhibition = false;
             sp = mock;
             sp.UpdateInhibitionRadius(mem);
-            Assert.IsTrue(1 == sp.InhibitionRadius);
+            Assert.IsTrue(1 == mem.HtmConfig.InhibitionRadius);
 
             /////////////
             mock = new SpatialPoolerMock3(2.4, 2);
@@ -1321,7 +1220,7 @@ namespace UnitTestsProject
             sp = mock;
             //((2 * 2.4) - 1) / 2.0 => round up
             sp.UpdateInhibitionRadius(mem);
-            Assert.IsTrue(2 == sp.InhibitionRadius);
+            Assert.IsTrue(2 == mem.HtmConfig.InhibitionRadius);
 
             //...
             sp = new SpatialPoolerMT();
@@ -1331,7 +1230,7 @@ namespace UnitTestsProject
             sp.UpdateInhibitionRadius(mem);
 
             // max dim of columns
-            Assert.IsTrue(57 == sp.InhibitionRadius);
+            Assert.IsTrue(57 == mem.HtmConfig.InhibitionRadius);
 
             // TODO..
             sp = mock;
@@ -1347,7 +1246,7 @@ namespace UnitTestsProject
         public void testAvgColumnsPerInput()
         {
             setupParameters();
-            InitTestSPInstance();
+            initSP();
 
             mem.HtmConfig.ColumnDimensions = new int[] { 2, 2, 2, 2 };
             mem.HtmConfig.InputDimensions = new int[] { 4, 4, 4, 4 };
@@ -1472,7 +1371,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setInputDimensions(new int[] { 8 });
             parameters.setColumnDimensions(new int[] { 5 });
-            InitTestSPInstance();
+            initSP();
 
             mem.HtmConfig.SynPermBelowStimulusInc = 0.01;
             mem.HtmConfig.SynPermTrimThreshold = 0.05;
@@ -1505,7 +1404,14 @@ namespace UnitTestsProject
             new double[] { 0.110, 0.748, 0.055, 0.000, 0.060, 0.000, 0.218, 0.000 }
         };
 
-          
+            //    Condition <?> cond = new Condition.Adapter<Integer>()
+            //    {
+            //    public boolean eval(int n)
+            //    {
+            //        return n == 1;
+            //    }
+            //};
+
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 int[] indexes = ArrayUtils.IndexWhere(potentialPools[i], n => n == 1);
@@ -1516,10 +1422,11 @@ namespace UnitTestsProject
             }
 
             //Execute method being tested
-            sp.BoostColsWithLowOverlap(mem);
+            sp.BumpUpWeakColumns(mem);
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
+                //double[] perms = mem.getPotentialPools().get(i).getDensePermanences(mem);
                 double[] perms = mem.GetColumn(i).ProximalDendrite.RFPool.GetDensePermanences(mem.HtmConfig.NumInputs);
                 for (int j = 0; j < truePermanences[i].Length; j++)
                 {
@@ -1582,9 +1489,9 @@ namespace UnitTestsProject
             parameters.setDutyCyclePeriod(1000);
             parameters.setMaxBoost(10);
             parameters.setRandom(new ThreadSafeRandom(42));
-            InitTestSPInstance();
+            initSP();
 
-           // mem.HtmConfig.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
 
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
@@ -1639,9 +1546,9 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 5 });
             parameters.setColumnDimensions(new int[] { 8 });
             parameters.Set(KEY.WRAP_AROUND, false);
-            InitTestSPInstance();
+            initSP();
 
-            //mem.HtmConfig.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             int inhibitionRadius = 1;
 
             for (int k = 0; k < 100; k++)
@@ -1692,7 +1599,7 @@ namespace UnitTestsProject
             sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            sp.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             int inhibitionRadius = 1;
 
             for (int k = 0; k < 100; k++)
@@ -1742,8 +1649,9 @@ namespace UnitTestsProject
             parameters.setMinPctActiveDutyCycles(0.001);
             parameters.setDutyCyclePeriod(1000);
             parameters.setMaxBoost(10);
-            InitTestSPInstance();
+            initSP();
 
+            mem.HtmConfig.InhibitionRadius = 1;
             int inhibitionRadius = 1;
 
             for (int k = 0; k < 100; k++)
@@ -1776,9 +1684,9 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 5 });
             parameters.setColumnDimensions(new int[] { 8 });
             parameters.Set(KEY.WRAP_AROUND, false);
-            InitTestSPInstance();
+            initSP();
 
-            sp.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
             mem.HtmConfig.ActiveDutyCycles = new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 };
             mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
@@ -1812,9 +1720,9 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 5 });
             parameters.setColumnDimensions(new int[] { 8 });
             parameters.Set(KEY.WRAP_AROUND, true);
-            InitTestSPInstance();
+            initSP();
 
-            sp.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
             mem.HtmConfig.ActiveDutyCycles = new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 };
             mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
@@ -1861,7 +1769,7 @@ namespace UnitTestsProject
             sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            sp.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
             mem.HtmConfig.ActiveDutyCycles = new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 };
             mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
@@ -1901,7 +1809,7 @@ namespace UnitTestsProject
             sp = new SpatialPoolerMT();
             sp.Init(mem);
 
-            sp.InhibitionRadius = 1;
+            mem.HtmConfig.InhibitionRadius = 1;
             mem.HtmConfig.OverlapDutyCycles = new double[] { 0.7, 0.1, 0.5, 0.01, 0.78, 0.55, 0.1, 0.001 };
             mem.HtmConfig.ActiveDutyCycles = new double[] { 0.9, 0.3, 0.5, 0.7, 0.1, 0.01, 0.08, 0.12 };
             mem.HtmConfig.MinPctActiveDutyCycles = 0.1;
@@ -1942,7 +1850,7 @@ namespace UnitTestsProject
             parameters.setInputDimensions(new int[] { 5 });
 
             parameters.setColumnDimensions(new int[] { 5 });
-            InitTestSPInstance();
+            initSP();
 
             mem.HtmConfig.MinPctOverlapDutyCycles = 0.01;
             mem.HtmConfig.MinPctActiveDutyCycles = 0.02;
@@ -1951,9 +1859,9 @@ namespace UnitTestsProject
 
             sp.UpdateMinDutyCyclesGlobal(mem);
             double[] trueMinActiveDutyCycles = new double[mem.HtmConfig.NumColumns];
-            ArrayUtils.InitArray(trueMinActiveDutyCycles, 0.02 * 0.6);
+            ArrayUtils.FillArray(trueMinActiveDutyCycles, 0.02 * 0.6);
             double[] trueMinOverlapDutyCycles = new double[mem.HtmConfig.NumColumns];
-            ArrayUtils.InitArray(trueMinOverlapDutyCycles, 0.01 * 6);
+            ArrayUtils.FillArray(trueMinOverlapDutyCycles, 0.01 * 6);
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
@@ -1967,7 +1875,7 @@ namespace UnitTestsProject
             mem.HtmConfig.OverlapDutyCycles = new double[] { 0.86, 2.4, 0.03, 1.6, 1.5 };
             mem.HtmConfig.ActiveDutyCycles = new double[] { 0.16, 0.007, 0.15, 0.54, 0.13 };
             sp.UpdateMinDutyCyclesGlobal(mem);
-            ArrayUtils.InitArray(trueMinOverlapDutyCycles, 0.015 * 2.4);
+            ArrayUtils.FillArray(trueMinOverlapDutyCycles, 0.015 * 2.4);
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 //          System.out.println(i + ") " + trueMinOverlapDutyCycles[i] + "  -  " +  mem.getMinOverlapDutyCycles()[i]);
@@ -1999,7 +1907,7 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setInputDimensions(new int[] { 5 });
             parameters.setColumnDimensions(new int[] { 5 });
-            InitTestSPInstance();
+            initSP();
 
             mem.HtmConfig.UpdatePeriod = 50;
             mem.SpIterationNum = 1;
@@ -2039,7 +1947,7 @@ namespace UnitTestsProject
             parameters.setColumnDimensions(new int[] { 4 });
             parameters.setSynPermInactiveDec(0.01);
             parameters.setSynPermActiveInc(0.1);
-            InitTestSPInstance();
+            initSP();
 
             mem.HtmConfig.SynPermTrimThreshold = 0.05;
 
@@ -2162,7 +2070,7 @@ namespace UnitTestsProject
             //normal circumstances because we want to enforce sparsity
             parameters.setPotentialPct(1);
 
-            InitTestSPInstance();
+            initSP();
 
             //We set the values on the Connections permanences here just for illustration
             SparseObjectMatrix<double[]> objMatrix = new SparseObjectMatrix<double[]>(new int[] { 5, 5 });
@@ -2191,7 +2099,7 @@ namespace UnitTestsProject
             new double[]{0.101, 0.101, 0.101, 0.101, 0.101}};   // increment 9 times
 
             //FORGOT TO SET PERMANENCES ABOVE - DON'T USE mem.setPermanences() 
-            int[] indices = mem.Memory.GetSparseIndices();
+            int[] indices = mem.HtmConfig.Memory.GetSparseIndices();
             for (int i = 0; i < mem.HtmConfig.NumColumns; i++)
             {
                 // double[] perm = mem.getPotentialPools().get(i).getSparsePermanences();
@@ -2219,7 +2127,7 @@ namespace UnitTestsProject
             //many pool members as Input Bits, which would never happen under
             //normal circumstances because we want to enforce sparsity
             parameters.setPotentialPct(1);
-            InitTestSPInstance();
+            initSP();
 
             double[][] permanences = new double[][] {
             new double[]{-0.10, 0.500, 0.400, 0.010, 0.020},
@@ -2265,7 +2173,7 @@ namespace UnitTestsProject
             setupDefaultParameters();
             parameters.setInputDimensions(new int[] { 10 });
             parameters.setColumnDimensions(new int[] { 5 });
-            InitTestSPInstance();
+            initSP();
 
             int[] dimensions = new int[] { 5, 10 };
             int[][] connectedSynapses = new int[][] {
@@ -2659,26 +2567,26 @@ namespace UnitTestsProject
             sp.Init(mem);
 
             mem.HtmConfig.NumInputs = 10;
-            //double connectedPct = 1;
+            double connectedPct = 1;
             int[] mask = new int[] { 0, 1 };
             double[] perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.HtmConfig.Random);
             int[] trueConnected = new int[] { 0, 1 };
 
             ArrayUtils.ToDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
-            //connectedPct = 1;
+            connectedPct = 1;
             mask = new int[] { 4, 5, 6 };
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.HtmConfig.Random);
             trueConnected = new int[] { 4, 5, 6 };
             ArrayUtils.ToDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
-            //connectedPct = 1;
+            connectedPct = 1;
             mask = new int[] { 8, 9 };
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.HtmConfig.Random);
             trueConnected = new int[] { 8, 9 };
             ArrayUtils.ToDoubleArray(trueConnected).SequenceEqual(perm.Where(d => d > 0));
 
-            //connectedPct = 1;
+            connectedPct = 1;
             mask = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
             perm = HtmCompute.InitSynapsePermanences(mem.HtmConfig, mask, mem.HtmConfig.Random);
             trueConnected = new int[] { 0, 1, 2, 3, 4, 5, 6, 8, 9 };
@@ -2698,42 +2606,42 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setInputDimensions(new int[] { 5 });
             parameters.setColumnDimensions(new int[] { 5 });
-            InitTestSPInstance();
+            initSP();
 
             double[] dc = new double[5];
-            ArrayUtils.InitArray(dc, 1000.0);
+            ArrayUtils.FillArray(dc, 1000.0);
             double[] newvals = new double[5];
             int period = 1000;
-            double[] newDc = SpatialPooler.CalcEventFrequency( dc, newvals, period);
-            double[] expectedDutyCycles = new double[] { 999, 999, 999, 999, 999 };
-            Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
+            double[] newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
+            double[] trueNewDc = new double[] { 999, 999, 999, 999, 999 };
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[5];
-            ArrayUtils.InitArray(dc, 1000.0);
+            ArrayUtils.FillArray(dc, 1000.0);
             newvals = new double[5];
-            ArrayUtils.InitArray(newvals, 1000);
+            ArrayUtils.FillArray(newvals, 1000);
             period = 1000;
-            newDc = SpatialPooler.CalcEventFrequency( dc, newvals, period);
+            newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
 
-            expectedDutyCycles = new double[5];
-            Array.Copy(dc, expectedDutyCycles, expectedDutyCycles.Length);
+            trueNewDc = new double[5];
+            Array.Copy(dc, trueNewDc, trueNewDc.Length);
 
-            Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[5];
-            ArrayUtils.InitArray(dc, 1000.0);
+            ArrayUtils.FillArray(dc, 1000.0);
             newvals = new double[] { 2000, 4000, 5000, 6000, 7000 };
             period = 1000;
-            newDc = SpatialPooler.CalcEventFrequency( dc, newvals, period);
-            expectedDutyCycles = new double[] { 1001, 1003, 1004, 1005, 1006 };
-            Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
+            newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
+            trueNewDc = new double[] { 1001, 1003, 1004, 1005, 1006 };
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
 
             dc = new double[] { 1000, 800, 600, 400, 2000 };
             newvals = new double[5];
             period = 2;
-            newDc = SpatialPooler.CalcEventFrequency( dc, newvals, period);
-            expectedDutyCycles = new double[] { 500, 400, 300, 200, 1000 };
-            Assert.IsTrue(expectedDutyCycles.SequenceEqual(newDc));
+            newDc = sp.UpdateDutyCyclesHelper(mem, dc, newvals, period);
+            trueNewDc = new double[] { 500, 400, 300, 200, 1000 };
+            Assert.IsTrue(trueNewDc.SequenceEqual(newDc));
         }
 
         [TestMethod]
@@ -2743,7 +2651,7 @@ namespace UnitTestsProject
         {
             setupParameters();
             parameters.setColumnDimensions(new int[] { 10 });
-            InitTestSPInstance();
+            initSP();
             //Internally calculated during init, to overwrite we put after init
             parameters.setInhibitionRadius(2);
             double density = 0.3;
@@ -2780,10 +2688,10 @@ namespace UnitTestsProject
             setupParameters();
             parameters.setInputDimensions(new int[] { 5 });
             parameters.setColumnDimensions(new int[] { 10 });
-            InitTestSPInstance();
+            initSP();
 
             //Internally calculated during init, to overwrite we put after init
-            sp.InhibitionRadius = 2;
+            mem.HtmConfig.InhibitionRadius = 2;
             double density = 0.5;
             double[] overlaps = new double[] { 1, 2, 7, 0, 3, 4, 16, 1, 1.5, 1.7 };
             //  L  W  W  L  L  W  W   L   W    W (wrapAround=true)
@@ -2800,7 +2708,7 @@ namespace UnitTestsProject
             Assert.IsTrue(trueActive.SequenceEqual(active));
 
             density = 0.5;
-            sp.InhibitionRadius = 3;
+            mem.HtmConfig.InhibitionRadius = 3;
             overlaps = new double[] { 1, 2, 7, 0, 3, 4, 16, 1, 1.5, 1.7 };
             //  L  W  W  L  W  W  W   L   L    W (wrapAround=true)
             //  L  W  W  L  W  W  W   L   L    L (wrapAround=false)
@@ -2817,7 +2725,7 @@ namespace UnitTestsProject
 
             // Test add to winners
             density = 0.3333;
-            sp.InhibitionRadius = 3;
+            mem.HtmConfig.InhibitionRadius = 3;
             overlaps = new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             //  W  W  L  L  W  W  L  L  L  L (wrapAround=true)
             //  W  W  L  L  W  W  L  L  W  L (wrapAround=false)
@@ -3190,7 +3098,7 @@ namespace UnitTestsProject
             {
                 sp.Init(c);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 //fail();
                 Assert.Fail();
@@ -3262,7 +3170,7 @@ namespace UnitTestsProject
                 //fail();
                 //Assert.Fail();
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
                 //assertEquals("Input array must be same size as the defined number"
                 //    + " of inputs: From Params: 8, From Input Vector: 6", e.getMessage());
@@ -3287,7 +3195,7 @@ namespace UnitTestsProject
             {
                 sp.compute(new int[matchedDims], new int[25], true);
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
                 //fail();
                 Assert.Fail();

@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Exception;
 using NeoCortexApi.Utility;
-using System;
-using System.Collections.Generic;
 
 namespace NeoCortexApi.Classifiers
 {
@@ -36,9 +36,10 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Represents the default constructor
         /// </summary>
-        public SdrClassifier() : this(0.001)
+        public SdrClassifier()
         {
-         
+            alpha = 0.001;
+            InitializeEntries();
         }
 
         /// <summary>
@@ -350,14 +351,5 @@ namespace NeoCortexApi.Classifiers
             throw new NotImplementedException();
         }
 
-        public void Learn(TIN input, Cell[] output)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

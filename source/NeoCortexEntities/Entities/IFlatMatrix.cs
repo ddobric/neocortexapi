@@ -1,5 +1,9 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
+using System.Collections.Generic;
+using System.Text;
+using NeoCortexApi;
 
 namespace NeoCortexApi.Entities
 {
@@ -46,7 +50,7 @@ namespace NeoCortexApi.Entities
 
         //bool IsColumnMajorOrdering {get;set;}
 
-        HtmModuleTopology ModuleTopology { get; set; }
+        HtmModuleTopology ModuleTopology {get;set;}
 
         int[] GetDimensionMultiples();
     }

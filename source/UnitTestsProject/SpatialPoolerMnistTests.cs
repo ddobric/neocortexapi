@@ -1,24 +1,25 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using LearningFoundation;
-using Microsoft.ML;
-using Microsoft.ML.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MLPerceptron;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
-using NeuralNet.MLPerceptron;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
+using System.Text;
+using System.Drawing;
+using NeoCortex;
+using NeoCortexApi.Network;
+using LearningFoundation;
+using System.Globalization;
+using MLPerceptron;
 using System.Linq;
-
+using NeuralNet.MLPerceptron;
+using Microsoft.ML;
+using Microsoft.ML.Data;
+using NeoCortexApi.DistributedCompute;
 
 namespace UnitTestsProject
 {
@@ -120,7 +121,7 @@ namespace UnitTestsProject
 
                                 string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                 //Read input csv file into array
                                 int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -248,7 +249,7 @@ namespace UnitTestsProject
 
                                     string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                    string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
                                     int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -258,7 +259,7 @@ namespace UnitTestsProject
 
                                     for (int k = 0; k < numIterationsPerImage; k++)
                                     {
-                                        sp.compute(inputVector, activeArray, true);
+                                        sp.compute( inputVector, activeArray, true);
 
                                         var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
                                         var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
@@ -416,7 +417,7 @@ namespace UnitTestsProject
 
                                     string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                                    string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                                     //Read input csv file into array
                                     int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -564,7 +565,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outputFolder}\\digit_{digit}_{fI.Name}_{imgSize}";
 
-                            string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{testImage}", imgSize, testName);
+                            string inputBinaryImageFile = Helpers.BinarizeImage($"{testImage}", imgSize, testName);
 
                             // Read input csv file into array
                             int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -707,7 +708,7 @@ namespace UnitTestsProject
             // This test can create more layers with the goal to analyse result.
             // However sparse representation of specific layer can be used for supervised
             // prediction.
-            //int targetLyrIndx = 2;
+            int targetLyrIndx = 2;
 
             string TestOutputFolder = $"Output-{nameof(GenerateSparsityImageTest)}";
             //if (Directory.Exists(TestOutputFolder))
@@ -819,7 +820,7 @@ namespace UnitTestsProject
 
                             string testName = $"{outFolder}\\digit_{digit}_{fI.Name}_{imageSizes[imSizeIndx]}";
 
-                            string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
+                            string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imageSizes[imSizeIndx], testName);
 
                             //Read input csv file into array
                             int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
@@ -832,7 +833,7 @@ namespace UnitTestsProject
 
                             for (int k = 0; k < numIterationsPerImage; k++)
                             {
-                                sp.compute(inputVector, activeArray, true);
+                                sp.compute( inputVector, activeArray, true);
 
                                 var distance = MathHelpers.GetHammingDistance(oldArray, activeArray);
 
@@ -988,7 +989,7 @@ namespace UnitTestsProject
                 {
                     string testName = $"PREDICT_digit_{digit}_{new FileInfo(mnistImage).Name}_{imgSize}";
 
-                    string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{mnistImage}", imgSize, testName);
+                    string inputBinaryImageFile = Helpers.BinarizeImage($"{mnistImage}", imgSize, testName);
 
                     //Read input csv file into array
                     int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();

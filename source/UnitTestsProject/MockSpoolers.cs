@@ -3,6 +3,8 @@
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace UnitTestsProject
 {
@@ -10,6 +12,7 @@ namespace UnitTestsProject
     {
         private int[] m_InhibitColumns;
 
+        private static long serialVersionUID = 1L;
 
         public SpatialPoolerMock(int[] inhibitColumns)
         {
@@ -24,17 +27,17 @@ namespace UnitTestsProject
 
     public class SpatialPoolerMock2 : SpatialPooler
     {
-        //private static long serialVersionUID = 1L;
+        private static long serialVersionUID = 1L;
 
         private Func<double, int[]> m_CallBackGlobal;
         private Func<double, int[]> m_CallBackLocal;
 
-        public SpatialPoolerMock2(Func<double, int[]> callBackGlobal, Func<double, int[]> callBackLocal)
+        public SpatialPoolerMock2( Func<double, int[]> callBackGlobal, Func<double, int[]> callBackLocal)
         {
             m_CallBackGlobal = callBackGlobal;
             m_CallBackLocal = callBackLocal;
         }
-
+        
 
         public override int[] InhibitColumnsGlobal(Connections c, double[] overlap, double density)
         {
@@ -57,6 +60,7 @@ namespace UnitTestsProject
 
     public class SpatialPoolerMock3 : SpatialPooler
     {
+        private static long serialVersionUID = 1L;
 
         private double m_avgConnectedSpanForColumnND;
 
@@ -74,7 +78,7 @@ namespace UnitTestsProject
             return this.m_avgConnectedSpanForColumnND;
         }
 
-        internal override double CalcAvgColumnsPerInput(Connections c)
+        public override double CalcAvgColumnsPerInput(Connections c)
         {
             return this.m_avgColumnsPerInput;
         }
@@ -83,10 +87,12 @@ namespace UnitTestsProject
 
     public class SpatialPoolerMock4 : SpatialPooler
     {
+        private static long serialVersionUID = 1L;
+
 
         public SpatialPoolerMock4()
         {
-
+           
 
         }
 

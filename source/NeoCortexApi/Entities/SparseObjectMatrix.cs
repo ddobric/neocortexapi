@@ -2,8 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Linq;
-using System.IO;
+using NeoCortexApi.DistributedComputeLib;
 
 namespace NeoCortexApi.Entities
 {
@@ -15,7 +16,7 @@ namespace NeoCortexApi.Entities
     /// <remarks>
     /// @author David Ray, Damir Dobric
     /// </remarks>
-    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T>/*, ISerializable*/ where T : class
+    public class SparseObjectMatrix<T> : AbstractSparseMatrix<T>, IEquatable<T> where T : class
     {
 
         //private IDictionary<int, T> sparseMap = new Dictionary<int, T>();
@@ -68,10 +69,6 @@ namespace NeoCortexApi.Entities
                 this.m_SparseMap = new InMemoryDistributedDictionary<int, T>(1);
             else
                 this.m_SparseMap = dict;
-        }
-        //Default constructor for Deserialisation
-        public SparseObjectMatrix()
-        {
         }
 
 
@@ -130,7 +127,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="index"><inheritdoc/></param>
         /// <returns><inheritdoc/></returns>
-        public override T GetObject(int index)
+        public override T getObject(int index)
         {
             return GetColumn(index);
         }
@@ -197,20 +194,12 @@ namespace NeoCortexApi.Entities
             return result;
         }
 
-        public override bool Equals(object obj)
-        {
-            var matrix = obj as SparseObjectMatrix<T>;
-            if (matrix == null)
-                return false;
-            return this.Equals(matrix);
-        }
-
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="obj"><inheritdoc/></param>
         /// <returns><inheritdoc/></returns>
-        public override bool Equals(AbstractFlatMatrix<T> obj)
+        public override bool Equals(Object obj)
         {
             if (this == obj)
                 return true;
@@ -219,11 +208,6 @@ namespace NeoCortexApi.Entities
             if (this.GetType() != obj.GetType())
                 return false;
             SparseObjectMatrix<T> other = obj as SparseObjectMatrix<T>;
-            return this.Equals(other);
-        }
-
-        public bool Equals(SparseObjectMatrix<T> other)
-        {
             if (other == null)
                 return false;
 
@@ -233,15 +217,6 @@ namespace NeoCortexApi.Entities
                     return false;
             }
             else if (!m_SparseMap.Equals(other.m_SparseMap))
-                return false;
-            if (ModuleTopology == null)
-            {
-                if (other.ModuleTopology != null)
-                    return false;
-            }
-            else if (!ModuleTopology.Equals(other.ModuleTopology))
-                return false;
-            if (IsRemotelyDistributed != other.IsRemotelyDistributed)
                 return false;
 
             return true;
@@ -255,148 +230,6 @@ namespace NeoCortexApi.Entities
         public override ICollection<KeyPair> GetObjects(int[] indexes)
         {
             throw new NotImplementedException();
-        }
-
-
-        public override void Serialize(StreamWriter writer)
-        {
-            HtmSerializer ser = new HtmSerializer();
-
-            ser.SerializeBegin(nameof(SparseObjectMatrix<T>), writer);
-
-            ser.SerializeValue(this.IsRemotelyDistributed, writer);
-
-            if (this.ModuleTopology != null)
-            { this.ModuleTopology.Serialize(writer); }
-
-            if (this.m_SparseMap != null)
-            { this.m_SparseMap.Serialize(writer); }
-
-
-            ser.SerializeEnd(nameof(SparseObjectMatrix<T>), writer);
-        }
-
-        public static SparseObjectMatrix<T> Deserialize(StreamReader sr)
-        {
-            SparseObjectMatrix<T> sparse = new SparseObjectMatrix<T>();
-
-            HtmSerializer ser = new HtmSerializer();
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(SparseObjectMatrix<T>)))
-                {
-                    continue;
-                }
-                else if (data == ser.ReadBegin(nameof(HtmModuleTopology)))
-                {
-                    sparse.ModuleTopology = HtmModuleTopology.Deserialize(sr);
-                }
-                //else if (data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>) <{ nameof(TKey}>))
-                //{
-                //    sparse.m_SparseMap = InMemoryDistributedDictionary<TKey, TValue>.Deserialize(sr);
-                //}
-                else if (data == ser.ReadEnd(nameof(SparseObjectMatrix<T>)))
-                {
-                    break;
-                }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            case 0:
-                                {
-                                    //sparse.IsRemotelyDistributed = ser.ReadBoolValue(str[i]);
-                                    break;
-                                }
-                            default:
-                                { break; }
-
-                        }
-                    }
-                }
-            }
-            return sparse;
-        }
-
-
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            HtmSerializer.SerializeObject(obj, name, sw);
-
-            //var matrixColumns = obj as SparseObjectMatrix<Column>;
-            //if (matrixColumns != null)
-            //{
-            //    var ddSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.DistalDendrites).SelectMany(d => d.Synapses);
-            //    var cellSynapses = matrixColumns.m_SparseMap.Values.SelectMany(c => c.Cells).SelectMany(c => c.ReceptorSynapses);
-
-            //    var synapses = new List<Synapse>();
-            //    foreach (var synapse in ddSynapses)
-            //    {
-            //        if (synapses.Contains(synapse) == false)
-            //        {
-            //            synapses.Add(synapse);
-            //        }
-            //    }
-
-            //    foreach (var synapse in cellSynapses)
-            //    {
-            //        if (synapses.Contains(synapse) == false)
-            //        {
-            //            synapses.Add(synapse);
-            //        }
-            //    }
-
-            //    HtmSerializer2.Serialize(synapses, "synapsesList", sw);
-            //}
-        }
-
-        public static object Deserialize<TItem>(StreamReader sr, string name)
-        {
-            var ignoreMembers = new List<string>
-            {
-                //"synapsesList"
-            };
-            var matrix = HtmSerializer.DeserializeObject<SparseObjectMatrix<T>>(sr, name, ignoreMembers, (m, propName) =>
-            {
-                //var matrixColumns = m as SparseObjectMatrix<Column>;
-                //if (matrixColumns == null)
-                //    return;
-
-                //var synapses = HtmSerializer2.Deserialize<List<Synapse>>(sr, "synapsesList");
-
-                //foreach (var column in matrixColumns.m_SparseMap.Values)
-                //{
-                //    foreach (var cell in column.Cells)
-                //    {
-                //        var cellSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
-                //        foreach (var synapse in cellSynapses)
-                //        {
-                //            synapse.SourceCell = cell;
-                //        }
-                //    }
-                //}
-
-
-                //foreach (var column in matrixColumns.m_SparseMap.Values)
-                //{
-                //    foreach (var cell in column.Cells)
-                //    {
-                //        cell.ReceptorSynapses = synapses.Where(s => s.InputIndex == cell.Index).ToList();
-
-                //        foreach (var distalDentrite in cell.DistalDendrites)
-                //        {
-                //            distalDentrite.Synapses = synapses.Where(s => s.SegmentIndex == distalDentrite.SegmentIndex).ToList();
-                //        }
-                //    }
-                //}
-            });
-
-            return matrix;
         }
     }
 }

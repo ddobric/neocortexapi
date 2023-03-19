@@ -2067,28 +2067,16 @@
             <param name="permanenceDecrement"></param>
         </member>
         <member name="T:NeoCortexApi.TemporalMemory.ColumnData">
+            Used in the {@link TemporalMemory#compute(Connections, int[], boolean)} method
+            to make pulling values out of the {@link GroupBy2} more readable and named.
             <summary>
-            Used by Temporal memory algorithm.
+            Used in the <see cref="M:NeoCortexApi.TemporalMemory.Compute(System.Int32[],System.Boolean)"/> method to make pulling values out of the <see cref="T:NeoCortexApi.Utility.GroupBy2`1"/> more readable and named.
             </summary>
         </member>
         <member name="M:NeoCortexApi.TemporalMemory.ColumnData.IsExistAnyActiveCol(System.Int32)">
             <summary>
             Result indicates whether the slot at the specified index is empty</summary>
             indicator.<param name="memberIndex">Index of slot.</param>
-            <returns></returns>
-        </member>
-        <member name="T:NeoCortexApi.TemporalMemoryMT">
-            <summary>
-            Multicore implementation of the Temporal Memory algorithm
-            </summary>
-        </member>
-        <member name="M:NeoCortexApi.TemporalMemoryMT.ActivateCells(NeoCortexApi.Entities.Connections,System.Int32[],System.Boolean)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="conn"></param>
-            <param name="activeColumnIndices"></param>
-            <param name="learn"></param>
             <returns></returns>
         </member>
         <member name="M:NeoCortexApi.Utility.BitHistory.AddOrUpdate(System.Collections.Generic.Dictionary{System.Int32,System.Double},System.Int32,System.Double)">

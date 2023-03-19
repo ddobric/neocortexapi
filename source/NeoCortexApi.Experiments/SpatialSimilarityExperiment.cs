@@ -2,24 +2,21 @@
 using NeoCortex;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NeoCortexApi.Experiments
 {
-    /// <summary>
-    /// 
-    /// </summary>
     [TestClass]
     public class SpatialSimilarityExperiment
     {
-        /// <summary>
-        /// 
-        /// </summary>
         [TestMethod]
         public void SpatialSimilarityExperimentTest()
         {
@@ -30,7 +27,7 @@ namespace NeoCortexApi.Experiments
             double minOctOverlapCycles = 1.0;
             double maxBoost = 5.0;
 
-            // We will use 200 bits to represe nt an input vector (pattern).
+            // We will use 200 bits to represent an input vector (pattern).
             int inputBits = 200;
 
             // We will build a slice of the cortex with the given number of mini-columns
@@ -44,24 +41,23 @@ namespace NeoCortexApi.Experiments
                 MaxBoost = maxBoost,
                 DutyCyclePeriod = 100,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
-                StimulusThreshold = 10,
-                GlobalInhibition = true,
+
+                GlobalInhibition = false,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
-                //PotentialRadius = (int)(0.15 * inputBits)
-                PotentialRadius = (int)(1.0 * inputBits),
-                LocalAreaDensity = 0.02,
+                PotentialRadius = (int)(0.15 * inputBits),
+                LocalAreaDensity = 0.5,
                 ActivationThreshold = 10,
                 MaxSynapsesPerSegment = (int)(0.01 * numColumns),
-                Random = new ThreadSafeRandom(42),
+                Random = new ThreadSafeRandom(42)
             };
 
             double max = 100;
-            int width = 15;
+
             //
             // This dictionary defines a set of typical encoder parameters.
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
-                { "W", width},
+                { "W", 15},
                 { "N", inputBits},
                 { "Radius", -1.0},
                 { "MinVal", 0.0},
@@ -72,12 +68,12 @@ namespace NeoCortexApi.Experiments
             };
 
             EncoderBase encoder = new ScalarEncoder(settings);
-            
+
             //
             // We create here 100 random input values.
-            List<int[]> inputValues = GetTrainingvectors(0, inputBits, width);
+            List<int[]> inputValues = GetTrainingvectors(0, inputBits);
 
-            RunExperiment(cfg, inputValues);
+            RunExperiment(cfg, encoder, inputValues);
         }
 
 
@@ -87,7 +83,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="experimentCode"></param>
         /// <param name="inputBits"></param>
         /// <returns></returns>
-        private List<int[]> GetTrainingvectors(int experimentCode, int inputBits, int width)
+        private List<int[]> GetTrainingvectors(int experimentCode, int inputBits)
         {
             if (experimentCode == 0)
             {
@@ -95,25 +91,8 @@ namespace NeoCortexApi.Experiments
                 // We create here 2 vectors.
                 List<int[]> inputValues = new List<int[]>();
 
-                for (int i = 0; i < 10; i += 1)
-                {
-                    inputValues.Add(NeoCortexUtils.CreateVector(inputBits, i, i + width));
-                }
-
-
-                return inputValues;
-            }
-            else if (experimentCode == 1)
-            {
-                // todo. create or load other test vectors/images here 
-                // We create here 2 vectors.
-                List<int[]> inputValues = new List<int[]>();
-
-                for (int i = 0; i < 10; i += 1)
-                {
-                    inputValues.Add(NeoCortexUtils.CreateVector(inputBits, i, i + width));
-                }
-
+                inputValues.Add(NeoCortexUtils.CreateVector(inputBits, 5, 15 + 5));
+                inputValues.Add(NeoCortexUtils.CreateVector(inputBits, 3, 15 + 5 + 3));
 
                 return inputValues;
             }
@@ -127,7 +106,7 @@ namespace NeoCortexApi.Experiments
         /// <param name="cfg"></param>
         /// <param name="encoder"></param>
         /// <param name="inputValues"></param>
-        private static void RunExperiment(HtmConfig cfg, List<int[]> inputValues)
+        private static void RunExperiment(HtmConfig cfg, EncoderBase encoder, List<int[]> inputValues)
         {
             // Creates the htm memory.
             var mem = new Connections(cfg);
@@ -158,7 +137,7 @@ namespace NeoCortexApi.Experiments
                         // Here you can perform any action if required.
                         isInStableState = true;
                     }
-                }, requiredSimilarityThreshold: 0.975);
+                });
 
             // It creates the instance of Spatial Pooler Multithreaded version.
             SpatialPooler sp = new SpatialPoolerMT(hpa);
@@ -166,10 +145,7 @@ namespace NeoCortexApi.Experiments
             // Initializes the 
             sp.Init(mem);
 
-            // Holds the indicies of active columns of the SDR.
-            Dictionary<string, int[]> prevActiveColIndicies = new Dictionary<string, int[]>();
-
-            // Holds the active column SDRs.
+            // Will hold the SDR of every inputs.
             Dictionary<string, int[]> prevActiveCols = new Dictionary<string, int[]>();
 
             // Will hold the similarity of SDKk and SDRk-1 fro every input.
@@ -181,7 +157,7 @@ namespace NeoCortexApi.Experiments
             {
                 string inputKey = GetInputGekFromIndex(i);
                 prevSimilarity.Add(inputKey, 0.0);
-                prevActiveColIndicies.Add(inputKey, new int[0]);
+                prevActiveCols.Add(inputKey, new int[0]);
             }
 
             // Learning process will take 1000 iterations (cycles)
@@ -189,7 +165,7 @@ namespace NeoCortexApi.Experiments
 
             for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
             {
-                //Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
+                Debug.WriteLine($"Cycle  ** {cycle} ** Stability: {isInStableState}");
 
                 //
                 // This trains the layer on input pattern.
@@ -205,100 +181,25 @@ namespace NeoCortexApi.Experiments
                     // Learn the input pattern.
                     // Output lyrOut is the output of the last module in the layer.
                     sp.compute(input, activeColumns, true);
-                    // DrawImages(cfg, inputKey, input, activeColumns);
 
-                    var actColsIndicies = ArrayUtils.IndexWhere(activeColumns, c => c == 1);
+                    List<int[,]> twoDimArrays = new List<int[,]>();
+                    int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
+                    twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
+                    int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
+                    twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
 
-                    similarity = MathHelpers.CalcArraySimilarity(actColsIndicies, prevActiveColIndicies[inputKey]);
+                    NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
 
-                    Debug.WriteLine($"cycle={cycle} [i={inputKey}, cols=:{actColsIndicies.Length} s={similarity}] \tSDR: {Helpers.StringifyVector(actColsIndicies)}");
+                    var actCols = activeColumns.OrderBy(c => c).ToArray();
+
+                    similarity = MathHelpers.CalcArraySimilarity(activeColumns, prevActiveCols[inputKey]);
+
+                    Debug.WriteLine($"[cycle={cycle.ToString("D4")}, i={input}, cols=:{actCols.Length} s={similarity}] SDR: {Helpers.StringifyVector(actCols)}");
 
                     prevActiveCols[inputKey] = activeColumns;
-                    prevActiveColIndicies[inputKey] = actColsIndicies;
                     prevSimilarity[inputKey] = similarity;
-
-                    if (isInStableState)
-                    {
-                        GenerateResult(cfg, inputValues, prevActiveColIndicies, prevActiveCols);
-                        return;
-                    }
                 }
             }
-        }
-
-
-        /// <summary>
-        /// Draws all inputs and related SDRs. It also outputs the similarity matrix.
-        /// </summary>
-        /// <param name="cfg"></param>
-        /// <param name="inputValues"></param>
-        /// <param name="activeColIndicies"></param>
-        /// <param name="activeCols"></param>
-        private static void GenerateResult(HtmConfig cfg, List<int[]> inputValues,
-            Dictionary<string, int[]> activeColIndicies, Dictionary<string, int[]> activeCols)
-        {
-            int inpLen = (int)(Math.Sqrt(inputValues[0].Length) + 0.5);
-
-            Dictionary<string, int[]> inpVectorsMap = new Dictionary<string, int[]>();
-
-            for (int k = 0; k < inputValues.Count; k++)
-            {
-                inpVectorsMap.Add(GetInputGekFromIndex(k), ArrayUtils.IndexWhere(inputValues[k], c => c == 1));
-            }
-
-            var outRes = MathHelpers.CalculateSimilarityMatrix(activeColIndicies);
-
-            var inRes = MathHelpers.CalculateSimilarityMatrix(inpVectorsMap);
-
-            string[,] matrix = new string[inpVectorsMap.Keys.Count, inpVectorsMap.Keys.Count];
-            int i = 0;
-            foreach (var inputKey in inpVectorsMap.Keys)
-            {
-                for (int j = 0; j < inpVectorsMap.Keys.Count; j++)
-                {
-                    matrix[i, j] = $"{inRes[i, j].ToString("0.##")}/{outRes[i, j].ToString("0.##")}";
-                }
-
-                DrawBitmaps(cfg, inputKey, inputValues[i], inpLen, activeCols[inputKey]);
-
-                i++;
-            }
-
-            var res = Helpers.RenderSimilarityMatrix(inpVectorsMap.Keys.ToArray(), matrix);
-            
-            Console.WriteLine(res);
-            Debug.WriteLine(res);           
-        }
-
-      
-        /// <summary>
-        /// Draws the input and the corresponding SDR.
-        /// </summary>
-        /// <param name="cfg"></param>
-        /// <param name="inputKey"></param>
-        /// <param name="input"></param>
-        /// <param name="inpLen"></param>
-        /// <param name="activeColumns"></param>
-        private static void DrawBitmaps(HtmConfig cfg, string inputKey, int[] input, int inpLen, int[] activeColumns)
-        {
-            List<int[,]> twoDimArrays = new List<int[,]>();
-            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, inpLen, inpLen);
-            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
-            int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
-            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
-
-            NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
-        }
-
-        private static void DrawImages(HtmConfig cfg, string inputKey, int[] input, int[] activeColumns)
-        {
-            List<int[,]> twoDimArrays = new List<int[,]>();
-            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
-            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
-            int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
-            twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
-
-            NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
         }
 
         private static string GetInputGekFromIndex(int i)

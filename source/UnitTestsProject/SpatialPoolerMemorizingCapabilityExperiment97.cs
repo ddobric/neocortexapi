@@ -1,17 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
-using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
+using System.Drawing;
+using NeoCortex;
+using NeoCortexApi.Network;
 using System.Linq;
+using NeoCortexApi.Encoders;
+using System.Drawing.Imaging;
 /*
 * Version 1.0.0:
 * |DONE|
@@ -63,7 +63,7 @@ namespace UnitTestsProject
         private readonly String SDROuputDiff_CSI = "SDROutputDiff_CSI";
         private readonly String FreshComputed_CSI = "FreshComputed_CSI";
         private readonly String logOutputFolder = "logSDRcsv";
-        //private readonly String mutualTest = "mutualTest";
+        private readonly String mutualTest = "mutualTest";
         /*******************************************************************************************
          *                        _______ ______  _____ _______ _____                              *
          *                       |__   __|  ____|/ ____|__   __/ ____|                             *

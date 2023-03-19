@@ -1597,7 +1597,9 @@ namespace NeoCortexApi.Entities
             {
                 foreach (Cell cell in val)
                 {
+#pragma warning disable CS1061 // 'Cell' does not contain a definition for 'SerializeT' and no accessible extension method 'SerializeT' accepting a first argument of type 'Cell' could be found (are you missing a using directive or an assembly reference?)
                     cell.SerializeT(sw);
+#pragma warning restore CS1061 // 'Cell' does not contain a definition for 'SerializeT' and no accessible extension method 'SerializeT' accepting a first argument of type 'Cell' could be found (are you missing a using directive or an assembly reference?)
                     sw.Write(ValueDelimiter);
                 }
             }
@@ -1822,7 +1824,9 @@ namespace NeoCortexApi.Entities
             {
                 foreach (DistalDendrite val in distSegments)
                 {
+#pragma warning disable CS1061 // 'DistalDendrite' does not contain a definition for 'SerializeT' and no accessible extension method 'SerializeT' accepting a first argument of type 'DistalDendrite' could be found (are you missing a using directive or an assembly reference?)
                     val.SerializeT(sw);
+#pragma warning restore CS1061 // 'DistalDendrite' does not contain a definition for 'SerializeT' and no accessible extension method 'SerializeT' accepting a first argument of type 'DistalDendrite' could be found (are you missing a using directive or an assembly reference?)
                     sw.Write(ElementsDelimiter);
                 }
             }
@@ -1854,7 +1858,9 @@ namespace NeoCortexApi.Entities
             {
                 foreach (Synapse val in value)
                 {
+#pragma warning disable CS1061 // 'Synapse' does not contain a definition for 'SerializeT' and no accessible extension method 'SerializeT' accepting a first argument of type 'Synapse' could be found (are you missing a using directive or an assembly reference?)
                     val.SerializeT(sw);
+#pragma warning restore CS1061 // 'Synapse' does not contain a definition for 'SerializeT' and no accessible extension method 'SerializeT' accepting a first argument of type 'Synapse' could be found (are you missing a using directive or an assembly reference?)
                     sw.Write(ElementsDelimiter);
                 }
             }

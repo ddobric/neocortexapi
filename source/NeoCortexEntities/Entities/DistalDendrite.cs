@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -12,25 +13,29 @@ namespace NeoCortexApi.Entities
     /// Segments are owned by <see cref="Cell"/>s and in turn own <see cref="Synapse"/>s which are obversely connected to by a "source cell", 
     /// which is the <see cref="Cell"/> which will activate a given <see cref="Synapse"/> owned by this <see cref="Segment"/>.
     /// </summary>
-    public class DistalDendrite : Segment, IComparable<Segment>, IEquatable<Segment>, ISerializable
+    /// <remarks>
+    /// Authors of the JAVA implementation: Chetan Surpur, David Ray
+    /// </remarks>
+    public class DistalDendrite : Segment, IComparable<DistalDendrite>
     {
-     
+        /// <summary>
+        /// The cell that owns (parent) the segment.
+        /// </summary>
+        public Cell ParentCell;
+
+        private long m_LastUsedIteration;
+
         private int m_Ordinal = -1;
 
-       
+        /// <summary>
+        /// the last iteration in which this segment was active.
+        /// </summary>
+        public long LastUsedIteration { get => m_LastUsedIteration; set => m_LastUsedIteration = value; }
+
         /// <summary>
         /// The seqence number of the segment. Specifies the order of the segment of the <see cref="Connections"/> instance.
         /// </summary>
         public int Ordinal { get => m_Ordinal; set => m_Ordinal = value; }
-
-        /// <summary>
-        /// Default constructor used by deserializer.
-        /// </summary>
-        public DistalDendrite()
-        {
-
-        }
-
 
         /// <summary>
         /// Creates the Distal Segment.
@@ -44,13 +49,50 @@ namespace NeoCortexApi.Entities
         /// If some segments are destroyed, this number is still incrementd.</param>
         /// <param name="synapsePermConnected"></param>
         /// <param name="numInputs"></param>
-        public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, lastUsedIteration, synapsePermConnected, numInputs)
+        public DistalDendrite(Cell parentCell, int flatIdx, long lastUsedIteration, int ordinal, double synapsePermConnected, int numInputs) : base(flatIdx, synapsePermConnected, numInputs)
         {
             this.ParentCell = parentCell;
-            this.m_Ordinal = ordinal;   
+            this.m_Ordinal = ordinal;
+            this.m_LastUsedIteration = lastUsedIteration;
+
+            
         }
 
 
+        /// <summary>
+        /// Gets all synapses owned by this distal dentrite segment.
+        /// </summary>
+        /// <param name="mem"></param>
+        /// <returns>Synapses.</returns>
+        public List<Synapse> GetAllSynapses(Connections mem)
+        {
+            //DD  return mem.GetSynapses(this);
+            return this.Synapses;
+        }
+
+        /// <summary>
+        /// Gets all active synapses of this segment, which have presynaptic cell as active one.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="activeCells"></param>
+        /// <returns></returns>
+        public ISet<Synapse> GetActiveSynapses(Connections c, ISet<Cell> activeCells)
+        {
+            ISet<Synapse> activeSynapses = new LinkedHashSet<Synapse>();
+
+            //DD foreach (var synapse in c.GetSynapses(this))
+            foreach (var synapse in this.Synapses)
+            {
+                if (activeCells.Contains(synapse.getPresynapticCell()))
+                {
+                    activeSynapses.Add(synapse);
+                }
+            }
+
+            return activeSynapses;
+        }
+
+           
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -68,26 +110,17 @@ namespace NeoCortexApi.Entities
         public override int GetHashCode()
         {
             int prime = 31;
-            int result = 1;
+            int result = base.GetHashCode();
             result = prime * result + ((ParentCell == null) ? 0 : ParentCell.GetHashCode());
-            result *= this.SegmentIndex;
             return result;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (!(obj is Segment distalDendrite))
-                return false;
-            return this.Equals(distalDendrite);
-        }
 
         /// <summary>
-        /// Compares this segment with the given one.
+        /// <inheritdoc/>
         /// </summary>
-        /// <param name="obj"></param>
         /// <returns></returns>
-
-        public bool Equals(DistalDendrite obj)
+        public override bool Equals(Segment obj)
         {
             if (this == obj)
                 return true;
@@ -100,37 +133,7 @@ namespace NeoCortexApi.Entities
                 if (other.ParentCell != null)
                     return false;
             }
-            // We check here the cell id only! The cell as parent must be correctlly created to avoid having different cells with the same id.
-            // If we would use here ParenCell.Equals method, that method would cause a cicular invoke of this.Equals etc.
-            else if (ParentCell.Index != other.ParentCell.Index)
-                return false;
-            //if (m_LastUsedIteration != other.m_LastUsedIteration)
-            //    return false;
-            if (m_Ordinal != other.m_Ordinal)
-                return false;
-            if (LastUsedIteration != other.LastUsedIteration)
-                return false;
-            if (Ordinal != other.Ordinal)
-                return false;
-            if (SegmentIndex != obj.SegmentIndex)
-                return false;
-            if (Synapses == null)
-            {
-                if (obj.Synapses != null)
-                    return false;
-            }
-            else if (!Synapses.ElementsEqual(obj.Synapses))
-                return false;
-            //if (boxedIndex == null)
-            //{
-            //    if (obj.boxedIndex != null)
-            //        return false;
-            //}
-            //else if (!boxedIndex.Equals(obj.boxedIndex))
-            //    return false;
-            if (SynapsePermConnected != obj.SynapsePermConnected)
-                return false;
-            if (NumInputs != obj.NumInputs)
+            else if (!ParentCell.Equals(other.ParentCell))
                 return false;
 
             return true;
@@ -142,7 +145,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public int CompareTo(Segment other)
+        public int CompareTo(DistalDendrite other)
         {
             if (this.SegmentIndex > other.SegmentIndex)
                 return 1;
@@ -153,202 +156,21 @@ namespace NeoCortexApi.Entities
         }
 
         #region Serialization
-
-        /// <summary>
-        /// Only cell Serialize method should invoke this method!
-        /// </summary>
-        /// <param name="writer"></param>
-        internal void SerializeT(StreamWriter writer)
-        {
-            HtmSerializer ser = new HtmSerializer();
-
-            ser.SerializeBegin(nameof(Segment), writer);
-
-            //ser.SerializeValue(this.m_LastUsedIteration, writer);
-            ser.SerializeValue(this.m_Ordinal, writer);
-            ser.SerializeValue(this.LastUsedIteration, writer);
-            ser.SerializeValue(this.Ordinal, writer);
-            ser.SerializeValue(this.SegmentIndex, writer);
-            ser.SerializeValue(this.SynapsePermConnected, writer);
-            ser.SerializeValue(this.NumInputs, writer);
-
-            //if (this.boxedIndex != null)
-            //{
-            //    this.boxedIndex.Serialize(writer);
-            //}
-
-            // If we use this, we will get a cirular serialization.
-            //if (this.ParentCell != null)
-            //{
-            //    this.ParentCell.SerializeT(writer);
-            //}
-
-            if (this.Synapses != null && this.Synapses.Count > 0)
-                ser.SerializeValue(this.Synapses, writer);
-
-            ser.SerializeEnd(nameof(Segment), writer);
-        }
-
-        /// <summary>
-        /// Serialize method for DistalDendrite
-        /// </summary>
-        /// <param name="writer"></param>
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer ser = new HtmSerializer();
+            HtmSerializer2 ser = new HtmSerializer2();
 
-            ser.SerializeBegin(nameof(Segment), writer);
+            ser.SerializeBegin(nameof(HtmConfig), writer);
 
-            //ser.SerializeValue(this.LastUsedIteration, writer);
+            this.ParentCell.Serialize(writer);
+            ser.SerializeValue(this.m_LastUsedIteration, writer);
             ser.SerializeValue(this.m_Ordinal, writer);
             ser.SerializeValue(this.LastUsedIteration, writer);
             ser.SerializeValue(this.Ordinal, writer);
-            ser.SerializeValue(this.SegmentIndex, writer);
-            ser.SerializeValue(this.SynapsePermConnected, writer);
-            ser.SerializeValue(this.NumInputs, writer);
 
-
-            //if (this.boxedIndex != null)
-            //{
-            //    this.boxedIndex.Serialize(writer);
-            //}
-
-            if (this.ParentCell != null)
-            {
-                this.ParentCell.SerializeT(writer);
-            }
-
-            if (this.Synapses != null && this.Synapses.Count > 0)
-                ser.SerializeValue(this.Synapses, writer);
-
-            ser.SerializeEnd(nameof(DistalDendrite), writer);
+            ser.SerializeEnd(nameof(HtmConfig), writer);
         }
-
-        public static DistalDendrite Deserialize(StreamReader sr)
-        {
-            DistalDendrite distal = new DistalDendrite();
-
-            HtmSerializer ser = new HtmSerializer();
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Segment)) || data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter || (data.ToCharArray()[0] == HtmSerializer.ElementsDelimiter && data.ToCharArray()[1] == HtmSerializer.ParameterDelimiter))
-                {
-                    continue;
-                }
-                //else if (data == ser.ReadBegin(nameof(Integer)))
-                //{
-                //    distal.boxedIndex = Integer.Deserialize(sr);
-                //}
-                else if (data == ser.ReadBegin(nameof(Synapse)))
-                {
-                    distal.Synapses.Add(Synapse.Deserialize(sr));
-                }
-                else if (data == ser.ReadBegin(nameof(Cell)))
-                {
-                    distal.ParentCell = Cell.Deserialize(sr);
-                }
-                else if (data == ser.ReadEnd(nameof(Segment)))
-                {
-                    break;
-                }
-                else
-                {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        switch (i)
-                        {
-                            //case 0:
-                            //    {
-                            //        distal.m_LastUsedIteration = ser.ReadLongValue(str[i]);
-                            //        break;
-                            //    }
-                            case 0:
-                                {
-                                    distal.m_Ordinal = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    distal.LastUsedIteration = ser.ReadLongValue(str[i]);
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    distal.Ordinal = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 3:
-                                {
-                                    distal.SegmentIndex = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-                            case 5:
-                                {
-                                    distal.SynapsePermConnected = ser.ReadDoubleValue(str[i]);
-                                    break;
-                                }
-                            case 4:
-                                {
-                                    distal.NumInputs = ser.ReadIntValue(str[i]);
-                                    break;
-                                }
-
-                            default:
-                                { break; }
-
-                        }
-                    }
-                }
-            }
-
-            return distal;
-
-        }
-
         #endregion
-
-        public static void Serialize1(StreamWriter sw, object obj, string propName)
-        {
-            HtmSerializer.SerializeObject(obj, propName, sw, new List<string>{nameof(Segment.ParentCell)});
-        }
-
-        public static Segment Deserialize1(StreamReader sr, string propName)
-        {
-
-            var result = HtmSerializer.DeserializeObject<Segment>(sr, propName);
-            return result;
-        }
-
-        private static List<int> isCellsSerialized = new List<int>();
-
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            var ignoreMembers = new List<string> 
-            { 
-                //nameof(DistalDendrite.ParentCell),
-                nameof(Segment.Synapses)
-            };
-            HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers);
-            //var synapses = this.Synapses.Select(s => new Synapse() { SynapseIndex = s.SynapseIndex });
-            //HtmSerializer2.Serialize(synapses, nameof(Segment.Synapses), sw);
-
-            //var cell = (obj as DistalDendrite).ParentCell;
-
-            //if (cell != null && isCellsSerialized.Contains(cell.HashCode()) == false)
-            //{
-            //    isCellsSerialized.Add(cell.HashCode());
-            //    HtmSerializer2.Serialize((obj as DistalDendrite).ParentCell, nameof(DistalDendrite.ParentCell), sw, ignoreMembers: ignoreMembers);
-            //}
-        }
-
-        public static object Deserialize<T>(StreamReader sr, string name)
-        {
-            var distal = HtmSerializer.DeserializeObject<T>(sr, name);
-            return distal;
-        }
     }
 }
 

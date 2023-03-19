@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -12,88 +11,95 @@ namespace NeoCortexApi.Entities
 
     /// <summary>
     /// Base class for different types of segments. It which handles the creation of synapses (<seealso cref="Synapse"/>) on behalf of inheriting class types.
-    /// The HTM defines following segment types: Proximal, Distal and Apical.
-    /// Proximal segment connects mini-columns to sensory cells.<br/>
-    /// Distal (or basal) segment connects cells between mini-columns.<br/>
-    /// Apical segment connects cells between different regions.
     /// </summary>
+   
     public abstract class Segment : IEquatable<Segment>
-    {
-        private long m_LastUsedIteration;
-
-        /// <summary>
-        /// the last iteration in which this segment was active.
-        /// </summary>
-        public long LastUsedIteration { get => m_LastUsedIteration; set => m_LastUsedIteration = value; }
-
-
-        /// <summary>
-        /// The cell that owns (parent) the segment.
-        /// </summary>        
-        public Cell ParentCell;
-
-        /// <summary>
-        /// The index of the segment.
-        /// </summary>
+    {       
         public int SegmentIndex { get; set; }
 
-        /// <summary>
-        /// Synapses connected to the segment. Also called potential synapses.
-        /// </summary>
+        public Integer boxedIndex { get; set; }
+
         public List<Synapse> Synapses { get; set; }
 
         /// <summary>
         /// Permanence threshold value to declare synapse as connected.
         /// </summary>
-        protected double SynapsePermConnected { get; set; }
+        public double SynapsePermConnected { get; set; }
 
         /// <summary>
-        /// Number of input cells. Used by proximal dendrite segment by Spatial Pooler.
+        /// Number of input neorn cells.
         /// </summary>
         public int NumInputs { get; set; }
-
-        /// <summary>
-        /// Gets the number of connected (active) synapses.These are synapses with premanence value greather than <see cref="HtmConfig.SynapsePermConnected"/>.
-        /// </summary>
-        public int NumConnectedSynapses
-        {
-            get
-            {
-                return this.Synapses.Count(s => s.Permanence >= this.SynapsePermConnected);
-            }
-        }
-
-        /// <summary>
-        /// Default constructor used by serialization.
-        /// </summary>
-        protected Segment()
-        {
-            this.Synapses = new List<Synapse>();
-        }
-
 
         /// <summary>
         /// Creates the proximal dentrite segment with specified index.
         /// </summary>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="index">Index of segment.</param>
-        /// <param name="numInputs">Number of input cells.</param>
-        public Segment(int index, long lastUsedIteration, double synapsePermConnected, int numInputs)
+        /// <param name="numInputs">Number of input neorn cells.</param>
+        public Segment(int index, double synapsePermConnected, int numInputs)
         {
-            this.NumInputs = numInputs;
+            this.NumInputs = NumInputs;
             this.SynapsePermConnected = synapsePermConnected;
             this.Synapses = new List<Synapse>();
             this.SegmentIndex = index;
-            this.m_LastUsedIteration = lastUsedIteration;
+            this.boxedIndex = new Integer(index);
         }
+    
 
-        public void KillSynapse(Synapse synapse)
+        ///// <summary>
+        ///// Returns the index of proximal dentrite.
+        ///// </summary>
+        ///// <seealso cref="ProximalDendrite"/>
+        ///// <returns>Index</returns>
+        //public int getIndex()
+        //{
+        //    return SegmentIndex;
+        //}
+
+        /**
+        * <p>
+        * Creates and returns a newly created {@link Synapse} with the specified
+        * source cell, permanence, and index.
+        * </p><p>
+        * IMPORTANT: 	<b>This method is only called for Proximal Synapses.</b> For ProximalDendrites, 
+        * 				there are many synapses within a pool, and in that case, the index 
+        * 				specifies the synapse's sequence order within the pool object, and may 
+        * 				be referenced by that index.
+        * </p>
+        * @param c             the connections state of the temporal memory
+        * @param sourceCell    the source cell which will activate the new {@code Synapse}
+        * @param pool		    the new {@link Synapse}'s pool for bound variables.
+        * @param index         the new {@link Synapse}'s index.
+        * @param inputIndex	the index of this {@link Synapse}'s input (source object); be it a Cell or InputVector bit.
+        * 
+        * @return the newly created {@code Synapse}
+        * @see Connections#createSynapse(DistalDendrite, Cell, double)
+        */
+
+
+
+        /// <summary>
+        /// Creates and returns a newly created synapse with the specified source cell, permanence, and index.
+        /// </summary>
+        /// <param name="synapses">List of synapses, where one has to be added.</param>
+        /// <param name="sourceCell"></param>
+        /// <param name="pool"></param>
+        /// <param name="index">Sequence within gthe pool.</param>
+        /// <param name="inputIndex"></param>
+        /// <remarks>
+        /// <b>This method is only called for Proximal Synapses.</b> For ProximalDendrites, there are many synapses within a pool, and in that case, the index
+        /// specifies the synapse's sequence order within the pool object, and may be referenced by that index</remarks>
+        /// <returns>Instance of the new synapse.</returns>
+        /// <seealso cref="Synapse"/>
+        public Synapse CreateSynapse(Cell sourceCell, int index, int inputIndex)
         {
-            synapse.SourceCell.ReceptorSynapses.Remove(synapse);
-
-            this.Synapses.Remove(synapse);
+            Synapse synapse = new Synapse(sourceCell, this.SegmentIndex, index, inputIndex);
+            this.Synapses.Add(synapse);
+            return synapse;
         }
 
+       
         /// <summary>
         /// Hashcode calculation.
         /// </summary>
@@ -124,53 +130,26 @@ namespace NeoCortexApi.Entities
                 return true;
         }
 
-        /// <summary>
-        /// Used internally to find the synapse with the smallest permanence
-        /// on the given segment.
-        /// </summary>
-        /// <param name="seg">Segment object to search for synapses on</param>
-        /// <returns>Synapse object on the segment with the minimal permanence</returns>
-        public Synapse GetMinPermanenceSynapse()
-        {
-            List<Synapse> synapses = this.Synapses;
-
-            Synapse min = null;
-
-            double minPermanence = Double.MaxValue;
-
-            foreach (Synapse synapse in synapses)
-            {
-                if (!synapse.IsDestroyed && synapse.Permanence < minPermanence - 0.00001)
-                {
-                    min = synapse;
-                    minPermanence = synapse.Permanence;
-                }
-            }
-
-            return min;
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
-            StringBuilder sbPerms = new StringBuilder();
-
-            foreach (var syn in Synapses)
-            {
-                sbPerms.Append($" {syn.Permanence}");
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"\tcell:{this.ParentCell.Index}/seg {this.SegmentIndex}, Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}, [Permanences: {sbPerms}]");
-                     
-            return sb.ToString();
-
-
+            return $"Seg: {this.SegmentIndex}";
         }
+        #region Serialization
+        public void Serialize(StreamWriter writer)
+        {
+            HtmSerializer2 ser = new HtmSerializer2();
 
+            ser.SerializeBegin(nameof(HtmConfig), writer);
+
+            ser.SerializeValue(this.SegmentIndex, writer);
+            ser.SerializeValue(this.boxedIndex, writer);
+            ser.SerializeValue(this.Synapses, writer);
+            ser.SerializeValue(this.SynapsePermConnected, writer);
+            ser.SerializeValue(this.NumInputs, writer);
+
+            ser.SerializeEnd(nameof(HtmConfig), writer);
+        }
+        #endregion
     }
 }
 

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Daenet.ImageBinarizerLib;
-using Daenet.ImageBinarizerLib.Entities;
+using LearningFoundation.ImageBinarizer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System.Diagnostics;
@@ -11,9 +11,6 @@ using System.IO;
 
 namespace NeoCortexApi.Experiments
 {
-    /// <summary>
-    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.7_PerformanceSpatialPooler-between-Global-and-Local-Inhibition.pdf
-    /// </summary>
     [TestClass]
     public class SpatialPoolerInhibitionExperimentalTests
     {
@@ -30,7 +27,6 @@ namespace NeoCortexApi.Experiments
         /// <param name="imageSize"> Size of the image (image has same width and height)</param>
         /// <param name="columnDimension"> List of sparse space size.(with same width and height)</param>
         [TestMethod]
-        [TestCategory("Experiment")]
         [TestCategory("LongRunning")]
         [DataRow(@"Testfiles\digit7.png", new int[] { 32, 48, 64 }, new int[] { 16, 24, 32, 40, 48, 54, 64 })]
         [DataRow(@"Testfiles\digit8.png", new int[] { 32, 48, 64 }, new int[] { 32, 64, 128 })]
@@ -76,7 +72,6 @@ namespace NeoCortexApi.Experiments
         /// <param name="maxBoost"> Setup max boost parameter  </param>
         /// <param name="dutyCyclePeriod"> Setup duty cycle period parameter </param>
         [TestMethod]
-        [TestCategory("Experiment")]
         [TestCategory("LongRunning")]
         [DataRow(@"Testfiles\digit7.png", 32, 32, 1, 10)]
         [DataRow(@"Testfiles\digit7.png", 32, 32, 1, 100)]
@@ -124,7 +119,6 @@ namespace NeoCortexApi.Experiments
         /// <param name="columnDimension">Column dimension. Number of columns = columnDimension*columnDimension.</param>
         /// <param name="potentialRadius">The percent of the inputs, within a column's potential radius, that a column can be connected to.</param>
         [TestMethod]
-        [TestCategory("Experiment")]
         [TestCategory("LongRunning")]
         [DataRow(@"Testfiles\digit7.png", 32, 64, new int[] { 4, 8, 12, 16 })]
         [DataRow(@"Testfiles\digit8.png", 64, 64, new int[] { 4, 8, 16, 20, 24, 28, 32 })]
@@ -357,8 +351,9 @@ namespace NeoCortexApi.Experiments
         /// <returns>Path to the output binarized image</returns>
         private static string BinarizeImage(string mnistImage, int imageSize)
         {
-            var binaryImage = $@"Output\{GetFileName(mnistImage)}.txt";
-            
+            string binaryImage;
+            Binarizer binarizer = new Binarizer(200, 200, 200, imageSize, imageSize);
+            binaryImage = $@"Output\{GetFileName(mnistImage)}.txt";
             Directory.CreateDirectory($"Output");
 
             if (File.Exists(binaryImage))
@@ -366,9 +361,7 @@ namespace NeoCortexApi.Experiments
                 File.Delete(binaryImage);
             }
 
-            ImageBinarizer imageBinarizer = new ImageBinarizer(new BinarizerParams { RedThreshold = 200, GreenThreshold = 200, BlueThreshold = 200, ImageWidth = imageSize, ImageHeight = imageSize, InputImagePath = mnistImage, OutputImagePath = binaryImage });
-
-            imageBinarizer.Run();
+            binarizer.CreateBinary(mnistImage, binaryImage);
 
             return binaryImage;
         }

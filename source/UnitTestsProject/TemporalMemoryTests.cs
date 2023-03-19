@@ -3,10 +3,17 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Types;
+using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Runtime.Serialization;
+using NeoCortexApi.Types;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace UnitTestsProject
 {
@@ -72,30 +79,27 @@ namespace UnitTestsProject
         }
 
 
-        // TODO: formatter.Serialize is obsoleted
-        //private T deepCopyPlain<T>(T obj)
-        //{
-        //    IFormatter formatter = new BinaryFormatter();
-        //    using (Stream stream = new MemoryStream())
-        //    {
-        //        formatter.Serialize(stream, obj);
-        //        stream.Position = 0;
-        //        return (T)formatter.Deserialize(stream);
-        //    }
+        private T deepCopyPlain<T>(T obj)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            using (Stream stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, obj);
+                stream.Position = 0;
+                return (T)formatter.Deserialize(stream);
+            }
 
-        //    //JsonSerializerSettings jss = new Newtonsoft.Json.JsonSerializerSettings();
+            //JsonSerializerSettings jss = new Newtonsoft.Json.JsonSerializerSettings();
 
-        //    //string serObj = JsonConvert.SerializeObject(obj);
-        //    //return JsonConvert.DeserializeObject<T>(serObj);
-        //}
+            //string serObj = JsonConvert.SerializeObject(obj);
+            //return JsonConvert.DeserializeObject<T>(serObj);
+        }
 
         [TestMethod]
         [TestCategory("Prod")]
-        [DataRow(0)]
-        [DataRow(1)]
-        public void TestActivateCorrectlyPredictiveCells(int tmImplementation)
+        public void TestActivateCorrectlyPredictiveCells()
         {
-            TemporalMemory tm = tmImplementation == 0 ? new TemporalMemory() : new TemporalMemoryMT();
+            TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters();
             p.apply(cn);
@@ -137,7 +141,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
-            var burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3 });
+            IList<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
@@ -155,7 +159,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
-            var burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3 });
+            IList<Cell> burstingCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
 
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
@@ -207,7 +211,7 @@ namespace UnitTestsProject
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
             Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
-            List<Cell> expectedWinnerCells = new List<Cell>(cn.GetCells(new int[] { 4, 6 }));
+            List<Cell> expectedWinnerCells = new List<Cell>(cn.GetCellSet(new int[] { 4, 6 }));
 
             DistalDendrite activeSegment1 = cn.CreateDistalSegment(expectedWinnerCells[0]);
             cn.CreateSynapse(activeSegment1, previousActiveCells[0], 0.5);
@@ -411,9 +415,7 @@ namespace UnitTestsProject
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
 
-            //DD
-            //List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
-            List<DistalDendrite> segments = winnerCells[0].DistalDendrites;
+            List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
 
@@ -424,7 +426,7 @@ namespace UnitTestsProject
             foreach (Synapse synapse in synapses)
             {
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
-                Assert.IsTrue(prevWinnerCells.Contains(synapse.GetPresynapticCell()));
+                Assert.IsTrue(prevWinnerCells.Contains(synapse.getPresynapticCell()));
             }
         }
 
@@ -449,21 +451,16 @@ namespace UnitTestsProject
 
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(1, winnerCells.Count);
-
-            //DD
-            //List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
-            List<DistalDendrite> segments = winnerCells[0].DistalDendrites;
-
+            List<DistalDendrite> segments = winnerCells[0].GetSegments(cn);
             //List<DistalDendrite> segments = winnerCells[0].Segments;
             Assert.AreEqual(1, segments.Count);
-            //List<Synapse> synapses = segments[0].GetAllSynapses(cn);
-            List<Synapse> synapses = segments[0].Synapses;
+            List<Synapse> synapses = segments[0].GetAllSynapses(cn);
 
             List<Cell> presynapticCells = new List<Cell>();
             foreach (Synapse synapse in synapses)
             {
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
-                presynapticCells.Add(synapse.GetPresynapticCell());
+                presynapticCells.Add(synapse.getPresynapticCell());
             }
 
             presynapticCells.Sort();
@@ -482,7 +479,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1, 2, 3 };
-            IList<Cell> prevWinnerCells = cn.GetCells(new int[] { 0, 1, 2, 3 });
+            IList<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
             int[] activeColumns = { 4 };
 
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.GetCell(4));
@@ -500,12 +497,12 @@ namespace UnitTestsProject
             synapses.Sort();
             foreach (Synapse synapse in synapses)
             {
-                if (synapse.GetPresynapticCell().Index == 0) continue;
+                if (synapse.getPresynapticCell().Index == 0) continue;
 
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
-                Assert.IsTrue(synapse.GetPresynapticCell().Index == 1 ||
-                           synapse.GetPresynapticCell().Index == 2 ||
-                           synapse.GetPresynapticCell().Index == 3);
+                Assert.IsTrue(synapse.getPresynapticCell().Index == 1 ||
+                           synapse.getPresynapticCell().Index == 2 ||
+                           synapse.getPresynapticCell().Index == 3);
             }
         }
 
@@ -522,7 +519,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] previousActiveColumns = { 0, 1 };
-            IList<Cell> prevWinnerCells = cn.GetCells(new int[] { 0, 1 });
+            IList<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1 });
             int[] activeColumns = { 4 };
 
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.GetCell(4));
@@ -541,10 +538,10 @@ namespace UnitTestsProject
 
             foreach (Synapse synapse in synapses)
             {
-                if (synapse.GetPresynapticCell().Index == 0) continue;
+                if (synapse.getPresynapticCell().Index == 0) continue;
 
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
-                Assert.AreEqual(1, synapse.GetPresynapticCell().Index);
+                Assert.AreEqual(1, synapse.getPresynapticCell().Index);
             }
         }
 
@@ -582,10 +579,14 @@ namespace UnitTestsProject
             cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
             List<Cell> presynapticCells = new List<Cell>();
-            foreach (var syn in activeSegment.Synapses)
+            foreach (var syn in activeSegment.GetAllSynapses(cn))
             {
-                presynapticCells.Add(syn.GetPresynapticCell());
+                presynapticCells.Add(syn.getPresynapticCell());
             }
+
+            //= cn.getSynapses(activeSegment).stream()
+            //.map(s->s.getPresynapticCell())
+            //.collect(Collectors.toSet());
 
             Assert.IsTrue(
                 presynapticCells.Count == 4 && (
@@ -620,7 +621,7 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(3, activeSegment.Synapses.Count);
+            Assert.AreEqual(3, cn.GetNumSynapses(activeSegment));
         }
 
         [TestMethod]
@@ -650,7 +651,7 @@ namespace UnitTestsProject
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            Assert.AreEqual(3, activeSegment.Synapses.Count);
+            Assert.AreEqual(3, cn.GetNumSynapses(activeSegment));
         }
 
         [TestMethod]
@@ -673,7 +674,7 @@ namespace UnitTestsProject
             Assert.AreEqual(3, cn.HtmConfig.MaxSynapsesPerSegment);
 
             int[] prevActiveColumns = { 0, 1, 2 };
-            IList<Cell> prevWinnerCells = cn.GetCells(new int[] { 0, 1, 2 });
+            IList<Cell> prevWinnerCells = cn.GetCellSet(new int[] { 0, 1, 2 });
             int[] activeColumns = { 4 };
 
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.GetCell(4));
@@ -693,7 +694,7 @@ namespace UnitTestsProject
             //DD foreach (var syn in cn.GetSynapses(matchingSegment))
             foreach (var syn in matchingSegment.Synapses)
             {
-                presynapticCells.Add(syn.GetPresynapticCell());
+                presynapticCells.Add(syn.getPresynapticCell());
             }
 
             Assert.IsFalse(presynapticCells.Count(c => c.Index == 0) > 0);
@@ -724,19 +725,13 @@ namespace UnitTestsProject
             tm.Compute(prevActiveColumns1, true);
             tm.Compute(activeColumns, true);
 
-            //DD
-            //Assert.AreEqual(1, cn.GetSegments(cell9).Count);
-            Assert.AreEqual(1, cell9.DistalDendrites.Count);
-            //DD
-            //DistalDendrite oldestSegment = cn.GetSegments(cell9)[0];
-            DistalDendrite oldestSegment = cell9.DistalDendrites[0];
+            Assert.AreEqual(1, cn.GetSegments(cell9).Count);
+            DistalDendrite oldestSegment = cn.GetSegments(cell9)[0];
             tm.Reset(cn);
             tm.Compute(prevActiveColumns2, true);
             tm.Compute(activeColumns, true);
 
-            //DD
-            //Assert.AreEqual(2, cn.GetSegments(cell9).Count);
-            Assert.AreEqual(2, cell9.DistalDendrites.Count);
+            Assert.AreEqual(2, cn.GetSegments(cell9).Count);
 
             //Set<Cell> oldPresynaptic = cn.getSynapses(oldestSegment)
             //    .stream()
@@ -744,29 +739,24 @@ namespace UnitTestsProject
             //    .collect(Collectors.toSet());
 
             //var oldPresynaptic = cn.GetSynapses(oldestSegment).Select(s => s.getPresynapticCell()).ToList();
-            var oldPresynaptic = oldestSegment.Synapses.Select(s => s.GetPresynapticCell()).ToList();
+            var oldPresynaptic = oldestSegment.Synapses.Select(s => s.getPresynapticCell()).ToList();
 
             tm.Reset(cn);
             tm.Compute(prevActiveColumns3, true);
             tm.Compute(activeColumns, true);
-
-            //DD
-            //Assert.AreEqual(2, cn.GetSegments(cell9).Count);
-            Assert.AreEqual(2, cell9.DistalDendrites.Count);
+            Assert.AreEqual(2, cn.GetSegments(cell9).Count);
 
             // Verify none of the segments are connected to the cells the old
             // segment was connected to.
 
-            //DD
-            //foreach (DistalDendrite segment in cn.GetSegments(cell9))
-            foreach (DistalDendrite segment in cell9.DistalDendrites)
+            foreach (DistalDendrite segment in cn.GetSegments(cell9))
             {
                 //Set<Cell> newPresynaptic = cn.getSynapses(segment)
                 //    .stream()
                 //    .map(s->s.getPresynapticCell())
                 //    .collect(Collectors.toSet());
                 //DD var newPresynaptic = cn.GetSynapses(segment).Select(s => s.getPresynapticCell()).ToList();
-                var newPresynaptic = segment.Synapses.Select(s => s.GetPresynapticCell()).ToList();
+                var newPresynaptic = segment.Synapses.Select(s => s.getPresynapticCell()).ToList();
 
                 Assert.IsTrue(areDisjoined<Cell>(oldPresynaptic, newPresynaptic));
             }
@@ -862,7 +852,7 @@ namespace UnitTestsProject
                 Cell[] prevActiveCells = { cn.GetCell(4), cn.GetCell(5), cn.GetCell(6), cn.GetCell(7) };
                 int[] activeColumns = { 0 };
                 Cell[] nonMatchingCells = { cn.GetCell(0), cn.GetCell(3) };
-                IList<Cell> activeCells = cn.GetCells(new int[] { 0, 1, 2, 3 });
+                IList<Cell> activeCells = cn.GetCellSet(new int[] { 0, 1, 2, 3 });
 
                 DistalDendrite segment1 = cn.CreateDistalSegment(nonMatchingCells[0]);
                 cn.CreateSynapse(segment1, prevActiveCells[0], 0.5);
@@ -877,17 +867,13 @@ namespace UnitTestsProject
                 Assert.AreEqual(3, cn.NumSegments());
                 Assert.AreEqual(1, cn.NumSegments(cn.GetCell(0)));
                 Assert.AreEqual(1, cn.NumSegments(cn.GetCell(3)));
-                Assert.AreEqual(1, segment1.Synapses.Count);
-                Assert.AreEqual(1, segment2.Synapses.Count);
+                Assert.AreEqual(1, cn.GetNumSynapses(segment1));
+                Assert.AreEqual(1, cn.GetNumSynapses(segment2));
 
-                //DD
-                //List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetSegments(cn.GetCell(1)));
-                List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetCell(1).DistalDendrites);
+                List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetSegments(cn.GetCell(1)));
                 if (segments.Count == 0)
                 {
-                    //DD
-                    //List<DistalDendrite> segments2 = cn.GetSegments(cn.GetCell(2));
-                    List<DistalDendrite> segments2 = cn.GetCell(2).DistalDendrites;
+                    List<DistalDendrite> segments2 = cn.GetSegments(cn.GetCell(2));
                     Assert.IsFalse(segments2.Count == 0);
                     grewOnCell2 = true;
                     segments.AddRange(segments2);
@@ -898,7 +884,7 @@ namespace UnitTestsProject
                 }
 
                 Assert.AreEqual(1, segments.Count);
-                List<Synapse> synapses = segments[0].Synapses;
+                List<Synapse> synapses = segments[0].GetAllSynapses(cn);
                 Assert.AreEqual(4, synapses.Count);
 
                 ISet<Column> columnCheckList = cn.GetColumnSet(prevActiveColumns);
@@ -907,8 +893,8 @@ namespace UnitTestsProject
                 {
                     Assert.AreEqual(0.2, synapse.Permanence, 0.01);
 
-                    var parentColIndx = synapse.GetPresynapticCell().ParentColumnIndex;
-                    Column column = cn.Memory.GetColumn(parentColIndx);
+                    var parentColIndx = synapse.getPresynapticCell().ParentColumnIndex;
+                    Column column = cn.HtmConfig.Memory.GetColumn(parentColIndx);
                     Assert.IsTrue(columnCheckList.Contains(column));
                     columnCheckList.Remove(column);
                 }
@@ -950,56 +936,18 @@ namespace UnitTestsProject
             cn.CreateSynapse(wrongMatchingSegment, prevActiveCells[1], 0.5);
             cn.CreateSynapse(wrongMatchingSegment, prevInactiveCell, 0.5);
 
-            //var r = deepCopyPlain<Synapse>(cn.GetReceptorSynapses().Values.First().First());
-            //var synMapBefore = deepCopyPlain<Dictionary<Cell, LinkedHashSet<Synapse>>>(cn.GetReceptorSynapses());
-            //var segMapBefore = deepCopyPlain<Dictionary<Cell, List<DistalDendrite>>>(cn.GetSegmentMapping());
-            var actCellsBefore = cn.ActiveCells;
-            var winCellsBefore = cn.WinnerCells;
-
-            int prevPresynSum = 0;
-            int segSynSum = 0;
-
-            GetSynSums(cn, out prevPresynSum, out segSynSum);
+            var r = deepCopyPlain<Synapse>(cn.GetReceptorSynapses().Values.First().First());
+            var synMapBefore = deepCopyPlain<Dictionary<Cell, LinkedHashSet<Synapse>>>(cn.GetReceptorSynapses());
+            var segMapBefore = deepCopyPlain<Dictionary<Cell, List<DistalDendrite>>>(cn.GetSegmentMapping());
 
             tm.Compute(prevActiveColumns, false);
             tm.Compute(activeColumns, false);
 
-            int afterPresynSum = 0;
-            int afterSegSynSum = 0;
+            Assert.IsTrue(synMapBefore != cn.GetReceptorSynapses());
+            Assert.IsTrue(synMapBefore.Keys.SequenceEqual(cn.GetReceptorSynapses().Keys));
 
-            GetSynSums(cn, out afterPresynSum, out afterSegSynSum);
-
-            //DD
-            //Assert.IsTrue(synMapBefore != cn.GetReceptorSynapses());
-            //Assert.IsTrue(synMapBefore.Keys.SequenceEqual(cn.GetReceptorSynapses().Keys));
-            Assert.IsTrue(prevPresynSum == afterPresynSum);
-            Assert.IsTrue(segSynSum == afterSegSynSum);
-
-            cn.ActiveCells.SequenceEqual(actCellsBefore);
-            cn.WinnerCells.SequenceEqual(winCellsBefore);
-            //DD
-            //Assert.IsTrue(segMapBefore != cn.GetSegmentMapping());
-            //Assert.IsTrue(segMapBefore.Keys.SequenceEqual(cn.GetSegmentMapping().Keys));
-        }
-
-        private void GetSynSums(Connections cn, out int prevPresynSum, out int segSynSum)
-        {
-            prevPresynSum = 0;
-            segSynSum = 0;
-
-            for (int i = 0; i < cn.HtmConfig.NumColumns; i++)
-            {
-                var col = cn.GetColumn(i);
-                foreach (var cell in col.Cells)
-                {
-                    prevPresynSum += cell.ReceptorSynapses.Count;
-
-                    foreach (var seg in cell.DistalDendrites)
-                    {
-                        segSynSum += seg.Synapses.Count;
-                    }
-                }
-            }
+            Assert.IsTrue(segMapBefore != cn.GetSegmentMapping());
+            Assert.IsTrue(segMapBefore.Keys.SequenceEqual(cn.GetSegmentMapping().Keys));
         }
 
         public void TestLeastUsedCell()
@@ -1016,7 +964,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < 100; i++)
             {
-                Assert.AreEqual(1, TemporalMemory.GetLeastUsedCell(cn, cn.GetColumn(0).Cells, cn.HtmConfig.Random).Index);
+                Assert.AreEqual(1, tm.GetLeastUsedCell(cn, cn.GetColumn(0).Cells, cn.HtmConfig.Random).Index);
             }
         }
 
@@ -1035,7 +983,7 @@ namespace UnitTestsProject
             Synapse s2 = cn.CreateSynapse(dd, cn.GetCell(37), 0.4);
             Synapse s3 = cn.CreateSynapse(dd, cn.GetCell(477), 0.9);
 
-            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23, 37 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23, 37 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
 
             Assert.AreEqual(0.7, s1.Permanence, 0.01);
             Assert.AreEqual(0.5, s2.Permanence, 0.01);
@@ -1055,11 +1003,11 @@ namespace UnitTestsProject
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.9);
 
-            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             Assert.AreEqual(1.0, s1.Permanence, 0.1);
 
             // Now permanence should be at max
-            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             Assert.AreEqual(1.0, s1.Permanence, 0.1);
         }
 
@@ -1077,7 +1025,7 @@ namespace UnitTestsProject
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.1);
             cn.CreateSynapse(dd, cn.GetCell(1), 0.3);
 
-            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            tm.AdaptSegment(cn, dd, cn.GetCellSet(new int[] { }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
             //DD Assert.IsFalse(cn.GetSynapses(dd).Contains(s1));
             Assert.IsFalse(dd.Synapses.Contains(s1));
         }
@@ -1109,13 +1057,7 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.Init(cn);
 
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
-            {
-                cnt+=item.Cells.Length;
-            }
-
-            Assert.AreEqual(64 * 64 * 32, cnt);
+            Assert.AreEqual(64 * 64 * 32, cn.Cells.Length);
         }
 
         public void TemporalMemoryInit()
@@ -1127,204 +1069,6 @@ namespace UnitTestsProject
             TemporalMemory temporalMemory = new TemporalMemory();
 
             temporalMemory.Init(connections);
-        }
-
-        [TestMethod]
-        [TestCategory("Prod")]
-        public void TestWithTwoActiveColumns()
-        {
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
-            p.apply(cn);
-            tm.Init(cn);
-
-            int[] previousActiveColumns = { 2, 3 }; ///2 pre active cells
-            Cell cell5 = cn.GetCell(6); /// get cell 6 by calling connection method
-            Cell cell6 = cn.GetCell(7);
-
-            DistalDendrite activeSegment = cn.CreateDistalSegment(cell5);
-            //  DistalDendrite activeSegment1 = cn.CreateDistalSegment(cell6);
-            cn.CreateSynapse(activeSegment, cn.GetCell(0), 0.5);
-            cn.CreateSynapse(activeSegment, cn.GetCell(1), 0.5);
-            cn.CreateSynapse(activeSegment, cn.GetCell(2), 0.5);
-            cn.CreateSynapse(activeSegment, cn.GetCell(3), 0.5);
-
-
-            ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
-            Assert.IsFalse(cc.ActiveCells.Count == 0);
-            Assert.IsFalse(cc.WinnerCells.Count == 0);
-            Assert.IsTrue(cc.PredictiveCells.Count == 0);
-
-            int[] zeroColumns = new int[0];
-            ComputeCycle cc2 = tm.Compute(zeroColumns, true) as ComputeCycle; ///learn = true
-            Assert.IsTrue(cc2.ActiveCells.Count == 0); /// Active cell ==0
-            Assert.IsTrue(cc2.WinnerCells.Count == 0);  /// wineer cell equal to 0
-            Assert.IsTrue(cc2.PredictiveCells.Count == 0); ///lost of depolirized cells equal to 0
-        }
-
-        ///<summary>
-        /// Test adapt segment from syapse to centre 
-        /// <Summary>
-        [TestMethod]
-        [TestCategory("Prod")]
-        public void TestAdaptSegmentToCentre()
-        {
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = Parameters.getAllDefaultParameters();
-            p.apply(cn);
-            tm.Init(cn);
-
-            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
-            Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.5); // central 
-
-            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
-            Assert.AreEqual(0.6, s1.Permanence, 0.1);
-
-            // Now permanence should be at mean
-            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
-            Assert.AreEqual(0.7, s1.Permanence, 0.1);
-        }
-
-
-        /// <summary>
-        ///Test an Array which has none cells in it
-        /// </summary>
-        [TestMethod]
-        public void TestArrayNotContainingCells()
-        {
-
-            HtmConfig htmConfig = GetDefaultTMParameters();
-            Connections cn = new Connections(htmConfig);
-
-            TemporalMemory tm = new TemporalMemory();
-
-            tm.Init(cn);
-
-            int[] activeColumns = { 4, 5 };
-            Cell[] burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, });
-
-            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
-
-            Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
-        }
-
-        /// <summary>
-        ///Test a  if no cells have active segments, activate all the cells which cant be predicted in columns
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Prod")]
-        public void TestBurstNotpredictedColumns()
-        {
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
-            p.apply(cn);
-            tm.Init(cn);
-
-            int[] activeColumns = { 1, 2 }; //Cureently Active column
-            IList<Cell> burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3 }); //Number of Cell Indexs
-
-            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle; //COmpute class object 
-
-            Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
-        }
-
-        /// <summary>
-        ///Test a Un-change for non selected matching in no cells have active segments, activate 4 and 5 cell in the column
-        /// </summary>
-
-        [TestMethod]
-        [TestCategory("Prod")]
-        public void TestNoChangeToNoTSelectedMatchingSegmentsInBurstingColumn()
-        {
-            TemporalMemory tm = new TemporalMemory(); // TM class object
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08); // Used Permanence decrement parameter 
-
-            p.apply(cn);
-            tm.Init(cn);
-
-            int[] previousActiveColumns = { 0 };
-            int[] activeColumns = { 1 };
-            Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
-            // no cells have active segments, activate 4 and 5 cell in the column
-            Cell[] burstingCells = { cn.GetCell(4), cn.GetCell(5) };
-
-            DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(burstingCells[0]);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(81), 0.3);
-
-            DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(burstingCells[1]);
-            Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.3);
-            Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.3);
-
-            tm.Compute(previousActiveColumns, true);
-            tm.Compute(activeColumns, true);
-
-            Assert.AreEqual(0.3, as1.Permanence, 0.01);
-            Assert.AreEqual(0.3, is1.Permanence, 0.01);
-        }
-
-
-        /// <summary>
-        ///Test a active column Where most used cell in a column and after every test its alter the cell
-        /// </summary>
-        [TestMethod]
-        public void TestRandomMostUsedCell()
-        {
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 3 });
-            p = getDefaultParameters(p, KEY.CELLS_PER_COLUMN, 2);
-            p.apply(cn);
-            tm.Init(cn);
-
-            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(1));
-            cn.CreateSynapse(dd, cn.GetCell(0), 0.30);
-
-            for (int i = 0; i < 10; i++)
-            {
-                Assert.AreEqual(4, TemporalMemory.GetLeastUsedCell(cn, cn.GetColumn(2).Cells, cn.HtmConfig.Random).Index);
-            }
-        }
-
-        /// <summary>
-        /// Activates all of the cells in an unpredicted active column
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Prod")]
-        public void TestActivatedunpredictedActiveColumn()
-        {
-            HtmConfig htmConfig = GetDefaultTMParameters();
-            Connections cn = new Connections(htmConfig);
-            TemporalMemoryMock tm = new TemporalMemoryMock();
-            tm.Init(cn); ///use connection for specified object to build to implement algoarithm 
-            Random random = cn.HtmConfig.Random;
-            int[] prevActiveColumns = { 1, 2, 3, 4 }; /// 
-            Column column = cn.GetColumn(6); /// Retrieve column 6 
-            IList<Cell> preActiveCells = cn.GetCells(new int[] { 0, 1, 2, 3 }); /// 4 pre-active cells
-            IList<Cell> preWinnerCells = cn.GetCells(new int[] { 0, 1 }); ///Pre- winners cells from pre avtive once
-            List<DistalDendrite> matchingsegments = new List<DistalDendrite>(cn.GetCell(3).DistalDendrites); ///Matching segment from Distal dentrite list
-            var BustingResult = tm.BurstColumnMock(cn, column, matchingsegments,
-                                 preActiveCells, preWinnerCells, 0.10, 0.10,
-                                                new ThreadSafeRandom(100), true);
-            // Assert.AreEqual(, BustingResult);
-            Assert.AreEqual(6, BustingResult.BestCell.ParentColumnIndex);
-            Assert.AreEqual(1, BustingResult.BestCell.DistalDendrites.Count());
-        }
-    }
-
-    public class TemporalMemoryMock:  TemporalMemory
-    {
-        public BurstingResult BurstColumnMock(Connections conn, Column column, List<DistalDendrite> matchingSegments,
-           ICollection<Cell> prevActiveCells, ICollection<Cell> prevWinnerCells, double permanenceIncrement, double permanenceDecrement,
-               Random random, bool learn)
-        {
-            return base.BurstColumn(conn,column,matchingSegments, prevActiveCells, prevWinnerCells, permanenceIncrement, permanenceIncrement, random , learn);
         }
     }
 }

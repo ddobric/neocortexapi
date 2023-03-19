@@ -2,25 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace NeoCortexApi.Entities
 {
     // TODO naming convention for interface method
-    
-    /// <summary>
-    /// Definition of the sparse matrix.
-    /// </summary>
-    public interface ISparseMatrix
+    public interface ISparseMatrix 
     {
 
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
+    
     public interface ISparseMatrix<T> : ISparseMatrix, IFlatMatrix<T>
     {
         /// <summary>
@@ -29,17 +20,22 @@ namespace NeoCortexApi.Entities
         /// <returns>a sorted array of occupied indexes.</returns>
         int[] GetSparseIndices();
 
-
         /// <summary>
         /// Returns an array of all the flat indexes that can be computed from the current configuration.
         /// </summary>
         /// <returns></returns>
         int[] Get1DIndexes();
-             
-        public void Serialize(StreamWriter sw)
-        {
-            throw new NotImplementedException();
-        }
+
+        /**
+         * Uses the specified {@link TypeFactory} to return an array
+         * filled with the specified object type, according this {@code SparseMatrix}'s 
+         * configured dimensions
+         * 
+         * @param factory   a factory to make a specific type
+         * @return  the dense array
+         */
+        //T[] asDense(ITypeFactory<T> factory);
+
     }
 }
 

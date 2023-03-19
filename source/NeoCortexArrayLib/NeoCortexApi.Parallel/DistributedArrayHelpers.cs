@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+#pragma warning disable CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using NeoCortexApi.Entities;
+#pragma warning restore CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,7 +101,9 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return retVal;
         //}
 
-        /**
+        
+#pragma warning disable CS1570 // XML comment has badly formed XML -- 'Expected an end tag for element 'p'.'
+/**
          * <p>
          * Return a new double[] containing the difference of each element and its
          * succeding element.
@@ -420,7 +424,9 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return l;
         //}
 
-        /**
+        
+#pragma warning disable CS1570 // XML comment has badly formed XML -- 'Expected an end tag for element 'p'.'
+/**
          * Sorts the array, then returns an array containing the indexes of
          * those sorted items in the original array.
          * <p>
@@ -436,7 +442,9 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return argsort(inp, -1, -1);
         //}
 
-        /**
+        
+#pragma warning disable CS1570 // XML comment has badly formed XML -- 'Expected an end tag for element 'p'.'
+/**
          * Sorts the array, then returns an array containing the indexes of
          * those sorted items in the original array which are between the
          * given bounds (start=inclusive, end=exclusive)
@@ -666,7 +674,12 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="doubs">an array of doubles.</param>
         /// <returns></returns>
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static int[] ToIntArray(IDistributedArray doubs)
+#pragma warning restore CS1570 // XML comment has badly formed XML -- 'Expected an end tag for element 'p'.'
+#pragma warning restore CS1570 // XML comment has badly formed XML -- 'Expected an end tag for element 'p'.'
+#pragma warning restore CS1570 // XML comment has badly formed XML -- 'Expected an end tag for element 'p'.'
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             int[] retVal = new int[doubs.Count];
             for (int i = 0; i < doubs.Count; i++)
@@ -681,7 +694,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="ints">an array of ints.</param>
         /// <returns></returns>
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static double[] ToDoubleArray(IDistributedArray ints)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             double[] retVal = new double[ints.Count];
             for (int i = 0; i < ints.Count; i++)
@@ -1946,7 +1961,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="array"></param>
         /// <param name="x">the comparison</param>
         /// <param name="y">the value to set if the comparison fails</param>
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static void LessThanOrEqualXThanSetToY(IDistributedArray array, double x, double y)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             for (int i = 0; i < array.Count; i++)
             {
@@ -1960,7 +1977,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="array"></param>
         /// <param name="x">the comparison</param>
         /// <param name="y">the value to set if the comparison fails</param>
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static void LessThanXThanSetToY(IDistributedArray array, double x, double y)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             for (int i = 0; i < array.Count; i++)
             {
@@ -2036,7 +2055,11 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="targetB">array to set elements to Y</param>
         /// <param name="x">the comparison</param>
         /// <param name="y">the value to set if the comparison fails</param>
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static void GreaterThanXThanSetToYInB(IDistributedArray sourceA, IDistributedArray targetB, int x, double y)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             for (int i = 0; i < sourceA.Count; i++)
             {
@@ -2251,7 +2274,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static int MinInt(IDistributedArray array)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             int min = int.MaxValue;
             for (int i = 0; i < array.Count; i++)
@@ -2269,7 +2294,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static double MinDouble(IDistributedArray array)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             double min = Double.MaxValue;
             for (int i = 0; i < array.Count; i++)
@@ -2362,7 +2389,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="array"></param>
         /// <param name="value"></param>
         /// <param name="indexes"></param>
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static void SetValue(IDistributedArray array, int value, params int[] indexes)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             array.SetValue(value, indexes);
             //if (indexes.Length == 1)
@@ -2490,7 +2519,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="row"></param>
         /// <returns></returns>
         //public static T[] GetRow<T>(this T[,] array, int row)
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         public static T[] GetRow<T>(this IDistributedArray array, int row)
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         {
             if (array == null)
                 throw new ArgumentNullException("array");
@@ -2550,7 +2581,9 @@ namespace NeoCortexApi.DistributedComputeLib
         //    return result.toString();
         //}
 
-        /**
+        
+#pragma warning disable CS1570 // XML comment has badly formed XML -- 'Expected an end tag for element 'T'.'
+/**
          * Return True if all elements of the  <tt>values</tt> have evaluated to true with <tt>condition</tt>
          * @param values
          * @param condition
@@ -2620,6 +2653,7 @@ namespace NeoCortexApi.DistributedComputeLib
         //}
 
         public static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2)
+#pragma warning restore CS1570 // XML comment has badly formed XML -- 'Expected an end tag for element 'T'.'
         {
             if (dict1.Count != dict2.Count)
                 return false;

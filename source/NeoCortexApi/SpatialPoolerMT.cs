@@ -2,26 +2,22 @@
 // Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using NeoCortexApi.Entities;
+using System.Linq;
+using NeoCortexApi.Utility;
 
 namespace NeoCortexApi
 {
     public class SpatialPoolerMT : SpatialPooler
     {
         public SpatialPoolerMT(HomeostaticPlasticityController homeostaticPlasticityActivator = null) : base(homeostaticPlasticityActivator)
-        {
-
-        }
-
-        public SpatialPoolerMT()
-        {
-
+        { 
+        
         }
 
         /// <summary>
@@ -35,8 +31,7 @@ namespace NeoCortexApi
         }
 
         /// <summary>
-        /// Implements multicore initialization of the Spatial Pooler.
-        /// It creates the pool of potentially connected synapses on ProximalDendrite segment.
+        /// Implements muticore initialization of pooler.
         /// </summary>
         /// <param name="c"></param>
         protected override void ConnectAndConfigureInputs(Connections c)
@@ -49,6 +44,7 @@ namespace NeoCortexApi
 
             // Parallel implementation of initialization
             ParallelOptions opts = new ParallelOptions();
+            //int synapseCounter = 0;
 
             Parallel.For(0, numColumns, opts, (indx) =>
             {
@@ -76,7 +72,7 @@ namespace NeoCortexApi
 
                 data.AvgConnected = GetAvgSpanOfConnectedSynapses(c, colIndex);
 
-                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, data.Perm, data.Column, data.Potential, true);
+                HtmCompute.UpdatePermanencesForColumn( c.HtmConfig, data.Perm, data.Column, data.Potential, true);
 
                 if (!colList2.TryAdd(colIndex, new KeyPair() { Key = colIndex, Value = data }))
                 {
@@ -129,8 +125,8 @@ namespace NeoCortexApi
                 colList.Add(new KeyPair() { Key = i, Value = data.Column });
             }
 
-            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.Memory;
-
+            SparseObjectMatrix<Column> mem = (SparseObjectMatrix<Column>)c.HtmConfig.Memory;
+            
             if (mem.IsRemotelyDistributed)
             {
                 // Pool is created and attached to the local instance of Column.
@@ -146,58 +142,49 @@ namespace NeoCortexApi
             UpdateInhibitionRadius(c, avgSynapsesConnected);
         }
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="inputVector"></param>
-        /// <returns></returns>
-        public override int[] CalculateOverlap(Connections conn, int[] inputVector)
-        {
-            ParallelOptions opts = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
+        public override int[] CalculateOverlap(Connections c, int[] inputVector)
+        {
+            ParallelOptions opts = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
             ConcurrentDictionary<int, int> overlaps = new ConcurrentDictionary<int, int>();
 
-            //
-            // Calculates the overlapp for each mini-column.
-            Parallel.For(0, conn.HtmConfig.NumColumns, (col) =>
+            Parallel.For(0, c.HtmConfig.NumColumns, (col) =>
             {
-                var res = conn.GetColumn(col).CalcMiniColumnOverlap(inputVector, conn.HtmConfig.StimulusThreshold);
-                overlaps.TryAdd(col, res);
+                overlaps[col] = c.GetColumn(col).GetColumnOverlapp(inputVector, c.HtmConfig.StimulusThreshold);
             });
 
-            // We assign the overlaps to SortedDictionary which will order the overlap dictionary based on the keys.
-            // then, finally convert sortedOverlap to array
-            SortedDictionary<int, int> sortedOverlap = new SortedDictionary<int, int>(overlaps);
-
-            return sortedOverlap.Values.ToArray();
+          
+            return overlaps.Values.ToArray();
         }
 
-        public override void AdaptSynapses(Connections conn, int[] inputVector, int[] activeColumns)
+        public override void AdaptSynapses(Connections c, int[] inputVector, int[] activeColumns)
         {
 
             // Get all indicies of input vector, which are set on '1'.
             var inputIndices = ArrayUtils.IndexWhere(inputVector, inpBit => inpBit > 0);
 
-            double[] permChanges = new double[conn.HtmConfig.NumInputs];
+            double[] permChanges = new double[c.HtmConfig.NumInputs];
 
             // First we initialize all permChanges to minimum decrement values,
             // which are used in a case of none-connections to input.
-            ArrayUtils.InitArray(permChanges, -1 * conn.HtmConfig.SynPermInactiveDec);
+            ArrayUtils.FillArray(permChanges, -1 * c.HtmConfig.SynPermInactiveDec);
 
             // Then we update all connected permChanges to increment values for connected values.
             // Permanences are set in conencted input bits to default incremental value.
-            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), conn.HtmConfig.SynPermActiveInc);
+            ArrayUtils.SetIndexesTo(permChanges, inputIndices.ToArray(), c.HtmConfig.SynPermActiveInc);
 
             Parallel.For(0, activeColumns.Length, (i) =>
             {
                 //Pool pool = c.getPotentialPools().get(activeColumns[i]);
-                Pool pool = conn.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
-                double[] perm = pool.GetDensePermanences(conn.HtmConfig.NumInputs);
+                Pool pool = c.GetColumn(activeColumns[i]).ProximalDendrite.RFPool;
+                double[] perm = pool.GetDensePermanences(c.HtmConfig.NumInputs);
                 int[] indexes = pool.GetSparsePotential();
                 ArrayUtils.RaiseValuesBy(permChanges, perm);
-                Column col = conn.GetColumn(activeColumns[i]);
-                HtmCompute.UpdatePermanencesForColumn(conn.HtmConfig, perm, col, indexes, true);
+                Column col = c.GetColumn(activeColumns[i]);
+                HtmCompute.UpdatePermanencesForColumn(c.HtmConfig, perm, col, indexes, true);
             });
         }
 

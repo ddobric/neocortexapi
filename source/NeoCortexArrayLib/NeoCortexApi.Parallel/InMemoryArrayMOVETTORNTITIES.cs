@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+#pragma warning disable CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using NeoCortexApi.Entities;
+#pragma warning restore CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +10,9 @@ using System.Text;
 
 namespace NeoCortexApi.DistributedComputeLib
 {
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
     public class InMemoryArray : IDistributedArray
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
     {
         private int[] dimensions;
 
@@ -18,7 +22,11 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public int Rank => this.backingArray.Rank;
 
+#pragma warning disable CS0538 // 'IDistributedArray' in explicit interface declaration is not an interface
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
         long IDistributedArray.Count => this.backingArray.Length;
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedArray' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning restore CS0538 // 'IDistributedArray' in explicit interface declaration is not an interface
 
         /// <summary>
         /// Gets dimensions of distributed array.

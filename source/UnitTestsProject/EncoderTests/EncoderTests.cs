@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Globalization;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Network;
 
 namespace UnitTestsProject.EncoderTests
 {
@@ -204,7 +205,7 @@ namespace UnitTestsProject.EncoderTests
             }
         }
 
-
+ 
 
         private static Dictionary<string, object> getDefaultSettings()
         {

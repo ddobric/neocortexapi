@@ -3,6 +3,8 @@
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Linq;
 
 namespace NeoCortexApi.Network
 {
@@ -87,7 +89,7 @@ namespace NeoCortexApi.Network
         {
             if (levelIndx >= this.m_Poolers.Count)
                 throw new ArgumentException("Invalid level index.");
-
+           
             return this.m_ActiveArrays[levelIndx];
         }
 

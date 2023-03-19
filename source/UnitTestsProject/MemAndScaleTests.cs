@@ -1,12 +1,16 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
+using Akka.Actor;
+using Akka.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
+using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using System.Linq;
 
 namespace UnitTestsProject
 {
@@ -121,7 +125,7 @@ namespace UnitTestsProject
                     Console.Out.WriteLine("MaxValue: " + i);
 
                 }
-                catch (Exception)
+                catch (Exception ignored)
                 {
                     Console.WriteLine($"Max int array: {i - 1}");
                     return;
@@ -210,77 +214,76 @@ namespace UnitTestsProject
                         if (lastIncrement == 0) break;
                     }
                     else
-                        throw;
+                        throw ex;
                 }
             }
 
             return lastKnownGood;
         }
 
-        /*   [TestMethod]
-           [TestCategory("AkkaHostRequired")]
-           public void AkkClusterTest()
-           {
-               var actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
-                   akka {  
-                       loglevel=DEBUG
-                       actor{
-                           provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
-                       }
-                       remote {
-                           connection-timeout = 120 s
-                           transport-failure-detector {
-                               heartbeat-interval = 1000s 
-                               acceptable-heartbeat-pause = 6000s 
-                           }
-                           dot-netty.tcp {
-                               maximum-frame-size = 326000000b
-                               port = 8080
-                               hostname = 0.0.0.0
-                               public-hostname = DADO-SR1
-                           }
-                       }
-                   }"));
+        [TestMethod]
+        [TestCategory("AkkaHostRequired")]
+        public void AkkClusterTest()
+        {
+            var actSystem = ActorSystem.Create("Deployer", ConfigurationFactory.ParseString(@"
+                akka {  
+                    loglevel=DEBUG
+                    actor{
+                        provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""  		               
+                    }
+                    remote {
+                        connection-timeout = 120 s
+                        transport-failure-detector {
+			                heartbeat-interval = 1000s 
+			                acceptable-heartbeat-pause = 6000s 
+		                }
+                        dot-netty.tcp {
+                            maximum-frame-size = 326000000b
+		                    port = 8080
+		                    hostname = 0.0.0.0
+                            public-hostname = DADO-SR1
+                        }
+                    }
+                }"));
 
-               string actorName = $"TestActor2";
+            string actorName = $"TestActor2";
 
-               IActorRef aRef = null;
+            IActorRef aRef = null;
 
-               aRef = actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-                    .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(Helpers.DefaultNodeList.First())))),
-                    actorName);
+            aRef = actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+                 .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(Helpers.DefaultNodeList.First())))),
+                 actorName);
 
-               var sel = actSystem.ActorSelection($"/user/{actorName}");
-               aRef = sel.ResolveOne(TimeSpan.FromSeconds(5)).Result;
+            var sel = actSystem.ActorSelection($"/user/{actorName}");
+            aRef = sel.ResolveOne(TimeSpan.FromSeconds(5)).Result;
 
-               //try
-               //{
-               //    var sel = actSystem.ActorSelection($"/user/{actorName}");
-               //    aRef = sel.ResolveOne(TimeSpan.FromSeconds(5)).Result;
+            //try
+            //{
+            //    var sel = actSystem.ActorSelection($"/user/{actorName}");
+            //    aRef = sel.ResolveOne(TimeSpan.FromSeconds(5)).Result;
 
-               //}
-               //catch (AggregateException ex)
-               //{
-               //    if (ex.InnerException is ActorNotFoundException)
-               //    {
-               //        aRef =
-               //          actSystem.ActorOf(Props.Create(() => new DictNodeActor())
-               //          .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(Helpers.DefaultNodeList.First())))),
-               //          actorName);
-               //    }
-               //}
+            //}
+            //catch (AggregateException ex)
+            //{
+            //    if (ex.InnerException is ActorNotFoundException)
+            //    {
+            //        aRef =
+            //          actSystem.ActorOf(Props.Create(() => new DictNodeActor())
+            //          .WithDeploy(Deploy.None.WithScope(new RemoteScope(Address.Parse(Helpers.DefaultNodeList.First())))),
+            //          actorName);
+            //    }
+            //}
 
-               var result = aRef.Ask<string>(new PingNodeMsg()
-               {
-                   Msg = "Echo"
-               }, TimeSpan.FromSeconds(5)).Result;
-           }
-        */
+            var result = aRef.Ask<string>(new PingNodeMsg()
+            {
+                Msg = "Echo"
+            }, TimeSpan.FromSeconds(5)).Result;
+        }
+
         [TestMethod]
         //[DataRow(PoolerMode.SingleThreaded)]
         [DataRow(PoolerMode.Multicore)]
         [TestCategory("LongRunning")]
-        [TestCategory("Parallel")]
         public void SPInitTest(PoolerMode poolerMode)
         {
             //Thread.Sleep(2000);
@@ -335,7 +338,7 @@ namespace UnitTestsProject
             var mem = new Connections();
             parameters.apply(mem);
 
-            sp.Init(mem, UnitTestHelpers.GetMemory(mem.HtmConfig));
+            sp.Init(mem, UnitTestHelpers.GetMemory());
             //sp.init(mem);
 
             //int[] inputVector = new int[] { 1, 0, 1, 0, 1, 0, 0, 1, 1 };

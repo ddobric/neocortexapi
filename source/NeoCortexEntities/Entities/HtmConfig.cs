@@ -3,9 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -14,23 +12,18 @@ namespace NeoCortexApi.Entities
     /// HTM configuration.
     /// Also sent from Akka-client to Akka Actor.
     /// </summary>
-    public class HtmConfig : ISerializable
+    public class HtmConfig
     {
-        public static readonly double EPSILON = 0.00001;
-
         /// <summary>
         /// Default constructor with the default set of parameters.
         /// </summary>
         /// <param name="inputDims"></param>
         /// <param name="columnDims"></param>
-        public HtmConfig(int[] inputDims, int[] columnDims)
+        public HtmConfig(int[] inputDims,  int[] columnDims)
         {
             SetHtmConfigDefaultParameters(inputDims, columnDims);
         }
-        public HtmConfig()
-        {
 
-        }
         /// <summary>
         /// Not used!
         /// </summary>
@@ -49,7 +42,7 @@ namespace NeoCortexApi.Entities
 
         private double synPermActiveInc;
         private double synPermConnected;
-        
+        private AbstractSparseMatrix<Column> memory;
         private ISparseMatrix<int> inputMatrix;
 
         public TemporalMemoryConfig TemporalMemory { get; set; } = new TemporalMemoryConfig();
@@ -57,7 +50,12 @@ namespace NeoCortexApi.Entities
         public SpatialPoolerConfig SpatialPooler { get; set; } = new SpatialPoolerConfig();
 
         #region Spatial Pooler Variables
-
+        /// <summary>
+        /// The inhibition radius determines the size of a column's local neighborhood. of a column. A cortical column must overcome the overlap
+        /// score of columns in its neighborhood in order to become actives. This radius is updated every learning round. It grows and shrinks with the
+        /// average number of connected synapses per column.
+        /// </summary>
+        public int InhibitionRadius { get; set; } = 0;
 
         /// <summary>
         /// Manages input neighborhood transformations.
@@ -74,9 +72,6 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public int NumInputs { get; set; } = 1;
 
-        /// <summary>
-        /// Initialized after SP.Init.
-        /// </summary>
         public int NumColumns { get; set; }
 
         /// <summary>
@@ -85,8 +80,10 @@ namespace NeoCortexApi.Entities
         /// the field of vision. A large enough value will result in 'global coverage', meaning that each column
         /// can potentially be connected to every input bit. This parameter defines a square (or hyper square) area: a
         /// column will have a max square potential pool with sides of length 2 * <see cref="PotentialRadius"/> + 1.<br/>
+        /// 
+        /// <b>WARNING:</b> <see cref="PotentialRadius"/> <b><i>must</i></b> be set to the inputWidth if using 
+        /// <see cref="GlobalInhibition"/> and if not using the Network API (which sets this automatically).
         /// </summary>
-        /// <remarks>It must be set to the inputWidth if using <see cref="GlobalInhibition"/>.</remarks>
         public int PotentialRadius { get; set; }
 
         /// <summary>
@@ -99,12 +96,12 @@ namespace NeoCortexApi.Entities
         public double PotentialPct { get; set; }
 
         /// <summary>
-        /// Minimum number of connected synapses (mini-columns with active synapses) to the input to declare the mini-column active. 
+        /// Minimum number of connected synapses to make column active. Specified as a percent of a fully grown synapse.
         /// </summary>
         public double StimulusThreshold { get; set; }
 
         /// <summary>
-        /// Synapses of weak mini-columns will be stimulated by the boosting mechanism. The stimulation is done by adding of this increment value to the current permanence value of the synapse.
+        /// Stimulus increment for synapse permanences below the measured threshold.
         /// </summary>
         public double SynPermBelowStimulusInc { get; set; }
 
@@ -119,17 +116,10 @@ namespace NeoCortexApi.Entities
         public double SynPermActiveInc { get => synPermActiveInc; set { this.synPermActiveInc = value; SynPermTrimThreshold = value / 2.0; } }
 
         /// <summary>
-        /// Connected permanence Threshold. Any synapse whose permanence value is above the connected prtmanence threshold value is
+        /// The default connected threshold. Any synapse whose permanence value is above the connected threshold is
         /// a "connected synapse", meaning it can contribute to the cell's firing.
         /// </summary>
         public double SynPermConnected { get => synPermConnected; set { synPermConnected = value; SynPermBelowStimulusInc = value / 10.0; } }
-
-        /// <summary>
-        /// If the permanence value for a synapse is greater than this value, it is said to be connected = the potential synapse.
-        /// Synapses that exceeds this value are used in computation of active segments.
-        /// </summary>
-        [Obsolete("Use SynPermConnected instead.")]
-        public double ConnectedPermanence { get; set; } = 0.5;
 
         /// <summary>
         /// Specifies whether neighborhoods wider than the borders wrap around to the other side.
@@ -137,10 +127,19 @@ namespace NeoCortexApi.Entities
         public bool WrapAround { get; set; } = true;
 
         /// <summary>
-        /// This value is used by SP. When some permanence is under this value, it is set on zero.
-        /// In this case the synapse remains the potential one and still can participate in learning.
-        /// By following structural plasticity principal the synapse would become disconnected from the mini-column.
+        /// Enforses using of global inhibition process.
         /// </summary>
+        public bool GlobalInhibition { get; set; } = false;
+
+        /// <summary>
+        /// The desired density of active columns within a local inhibition area (the size of which is set by the
+        /// internally calculated <see cref="InhibitionRadius"/>, which is in turn determined from the average size of the
+        /// connected potential pools of all columns). The inhibition logic will insure that at most N columns
+        /// remain ON within a local inhibition area, where N = <see cref="LocalAreaDensity"/> * (total number of columns in
+        /// inhibition area).
+        /// </summary>
+        public double LocalAreaDensity { get; set; } = -1.0;
+
         public double SynPermTrimThreshold { get; set; }
 
         /// <summary>
@@ -164,13 +163,8 @@ namespace NeoCortexApi.Entities
         public ISparseMatrix<int> InputMatrix { get => inputMatrix; set { inputMatrix = value; InputModuleTopology = value?.ModuleTopology; } }
 
         /// <summary>
-        /// Enforses using of global inhibition process.
-        /// </summary>
-        public bool GlobalInhibition { get; set; } = false;
-
-        /// <summary>
         /// The configured number of active columns per inhibition area.<br/>
-        /// An alternate way to control the density of the active columns. If this value is specified then
+        /// An alternate way to control the density of the active columns. If numActivePerInhArea is specified then
         /// localAreaDensity must be less than 0, and vice versa. When using numActivePerInhArea, the inhibition logic
         /// will insure that at most <see cref="NumActiveColumnsPerInhArea"/> columns remain ON within a local inhibition area (the
         /// size of which is set by the internally calculated inhibitionRadius, which is in turn determined from
@@ -182,28 +176,12 @@ namespace NeoCortexApi.Entities
         public double NumActiveColumnsPerInhArea { get; set; }
 
         /// <summary>
-        /// The desired density of active columns within a local inhibition area (the size of which is set by the
-        /// internally calculated <see cref="InhibitionRadius"/>, which is in turn determined from the average size of the
-        /// connected potential pools of all columns). The inhibition logic will insure that at most N columns
-        /// remain ON within a local inhibition area, where N = <see cref="LocalAreaDensity"/> * (total number of columns in
-        /// inhibition area).
-        /// Higher values increase similarity of inputs.
-        /// </summary>
-        public double LocalAreaDensity { get; set; } = -1.0;
-
-        /// <summary>
-        /// Maximum allowed inhibtion density.
-        /// </summary>
-        public double MaxInibitionDensity { get; set; } = 0.5;
-
-        /// <summary>
-        /// A number between 0 and 1.0, used to set a floor on how often a column should be activated, 
-        /// when learning spatial patterns. Periodically, each column looks at the overlap duty cycle of
+        /// A number between 0 and 1.0, used to set a floor on how often a column should have at least
+        /// stimulusThreshold active inputs. Periodically, each column looks at the overlap duty cycle of
         /// all other columns within its inhibition radius and sets its own internal minimal acceptable duty cycle
         /// to: minPctDutyCycleBeforeInh * max(other columns' duty cycles).
         /// On each iteration, any column whose overlap duty cycle falls below this computed value will  get
-        /// all of its permanence values boosted up by <see cref="SynPermActiveInc"/>. 
-        /// Raising all permanences in response
+        /// all of its permanence values boosted up by <see cref="SynPermActiveInc"/>. Raising all permanences in response
         /// to a sub-par duty cycle before  inhibition allows a cell to search for new inputs when either its
         /// previously learned inputs are no longer ever active, or when the vast majority of them have been
         /// "hijacked" by other columns.
@@ -211,9 +189,9 @@ namespace NeoCortexApi.Entities
         public double MinPctOverlapDutyCycles { get; set; } = 0.001;
 
         /// <summary>
-        /// A number between 0 and 1.0, used to set a floor on how often a column should be activated.
-        /// Periodically, each column looks at the activity duty cycle of all other columns within its inhibition
-        /// radius and sets its own internal minimal acceptable duty cycle to:<br/>
+        /// A number between 0 and 1.0, used to set a floor on  how often a column should be activate.
+        /// Periodically, each column looks at the activity duty  cycle of all other columns within its inhibition
+        /// radius and sets its own internal minimal acceptable  duty cycle to:<br/>
         /// minPctDutyCycleAfterInh * max(other columns' duty cycles).<br/>
         /// On each iteration, any column whose duty cycle after inhibition falls below this computed value will get
         /// its internal boost factor increased.
@@ -226,7 +204,7 @@ namespace NeoCortexApi.Entities
         public double PredictedSegmentDecrement { get; set; } = 0.0;
 
         /// <summary>
-        /// The period used to calculate duty cycles. Higher values make it take longer to respond to changes in
+        /// he period used to calculate duty cycles. Higher values make it take longer to respond to changes in
         /// boost or synPerConnectedCell. Shorter values make it more unstable and likely to oscillate.
         /// </summary>
         public int DutyCyclePeriod { get; set; } = 1000;
@@ -243,7 +221,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Controls if bumping-up of weak columns shell be done.
         /// </summary>
-        //public bool IsBumpUpWeakColumnsDisabled { get; set; } = false;
+        public bool IsBumpUpWeakColumnsDisabled { get; set; } = false;
 
         /// <summary>
         /// Period count which is the number of cycles between updates of inhibition radius and min. duty cycles.
@@ -257,20 +235,17 @@ namespace NeoCortexApi.Entities
         public double[] OverlapDutyCycles { get; set; }
 
         /// <summary>
-        /// TODO: Should be removed to Connections class.
         /// The dense (size=numColumns) array of duty cycle stats.
         /// </summary>
         public double[] ActiveDutyCycles { get; set; }
 
         /// <summary>
         /// TODO property documentation
-        /// TODO: Should be removed to Connections class.
         /// </summary>
         public double[] MinOverlapDutyCycles { get; set; }
 
         /// <summary>
         /// TODO property documentation
-        /// TODO: Should be removed to Connections class.
         /// </summary>
         public double[] MinActiveDutyCycles { get; set; }
 
@@ -325,12 +300,17 @@ namespace NeoCortexApi.Entities
         public HtmModuleTopology ColumnModuleTopology { get; set; }
 
         /// <summary>
-        /// The topology of the input.
+        /// TODO property documentation
         /// </summary>
         public HtmModuleTopology InputModuleTopology { get; set; }
 
         /// <summary>
-        /// Activation threshold used in sequence learning. If the number of active connected synapses on a distal segment is at least this threshold, the segment is declared as active one.
+        /// The main data structure containing columns, cells, and synapses.
+        /// </summary>
+        public AbstractSparseMatrix<Column> Memory { get => memory; set { memory = value; ColumnModuleTopology = value?.ModuleTopology; } }
+
+        /// <summary>
+        /// Activation threshold. If the number of active connected synapses on a segment is at least this threshold, the segment is said to be active.
         /// </summary>
         public int ActivationThreshold { get; set; } = 13;
 
@@ -350,6 +330,11 @@ namespace NeoCortexApi.Entities
         /// Initial permanence of a new synapse
         /// </summary>
         public double InitialPermanence { get; set; } = 0.21;
+
+        /// <summary>
+        /// If the permanence value for a synapse is greater than this value, it is said to be connected.
+        /// </summary>
+        public double ConnectedPermanence { get; set; } = 0.5;
 
         //public bool Learn { get; set; } = true;
         #endregion
@@ -392,13 +377,13 @@ namespace NeoCortexApi.Entities
             this.PermanenceIncrement = 0.10;
             this.PermanenceDecrement = 0.10;
             this.PredictedSegmentDecrement = 0.1;
-
+            
             // Spatial Pooler parameters
-
+          
             this.PotentialRadius = 15;
             this.PotentialPct = 0.75;
             this.GlobalInhibition = true;
-            //this.InhibitionRadius = 15;
+            this.InhibitionRadius = 15;
             this.LocalAreaDensity = -1.0;
             this.NumActiveColumnsPerInhArea = 0.02 * 2048;
             this.StimulusThreshold = 5.0;
@@ -417,213 +402,28 @@ namespace NeoCortexApi.Entities
 
         public void ClearModuleTopology()
         {
+            this.Memory = null;
             this.InputMatrix = null;
         }
-        public bool Equals(HtmConfig obj)
-        {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
 
-            //if (memory == null)
-            //{
-            //    if (obj.memory != null)
-            //        return false;
-            //}
-            //else if (!memory.Equals(obj.memory))
-            //    return false;
-            if (inputMatrix == null)
-            {
-                if (obj.inputMatrix != null)
-                    return false;
-            }
-            else if (!inputMatrix.Equals(obj.inputMatrix))
-                return false;
-            if (InputTopology == null)
-            {
-                if (obj.InputTopology != null)
-                    return false;
-            }
-            else if (!InputTopology.Equals(obj.InputTopology))
-                return false;
-            if (ColumnTopology == null)
-            {
-                if (obj.ColumnTopology != null)
-                    return false;
-            }
-            else if (!ColumnTopology.Equals(obj.ColumnTopology))
-                return false;
-            if (InputMatrix == null)
-            {
-                if (obj.InputMatrix != null)
-                    return false;
-            }
-            else if (!InputMatrix.Equals(obj.InputMatrix))
-                return false;
-            if (ColumnModuleTopology == null)
-            {
-                if (obj.ColumnModuleTopology != null)
-                    return false;
-            }
-            else if (!ColumnModuleTopology.Equals(obj.ColumnModuleTopology))
-                return false;
-            if (InputModuleTopology == null)
-            {
-                if (obj.InputModuleTopology != null)
-                    return false;
-            }
-            else if (!InputModuleTopology.Equals(obj.InputModuleTopology))
-                return false;
-            //if (Memory == null)
-            //{
-            //    if (obj.Memory != null)
-            //        return false;
-            //}
-            //else if (!Memory.Equals(obj.Memory))
-            //    return false;
-            if (synPermActiveInc != obj.SynPermActiveInc)
-                return false;
-            if (synPermConnected != obj.synPermConnected)
-                return false;
-            //if (InhibitionRadius != obj.InhibitionRadius)
-            //    return false;
-            if (NumInputs != obj.NumInputs)
-                return false;
-            if (NumColumns != obj.NumColumns)
-                return false;
-            if (PotentialRadius != obj.PotentialRadius)
-                return false;
-            if (PotentialPct != obj.PotentialPct)
-                return false;
-            if (StimulusThreshold != obj.StimulusThreshold)
-                return false;
-            if (SynPermBelowStimulusInc != obj.SynPermBelowStimulusInc)
-                return false;
-            if (SynPermInactiveDec != obj.SynPermInactiveDec)
-                return false;
-            if (SynPermActiveInc != obj.SynPermActiveInc)
-                return false;
-            if (SynPermConnected != obj.SynPermConnected)
-                return false;
-            if (WrapAround != obj.WrapAround)
-                return false;
-            if (GlobalInhibition != obj.GlobalInhibition)
-                return false;
-            if (LocalAreaDensity != obj.LocalAreaDensity)
-                return false;
-            if (SynPermTrimThreshold != obj.SynPermTrimThreshold)
-                return false;
-            if (SynPermMax != obj.SynPermMax)
-                return false;
-            if (SynPermMin != obj.SynPermMin)
-                return false;
-            if (InitialSynapseConnsPct != obj.InitialSynapseConnsPct)
-                return false;
-            if (NumActiveColumnsPerInhArea != obj.NumActiveColumnsPerInhArea)
-                return false;
-            if (MinPctOverlapDutyCycles != obj.MinPctOverlapDutyCycles)
-                return false;
-            if (MinPctActiveDutyCycles != obj.MinPctActiveDutyCycles)
-                return false;
-            if (PredictedSegmentDecrement != obj.PredictedSegmentDecrement)
-                return false;
-            if (DutyCyclePeriod != obj.DutyCyclePeriod)
-                return false;
-            if (MaxBoost != obj.MaxBoost)
-                return false;
-
-            if (UpdatePeriod != obj.UpdatePeriod)
-                return false;
-            if (OverlapDutyCycles != null && this.OverlapDutyCycles != null)
-            {
-
-                if (!obj.OverlapDutyCycles.SequenceEqual(this.OverlapDutyCycles))
-                    return false;
-            }
-            if (ActiveDutyCycles != null && ActiveDutyCycles != null)
-            {
-
-                if (!obj.ActiveDutyCycles.SequenceEqual(ActiveDutyCycles))
-                    return false;
-            }
-            if (MinOverlapDutyCycles != null && MinOverlapDutyCycles != null)
-            {
-
-                if (!obj.MinOverlapDutyCycles.SequenceEqual(MinOverlapDutyCycles))
-                    return false;
-            }
-            if (MinActiveDutyCycles != null && MinActiveDutyCycles != null)
-            {
-
-                if (!obj.MinActiveDutyCycles.SequenceEqual(MinActiveDutyCycles))
-                    return false;
-            }
-            if (ColumnDimensions != null && ColumnDimensions != null)
-            {
-
-                if (!obj.ColumnDimensions.SequenceEqual(ColumnDimensions))
-                    return false;
-            }
-            if (CellsPerColumn != obj.CellsPerColumn)
-                return false;
-            if (InputDimensions != null && InputDimensions != null)
-            {
-
-                if (!obj.InputDimensions.SequenceEqual(InputDimensions))
-                    return false;
-            }
-            if (MaxNewSynapseCount != obj.MaxNewSynapseCount)
-                return false;
-            if (MaxSegmentsPerCell != obj.MaxSegmentsPerCell)
-                return false;
-            if (MaxSynapsesPerSegment != obj.MaxSynapsesPerSegment)
-                return false;
-            if (PermanenceIncrement != obj.PermanenceIncrement)
-                return false;
-            if (PermanenceDecrement != obj.PermanenceDecrement)
-                return false;
-            if (ActivationThreshold != obj.ActivationThreshold)
-                return false;
-            if (LearningRadius != obj.LearningRadius)
-                return false;
-            if (MinThreshold != obj.MinThreshold)
-                return false;
-            if (InitialPermanence != obj.InitialPermanence)
-                return false;
-            if (ConnectedPermanence != obj.ConnectedPermanence)
-                return false;
-            if (RandomGenSeed != obj.RandomGenSeed)
-                return false;
-            if (Name != obj.Name)
-                return false;
-            if (Random != null && obj.Random != null)
-            {
-                if (!obj.Random.Equals(Random))
-                    return false;
-            }
-
-            return true;
-
-        }
         #region Serialization
         public void Serialize(StreamWriter writer)
         {
-            HtmSerializer ser = new HtmSerializer();
+            HtmSerializer2 ser = new HtmSerializer2();
 
             ser.SerializeBegin(nameof(HtmConfig), writer);
 
             ser.SerializeValue(this.synPermActiveInc, writer);
             ser.SerializeValue(this.SynPermConnected, writer);
+
             //Spatial Pooler Variables
-            //ser.SerializeValue(this.InhibitionRadius, writer);
-            ser.SerializeValue(-1, writer);
+            ser.SerializeValue(this.InhibitionRadius, writer);
             ser.SerializeValue(this.NumInputs, writer);
             ser.SerializeValue(this.NumColumns, writer);
             ser.SerializeValue(this.PotentialRadius, writer);
             ser.SerializeValue(this.PotentialPct, writer);
             ser.SerializeValue(this.StimulusThreshold, writer);
-            ser.SerializeValue(this.SynPermBelowStimulusInc, writer);
+            ser.SerializeValue(this.SynPermBelowStimulusInc,writer);
             ser.SerializeValue(this.SynPermInactiveDec, writer);
             ser.SerializeValue(this.SynPermActiveInc, writer);
             ser.SerializeValue(this.SynPermConnected, writer);
@@ -635,18 +435,18 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.SynPermMin, writer);
             ser.SerializeValue(this.InitialSynapseConnsPct, writer);
             ser.SerializeValue(this.NumActiveColumnsPerInhArea, writer);
-            writer.WriteLine();
             ser.SerializeValue(this.MinPctOverlapDutyCycles, writer);
             ser.SerializeValue(this.MinPctActiveDutyCycles, writer);
             ser.SerializeValue(this.PredictedSegmentDecrement, writer);
             ser.SerializeValue(this.DutyCyclePeriod, writer);
             ser.SerializeValue(this.MaxBoost, writer);
-
+            ser.SerializeValue(this.IsBumpUpWeakColumnsDisabled, writer);
             ser.SerializeValue(this.UpdatePeriod, writer);
             ser.SerializeValue(this.OverlapDutyCycles, writer);
             ser.SerializeValue(this.ActiveDutyCycles, writer);
             ser.SerializeValue(this.MinOverlapDutyCycles, writer);
             ser.SerializeValue(this.MinActiveDutyCycles, writer);
+
             //TemporalMemoryVariables
             ser.SerializeValue(this.ColumnDimensions, writer);
             ser.SerializeValue(this.CellsPerColumn, writer);
@@ -656,376 +456,24 @@ namespace NeoCortexApi.Entities
             ser.SerializeValue(this.MaxSynapsesPerSegment, writer);
             ser.SerializeValue(this.PermanenceIncrement, writer);
             ser.SerializeValue(this.PermanenceDecrement, writer);
-            ser.SerializeValue(this.ActivationThreshold, writer);
+            ser.SerializeValue(this.ActivationThreshold,writer);
             ser.SerializeValue(this.LearningRadius, writer);
             ser.SerializeValue(this.MinThreshold, writer);
             ser.SerializeValue(this.InitialPermanence, writer);
             ser.SerializeValue(this.ConnectedPermanence, writer);
             ser.SerializeValue(this.RandomGenSeed, writer);
             ser.SerializeValue(this.Name, writer);
-            ser.SerializeValue(this.RandomGenSeed, writer);
-
-            //if (this.memory != null)
-            //{
-            //    this.memory.Serialize(writer);
-            //}
-            if (this.inputMatrix != null)
-            {
-                this.inputMatrix.Serialize(writer);
-            }
-            if (this.InputTopology != null)
-            {
-                this.InputTopology.Serialize(writer);
-            }
-            if (this.ColumnTopology != null)
-            {
-                this.ColumnTopology.Serialize(writer);
-            }
-            if (this.ColumnModuleTopology != null)
-            {
-                this.ColumnModuleTopology.Serialize(writer);
-            }
-
-            if (this.InputModuleTopology != null)
-            {
-                this.InputModuleTopology.Serialize(writer);
-            }
-            if (this.InputMatrix != null)
-            {
-                this.InputMatrix.Serialize(writer);
-            }
-            //if (this.Memory != null)
-            //{
-            //    this.Memory.Serialize(writer);
-            //}
 
             ser.SerializeEnd(nameof(HtmConfig), writer);
         }
-        public static HtmConfig Deserialize(StreamReader sr)
-        {
-            HtmConfig htmConfig = new HtmConfig();
-            HtmSerializer ser = new HtmSerializer();
-
-            while (sr.Peek() >= 0)
-            {
-                string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(HtmConfig)))
-                {
-                    continue;
-                }
-                else if (data == ser.ReadBegin(nameof(Topology)))
-                {
-                    htmConfig.InputTopology = Topology.Deserialize(sr);
-                    htmConfig.ColumnTopology = Topology.Deserialize(sr);
-                }
-                else if (data == ser.ReadBegin(nameof(HtmModuleTopology)))
-                {
-                    htmConfig.ColumnModuleTopology = HtmModuleTopology.Deserialize(sr);
-                    htmConfig.InputModuleTopology = HtmModuleTopology.Deserialize(sr);
-                }
-                else if (data == ser.ReadEnd(nameof(HtmConfig)))
-                {
-                    break;
-                }
-                else
-                {
-                    int count = data.Count(ch => ch == HtmSerializer.ParameterDelimiter);
-                    if (count == 20)
-                    {
-                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                        for (int i = 0; i < str.Length; i++)
-                        {
-                            switch (i)
-                            {
-                                case 0:
-                                    {
-                                        htmConfig.synPermActiveInc = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 1:
-                                    {
-                                        htmConfig.SynPermConnected = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 2:
-                                    {
-                                        // htmConfig.InhibitionRadius = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 3:
-                                    {
-                                        htmConfig.NumInputs = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 4:
-                                    {
-                                        htmConfig.NumColumns = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 5:
-                                    {
-                                        htmConfig.PotentialRadius = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 6:
-                                    {
-                                        htmConfig.PotentialPct = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 7:
-                                    {
-                                        htmConfig.StimulusThreshold = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 8:
-                                    {
-                                        htmConfig.SynPermBelowStimulusInc = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 9:
-                                    {
-                                        htmConfig.SynPermInactiveDec = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-
-                                case 10:
-                                    {
-                                        htmConfig.SynPermActiveInc = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 11:
-                                    {
-                                        htmConfig.SynPermConnected = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 12:
-                                    {
-                                        htmConfig.WrapAround = ser.ReadBoolValue(str[i]);
-                                        break;
-                                    }
-                                case 13:
-                                    {
-                                        htmConfig.GlobalInhibition = ser.ReadBoolValue(str[i]);
-                                        break;
-                                    }
-                                case 14:
-                                    {
-                                        htmConfig.LocalAreaDensity = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 15:
-                                    {
-                                        htmConfig.SynPermTrimThreshold = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 16:
-                                    {
-                                        htmConfig.SynPermMax = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 17:
-                                    {
-                                        htmConfig.SynPermMin = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 18:
-                                    {
-                                        htmConfig.InitialSynapseConnsPct = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 19:
-                                    {
-                                        htmConfig.NumActiveColumnsPerInhArea = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                        for (int i = 0; i < str.Length; i++)
-                        {
-                            switch (i)
-                            {
-                                case 0:
-                                    {
-                                        htmConfig.MinPctActiveDutyCycles = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 1:
-                                    {
-                                        htmConfig.MinPctActiveDutyCycles = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 2:
-                                    {
-                                        htmConfig.PredictedSegmentDecrement = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 3:
-                                    {
-                                        htmConfig.DutyCyclePeriod = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 4:
-                                    {
-                                        htmConfig.MaxBoost = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 5:
-                                    {
-                                        //htmConfig.IsBumpUpWeakColumnsDisabled = ser.ReadBoolValue(str[i]);
-                                        break;
-                                    }
-                                case 6:
-                                    {
-                                        htmConfig.UpdatePeriod = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 7:
-                                    {
-                                        htmConfig.OverlapDutyCycles = ser.ReadArrayDouble(str[i]);
-                                        break;
-                                    }
-                                case 8:
-                                    {
-                                        htmConfig.ActiveDutyCycles = ser.ReadArrayDouble(str[i]);
-                                        break;
-                                    }
-                                case 9:
-                                    {
-                                        htmConfig.MinOverlapDutyCycles = ser.ReadArrayDouble(str[i]);
-                                        break;
-                                    }
-
-                                case 10:
-                                    {
-                                        htmConfig.MinActiveDutyCycles = ser.ReadArrayDouble(str[i]);
-                                        break;
-                                    }
-
-                                case 11:
-                                    {
-                                        htmConfig.ColumnDimensions = ser.ReadArrayInt(str[i]);
-                                        break;
-                                    }
-                                case 12:
-                                    {
-                                        htmConfig.CellsPerColumn = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 13:
-                                    {
-                                        htmConfig.InputDimensions = ser.ReadArrayInt(str[i]);
-                                        break;
-                                    }
-                                case 14:
-                                    {
-                                        htmConfig.MaxNewSynapseCount = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-
-                                case 15:
-                                    {
-                                        htmConfig.MaxSegmentsPerCell = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 16:
-                                    {
-                                        htmConfig.MaxSynapsesPerSegment = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 17:
-                                    {
-                                        htmConfig.PermanenceIncrement = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 18:
-                                    {
-                                        htmConfig.PermanenceDecrement = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 19:
-                                    {
-                                        htmConfig.ActivationThreshold = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 20:
-                                    {
-                                        htmConfig.LearningRadius = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 21:
-                                    {
-                                        htmConfig.MinThreshold = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 22:
-                                    {
-                                        htmConfig.InitialPermanence = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-                                case 23:
-                                    {
-                                        htmConfig.ConnectedPermanence = ser.ReadDoubleValue(str[i]);
-                                        break;
-                                    }
-
-                                case 24:
-                                    {
-                                        htmConfig.RandomGenSeed = ser.ReadIntValue(str[i]);
-                                        break;
-                                    }
-                                case 25:
-                                    {
-                                        htmConfig.Name = ser.ReadStringValue(str[i]);
-                                        break;
-                                    }
-                                case 26:
-                                    {
-                                        htmConfig.Random = ser.ReadRandomValue(str[i]);
-                                        break;
-                                    }
-                                default:
-                                    { break; }
-
-                            }
-                        }
-
-                    }
-
-                }
-            }
-            return htmConfig;
-        }
-
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            var excludeMembers = new List<string>
-            {
-                nameof(HtmConfig.inputMatrix),
-                nameof(HtmConfig.synPermActiveInc),
-                nameof(HtmConfig.synPermConnected)
-            };
-            HtmSerializer.SerializeObject(obj, name, sw, excludeMembers);
-        }
-
-        public static object Deserialize<T>(StreamReader sr, string name)
-        {
-            var htmConfig = HtmSerializer.DeserializeObject<HtmConfig>(sr, name);
-            return htmConfig;
-        }
         #endregion
-
     }
 
     public class test
-
     {
         public test()
         {
-            HtmConfig htm = new HtmConfig(new int[] { 100 }, new int[] { 1024 });
+            HtmConfig htm = new HtmConfig(new int[] { 100}, new int[] { 1024 });
 
             Connections c = new Connections(htm);
 
@@ -1034,5 +482,3 @@ namespace NeoCortexApi.Entities
         }
     }
 }
-
-

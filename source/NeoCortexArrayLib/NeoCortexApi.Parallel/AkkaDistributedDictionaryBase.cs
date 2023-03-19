@@ -7,15 +7,23 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
+#pragma warning disable CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using NeoCortexApi.Entities;
+#pragma warning restore CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using System.Collections.Concurrent;
 using NeoCortexApi.Utility;
 using System.Threading;
+#pragma warning disable CS0234 // The type or namespace name 'Extensions' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?)
 using Microsoft.Extensions.Logging;
+#pragma warning restore CS0234 // The type or namespace name 'Extensions' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?)
 
 namespace NeoCortexApi.DistributedComputeLib
 {
+#pragma warning disable CS0246 // The type or namespace name 'IHtmDistCalculus' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0246 // The type or namespace name 'IDistributedDictionary<,>' could not be found (are you missing a using directive or an assembly reference?)
     public abstract class AkkaDistributedDictionaryBase<TKey, TValue> : IDistributedDictionary<TKey, TValue>, IHtmDistCalculus
+#pragma warning restore CS0246 // The type or namespace name 'IDistributedDictionary<,>' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning restore CS0246 // The type or namespace name 'IHtmDistCalculus' could not be found (are you missing a using directive or an assembly reference?)
     {
 
         // not used!
@@ -29,10 +37,13 @@ namespace NeoCortexApi.DistributedComputeLib
 
         private List<Placement<TKey>> m_ActorMap;
 
-        /// <summary>
+        
+#pragma warning disable CS1570 // XML comment has badly formed XML -- 'Missing equals sign between attribute and attribute value.'
+/// <summary>
         /// Maps from Actor partition identifier to actor index in <see cref="dictActors" list./>
         /// </summary>
         protected List<Placement<TKey>> ActorMap
+#pragma warning restore CS1570 // XML comment has badly formed XML -- 'Missing equals sign between attribute and attribute value.'
         {
             get
             {
@@ -59,14 +70,18 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <summary>
         /// Configuration used to initialize HTM actor.
         /// </summary>
+#pragma warning disable CS0246 // The type or namespace name 'HtmConfig' could not be found (are you missing a using directive or an assembly reference?)
         public HtmConfig HtmConfig { get; set; }
+#pragma warning restore CS0246 // The type or namespace name 'HtmConfig' could not be found (are you missing a using directive or an assembly reference?)
         #endregion
 
         /// <summary>
         /// Creates all required actors, which host partitions.
         /// </summary>
         /// <param name="config"></param>
+#pragma warning disable CS0246 // The type or namespace name 'ILogger' could not be found (are you missing a using directive or an assembly reference?)
         public AkkaDistributedDictionaryBase(object cfg, ILogger logger = null)
+#pragma warning restore CS0246 // The type or namespace name 'ILogger' could not be found (are you missing a using directive or an assembly reference?)
         {
             AkkaDistributedDictConfig config = (AkkaDistributedDictConfig)cfg;
             if (config == null)
@@ -143,7 +158,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
+#pragma warning disable CS0246 // The type or namespace name 'IActorRef' could not be found (are you missing a using directive or an assembly reference?)
         protected abstract IActorRef GetPartitionActorFromKey(TKey key);
+#pragma warning restore CS0246 // The type or namespace name 'IActorRef' could not be found (are you missing a using directive or an assembly reference?)
 
         /// <summary>
         /// Gets partitions (nodes) with assotiated indexes.
@@ -251,7 +268,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Adds/Updates batch of elements to remote nodes.
         /// </summary>
         /// <param name="keyValuePairs"></param>
+#pragma warning disable CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
         public void AddOrUpdate(ICollection<KeyPair> keyValuePairs)
+#pragma warning restore CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
         {
             ParallelOptions opts = new ParallelOptions
             {
@@ -307,7 +326,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// Adds/Updates batch of elements to remote nodes.
         /// </summary>
         /// <param name="keyValuePairs"></param>
+#pragma warning disable CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
         public void InitializeColumnPartitionsDist(ICollection<KeyPair> keyValuePairs)
+#pragma warning restore CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
         {
             ParallelOptions opts = new ParallelOptions
             {
@@ -407,7 +428,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// <param name="htmConfig"></param>
         /// <returns>List of average spans of all columns on this node in this partition.
         /// This list is agreggated by caller to estimate average span for all system.</returns>
+#pragma warning disable CS0246 // The type or namespace name 'HtmConfig' could not be found (are you missing a using directive or an assembly reference?)
         public List<double> ConnectAndConfigureInputsDist(HtmConfig htmConfig2)
+#pragma warning restore CS0246 // The type or namespace name 'HtmConfig' could not be found (are you missing a using directive or an assembly reference?)
         {
             // List of results.
             ConcurrentDictionary<int, double> aggLst = new ConcurrentDictionary<int, double>();
@@ -532,13 +555,23 @@ namespace NeoCortexApi.DistributedComputeLib
         /// </summary>
         /// <param name="keyValuePairs">Keyvalue pairs.</param>
         /// <returns></returns>
+#pragma warning disable CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0246 // The type or namespace name 'IActorRef' could not be found (are you missing a using directive or an assembly reference?)
         public abstract Dictionary<IActorRef, List<KeyPair>> GetPartitionsForKeyset(ICollection<KeyPair> keyValuePairs);
+#pragma warning restore CS0246 // The type or namespace name 'IActorRef' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning restore CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning restore CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
 
         /// <summary>
         /// Gets partitions grouped by nodes.
         /// </summary>
         /// <returns></returns>
+#pragma warning disable CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0246 // The type or namespace name 'IActorRef' could not be found (are you missing a using directive or an assembly reference?)
         public abstract Dictionary<IActorRef, List<KeyPair>> GetPartitionsByNode();
+#pragma warning restore CS0246 // The type or namespace name 'IActorRef' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning restore CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
 
         /// <summary>
         /// Ads the value with specified keypair.
@@ -669,7 +702,9 @@ namespace NeoCortexApi.DistributedComputeLib
 
 
 
+#pragma warning disable CS0540 // 'AkkaDistributedDictionaryBase<TKey, TValue>.IEnumerable.GetEnumerator()': containing type does not implement interface 'IEnumerable'
         IEnumerator IEnumerable.GetEnumerator()
+#pragma warning restore CS0540 // 'AkkaDistributedDictionaryBase<TKey, TValue>.IEnumerable.GetEnumerator()': containing type does not implement interface 'IEnumerable'
         {
             return this;
         }
@@ -688,7 +723,9 @@ namespace NeoCortexApi.DistributedComputeLib
 
         public object Current => this.m_DictList[this.currentDictIndex].ElementAt(currentIndex);
 
+#pragma warning disable CS0540 // 'AkkaDistributedDictionaryBase<TKey, TValue>.IEnumerator<KeyValuePair<TKey, TValue>>.Current': containing type does not implement interface 'IEnumerator<KeyValuePair<TKey, TValue>>'
         KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => this.m_DictList[this.currentDictIndex].ElementAt(currentIndex);
+#pragma warning restore CS0540 // 'AkkaDistributedDictionaryBase<TKey, TValue>.IEnumerator<KeyValuePair<TKey, TValue>>.Current': containing type does not implement interface 'IEnumerator<KeyValuePair<TKey, TValue>>'
 
         /// <summary>
         /// Gets number of physical nodes in cluster.
@@ -750,7 +787,9 @@ namespace NeoCortexApi.DistributedComputeLib
         /// should sot keys </param>
         /// <returns></returns>
         /// TODO Unreachable code ??
+#pragma warning disable CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
         public ICollection<KeyPair> GetObjects(TKey[] keys)
+#pragma warning restore CS0246 // The type or namespace name 'KeyPair' could not be found (are you missing a using directive or an assembly reference?)
         {
             if (keys == null || keys.Length == 0)
                 throw new ArgumentException("Argument 'keys' must be specified!");

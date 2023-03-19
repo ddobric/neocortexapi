@@ -23,7 +23,7 @@ The ability to recognize and predict temporal sequences of sensory inputs is vit
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_CellsPerColumnExperiment_Paper.pdf)
 
-[Check out implementation here](../NeoCortexApi.Experiments/CortexNetworkTests/CellsPerColumnExperimentTest.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests/CellsPerColumnExperimentTest.cs)
 
 #### **HTM Sparsity**
 
@@ -31,7 +31,7 @@ It is necessary for survival in natural environment to be able to identify and p
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_HtmSparsityExperiments_Paper.pdf)
 
-[Check out implementation here](../NeoCortexApi.Experiments/CortexNetworkTests/HtmSparsityTest.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests/HtmSparsityTest.cs)
 
 #### **Parameter Change Experiment**
 
@@ -39,7 +39,7 @@ Hierarchical Temporal Memory (HTM) is based on the supposition that the world ha
 
 [Download student paper here](./Experiments/ML-19-20_20-5.4_ParameterChangeExperiment_Paper.pdf)
 
-[Check out implementation here](../NeoCortexApi.Experiments/CortexNetworkTests/InputBitsExperimentTest.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests/InputBitsExperimentTest.cs)
 
 ## Performance Spatial Pooler between Global and Local Inhibition
 
@@ -59,7 +59,7 @@ Each region in the cortex receives input through millions of axons from sensory 
 
 [Download student paper here](./Experiments/ML-19-20_20-5.7_PerformanceSpatialPooler-between-Global-and-Local-Inhibition.pdf)
 
-[Check out implementation here](../NeoCortexApi.Experiments/SpatialPoolerInhibitionExperimentalTests.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/SpatialPoolerInhibitionExperimentalTests.cs)
 
 ## Investigation of Hierarchical Temporal Memory Spatial Pooler's Noise Robustness against Gaussian noise
 
@@ -79,7 +79,7 @@ The Thousand Brains Theory of Intelligence is a new and rising approach to under
 
 [Download student paper here](./Experiments/ML-19-20_20-5.12_SpatialPooler_NoiseRobustness.pdf)
 
-[Check out implementation here](../NeoCortexApi.Experiments/CortexNetworkTests/GaussianNoiseExperiment.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/CortexNetworkTests\GoussianNoiseExperiment.cs)
 
 ## Validate Memorizing capabilities of SpatialPooler
 
@@ -100,7 +100,7 @@ The main objective of the project is to describe memorizing capabilites as the a
 
 [Download student paper here](./Experiments/ML-19-20_20-5.10_ValdatingMemorizingCapabilitesOfSpatialPooler.pdf)
 
-[Check out implementation here](../NeoCortexApi.Experiments/SpatialPoolerMemorizingExperiment84.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/SpatialPoolerMemorizingExperiment84.cs)
 
 ## ML19/20-5.2. Improving of implementation of the Scalar encoder in HTM
 
@@ -137,7 +137,7 @@ The image classification is a classical problem of image processing; machine lea
 
 [Download student paper here](./Experiments/ML-19-20_20-5.11_SchemaImageClassification.pdf)
 
-[Check out implementation here](../NeoCortexApi.Experiments/SchemaImageClassificationExperiment.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/SchemaImageClassificationExperiment.cs)
 
 ## Sequence Learning - Music Notes Experiment
 
@@ -152,7 +152,7 @@ To demonstrate learning of sequences, I have originally developed an experiment 
 Every music note is represented as a scalar value, which appear in the sequence of notes. For example, notes C, D, E, F, G and H can be associated with the scalar values: C-0, D-1, E-2, F-3, G-4, H-5. By following that rule notes of some has been taken. In the very first experiment the song _twinkle, twinkle little star_ was used in the experiment: [here] (https://www.bethsnotesplus.com/2013/08/twinkle-twinkle-little-star.html).
 Over time, the experiment has grown, but we have kept the original name '_Music Notes Experiment_'. In this experiment various outputs are generated, which trace the state of active columns and active cells during the learning process. Today, we use this experiment to learn how HTM learns sequences.
 
-[Check out implementation here](../NeoCortexApi.Experiments/SequenceLearningExperiments/MuscNotesExperiment.cs)
+[Check out implementation here](../../NeoCortexApi/UnitTestsProject/SequenceLearningExperiments/MuscNotesExperiment.cs)
 
 ## On the Relationship Between Input Sparsity and Noise Robustness in SP (Paper)
 
@@ -189,73 +189,3 @@ The Hierarchical Temporal Memory Cortical Learning Algorithm (HTM CLA) is a theo
 
 [Download from IJAIA](https://aircconline.com/abstract/ijaia/v11n4/11420ijaia07.html)  
 [Download from AIS 2020 publishing site](https://aircconline.com/csit/abstract/v10n6/csit100606.html)
-
-## Improved Spatial Pooler with Homeostatic Plasticity Controller (Best Industrial Paper Award)
-
-### Author
-
-Damir Dobric, Andreas Pech, Bogdan Ghita, Thomas Wennekers
-Published 2012 at [ICPRAM Vienna, Austria](https://www.insticc.org/node/technicalprogram/icpram/2021/)
-
-### Abstract
-
-Hierarchical Temporal Memory (HTM) - Spatial Pooler (SP) is a Learning Algorithm for learning of spatial
-patterns inspired by the neo-cortex. It is designed to learn the pattern in a few iteration steps and to generate
-the Sparse Distributed Representation (SDR) of the input. It encodes spatially similar inputs into the same or
-similar SDRs memorized as a population of active neurons organized in groups called micro-columns.
-Findings in this research show that produced SDRs can be forgotten during the training progress, which causes
-the SP to learn the same pattern again and converts into the new SDR. This work shows that instable learning
-behaviour of the SP is caused by the internal boosting algorithm inspired by the homeostatic plasticity
-mechanism. Previous findings in neurosciences show that this mechanism is only active during the
-development of new-born mammals and later deactivated or shifted from cortical layer L4, where the SP is
-supposed to be active. The same mechanism was used in this work. The SP algorithm was extended with the
-new homeostatic plasticity component that controls the boosting and deactivates it after entering the stable
-state. Results show that learned SDRs remain stable during the lifetime of the Spatial Pooler.
-
-[Download Paper](https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ICPRAM_2021_76_CR.pdf)
-
-[Presentation](https://dobricfamily-my.sharepoint.com/:p:/g/personal/damir_dobric_de/ETLj1GSdvRFElIV2a-dKS5IBXsKP4-oNSVc60Jh31K6nQw?e=mo7qpe)
-
-[See paper on the conference site](https://www.insticc.org/node/TechnicalProgram/icpram/2021/presentationDetails/103142)
-
-## Implementation of HTM FeedForward network
-
-### Author
-
-Md Mukit Khan,
-S M Mehedi Hasan
-
-### Project reference
-
-ML20/21 - 5.2
-Issue 70
-
-### Abstract
-
-HTM Feedforward network is a multilayer based artificial neural orchestrate which is a biologically propelled show of a single cortical column of the NeoCortex, is a set of six layers of the portion of mammalian cerebral cortex wherever the higher cognitive functioning is acknowledged to originate from. Previous findings in neurosciences show that there is the presence of two sets of Feedforward network in the single cortical column of the human brain among them layer L4-L2 Feedforward network plays the active role to learn new things from the environment. Within the L4-L2 Feedforward network arrange, the lower layer L4 takes the sensory data directly as input from the environment and passes the processed data to layer L2 to perform cognitive predicting & learning functions in the brain. In this paper, the idea to implement the layer L4-L2 based HTM Feed Forward network is demonstrated utilizing the most recent adaptation of NeocortexApi package, which is an open-source solution of the Hierarchical Temporal Memory Cortical Learning Algorithm. Besides, it is also examined how the implemented L4-L2 Feedforward network arrangement behaves at upper layer L2 in case of sequence learning and predicting using HTM Classifier. Aside from that, NuMenta's discoveries and guidelines are investigated as well. The results show that the proposed L4-L2 based HTM Feedforward network with NeocortexApi can learn and predict sequential data patterns with precision in the upper layer region.
-
-[Download student paper here](./Experiments/ML-20-21_20-5.2_HTM%20FeedForward_Network.pdf)
-
-[Check out implementation here](../NeoCortexApi.Experiments/FeedForwardExperiment_L4L2.cs)
-
-
-#### **Investigation of Hierarchical Temporal Memory Multiple Sequences Learning**
-
-The Hierarchical Temporal Memory (HTM) - is an AI framework, which has some applications in practice. This paper focuses on one of its applications which is multiple sequence learning and how to optimize it. The HTM model consists of an Encoder, a Spatial Pooler, and a Temporal Memory. Of the three mentioned components, Temporal Memory will be the focus of this paper as it is where the optimization takes place. For sequence learning, the Temporal Memory is responsible for creating a connection between each element in the sequence. This allows the HTM to predict what the next input element will likely be given an input element. Experiments are set up to test if it is beneficial to keep the connection between the last element of the sequence and the first element, or if severing or resetting this connection is preferable in terms of learning performance. The results gathered from the experiment show a faster learning rate in terms of the number of cycles needed with the removal of this connection.
-
-[Download student paper here] (./Experiments/IndividualProject_Investigation_of_Hierarchical_Temporal_Memory_Multiple_Sequences_Learning.pdf)
-
-[Check out implementation here](../source/Samples/NeoCortexApiSample/MultisequenceLearning.cs)
-
-## On the Importance of the Newborn Stage When Learning Patterns with the Spatial Pooler
-
-### Author
-
-Damir Dobric, Andreas Pech, Bogdan Ghita, Thomas Wennekers
-
-### Abstract
-
-Hierarchical Temporal Memory (HTM-CLA)—Spatial Pooler (SP) is a Cortical Learning Algorithm for learning inspired by the neocortex. It is designed to learn the spatial pattern by generating the Sparse Distributed Representation code (SDR) of the input. It encodes the set of active input neurons as SDR defined by the set of active neurons organized in groups called mini-columns. This paper provides additional findings extending the previous work, that demonstrates how and why the Spatial Pooler forgets learned SDRs in the training progress. The previous work introduced the newborn stage of the algorithm, which takes a control of the boosting of mini-columns by deactivating the Homeostatic Plasticity mechanism inside of the SP in layer 4. The newborn stage was inspired by findings in neurosciences that show that this plasticity mechanism is only active during the development of newborn mammals and later deactivated or shifted from cortical layer L4, where the SP is supposed to be active. The extended SP showed the stable learned state of the model. In this work, the plasticity was deactivated by disabling the homeostatic excitation of synaptic connections between input neurons and slightly inactive mini-columns. The final solution that includes disabling of boosting of inactive mini-columns and disabling excitation of synaptic connections after exiting the introduced newborn stage, shows that learned SDRs remain stable during the lifetime of the Spatial Pooler.
-
-[See paper on the publisher site](https://doi.org/10.1007/s42979-022-01066-4)
-

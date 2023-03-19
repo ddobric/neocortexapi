@@ -28,6 +28,10 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// Defines the NoOfBits. Works same as N. It is used to change Type of a variable
         /// </summary>
+
+
+
+
         /// <param name="encoderSettings">The encoderSettings<see cref="Dictionary{string, object}"/></param>
         public GeoSpatialEncoderExperimental(Dictionary<string, object> encoderSettings)
         {
@@ -67,7 +71,7 @@ namespace NeoCortexApi.Encoders
             // each case here.
             InitEncoder(W, MinVal, MaxVal, N, Radius, Resolution);
 
-            //nInternal represents the output _area excluding the possible padding on each side
+            //nInternal represents the output area excluding the possible padding on each side
             NInternal = N - 2 * Padding;
 
             if (Name == null)

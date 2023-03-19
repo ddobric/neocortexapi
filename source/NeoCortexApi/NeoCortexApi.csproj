@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
-    <Version>1.1.4</Version>
+    <Version>1.0.9</Version>
     <Authors>Damir Dobric</Authors>
     <Company>daenet GmbH</Company>
     <Product>Hierarchical Temporal Framework in C#</Product>
@@ -21,37 +20,19 @@
 	<PackageIcon>NeoCortexAPI.png</PackageIcon>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	  <PackageReleaseNotes>Added method GetPredictedInputValues to the HtmClassifier</PackageReleaseNotes>
-	  <EnableNETAnalyzers>True</EnableNETAnalyzers>
-	  <AnalysisLevel>latest</AnalysisLevel>
-	  <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>UnitTestsProject</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <LangVersion>8.0</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <DefineConstants>TRACE;USE_AKKA</DefineConstants>
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-	  <LangVersion>8.0</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Anomaly.cs" />
     <Compile Remove="Classification.cs" />
-    <Compile Remove="DistributedCompute\HtmSparseIntDictionary.cs" />
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="HtmSerializer2.cs" />
     <Compile Remove="Network\NearestClassifier.cs" />
@@ -62,10 +43,8 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
-    <None Include="DistributedCompute\HtmSparseIntDictionary.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="HtmSerializer2.cs" />
     <None Include="NeoCortexApi\NeoCortexAPI.png">
@@ -77,10 +56,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
    
   </ItemGroup>
 
   <ItemGroup>
+	  <ProjectReference Include="..\DistributedComputeLib\DistributedComputeLib.csproj">
+		  <PrivateAssets>all</PrivateAssets>
+	  </ProjectReference>
 	  <ProjectReference Include="..\NeoCortexArrayLib\NeoCortexArrayLib.csproj">
 		  <PrivateAssets>all</PrivateAssets>
 	  </ProjectReference>

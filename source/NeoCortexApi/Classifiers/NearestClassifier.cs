@@ -1,9 +1,14 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using NeoCortexApi.Encoders;
+using NeoCortexApi.Entities;
+using NeoCortexApi.Utility;
 
 namespace NeoCortexApi.Classifiers
 {
@@ -111,30 +116,5 @@ namespace NeoCortexApi.Classifiers
             return null;
         }
 
-        public bool Equals(IHtmModule other)
-        {
-            return this.Equals((object)other);
-        }
-
-        public override bool Equals(object obj)
-        {
-            var classifier = obj as NearestClassifier<TIN, TOUT>;
-            if (classifier == null)
-                return false;
-            return this.Equals(classifier);
-        }
-
-        public bool Equals(NearestClassifier<TIN, TOUT> classifier)
-        {
-            foreach (var item in this.activeMap.Keys)
-            {
-                if (classifier.activeMap.TryGetValue(item, out int[] value))
-                {
-                    if (!this.activeMap[item].Equals(value))
-                        return false;
-                }
-            }
-            return true;
-        }
     }
 }

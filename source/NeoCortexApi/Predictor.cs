@@ -16,7 +16,9 @@ namespace NeoCortexApi
     /// For example, assume there ar two sequences: ABCD and ABGHI. By presenting the element B, the predictor is not sure if the next element is C or D. 
     /// When presenting after B the element C, the predictor knows that the next element must be C.
     /// </summary>
+#pragma warning disable CS0246 // The type or namespace name 'ISerializable' could not be found (are you missing a using directive or an assembly reference?)
     public class Predictor : ISerializable
+#pragma warning restore CS0246 // The type or namespace name 'ISerializable' could not be found (are you missing a using directive or an assembly reference?)
     {
         private Connections connections { get; set; }
 
@@ -53,7 +55,9 @@ namespace NeoCortexApi
         /// </summary>
         /// <param name="input">The element that will cause the next expected element.</param>
         /// <returns>The list of expected (predicting) elements.</returns>
+#pragma warning disable CS0246 // The type or namespace name 'ClassifierResult<>' could not be found (are you missing a using directive or an assembly reference?)
         public List<ClassifierResult<string>> Predict(double input)
+#pragma warning restore CS0246 // The type or namespace name 'ClassifierResult<>' could not be found (are you missing a using directive or an assembly reference?)
         {
             var lyrOut = this.layer.Compute(input, false) as ComputeCycle;
 

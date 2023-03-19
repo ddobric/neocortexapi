@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace NeoCortexApi.Classifiers
 {
@@ -28,11 +30,6 @@ namespace NeoCortexApi.Classifiers
                 }
             }
             return (TIN)charOutput;
-        }
-
-        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
-        {
-            throw new System.NotImplementedException();
         }
 
         //private Dictionary<TIN, int[]> activeMap = new Dictionary<TIN, int[]>();
@@ -99,11 +96,6 @@ namespace NeoCortexApi.Classifiers
                     m_ActiveMap[input] = GetUnionArr(cellAsInt, m_ActiveMap[input]);
                 }
             }
-        }
-
-        public void Learn(TIN input, Cell[] output)
-        {
-            throw new System.NotImplementedException();
         }
 
         private int[] GetUnionArr(int[] prevCells, int[] currCells)

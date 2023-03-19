@@ -1,9 +1,15 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+#pragma warning disable CS0246 // The type or namespace name 'Akka' could not be found (are you missing a using directive or an assembly reference?)
 using Akka.Actor;
+#pragma warning restore CS0246 // The type or namespace name 'Akka' could not be found (are you missing a using directive or an assembly reference?)
+#pragma warning disable CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using NeoCortexApi.Entities;
+#pragma warning restore CS0234 // The type or namespace name 'Entities' does not exist in the namespace 'NeoCortexApi' (are you missing an assembly reference?)
 using NeoCortexApi.Utility;
+#pragma warning disable CS0246 // The type or namespace name 'Newtonsoft' could not be found (are you missing a using directive or an assembly reference?)
 using Newtonsoft.Json;
+#pragma warning restore CS0246 // The type or namespace name 'Newtonsoft' could not be found (are you missing a using directive or an assembly reference?)
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,13 +22,17 @@ namespace NeoCortexApi.DistributedComputeLib
 {
 
 
+#pragma warning disable CS0246 // The type or namespace name 'ReceiveActor' could not be found (are you missing a using directive or an assembly reference?)
     public class DictNodeActor : ReceiveActor
+#pragma warning restore CS0246 // The type or namespace name 'ReceiveActor' could not be found (are you missing a using directive or an assembly reference?)
     {
         private int m_PartitionKey;
 
         private Dictionary<object, object> m_Dict = new Dictionary<object, object>();
 
+#pragma warning disable CS0246 // The type or namespace name 'HtmConfig' could not be found (are you missing a using directive or an assembly reference?)
         private HtmConfig m_Config;
+#pragma warning restore CS0246 // The type or namespace name 'HtmConfig' could not be found (are you missing a using directive or an assembly reference?)
 
         protected override void Unhandled(object msg)
         {
@@ -325,7 +335,9 @@ namespace NeoCortexApi.DistributedComputeLib
 
         }
 
+#pragma warning disable CS0246 // The type or namespace name 'IActorRef' could not be found (are you missing a using directive or an assembly reference?)
         private void Log(object msg, IActorRef aRef, string txt)
+#pragma warning restore CS0246 // The type or namespace name 'IActorRef' could not be found (are you missing a using directive or an assembly reference?)
         {
             Console.WriteLine($"{DateTime.UtcNow} - {aRef.Path.Elements.Last()} - '{msg.GetType().Name}'. {txt}");
 

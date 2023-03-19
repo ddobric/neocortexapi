@@ -4,8 +4,9 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
+using System.Diagnostics;
 
 namespace NeoCortexApi
 {
@@ -45,11 +46,11 @@ namespace NeoCortexApi
             return retVal;
         }
 
-
+      
         /// <summary>
-        /// Maps a column to its input bits. This method encapsulates the topology of the region. It takes the index of the column as an argument and calculates 
-        /// indexes of the input vector that represent column's potential pool. The return value is a list containing the indices of 
-        /// connected input bits. The current implementation of the base class only supports a 1 dimensional topology of columns with a 1 dimensional topology of inputs. 
+        /// Maps a column to its input bits. This method encapsulates the topology of the region. It takes the index of the column as an argument and determines 
+        /// what are the indices of the input vector that are located within the column's potential pool. The return value is a list containing the indices of 
+        /// the input bits. The current implementation of the base class only supports a 1 dimensional topology of columns with a 1 dimensional topology of inputs. 
         /// To extend this class to support 2-D topology you will need to override this method. Examples of the expected output of this method:
         /// <list type="bullet">
         ///     <item>
@@ -60,8 +61,7 @@ namespace NeoCortexApi
         ///     If the topology is one dimensional, and the potentialRadius is 5, this method will return an array containing 5 consecutive values centered on 
         ///     the index of the column (wrapping around if necessary).
         ///     </item>
-        ///     <item>
-        ///     If the topology is two dimensional (not implemented), and the potentialRadius is 5, the method should return an array containing 25 '1's, where 
+        ///     <item>If the topology is two dimensional (not implemented), and the potentialRadius is 5, the method should return an array containing 25 '1's, where 
         ///     the exact indices are to be determined by the mapping from 1-D index to 2-D position.
         ///     </item>
         /// </list>
@@ -99,7 +99,7 @@ namespace NeoCortexApi
             return sb.ToString();
         }
 
-
+      
         /// <summary>
         /// Uniform Column Mapping <br></br>
         /// Maps a column to its respective input index, keeping to the topology of the region. It takes the index of the column as an argument and determines 
@@ -268,7 +268,7 @@ namespace NeoCortexApi
             return baseNum;
         }
 
-
+              
         /// <summary>
         /// Gets a neighborhood of inputs. Simply calls topology.wrappingNeighborhood or topology.neighborhood. A subclass can insert different topology behavior by overriding this method.
         /// </summary>
@@ -319,7 +319,7 @@ namespace NeoCortexApi
             return perm;
         }
 
-
+      
         /// <summary>
         /// Returns a randomly generated permanence value for a synapse that is initialized in a connected state. The basic idea here is to initialize
         /// permanence values very close to <c>synPermConnected</c> so that a small number of learning steps could make it disconnected or connected.
@@ -380,32 +380,21 @@ namespace NeoCortexApi
 
             int[] maxCoord = new int[htmConfig.InputModuleTopology.Dimensions.Length];
             int[] minCoord = new int[maxCoord.Length];
-
             ArrayUtils.FillArray(maxCoord, -1);
             ArrayUtils.FillArray(minCoord, ArrayUtils.Max(htmConfig.InputModuleTopology.Dimensions));
 
             //
-            // Traverse all connected input neurons.
+            // It takes all connected synapses
             for (int i = 0; i < connected.Length; i++)
             {
-                var coordinates = AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
-                  htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]);
+                maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
 
-                maxCoord = ArrayUtils.MaxBetween(maxCoord, coordinates);
-
-                minCoord = ArrayUtils.MinBetween(minCoord, coordinates);
-
-
-                //maxCoord = ArrayUtils.MaxBetween(maxCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
-                //   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
-
-                //minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
-                //   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
+                minCoord = ArrayUtils.MinBetween(minCoord, AbstractFlatMatrix.ComputeCoordinates(htmConfig.InputModuleTopology.Dimensions.Length,
+                   htmConfig.InputModuleTopology.DimensionMultiplies, htmConfig.InputModuleTopology.IsMajorOrdering, connected[i]));
             }
 
-            var spans = ArrayUtils.Subtract(maxCoord, minCoord);
-
-            return ArrayUtils.Average(ArrayUtils.Add(spans, 1));
+            return ArrayUtils.Average(ArrayUtils.Add(ArrayUtils.Subtract(maxCoord, minCoord), 1));
         }
 
 
@@ -416,175 +405,73 @@ namespace NeoCortexApi
         /// inhibition phase, columns without such minimal number of connections, even
         /// if all the input bits they are connected to turn on, have no chance of
         /// obtaining the minimum threshold. For such columns, the permanence values
-        /// are increased until the minimum number of connections are formed.        
+        /// are increased until the minimum number of connections are formed.        /// 
         /// </summary>
         /// <param name="htmConfig"></param>
-        /// <param name="permanences">An array of permanence values for a column. The array is "dense", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
-        /// <param name="potentialIndexes">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
-        public static void BoostProximalSegment(HtmConfig htmConfig, double[] permanences, int[] potentialIndexes)
+        /// <param name="perm"></param>
+        /// <param name="maskPotential"></param>
+        public static void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm, int[] maskPotential)
         {
-            // TODO. Consider moving this condition to the initialization of the SP.
-            if (potentialIndexes.Length < htmConfig.StimulusThreshold)
+            if (maskPotential.Length < htmConfig.StimulusThreshold)
             {
                 throw new ArgumentException("StimulusThreshold as number of required connected synapses cannot be greather than number of neurons in receptive field.");
             }
 
-            ArrayUtils.EnsureBetweenMinAndMax(permanences, htmConfig.SynPermMin, htmConfig.SynPermMax);
-
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
             while (true)
             {
-                // Gets number of synapses with permanence value grather than 'SynPermConnected' = Connected Synapses.
-                int numConnected = ArrayUtils.GreaterThanAtIndex(htmConfig.SynPermConnected, permanences, potentialIndexes);
+                // Gets number of synapses with permanence value grather than 'PermConnected'.
+                int numConnected = ArrayUtils.ValueGreaterThanCountAtIndex(htmConfig.SynPermConnected, perm, maskPotential);
 
-                // If enough synapses are connected, all ok.
+                // If enough synapces are connected, all ok.
                 if (numConnected >= htmConfig.StimulusThreshold)
                     return;
 
                 // If number of connected synapses is below threshold, 
                 // then permanences of all synapses will be incremented (raised) until column is connected.
-                ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, permanences, potentialIndexes);
+                ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm, maskPotential);
             }
         }
 
-
-        /// <summary>
-        /// Traverses all synapses and incremments their permanence values until the number of connected synapses 
-        /// is greather than StimulusThreshold.
-        /// </summary>
-        /// <param name="htmConfig"></param>
-        /// <param name="perm">Permanence values.</param>
-        public static void RaisePermanenceToThreshold(HtmConfig htmConfig, double[] perm)
+        public static void RaisePermanenceToThresholdSparse(HtmConfig htmConfig, double[] perm)
         {
-            ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
-
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
             while (true)
             {
                 int numConnected = ArrayUtils.ValueGreaterCount(htmConfig.SynPermConnected, perm);
-
-                if (numConnected >= htmConfig.StimulusThreshold) 
-                    return;
-
+                if (numConnected >= htmConfig.StimulusThreshold) return;
                 ArrayUtils.RaiseValuesBy(htmConfig.SynPermBelowStimulusInc, perm);
             }
         }
-
+      
         /// <summary>
-        /// This method updates the permanences with a column's new permanence values. 
-        /// It is in charge of implementing 'clipping' - ensuring that the permanence values are always between 0
-        /// and 1 - and 'trimming' - enforcing sparseness by zeroing out
-        /// all permanence values below 'synPermTrimThreshold'.
+        /// This method updates the permanence matrix with a column's new permanence values. The column is identified by its index, which reflects the row in
+        /// the matrix, and the permanence is given in 'sparse' form, i.e. an array whose members are associated with specific indexes. It is in charge of 
+        /// implementing 'clipping' - ensuring that the permanence values are always between 0 and 1 - and 'trimming' - enforcing sparseness by zeroing out
+        /// all permanence values below 'synPermTrimThreshold'. It also maintains the consistency between 'permanences' (the matrix storing the permanence values), 
+        /// 'connectedSynapses', (the matrix storing the bits each column is connected to), and 'connectedCounts' (an array storing the number of input bits each 
+        /// column is connected to). Every method wishing to modify the permanence matrix should do so through this method.
         /// </summary>
         /// <param name="htmConfig">the configuration used in <see cref="Connections"/>.</param>
         /// <param name="perm">An array of permanence values for a column. The array is "dense", i.e. it contains an entry for each input bit, even if the permanence value is 0.</param>
-        /// <param name="column">The column to be updated.</param>
-        /// <param name="potentialIndexes">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
+        /// <param name="column">The column in the permanence, potential and connectivity matrices.</param>
+        /// <param name="maskPotential">The indexes of inputs in the specified <see cref="Column"/>'s pool.</param>
         /// <param name="raisePerm">a boolean value indicating whether the permanence values</param>
-        public static void UpdatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] potentialIndexes, bool raisePerm)
+        public static void UpdatePermanencesForColumn(HtmConfig htmConfig, double[] perm, Column column, int[] maskPotential, bool raisePerm)
         {
             if (raisePerm)
             {
                 // During every learning cycle, this method ensures that every column 
-                // has enough connections (perm > SynPermConnected) to the iput space.
-                BoostProximalSegment(htmConfig, perm, potentialIndexes);
+                // has enough connections ('SynPermConnected') to iput space.
+                RaisePermanenceToThreshold(htmConfig, perm, maskPotential);
             }
 
-            // Here we set all permanences to 0 if the permanence value is less than SynPermTrimThreshold.
+            // Here we set all permanences to 0 
             ArrayUtils.LessOrEqualXThanSetToY(perm, htmConfig.SynPermTrimThreshold, 0);
 
-            ArrayUtils.EnsureBetweenMinAndMax(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
+            ArrayUtils.Clip(perm, htmConfig.SynPermMin, htmConfig.SynPermMax);
 
             column.SetPermanences(htmConfig, perm);
-        }
-
-        /// <summary>
-        /// Returns the <see cref="Cell"/> with the least number of <see cref="Segment"/>s.
-        /// </summary>
-        /// <param name="random"></param>
-        /// <param name="cells"></param>
-        /// <returns></returns>
-        public static Cell GetLeastUsedCell(ICollection<Cell> cells, Random random)
-        {
-            List<Cell> leastUsedCells = new List<Cell>();
-            int minNumSegments = Integer.MaxValue;
-
-            foreach (var cell in cells)
-            {
-                //DD
-                //int numSegments = cell.GetSegments(c).Count;
-                int numSegments = cell.DistalDendrites.Count;
-                //int numSegments = cell.Segments.Count;
-
-                if (numSegments < minNumSegments)
-                {
-                    minNumSegments = numSegments;
-                    leastUsedCells.Clear();
-                }
-
-                if (numSegments == minNumSegments)
-                {
-                    leastUsedCells.Add(cell);
-                }
-            }
-
-            int index = random.Next(leastUsedCells.Count);
-            leastUsedCells.Sort();
-            return leastUsedCells[index];
-        }
-
-
-
-        /// <summary>
-        /// Gets the segment with maximal potential from all segments in the last cycle. Segment's potential is measured by number of potential synapses.
-        /// </summary>
-        /// <param name="matchingSegments"></param>
-        /// <returns></returns>
-        public static Segment GetSegmentwithHighesPotential(
-            IList<Segment> matchingSegments, 
-            ICollection<Cell> prevActiveCells,
-             Dictionary<int, int> potentialSynapses)
-        {
-            Segment maxSeg = matchingSegments[0];
-
-            int indxOfLastHighestSegment = -1;
-
-            for (int i = 0; i < matchingSegments.Count - 1; i++)
-            {
-                var potSynsPlus1 = potentialSynapses[matchingSegments[i + 1].SegmentIndex];
-
-                if (potSynsPlus1 > potentialSynapses[matchingSegments[i].SegmentIndex])
-                {
-                    if (matchingSegments[i + 1].SegmentIndex != indxOfLastHighestSegment)
-                    {
-                        maxSeg = matchingSegments[i + 1];
-                        indxOfLastHighestSegment = matchingSegments[i + 1].SegmentIndex;
-                    }
-                }
-            }
-            return maxSeg;
-        }
-
-
-        /// <summary>
-        /// <summary>
-        /// Gets the segment with maximal potential from all segments in the last cycle. 
-        /// Segment's potential is measured by number of potential synapses.
-        /// </summary>
-        /// <param name="matchingSegments"></param>
-        /// <returns>The segment with mot synapses.</returns>
-        public static Segment GetSegmentWithHighesPotential(IList<Segment> matchingSegments)
-        {
-            if (matchingSegments.Count == 0)
-                return null;
-
-            Segment maxSeg = matchingSegments[0];
-
-            for (int i = 1; i < matchingSegments.Count; i++)
-            {
-                if (matchingSegments[i].Synapses.Count > maxSeg.Synapses.Count)
-                    maxSeg = matchingSegments[i];
-            }
-
-            return maxSeg;
         }
     }
 }

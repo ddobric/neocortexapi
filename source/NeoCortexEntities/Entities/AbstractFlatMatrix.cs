@@ -2,7 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
+using System.Text;
 
 namespace NeoCortexApi.Entities
 {
@@ -10,7 +11,7 @@ namespace NeoCortexApi.Entities
     /// <summary>
     /// Provides common generic independent calculation functions.
     /// </summary>
-    public class AbstractFlatMatrix /*: ISerializable*/
+    public class AbstractFlatMatrix
     {
         public AbstractFlatMatrix()
         {
@@ -66,7 +67,12 @@ namespace NeoCortexApi.Entities
             return @base;
         }
 
-  
+        /**
+        * Checks the indexes specified to see whether they are within the
+        * configured bounds and size parameters of this array configuration.
+        * 
+        * @param index the array dimensions to check
+        */
         /// <summary>
         /// Checks the indexes specified to see whether they are within the configured bounds and size parameters of this array configuration.
         /// </summary>
@@ -99,6 +105,20 @@ namespace NeoCortexApi.Entities
         {
             string res = string.Join(",", arr);
             return res;
+            //if (aObject is Array)
+            //{
+            //    if (!typeof(T).IsValueType) // can we cast to Object[]
+            //        return aObject.ToString();
+            //    else
+            //    {  // we can't cast to Object[] - case of primitive arrays
+            //        int length = ((Array)aObject).Length;
+            //        Object[] objArr = new Object[length];
+            //        for (int i = 0; i < length; i++)
+            //            objArr[i] = ((Array)aObject).GetValue(i);
+            //        return objArr.ToString();
+            //    }
+            //}
+            //return "[]";
         }
 
         /// <summary>
@@ -111,7 +131,6 @@ namespace NeoCortexApi.Entities
             int holder = 1;
             int len = dimensions.Length;
             int[] dimensionMultiples = new int[dimensions.Length];
-
             for (int i = 0; i < len; i++)
             {
                 holder *= (i == 0 ? 1 : dimensions[len - i]);
@@ -119,16 +138,6 @@ namespace NeoCortexApi.Entities
             }
             return dimensionMultiples;
         }
-
-        //public void Serialize(object obj, string name, StreamWriter sw)
-        //{
-        //    HtmSerializer2.SerializeObject(obj, name, sw);
-        //}
-
-        //public static object Deserialize(StreamReader sr, string name)
-        //{
-        //    return HtmSerializer2.DeserializeObject<AbstractFlatMatrix>(sr, name);
-        //}
     }
 
 
@@ -144,9 +153,7 @@ namespace NeoCortexApi.Entities
 
         }
 
-        /// <summary>
-        /// Gets/Sets the topology of the HTM model.
-        /// </summary>
+
         public HtmModuleTopology ModuleTopology { get; set; }
 
         //protected int[] dimensions;
@@ -353,21 +360,24 @@ namespace NeoCortexApi.Entities
          */
         //@SuppressWarnings("rawtypes")
         //@Override
-        public virtual bool Equals(AbstractFlatMatrix<T> obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
                 return true;
             if (obj == null)
                 return false;
+            //if (getClass() != obj.getClass())
             if ((obj.GetType() != this.GetType()))
                 return false;
-            AbstractFlatMatrix<T> other = obj;
-            if (ModuleTopology == null)
-            {
-                if (obj.ModuleTopology != null)
-                    return false;
-            }
-            else if (!ModuleTopology.Equals(obj.ModuleTopology))
+            AbstractFlatMatrix<T> other = (AbstractFlatMatrix<T>)obj;
+
+            if (!Array.Equals(this.ModuleTopology.DimensionMultiplies, other.ModuleTopology.DimensionMultiplies))
+                return false;
+            if (!Array.Equals(this.ModuleTopology.Dimensions, other.ModuleTopology.Dimensions))
+                return false;
+            if (this.ModuleTopology.IsMajorOrdering != other.ModuleTopology.IsMajorOrdering)
+                return false;
+            if (this.ModuleTopology.NumDimensions != other.ModuleTopology.NumDimensions)
                 return false;
             return true;
         }

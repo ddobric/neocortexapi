@@ -1,12 +1,15 @@
-﻿using NeoCortexApi;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using NeoCortexApi;
+using NeoCortexApi.DistributedComputeLib;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace NeoCortexApiSample
 {
@@ -40,15 +43,13 @@ namespace NeoCortexApiSample
                 DutyCyclePeriod = 100,
                 MinPctOverlapDutyCycles = minOctOverlapCycles,
 
-                GlobalInhibition = false,
+                GlobalInhibition = true,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns,
-                PotentialRadius = (int)(0.15 * inputBits),
+                PotentialRadius = (int)(0.8 * inputBits),
                 LocalAreaDensity = -1,
                 ActivationThreshold = 10,
-                
-                MaxSynapsesPerSegment = (int)(0.01 * numColumns),
-                Random = new ThreadSafeRandom(42),
-                StimulusThreshold=10,
+                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
+                Random = new ThreadSafeRandom(42)
             };
 
             double max = 100;
@@ -66,7 +67,6 @@ namespace NeoCortexApiSample
                 { "ClipInput", false},
                 { "MaxVal", max}
             };
-
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
@@ -102,32 +102,30 @@ namespace NeoCortexApiSample
             // (defined by the second argument) the HPC is controlling the learning process of the SP.
             // Once the SDR generated for every input gets stable, the HPC will fire event that notifies your code
             // that SP is stable now.
-            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 40,
+            HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, inputValues.Count * 15,
                 (isStable, numPatterns, actColAvg, seenInputs) =>
                 {
                     // Event should only be fired when entering the stable state.
                     // Ideal SP should never enter unstable state after stable state.
                     if (isStable == false)
                     {
-                        Debug.WriteLine($"INSTABLE STATE");
+                        Debug.WriteLine($"INSTABLE");
                         // This should usually not happen.
                         isInStableState = false;
                     }
                     else
                     {
-                        Debug.WriteLine($"STABLE STATE");
+                        Debug.WriteLine($"STABILITY");
                         // Here you can perform any action if required.
                         isInStableState = true;
                     }
                 });
 
             // It creates the instance of Spatial Pooler Multithreaded version.
-            SpatialPooler sp = new SpatialPooler(hpa);
+            SpatialPooler sp = new SpatialPoolerMT(hpa);
 
             // Initializes the 
             sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
-
-            // mem.TraceProximalDendritePotential(true);
 
             // It creates the instance of the neo-cortex layer.
             // Algorithm will be performed inside of that layer.
