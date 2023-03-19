@@ -178,33 +178,7 @@ namespace NeoCortexApiSample
         }
 
 
-        /* Method to read subsequences input from text files */
-
-        public static List<List<double>> GetSubSequencesInputFromTextFiles()
-        {
-            var SubSequences = new List<List<double>>();
-            var TestSubSequences = new List<double>();
-
-            using (StreamReader reader = new StreamReader(@"D:\SE_Project\Project\neocortexapi_Team_MSL\source\MultiSequenceLearning_Team_MSL\Input_Files\Subsequence_input.txt"))
-            {
-
-
-                while (!reader.EndOfStream)
-                {
-                    var row = reader.ReadLine();
-                    var numbers = row.Split(',');
-
-                    foreach (var digit in numbers)
-                    {
-                        TestSubSequences.Add(Convert.ToDouble(digit));
-                    }
-                    SubSequences.Add(TestSubSequences);
-                }
-            }
-            return SubSequences;
-        }
-
-
+       
 
         /* This method takes the input from Excel file */
 
@@ -232,7 +206,6 @@ namespace NeoCortexApiSample
 
             return SubSequences;
         }
-
 
 
 
