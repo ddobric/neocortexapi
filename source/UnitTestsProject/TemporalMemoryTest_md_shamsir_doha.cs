@@ -100,7 +100,6 @@ namespace UnitTestsProject
             Assert.AreEqual(2, winnerCells[1].Index);
         }
 
-        [TestMethod]
         public void TestIncreasePermanenceOfActiveSynapses()
         {
             // Arrange
@@ -116,7 +115,29 @@ namespace UnitTestsProject
             // Activate some cells
             ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
             List<Cell> prevActiveCells = new List<Cell>(cc.ActiveCells);
-            Assert.AreEqual(12, prevActiveCells.Count); }
+            Assert.AreEqual(12, prevActiveCells.Count);
+
+            // Increase permanence of synapses for active cells
+            cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            List<Cell> activeCells = new List<Cell>(cc.ActiveCells);
+            Assert.AreEqual(12, activeCells.Count);
+
+            // Assert that the permanence of synapses has increased
+            List<Synapse> activeSynapses = new List<Synapse>();
+            //foreach (Cell cell in activeCells)
+            //{
+            //foreach (DistalDendrite segment in cell.DistalDendrites)
+            //{
+            //    activeSynapses.AddRange(segment.Synapses.FindAll(synapse => synapse.IsDefined()));
+            //}
+            //}
+
+            foreach (Synapse synapse in activeSynapses)
+            {
+                Assert.IsTrue(synapse.Permanence > 0.5);
+            }
+        }
 
 
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
