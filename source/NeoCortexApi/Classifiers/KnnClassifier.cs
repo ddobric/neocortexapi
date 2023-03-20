@@ -58,20 +58,6 @@ namespace NeoCortexApi.Classifiers
         private int _sdrs = 10;
 
         /// <summary>
-        ///     Gets the distance using the euclidean principle using coordinate values int[] = (x, y).
-        ///     i.e (x1, x2) => sqrt(pow(x2 - x1, 2))
-        /// </summary>
-        /// <param name="model">The model with active cells</param>
-        /// <param name="item">The unidentified data with active cells</param>
-        /// <returns>
-        ///     Distance between 2 points.
-        /// </returns>
-        int GetDistance(int model, int item)
-        {
-            return model - item;
-        }
-
-        /// <summary>
         ///     This function return the first N values which is determined by the _nNeighbours.
         ///     i.e comparison unclassified coordinates 2 to unclassified coordinates [1, 3 .... 6, 7] 
         /// </summary>
@@ -87,15 +73,15 @@ namespace NeoCortexApi.Classifiers
         ///     Returns a sorted distance List[float].
         ///         [1.23, 1.53, ...]
         /// </returns>
-        List<int> FirstNValues(ref int[] classifiedSequence, int unclassifiedIdx)
+        int LeastValue(int[] classifiedSequence, int unclassifiedIdx)
         {
             var rawDistanceList = new List<int>();
 
             foreach (var classifiedIdx in classifiedSequence)
-                rawDistanceList.Add(GetDistance(classifiedIdx, unclassifiedIdx));
+                rawDistanceList.Add(Math.Abs(classifiedIdx - unclassifiedIdx));
 
             rawDistanceList.Sort();
-            return rawDistanceList.GetRange(0, _nNeighbors);
+            return rawDistanceList[0];
         }
 
         /// <summary>
@@ -115,14 +101,19 @@ namespace NeoCortexApi.Classifiers
         ///         ...
         ///     }
         /// </returns>
-        Dictionary<int, List<int>> GetDistanceTable(int[] classifiedSequence, ref int[] unclassifiedSequence)
+        Dictionary<int, List<int>> GetDistanceTable(int[] classifiedSequence, int[] unclassifiedSequence)
         {
             // i.e: {1: [1.23, 1.65, 2.23, ...], ...}
             var distanceTable = new Dictionary<int, List<int>>();
 
             foreach (var index in unclassifiedSequence)
-                distanceTable[index] = FirstNValues(ref classifiedSequence, index);
-            
+            {
+                if (distanceTable.ContainsKey(index))
+                    distanceTable[index].Add(LeastValue(classifiedSequence, index));
+                else
+                    distanceTable[index] = new List<int>{LeastValue(classifiedSequence, index)};
+            }
+
             return distanceTable;
         }
 
@@ -146,14 +137,14 @@ namespace NeoCortexApi.Classifiers
         ///         [ClassifierResult 1, ClassifierResult 2, ...]
         ///     }
         /// </returns>
-        List<ClassifierResult<string>> Voting(ref Dictionary<int, List<ClassificationAndDistance>> table)
+        List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> table)
         {
             var votes = new Dictionary<string, int>();
             var orderedDict = new Dictionary<string, int>();
 
             foreach (var coordinates in table)
             {
-                for (int i = 0; i < _nNeighbors; i++)
+                for (int i = 0; i < _nNeighbors && i < coordinates.Value.Count; i++)
                 {
                     if (votes.ContainsKey(coordinates.Value[i].Classification))
                         votes[coordinates.Value[i].Classification] += 1;
@@ -163,7 +154,7 @@ namespace NeoCortexApi.Classifiers
 
                 orderedDict = votes.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
             }
-            
+
             var result = new List<ClassifierResult<string>>();
             foreach (var paired in orderedDict)
             {
@@ -188,26 +179,29 @@ namespace NeoCortexApi.Classifiers
             var unclassifiedSequence = unclassifiedCells.Select(idx => idx.Index).ToArray();
             _sdrs = sdr;
             var mappedElements = new Dictionary<int, List<ClassificationAndDistance>>();
-            
+
             foreach (var model in _models)
-            { 
+            {
                 foreach (var sequence in model.Value)
                 {
-                    foreach (var index in GetDistanceTable(sequence, ref unclassifiedSequence))
+                    foreach (var index in GetDistanceTable(sequence, unclassifiedSequence))
                     {
                         var values = index.Value
                             .Select(dist => new ClassificationAndDistance(model.Key, dist))
                             .ToList();
-                        mappedElements[index.Key] = new List<ClassificationAndDistance>();
-                        mappedElements[index.Key].AddRange(values);
+
+                        if (mappedElements.ContainsKey(index.Key))
+                            mappedElements[index.Key].AddRange(values);
+                        else
+                            mappedElements[index.Key] = values;
                     }
                 }
             }
 
             foreach (var coordinates in mappedElements)
                 coordinates.Value.Sort();
-            
-            return Voting(ref mappedElements);
+
+            return Voting(mappedElements);
         }
 
         /// <summary>
@@ -224,10 +218,15 @@ namespace NeoCortexApi.Classifiers
             return false;
         }
 
+        /// <summary>
+        ///     This Function adds and removes SDR's to the model.
+        /// </summary>
+        /// <param name="input">The classification type.</param>
+        /// <param name="cell">object of type Cell</param>
         public void Learn(string input, Cell[] cell)
         {
             int[] cellIndicies = cell.Select(idx => idx.Index).ToArray();
-            
+
             if (_models.ContainsKey(input) == false)
                 _models.Add(input, new List<int[]>());
 
@@ -245,7 +244,7 @@ namespace NeoCortexApi.Classifiers
                 Debug.WriteLine($"Prev/Now/Same={previousOne.Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
             }
         }
-        
+
         public void ClearState()
         {
             _models.Clear();
