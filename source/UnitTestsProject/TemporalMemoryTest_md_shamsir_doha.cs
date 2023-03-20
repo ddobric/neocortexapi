@@ -139,6 +139,38 @@ namespace UnitTestsProject
             }
         }
 
+        [TestMethod]
+        public void TestGetLeastUsedCell()
+        {
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 4 });
+            p = getDefaultParameters(p, KEY.CELLS_PER_COLUMN, 3);
+            p.apply(cn);
+
+            TemporalMemory tm = new TemporalMemory();
+            tm.Init(cn);
+
+            // Create a distal segment and synapses
+            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(1));
+            cn.CreateSynapse(dd, cn.GetCell(0), 0.30);
+            cn.CreateSynapse(dd, cn.GetCell(2), 0.50);
+
+            // Get the least used cell in column 1
+            Cell leastUsedCell = TemporalMemory.GetLeastUsedCell(cn, cn.GetColumn(1).Cells, cn.HtmConfig.Random);
+
+            // Verify that the least used cell is correct
+            Assert.AreNotEqual(leastUsedCell, cn.GetCell(0));
+
+            // Increment the usage count of the least used cell
+            leastUsedCell.ParentColumnIndex++;
+
+            // Get the least used cell in column 1 again
+            Cell newLeastUsedCell = TemporalMemory.GetLeastUsedCell(cn, cn.GetColumn(1).Cells, cn.HtmConfig.Random);
+
+            // Verify that the new least used cell is not the same as the original least used cell
+            Assert.AreNotEqual(newLeastUsedCell, leastUsedCell);
+        }
+
 
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
         {
