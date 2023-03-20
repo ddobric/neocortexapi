@@ -31,24 +31,21 @@ namespace NeoCortexApi.Classifiers
     /// <summary>
     ///     This KNN classifier takes an input as a 2D array of on: 1, off: 0 which is provided for classification.
     /// 
-    ///     |0 0 1 1|
-    ///     |1 0 0 0| = Unclassified
-    ///     |0 1 1 1|
+    ///     { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, } = Unclassified
     ///
     ///     Which then needs to run through a model of similar matrices to be classified which matrix it resembles
     ///     closest to. The K-nearest-neighbor 
     ///
-    ///               {     |0 0 1 1|       |1 1 0 0|       |1 1 0 0| }
-    ///  Dict model = { A = |1 0 0 1| , B = |0 1 1 1| , C = |1 1 1 1| }
-    ///               {     |0 1 1 0|       |1 0 0 0|       |0 0 0 0| }
+    ///     models = { A = [[ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]],
+    ///                B = []
     ///
     ///     The verdict must be in terms of %. Where the distance of each point of the unknown/unclassified matrix is
     ///     calculated and compared to the known matrices. Whence a comparison is made by using the shortest nNeighbors
     ///     to each unclassified coordinate and assigns the classification keys A, B, C by considering the most amount
     ///     classifications closest to that point.
     ///     {
-    ///         (2, 3): A,
-    ///         (2, 0): B,
+    ///         3: A,
+    ///         0: B,
     ///         ...
     ///     }
     ///     In this case A is highest occurence hence A for the coordinate (3, 2).
@@ -56,7 +53,8 @@ namespace NeoCortexApi.Classifiers
     public class KNeighborsClassifier
     {
         private int _nNeighbors;
-        private Dictionary<string, int[][]> _model = new Dictionary<string, int[][]>();
+        private Dictionary<string, List<int[]>> _models = new Dictionary<string, List<int[]>>();
+        private int _sdrs = 10;
 
         KNeighborsClassifier(int nNeighbors = 5)
         {
@@ -66,66 +64,39 @@ namespace NeoCortexApi.Classifiers
 
         /// <summary>
         ///     Gets the distance using the euclidean principle using coordinate values int[] = (x, y).
-        ///     i.e (x1, x2) & (x2, y2) => sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
+        ///     i.e (x1, x2) => sqrt(pow(x2 - x1, 2))
         /// </summary>
         /// <param name="model">The model with active cells</param>
         /// <param name="item">The unidentified data with active cells</param>
         /// <returns>
         ///     Distance between 2 points.
         /// </returns>
-        double GetDistance(int[] model, int[] item)
+        double GetDistance(int model, int item)
         {
-            return Math.Sqrt(Math.Pow(model[0] - item[0], 2) + Math.Pow(model[1] - item[1], 2));
-        }
-
-        /// <summary>
-        ///     Looks for the active cells in the matrix of the unclassified matrix and the classified matrix.
-        /// </summary>
-        /// <param name="dataItem">Is the matrix:
-        ///     |0 0 1 1|
-        ///     |1 0 0 1|
-        ///     |0 1 1 0|
-        /// </param>
-        /// <returns>
-        ///     Returns a 2d array containing the cell information of the active regions.
-        ///     List[int[2]] A = [(0,2),(0,3),(1,0)....]
-        /// </returns>
-        List<int[]> GetIndexes(int[][] dataItem)
-        {
-            List<int[]> coordinates = new List<int[]>();
-            for (int i = 0; i < dataItem.Length; i++)
-            {
-                for (int j = 0; j < dataItem[0].Length; j++)
-                {
-                    if (dataItem[i][j] == 1)
-                        coordinates.Add(new int[] { i, j });
-                }
-            }
-
-            return coordinates;
+            return Math.Sqrt(Math.Pow(model - item, 2));
         }
 
         /// <summary>
         ///     This function return the first N values which is determined by the _nNeighbours.
-        ///     i.e comparison unclassified coordinates (2, 3) to unclassified coordinates (1, 5), (3, 2) .... & (6, 7) 
+        ///     i.e comparison unclassified coordinates 2 to unclassified coordinates [1, 3 .... 6, 7] 
         /// </summary>
-        /// <param name="classifiedMatrixIndexes">
+        /// <param name="classifiedSequence">
         ///     The active indices from the classified Matrix.
-        ///     (1, 5), (3, 2) .... & (6, 7)
+        ///     [1, 3 .... 6, 7]
         /// </param>
         /// <param name="unclassifiedIdx">
         ///     The active index from the unclassified Matrix.
-        ///     (2, 3)
+        ///     2
         /// </param>
         /// <returns>
         ///     Returns a sorted distance List[float].
         ///         [1.23, 1.53, ...]
         /// </returns>
-        List<double> FirstNValues(List<int[]> classifiedMatrixIndexes, int[] unclassifiedIdx)
+        List<double> FirstNValues(int[] classifiedSequence, int unclassifiedIdx)
         {
             var rawDistanceList = new List<double>();
 
-            foreach (var classifiedIdx in classifiedMatrixIndexes)
+            foreach (var classifiedIdx in classifiedSequence)
                 rawDistanceList.Add(GetDistance(classifiedIdx, unclassifiedIdx));
 
             rawDistanceList.Sort();
@@ -135,15 +106,11 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         ///     This function computes the distance of the unclassified point to the distance of the classified points.
         /// </summary>
-        /// <param name="classifiedMatrix">
-        ///       |0 0 1 1|
-        ///   A = |1 0 0 1|
-        ///       |0 1 1 0|
+        /// <param name="classifiedSequence">
+        ///     A = [1.01, ...]
         /// </param>
-        /// <param name="unclassifiedMatrix">
-        ///     |0 0 1 1|
-        ///     |1 0 1 0| = Unclassified Matrix
-        ///     |1 1 0 0|
+        /// <param name="unclassifiedSequence">
+        ///     [1.23, 1.65, 2.23, ...] = Unclassified Matrix
         /// </param>
         /// <returns>
         ///     Returns a dictionary mapping of a int[] to List[floats].
@@ -153,102 +120,131 @@ namespace NeoCortexApi.Classifiers
         ///         ...
         ///     }
         /// </returns>
-        Dictionary<int[], List<double>> GetDistanceTable(int[][] classifiedMatrix, int[][] unclassifiedMatrix)
+        Dictionary<int, List<double>> GetDistanceTable(int[] classifiedSequence, int[] unclassifiedSequence)
         {
-            List<int[]> classifiedMatrixIndexes = GetIndexes(classifiedMatrix);
-            List<int[]> unclassifiedMatrixIndexes = GetIndexes(unclassifiedMatrix);
-
             // i.e: {(1, 3): [1.23, 1.65, 2.23, ...], ...}
-            var distanceTable = new Dictionary<int[], List<double>>();
+            var distanceTable = new Dictionary<int, List<double>>();
 
-            foreach (var index in unclassifiedMatrixIndexes)
-                distanceTable[index].AddRange(FirstNValues(classifiedMatrixIndexes, index));
+            foreach (var index in unclassifiedSequence)
+                distanceTable[index].AddRange(FirstNValues(classifiedSequence, index));
 
             return distanceTable;
         }
 
         /// <summary>
         ///     This function should take the Table and find the shortest distances to the different unclassified
-        ///     coordinates i.e (3, 2) and cast a vote, i.e (A, B, C) which classification occurs the highest. This
-        ///     should be done for all the unclassified coordinates.
+        ///     coordinates i.e 3 and cast a vote, i.e (A, B, C) which classification occurs the highest. This
+        ///     should be done for all the unclassified coordinates. After which the max number of occurence is
+        ///     considered 
         /// </summary>
         /// <param name="table">
         ///     Takes in the tabular data of all the comparison points and gives the verdict on the maximum occurrence.
         ///     {
-        ///         (2, 3): [(ClassificationAndDistance 1), (ClassificationAndDistance 2), ...],
-        ///         (2, 0): [(ClassificationAndDistance 1), (ClassificationAndDistance 2), ...],
+        ///         2: [(ClassificationAndDistance 1), (ClassificationAndDistance 2), ...],
+        ///         3: [(ClassificationAndDistance 1), (ClassificationAndDistance 2), ...],
         ///         ...
         ///     }
         /// </param>
         /// <returns>
-        ///     Returns a mapping of coordinates to classification.
+        ///     Returns a list of classifier results.
         ///     {
-        ///         (2, 3): A,
-        ///         (2, 0): B,
-        ///         ...
+        ///         [ClassifierResult 1, ClassifierResult 2, ...]
         ///     }
         /// </returns>
-        Dictionary<int[], string> Voting(Dictionary<int[], List<ClassificationAndDistance>> table)
+        List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> table)
         {
             var votes = new Dictionary<string, int>();
-            var classification = new Dictionary<int[], string>();
+            var orderedDict = new Dictionary<string, int>();
+
             foreach (var coordinates in table)
             {
-                int i;
-                for (i = 0; i < _nNeighbors; i++)
+                for (int i = 0; i < _nNeighbors; i++)
                 {
-                    // Returns the Classification of [(ClassificationAndDistance 1), ...]
                     if (votes.ContainsKey(coordinates.Value[i].Classification))
                         votes[coordinates.Value[i].Classification] += 1;
                     else
                         votes[coordinates.Value[i].Classification] = 0;
                 }
 
-                // Handles if a variable contains the same value multiple times.
-                for (; coordinates.Value[i].Distance <= coordinates.Value[i + 1].Distance; i++)
-                    votes[coordinates.Value[i].Classification] += 1;
-
-                var classificationType = votes.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
-                classification[coordinates.Key] = classificationType;
+                orderedDict = votes.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            }
+            
+            var result = new List<ClassifierResult<string>>();
+            foreach (var paired in orderedDict)
+            {
+                var cls = new ClassifierResult<string>();
+                cls.PredictedInput = paired.Key;
+                result.Add(cls);
             }
 
-            return classification;
+            return result;
         }
 
         /// <summary>
-        ///     This function takes in the unclassified matrix and assigns a classification verdict. i.e:
-        ///     A = 30%, B = 30%, C = 40%
+        ///     This function needs to classify the sequence of numbers that is provided to it.
         /// </summary>
-        /// <param name="unclassifiedMatrix">
-        ///     |0 0 1 1|
-        ///     |1 0 0 0| = Unclassified Matrix
-        ///     |0 1 1 0|
+        /// <param name="unclassifiedSequence">
+        ///     Takes in a sequence of numbers which needs to be classified and fed into the SDR.
+        ///     i.e { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }
         /// </param>
-        void GetPredictedInputValue(int[][] unclassifiedMatrix)
+        /// <param name="sdr">Number of SDRs stored under the same classification</param>
+        void GetPredictedInputValue(int[] unclassifiedSequence, int sdr)
         {
-            var mappedElements = new Dictionary<int[], List<ClassificationAndDistance>>();
-            foreach (var dict in _model)
+            _sdrs = sdr;
+            var mappedElements = new Dictionary<int, List<ClassificationAndDistance>>();
+            
+            foreach (var model in _models)
             {
-                foreach (var indices in GetDistanceTable(dict.Value, unclassifiedMatrix))
+                foreach (var sequence in model.Value)
                 {
-                    var values = indices.Value.Select(dist => new ClassificationAndDistance(dict.Key, dist)).ToList();
-                    mappedElements[indices.Key].AddRange(values);
+                    foreach (var index in GetDistanceTable(sequence, unclassifiedSequence))
+                    {
+                        var values = index.Value
+                            .Select(dist => new ClassificationAndDistance(model.Key, dist))
+                            .ToList();
+                        mappedElements[index.Key].AddRange(values);
+                    }
                 }
             }
 
             foreach (var coordinates in mappedElements)
                 coordinates.Value.Sort();
             
-            var classificationType = Voting(mappedElements).Values
-                .GroupBy(s => s)
-                .OrderByDescending(s => s.Count())
-                .First().Key;
-
-            Console.WriteLine($"Verdict is: {classificationType}");
+            var result = Voting(mappedElements);
         }
 
-        void Learn(object x, string[] tags)
+        /// <summary>
+        /// Checks if the same SDR is already stored under the given key.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="sdr"></param>
+        /// <returns></returns>
+        private bool ContainsSdr(string input, int[] sdr)
         {
+            foreach (var item in _models[input])
+                return item.SequenceEqual(sdr);
+
+            return false;
+        }
+
+        public void Learn(string input, int[] cellIndicies)
+        {
+            if (_models.ContainsKey(input) == false)
+                _models.Add(input, new List<int[]>());
+
+            if (!ContainsSdr(input, cellIndicies))
+                _models[input].Add(cellIndicies);
+
+            if (_models[input].Count > _sdrs)
+                _models[input].RemoveRange(_sdrs, _models[input].Count - _sdrs);
+
+            var previousOne = _models[input][Math.Max(0, _models[input].Count - 2)];
+
+            if (!previousOne.SequenceEqual(cellIndicies))
+            {
+                var numOfSameBitsPct = previousOne.Intersect(cellIndicies).Count();
+                Debug.WriteLine($"Prev/Now/Same={previousOne.Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
+            }
         }
     }
 }
