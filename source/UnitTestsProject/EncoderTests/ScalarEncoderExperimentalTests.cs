@@ -41,6 +41,50 @@ namespace UnitTestsProject.EncoderTests
     public class ScalarEncoderScalarEncoderExperimentalTestsTests
     {
 
+
+        [TestMethod]
+        [TestCategory("Prod")]
+      
+    
+
+        [DataRow(0, new int[] { 1, 1, 0, 0, 0, 0, 0, 0, 1, })] 
+        [DataRow(1, new int[] { 1, 1, 1, 0, 0, 0, 0, 0, 0, })] 
+        [DataRow(2, new int[] { 0, 1, 1, 1, 0, 0, 0, 0, 0, })] 
+
+
+        public void ScalarEncoderUnitTempTest(double input, int[] expectedResult)
+        {
+            CortexNetworkContext ctx = new CortexNetworkContext();
+            ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
+            {
+                { "W", 3},
+                { "N", 9},
+                { "MinVal", (double)0}, // Min value = (0).
+                { "MaxVal", (double)7}, // Max value = (7).
+                { "Periodic", true}, //
+                { "Name", "Days Of Week"},
+                { "ClipInput", true},
+            });
+
+            var result = encoder.Encode(input); // Encoding the input according to the encoding parameters.
+
+            PrintBitMap(encoder, nameof(ScalarEncoderUnitTestWeek)); // Calling the Bitmap method to show output in Bitmap Format.
+
+            Debug.WriteLine(input);
+            Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
+            Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(expectedResult));
+
+
+            Assert.IsTrue(expectedResult.SequenceEqual(result)); // Assert.IsTrue is used to check whether the given input result matches with the expected result.
+
+        }
+
+
+
+
+
+
+
         [TestMethod]
         // <summary>
         // Problem : Encoding the different days of week
