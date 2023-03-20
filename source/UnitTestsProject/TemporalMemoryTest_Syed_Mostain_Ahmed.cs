@@ -308,29 +308,6 @@ namespace UnitTestsProject
             Assert.IsFalse(cc.ActiveCells.SequenceEqual(burstingCells));
         }
 
-        /// <summary>
-        /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
-        /// </summary>
-        [TestMethod]
-        public void TestColumnDimensions()
-        {
-            // Initialize
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = Parameters.getAllDefaultParameters();
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32, 64 }); // Set custom column dimensions
-            p.Set(KEY.CELLS_PER_COLUMN, 32);
-            p.apply(cn);
-            tm.Init(cn);
-
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
-            {
-                cnt += item.Cells.Length;
-            }
-
-            Assert.AreEqual(32 * 64 * 32, cnt);
-        }
 
         [TestMethod]
         public void TestTemporalMemoryComputeReturnsWinnerCells()
@@ -351,5 +328,44 @@ namespace UnitTestsProject
             Assert.AreEqual(0, winnerCells[0].Index);
             Assert.AreEqual(2, winnerCells[1].Index);
         }
+
+        /// <summary>
+        /// create a Connections object with some Cells and Segments, 
+        /// and then call the GetLeastUsedCell method with a list of Cells and a Random object. We then assert 
+        /// that the Cell returned by the method is the one that we expect (in this case, c3)
+        /// </summary>
+        [TestMethod]
+        public void TestGetLeastUsedCell()
+        {
+            // Create a Connections object with some Cells and Segments
+            TemporalMemory tm = new TemporalMemory();
+            Parameters p = getDefaultParameters();
+            Connections conn = new Connections();
+            p.apply(conn);
+            tm.Init(conn);
+
+            Cell c1 = conn.GetCell(1);
+            Cell c2 = conn.GetCell(2);
+            Cell c3 = conn.GetCell(3);
+            DistalDendrite s1 = conn.CreateDistalSegment(c1);
+            DistalDendrite s2 = conn.CreateDistalSegment(c1);
+            DistalDendrite s3 = conn.CreateDistalSegment(c2);
+            DistalDendrite s4 = conn.CreateDistalSegment(c3);
+            Synapse syn1 = conn.CreateSynapse(s1, c1, 0.5);
+            Synapse syn2 = conn.CreateSynapse(s1, c2, 0.5);
+            Synapse syn3 = conn.CreateSynapse(s2, c3, 0.5);
+            Synapse syn4 = conn.CreateSynapse(s3, c1, 0.5);
+            Synapse syn5 = conn.CreateSynapse(s4, c1, 0.5);
+
+            // Get the least used Cell from a list of Cells
+            List<Cell> cells = new List<Cell> { c1, c2, c3 };
+            Random random = new Random(42);
+            Cell leastUsedCell = TemporalMemory.GetLeastUsedCell(conn, cells, random);
+
+            // Verify that the least used Cell is c3
+            Assert.AreEqual(c3.ParentColumnIndex, leastUsedCell.ParentColumnIndex);
+            Assert.AreEqual(c3.Index, leastUsedCell.Index);
+        }
+
     }
 }

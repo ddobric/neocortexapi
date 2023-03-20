@@ -668,15 +668,14 @@ namespace NeoCortexApi
                 {
                     minNumSegments = numSegments;
                     leastUsedCells.Clear();
+                    leastUsedCells.Add(cell);
                 }
-
-                if (numSegments == minNumSegments)
+                else if (numSegments == minNumSegments)
                 {
                     leastUsedCells.Add(cell);
                 }
             }
 
-            random = new Random();
             int i = random.Next(leastUsedCells.Count);
             return leastUsedCells[i];
         }
