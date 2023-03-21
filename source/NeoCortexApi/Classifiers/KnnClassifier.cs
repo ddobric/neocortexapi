@@ -58,20 +58,20 @@ namespace NeoCortexApi.Classifiers
         private int _sdrs = 10;
 
         /// <summary>
-        ///     This function return the first N values which is determined by the _nNeighbours.
+        ///     This function compares the a single value with a sequence of values
         ///     i.e comparison unclassified coordinates 2 to unclassified coordinates [1, 3 .... 6, 7] 
         /// </summary>
         /// <param name="classifiedSequence">
-        ///     The active indices from the classified Matrix.
+        ///     The active indices from the classified Sequence.
         ///     [1, 3 .... 6, 7]
         /// </param>
         /// <param name="unclassifiedIdx">
-        ///     The active index from the unclassified Matrix.
+        ///     The active index from the unclassified Sequence.
         ///     2
         /// </param>
         /// <returns>
-        ///     Returns a sorted distance List[float].
-        ///         [1.23, 1.53, ...]
+        ///     Returns the smallest value int.
+        ///         [1, 5, ...] => 1
         /// </returns>
         int LeastValue(int[] classifiedSequence, int unclassifiedIdx)
         {
@@ -96,8 +96,8 @@ namespace NeoCortexApi.Classifiers
         /// <returns>
         ///     Returns a dictionary mapping of a int[] to List[floats].
         ///     {
-        ///         (1, 3): [1.23, 1.65, 2.23, ...],
-        ///         (2, 0): [1.01, ...],
+        ///         0: [1.23, 1.65, 2.23, ...],
+        ///         2: [1.01, ...],
         ///         ...
         ///     }
         /// </returns>
@@ -111,7 +111,7 @@ namespace NeoCortexApi.Classifiers
                 if (distanceTable.ContainsKey(index))
                     distanceTable[index].Add(LeastValue(classifiedSequence, index));
                 else
-                    distanceTable[index] = new List<int>{LeastValue(classifiedSequence, index)};
+                    distanceTable[index] = new List<int> { LeastValue(classifiedSequence, index) };
             }
 
             return distanceTable;
@@ -226,10 +226,10 @@ namespace NeoCortexApi.Classifiers
         public void Learn(string classification, Cell[] cells)
         {
             int[] cellIndicies = cells.Select(idx => idx.Index).ToArray();
-            
+
             if (_models.ContainsKey(classification) == false)
                 _models.Add(classification, new List<int[]>());
-            
+
             if (!ContainsSdr(classification, cellIndicies))
                 _models[classification].Add(cellIndicies);
 
