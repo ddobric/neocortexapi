@@ -31,7 +31,7 @@ namespace NeoCortexApi
         /// <param name="connections">The HTM memory in the learned state.</param>
         /// <param name="classifier">The classifier that contains the state of learned sequences.</param>
 
-        public Predictor(CortexLayer<object, object> layer, Connections connections, HtmClassifier<string, ComputeCycle> classifier)
+        public Predictor (CortexLayer<object, object> layer, Connections connections, HtmClassifier<string, ComputeCycle> classifier)
         { 
             this.connections = connections;
             this.layer = layer;
