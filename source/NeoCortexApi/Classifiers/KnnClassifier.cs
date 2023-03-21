@@ -205,14 +205,14 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        /// Checks if the same SDR is already stored under the given key.
+        ///     Checks if the same SDR is already stored under the given key.
         /// </summary>
-        /// <param name="input"></param>
-        /// <param name="sdr"></param>
-        /// <returns></returns>
-        private bool ContainsSdr(string input, int[] sdr)
+        /// <param name="classification">The classification type</param>
+        /// <param name="sdr">A sequence of cell positions</param>
+        /// <returns>true if the sequence exist false if it doesn't</returns>
+        private bool ContainsSdr(string classification, int[] sdr)
         {
-            foreach (var item in _models[input])
+            foreach (var item in _models[classification])
                 return item.SequenceEqual(sdr);
 
             return false;
@@ -221,22 +221,22 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         ///     This Function adds and removes SDR's to the model.
         /// </summary>
-        /// <param name="input">The classification type.</param>
-        /// <param name="cell">object of type Cell</param>
-        public void Learn(string input, Cell[] cell)
+        /// <param name="classification">The classification type</param>
+        /// <param name="cells">object of type Cell</param>
+        public void Learn(string classification, Cell[] cells)
         {
-            int[] cellIndicies = cell.Select(idx => idx.Index).ToArray();
+            int[] cellIndicies = cells.Select(idx => idx.Index).ToArray();
+            
+            if (_models.ContainsKey(classification) == false)
+                _models.Add(classification, new List<int[]>());
+            
+            if (!ContainsSdr(classification, cellIndicies))
+                _models[classification].Add(cellIndicies);
 
-            if (_models.ContainsKey(input) == false)
-                _models.Add(input, new List<int[]>());
+            if (_models[classification].Count > _sdrs)
+                _models[classification].RemoveRange(_sdrs, _models[classification].Count - _sdrs);
 
-            if (!ContainsSdr(input, cellIndicies))
-                _models[input].Add(cellIndicies);
-
-            if (_models[input].Count > _sdrs)
-                _models[input].RemoveRange(_sdrs, _models[input].Count - _sdrs);
-
-            var previousOne = _models[input][Math.Max(0, _models[input].Count - 2)];
+            var previousOne = _models[classification][Math.Max(0, _models[classification].Count - 2)];
 
             if (!previousOne.SequenceEqual(cellIndicies))
             {
