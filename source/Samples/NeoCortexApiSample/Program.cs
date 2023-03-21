@@ -19,6 +19,9 @@ namespace NeoCortexApiSample
 {
     class Program
     {
+        static double MinVal = 0.0;
+        static double MaxVal = 99.0;
+
         /// <summary>
         /// This sample shows a typical experiment code for SP and TM.
         /// You must start this code in debugger to follow the trace.
@@ -143,9 +146,15 @@ namespace NeoCortexApiSample
 
                             if (double.TryParse(digit, out double number))
                             {
-                                inputList.Add(number);
-                                rowHasData = true;
+                                
+                                    if (number >= MinVal && number <= MaxVal)
+                                    {
+                                        inputList.Add(number);
+                                    }
+                                   rowHasData = true;
+                                
                             }
+
                         }
 
                         if (rowHasData)
@@ -222,7 +231,10 @@ namespace NeoCortexApiSample
 
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            TestSubSequences.Add(reader.GetDouble(i));
+                            if (reader.GetDouble(i) >= MinVal && reader.GetDouble(i) <= MaxVal)
+                            {
+                                TestSubSequences.Add(reader.GetDouble(i));
+                            }
                         }
 
                         SubSequences.Add(TestSubSequences);
