@@ -25,6 +25,8 @@
     <PackageReference Include="DotNetActors" Version="1.0.3" />
     <PackageReference Include="ImageBinarizer" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
     
   </ItemGroup>
 
