@@ -101,19 +101,14 @@ namespace NeoCortexApi.Classifiers
         ///         ...
         ///     }
         /// </returns>
-        Dictionary<int, List<int>> GetDistanceTable(int[] classifiedSequence, int[] unclassifiedSequence)
+        Dictionary<int, int> GetDistanceTable(int[] classifiedSequence, int[] unclassifiedSequence)
         {
             // i.e: {1: [1.23, 1.65, 2.23, ...], ...}
-            var distanceTable = new Dictionary<int, List<int>>();
+            var distanceTable = new Dictionary<int, int>();
 
             foreach (var index in unclassifiedSequence)
-            {
-                if (distanceTable.ContainsKey(index))
-                    distanceTable[index].Add(LeastValue(classifiedSequence, index));
-                else
-                    distanceTable[index] = new List<int> { LeastValue(classifiedSequence, index) };
-            }
-
+                distanceTable[index] = LeastValue(classifiedSequence, index);
+            
             return distanceTable;
         }
 
@@ -186,14 +181,12 @@ namespace NeoCortexApi.Classifiers
                 {
                     foreach (var index in GetDistanceTable(sequence, unclassifiedSequence))
                     {
-                        var values = index.Value
-                            .Select(dist => new ClassificationAndDistance(model.Key, dist))
-                            .ToList();
+                        var value = new ClassificationAndDistance(model.Key, index.Value);
 
                         if (mappedElements.ContainsKey(index.Key))
-                            mappedElements[index.Key].AddRange(values);
+                            mappedElements[index.Key].Add(value);
                         else
-                            mappedElements[index.Key] = values;
+                            mappedElements[index.Key] = new List<ClassificationAndDistance>() { value };
                     }
                 }
             }
