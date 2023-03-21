@@ -7,6 +7,24 @@ using System.Linq;
 
 namespace NeoCortexApi.Classifiers
 {
+    public class DefaultDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
+    {
+        public new TValue this[TKey key]
+        {
+            get
+            {
+                if (!TryGetValue(key, out TValue val))
+                {
+                    val = new TValue();
+                    Add(key, val);
+                }
+
+                return val;
+            }
+            set => base[key] = value;
+        }
+    }
+
     public class ClassificationAndDistance : IComparable<ClassificationAndDistance>
     {
         public string Classification { get; }
@@ -73,15 +91,17 @@ namespace NeoCortexApi.Classifiers
         ///     Returns the smallest value int.
         ///         [1, 5, ...] => 1
         /// </returns>
-        int LeastValue(int[] classifiedSequence, int unclassifiedIdx)
+        int LeastValue(ref int[] classifiedSequence, int unclassifiedIdx)
         {
-            var rawDistanceList = new List<int>();
-
+            int smallestDistance = unclassifiedIdx;
             foreach (var classifiedIdx in classifiedSequence)
-                rawDistanceList.Add(Math.Abs(classifiedIdx - unclassifiedIdx));
+            {
+                var distance = Math.Abs(classifiedIdx - unclassifiedIdx);
+                if (smallestDistance > distance)
+                    smallestDistance = distance;
+            }
 
-            rawDistanceList.Sort();
-            return rawDistanceList[0];
+            return smallestDistance;
         }
 
         /// <summary>
@@ -101,14 +121,14 @@ namespace NeoCortexApi.Classifiers
         ///         ...
         ///     }
         /// </returns>
-        Dictionary<int, int> GetDistanceTable(int[] classifiedSequence, int[] unclassifiedSequence)
+        Dictionary<int, int> GetDistanceTable(int[] classifiedSequence, ref int[] unclassifiedSequence)
         {
             // i.e: {1: [1.23, 1.65, 2.23, ...], ...}
             var distanceTable = new Dictionary<int, int>();
 
             foreach (var index in unclassifiedSequence)
-                distanceTable[index] = LeastValue(classifiedSequence, index);
-            
+                distanceTable[index] = LeastValue(ref classifiedSequence, index);
+
             return distanceTable;
         }
 
@@ -134,27 +154,42 @@ namespace NeoCortexApi.Classifiers
         /// </returns>
         List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> table)
         {
-            var votes = new Dictionary<string, int>();
-            var orderedDict = new Dictionary<string, int>();
+            var votes = new DefaultDictionary<string, int>();
+            var overLaps = new Dictionary<string, int>();
+            var similarity = new Dictionary<string, double>();
+            var orderedVotes = new Dictionary<string, int>();
+            var orderedOverLaps = new Dictionary<string, int>();
 
+            foreach (var key in _models.Keys)
+                overLaps[key] = 0;
+            
             foreach (var coordinates in table)
             {
                 for (int i = 0; i < _nNeighbors && i < coordinates.Value.Count; i++)
                 {
-                    if (votes.ContainsKey(coordinates.Value[i].Classification))
-                        votes[coordinates.Value[i].Classification] += 1;
-                    else
-                        votes[coordinates.Value[i].Classification] = 1;
-                }
+                    votes[coordinates.Value[i].Classification] += 1;
 
-                orderedDict = votes.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+                    if (coordinates.Value[i].Distance.Equals(0))
+                        overLaps[coordinates.Value[i].Classification] += 1;
+                }
             }
 
+            orderedVotes = votes.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            orderedOverLaps = overLaps.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
+            foreach (var paired in orderedOverLaps)
+                similarity[paired.Key] = (double)paired.Value / table.Count;
+
+
             var result = new List<ClassifierResult<string>>();
-            foreach (var paired in orderedDict)
+            var orderedResults = orderedOverLaps.Values.First() > table.Count / 2 ? orderedOverLaps.Keys : orderedVotes.Keys;
+
+            foreach (var key in orderedResults)
             {
                 var cls = new ClassifierResult<string>();
-                cls.PredictedInput = paired.Key;
+                cls.PredictedInput = key;
+                cls.Similarity = similarity[key];
+                cls.NumOfSameBits = orderedOverLaps[key];
                 result.Add(cls);
             }
 
@@ -173,20 +208,16 @@ namespace NeoCortexApi.Classifiers
         {
             var unclassifiedSequence = unclassifiedCells.Select(idx => idx.Index).ToArray();
             _sdrs = sdr;
-            var mappedElements = new Dictionary<int, List<ClassificationAndDistance>>();
+            var mappedElements = new DefaultDictionary<int, List<ClassificationAndDistance>>();
 
             foreach (var model in _models)
             {
                 foreach (var sequence in model.Value)
                 {
-                    foreach (var index in GetDistanceTable(sequence, unclassifiedSequence))
+                    foreach (var index in GetDistanceTable(sequence, ref unclassifiedSequence))
                     {
                         var value = new ClassificationAndDistance(model.Key, index.Value);
-
-                        if (mappedElements.ContainsKey(index.Key))
-                            mappedElements[index.Key].Add(value);
-                        else
-                            mappedElements[index.Key] = new List<ClassificationAndDistance>() { value };
+                        mappedElements[index.Key].Add(value);
                     }
                 }
             }
