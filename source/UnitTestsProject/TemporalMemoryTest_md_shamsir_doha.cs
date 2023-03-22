@@ -197,7 +197,29 @@ namespace UnitTestsProject
             Assert.IsNotNull(newSegment);
             Assert.AreEqual(2, newSegment.Synapses.Count);
         }
-        
+        /// <summary>
+        /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
+        /// </summary>
+        [TestMethod]
+        public void TestColumnDimensions()
+        {
+            // Initialize
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32, 64 }); // Set custom column dimensions
+            p.Set(KEY.CELLS_PER_COLUMN, 32);
+            p.apply(cn);
+            tm.Init(cn);
+
+            int cnt = 0;
+            foreach (var item in cn.GetColumns())
+            {
+                cnt += item.Cells.Length;
+            }
+
+            Assert.AreEqual(32 * 64 * 32, cnt);
+        }
     }
 }
 // files
