@@ -44,31 +44,27 @@ namespace UnitTestsProject.EncoderTests
 
         [TestMethod]
         [TestCategory("Prod")]
-      
-    
 
-        [DataRow(0, new int[] { 1, 1, 0, 0, 0, 0, 0, 0, 1, })] 
-        [DataRow(1, new int[] { 1, 1, 1, 0, 0, 0, 0, 0, 0, })] 
-        [DataRow(2, new int[] { 0, 1, 1, 1, 0, 0, 0, 0, 0, })] 
+        [DataRow(0, new int[] { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, })]
 
 
-        public void ScalarEncoderUnitTempTest(double input, int[] expectedResult)
+        public void ScalarEncoderUnitTemperatureTest(double input, int[] expectedResult)
         {
             CortexNetworkContext ctx = new CortexNetworkContext();
             ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
             {
-                { "W", 3},
-                { "N", 9},
+                { "W", 5},
+                { "N", 20},
                 { "MinVal", (double)0}, // Min value = (0).
-                { "MaxVal", (double)7}, // Max value = (7).
-                { "Periodic", true}, //
-                { "Name", "Days Of Week"},
-                { "ClipInput", true},
+                { "MaxVal", (double)20}, // Max value = (7).
+                { "Periodic", false }, // Since Monday would repeat again.
+                { "Name", "Temperature"},
+                { "ClipInput", false},
             });
 
             var result = encoder.Encode(input); // Encoding the input according to the encoding parameters.
 
-            PrintBitMap(encoder, nameof(ScalarEncoderUnitTestWeek)); // Calling the Bitmap method to show output in Bitmap Format.
+            PrintBitMap(encoder, nameof(ScalarEncoderUnitTemperatureTest()); // Calling the Bitmap method to show output in Bitmap Format.
 
             Debug.WriteLine(input);
             Debug.WriteLine(NeoCortexApi.Helpers.StringifyVector(result));
