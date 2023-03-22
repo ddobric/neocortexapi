@@ -7,8 +7,28 @@ using System.Linq;
 
 namespace NeoCortexApi.Classifiers
 {
+    public static class EnumExtension 
+    {
+        /// <summary>
+        ///     Extends the foreach method to take a the item and index.
+        ///     i.e List[int].foreach((item, idx) => (some operation!!!))
+        /// </summary>
+        /// <param name="self">Take in an Enumerable object</param>
+        /// <typeparam name="T">Generic type string</typeparam>
+        /// <returns>null</returns>
+        public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> self)       
+            => self.Select((item, index) => (item, index));
+    }
     public class DefaultDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
     {
+        /// <summary>
+        ///     Implementing the DefaultDict similar to python.
+        ///     i.e var sample = DefaultDictionary[string, int]()
+        ///         >>> sample['A']
+        ///         >>> 0
+        ///     prints the default value of in which is 0.
+        /// </summary>
+        /// <param name="key">A dictionary key.</param>
         public new TValue this[TKey key]
         {
             get
@@ -29,11 +49,13 @@ namespace NeoCortexApi.Classifiers
     {
         public string Classification { get; }
         public int Distance { get; }
+        public int ClassificationNo { get; }
 
-        public ClassificationAndDistance(string classification, int distance)
+        public ClassificationAndDistance(string classification, int distance, int classificationNo)
         {
             Classification = classification;
             Distance = distance;
+            ClassificationNo = classificationNo;
         }
 
         /// <summary>
@@ -58,16 +80,6 @@ namespace NeoCortexApi.Classifiers
     ///     models = { A = [[ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]],
     ///                B = []
     ///
-    ///     The verdict must be in terms of %. Where the distance of each point of the unknown/unclassified matrix is
-    ///     calculated and compared to the known matrices. Whence a comparison is made by using the shortest nNeighbors
-    ///     to each unclassified coordinate and assigns the classification keys A, B, C by considering the most amount
-    ///     classifications closest to that point.
-    ///     {
-    ///         3: A,
-    ///         0: B,
-    ///         ...
-    ///     }
-    ///     In this case A is highest occurence hence A for the coordinate (3, 2).
     /// </summary>
     public class KNeighborsClassifier
     {
@@ -159,10 +171,11 @@ namespace NeoCortexApi.Classifiers
             var similarity = new Dictionary<string, double>();
             var orderedVotes = new Dictionary<string, int>();
             var orderedOverLaps = new Dictionary<string, int>();
-
+            
+            // Initializing the overlaps with 0
             foreach (var key in _models.Keys)
                 overLaps[key] = 0;
-            
+
             foreach (var coordinates in table)
             {
                 for (int i = 0; i < _nNeighbors && i < coordinates.Value.Count; i++)
@@ -182,7 +195,9 @@ namespace NeoCortexApi.Classifiers
 
 
             var result = new List<ClassifierResult<string>>();
-            var orderedResults = orderedOverLaps.Values.First() > table.Count / 2 ? orderedOverLaps.Keys : orderedVotes.Keys;
+            var orderedResults = orderedOverLaps.Values.First() > table.Count / 2
+                ? orderedOverLaps.Keys
+                : orderedVotes.Keys;
 
             foreach (var key in orderedResults)
             {
@@ -212,11 +227,11 @@ namespace NeoCortexApi.Classifiers
 
             foreach (var model in _models)
             {
-                foreach (var sequence in model.Value)
+                foreach (var (sequence, idx) in model.Value.WithIndex())
                 {
                     foreach (var index in GetDistanceTable(sequence, ref unclassifiedSequence))
                     {
-                        var value = new ClassificationAndDistance(model.Key, index.Value);
+                        var value = new ClassificationAndDistance(model.Key, index.Value, idx);
                         mappedElements[index.Key].Add(value);
                     }
                 }
