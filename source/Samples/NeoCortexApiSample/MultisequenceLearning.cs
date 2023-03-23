@@ -174,7 +174,7 @@ namespace NeoCortexApiSample
             // We activate here the Temporal Memory algorithm.
             layer1.HtmModules.Add("tm", tm);
 
-            //
+            
             // Loop over all sequences.
             foreach (var sequenceKeyPair in sequences)
             {
@@ -273,10 +273,11 @@ namespace NeoCortexApiSample
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
                     Debug.WriteLine($"{sequenceKeyPair.Key} is having Accuracy: {accuracy}% ");
 
+                    int rowNum = 1; // initialize row number to 1
                     string sequenceKey = sequenceKeyPair.Key;
                     // Create a new Excel package and worksheet
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                    int rowNum = 1; // initialize row number to 1
+
                     using (var package = new ExcelPackage())
                     {
                         var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");
@@ -287,6 +288,8 @@ namespace NeoCortexApiSample
                         FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");
                         package.SaveAs(fileInfo);
                     }
+
+
 
 
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
