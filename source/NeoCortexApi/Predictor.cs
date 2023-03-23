@@ -149,7 +149,7 @@ namespace NeoCortexApi
                 
                 var data = sr.ReadLine();
                 
-                /*
+                
                 if (data == ser.ReadBegin(nameof(Connections)))
                 {
                     

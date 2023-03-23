@@ -771,6 +771,13 @@ namespace NeoCortexApi.Classifiers
         }
         #endregion
 
+        /// <summary>
+        /// De-serialize the HtmClassifier
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sr"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             return HtmSerializer.DeserializeObject<T>(sr, name);
