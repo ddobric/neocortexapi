@@ -83,7 +83,7 @@ namespace NeoCortexApi.Classifiers
         /// </returns>
         double GetDistance(int[] model, int[] item)
         {
-            return Math.Sqrt(Math.Pow(model[0] - item[0], 2) + Math.Pow(model[1] - item[1], 2));
+            return Math.Sqrt(Math.Pow(model[1] - item[1], 2) + Math.Pow(model[2] - item[2], 2));
         }
 
         /// <summary>
