@@ -62,7 +62,7 @@ namespace NeoCortexApiSample
             foreach (KeyValuePair<string, List<double>> kvp in sequences)
             {
                 //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
-                Console.WriteLine(string.Format("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
+                Console.WriteLine(string.Format("Key = {0}, Value = {1}", kvp.Key,kvp.Value));
             }
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));

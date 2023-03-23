@@ -84,6 +84,7 @@ namespace NeoCortexApiSample
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+
             int maxMatchCnt = 0;
 
             var mem = new Connections(cfg);
@@ -273,23 +274,20 @@ namespace NeoCortexApiSample
                     Debug.WriteLine($"{sequenceKeyPair.Key} is having Accuracy: {accuracy}% ");
 
                     string sequenceKey = sequenceKeyPair.Key;
-                    double accuracyOfValue = 99.9;
-                    int rowNum = 1; // initialize row number to 1
-
                     // Create a new Excel package and worksheet
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    int rowNum = 1; // initialize row number to 1
                     using (var package = new ExcelPackage())
                     {
-                        var worksheet = package.Workbook.Worksheets.Add("Sheet1");
-
+                        var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");
                         // Write the Debug output to the Excel worksheet
                         worksheet.Cells[rowNum, 1].Value = $"{sequenceKey} is having Accuracy: {accuracy}%";
                         rowNum++; // increment row number
-
                         // Save the Excel package to a file
-                        FileInfo fileInfo = new FileInfo("output.xlsx");
+                        FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");
                         package.SaveAs(fileInfo);
                     }
+
 
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
 
