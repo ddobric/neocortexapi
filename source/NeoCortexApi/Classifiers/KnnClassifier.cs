@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace NeoCortexApi.Classifiers
 {
-    public static class EnumExtension 
+    public static class EnumExtension
     {
         /// <summary>
         ///     Extends the foreach method to take a the item and index.
@@ -16,9 +16,10 @@ namespace NeoCortexApi.Classifiers
         /// <param name="self">Take in an Enumerable object</param>
         /// <typeparam name="T">Generic type string</typeparam>
         /// <returns>null</returns>
-        public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> self)       
+        public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> self)
             => self.Select((item, index) => (item, index));
     }
+
     public class DefaultDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
     {
         /// <summary>
@@ -83,7 +84,7 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     public class KNeighborsClassifier
     {
-        private int _nNeighbors = 1;
+        private int _nNeighbors = 1; // From Numenta's example 1 is default
         private Dictionary<string, List<int[]>> _models = new Dictionary<string, List<int[]>>();
         private int _sdrs = 10;
 
@@ -169,9 +170,7 @@ namespace NeoCortexApi.Classifiers
             var votes = new DefaultDictionary<string, int>();
             var overLaps = new Dictionary<string, int>();
             var similarity = new Dictionary<string, double>();
-            var orderedVotes = new Dictionary<string, int>();
-            var orderedOverLaps = new Dictionary<string, int>();
-            
+
             // Initializing the overlaps with 0
             foreach (var key in _models.Keys)
                 overLaps[key] = 0;
@@ -187,12 +186,16 @@ namespace NeoCortexApi.Classifiers
                 }
             }
 
-            orderedVotes = votes.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-            orderedOverLaps = overLaps.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            var orderedVotes = votes.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            var orderedOverLaps = overLaps.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
 
             foreach (var paired in orderedOverLaps)
-                similarity[paired.Key] = (double)paired.Value / table.Count;
-
+            {
+                if (paired.Value != 0)
+                    similarity[paired.Key] = (double)paired.Value / table.Count;
+                else
+                    similarity[paired.Key] = 0;
+            }
 
             var result = new List<ClassifierResult<string>>();
             var orderedResults = orderedOverLaps.Values.First() > table.Count / 2
@@ -204,11 +207,18 @@ namespace NeoCortexApi.Classifiers
                 var cls = new ClassifierResult<string>();
                 cls.PredictedInput = key;
                 cls.Similarity = similarity[key];
-                cls.NumOfSameBits = orderedOverLaps[key];
+                cls.NumOfSameBits = overLaps[key];
                 result.Add(cls);
             }
 
             return result;
+        }
+
+        void DynamicKnnAdjustment()
+        {
+            // Total length of the SDRs stored
+            var modelLength = _models.Values.Select(value => value.Count).Aggregate(0, (acc, x) => acc + x) / 10;
+            _nNeighbors = modelLength % 2 != 0 ? modelLength : modelLength + 1;
         }
 
         /// <summary>
