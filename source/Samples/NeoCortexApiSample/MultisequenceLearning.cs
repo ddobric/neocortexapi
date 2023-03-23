@@ -6,7 +6,10 @@ using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using OfficeOpenXml;
+using System.IO;
 
 
 namespace NeoCortexApiSample
@@ -267,6 +270,26 @@ namespace NeoCortexApiSample
                     double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.Value.Count - 1) / (double)sequenceKeyPair.Value.Count * 100.0;
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
+                    Debug.WriteLine($"{sequenceKeyPair.Key} is having Accuracy: {accuracy}% ");
+
+                    string sequenceKey = sequenceKeyPair.Key;
+                    double accuracyOfValue = 99.9;
+                    int rowNum = 1; // initialize row number to 1
+
+                    // Create a new Excel package and worksheet
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    using (var package = new ExcelPackage())
+                    {
+                        var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+
+                        // Write the Debug output to the Excel worksheet
+                        worksheet.Cells[rowNum, 1].Value = $"{sequenceKey} is having Accuracy: {accuracy}%";
+                        rowNum++; // increment row number
+
+                        // Save the Excel package to a file
+                        FileInfo fileInfo = new FileInfo("output.xlsx");
+                        package.SaveAs(fileInfo);
+                    }
 
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
 
