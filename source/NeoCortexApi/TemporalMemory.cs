@@ -650,9 +650,9 @@ namespace NeoCortexApi
         #region Helper Methods
 
         /// <summary>
-        /// Gets the cell with the smallest number of segments in the currentlly processing mini-column.
+        /// Gets the cell with the smallest number of segments in the currently processing mini-column.
         /// </summary>
-        /// <param name="conn">Connections instance currentlly in use.</param>
+        /// <param name="conn">Connections instance currently in use.</param>
         /// <param name="cells">List of cells.</param>
         /// <param name="random">Random generator.</param>
         /// <returns></returns>
