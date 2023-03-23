@@ -100,6 +100,7 @@ namespace UnitTestsProject
             Assert.AreEqual(2, winnerCells[1].Index);
         }
 
+        [TestMethod]
         public void TestIncreasePermanenceOfActiveSynapses()
         {
             // Arrange
@@ -171,7 +172,7 @@ namespace UnitTestsProject
             Assert.AreNotEqual(newLeastUsedCell, leastUsedCell);
         }
 
-
+        [TestMethod]
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
         {
             TemporalMemory tm = new TemporalMemory();
@@ -222,4 +223,3 @@ namespace UnitTestsProject
         }
     }
 }
-// files

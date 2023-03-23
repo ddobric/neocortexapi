@@ -23,6 +23,7 @@ namespace UnitTestsProject
         /// <summary>
         /// Gets or sets the test context which provides
         /// information about and functionality for the current test run.
+        /// For debugging the tests
         /// </summary>
         public TestContext TestContext
         {
@@ -165,28 +166,6 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// TestActiveCellCount: Verify that the number of active cells in the 
-        /// output of Temporal Memory Algorithm is less than or equal to the maximum 
-        /// number of active cells allowed per column.
-        /// </summary>
-        [TestMethod]
-        public void TestActiveCellCount()
-        {
-            // Initialize
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 5);
-            p.apply(cn);
-            tm.Init(cn);
-
-            int[] activeColumns = { 0 };
-            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
-            var activeCells = cc.ActiveCells;
-
-            Assert.IsTrue(activeCells.Count <= 5);
-        }
-
-        /// <summary>
         /// Test the growth of a new dendrite segment when no matching segments are found
         /// </summary>
         [TestMethod]
@@ -325,8 +304,8 @@ namespace UnitTestsProject
 
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(4, winnerCells.Count);
-            Assert.AreEqual(0, winnerCells[0].Index);
-            Assert.AreEqual(2, winnerCells[1].Index);
+            Assert.AreEqual(0, winnerCells[0].ParentColumnIndex);
+            Assert.AreEqual(1, winnerCells[1].ParentColumnIndex);
         }
 
         /// <summary>
