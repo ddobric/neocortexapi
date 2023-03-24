@@ -83,7 +83,7 @@ namespace NeoCortexApi.Classifiers
         /// </returns>
         double GetDistance(int[] model, int[] item)
         {
-            return Math.Sqrt(Math.Pow(model[1] - item[1], 2) + Math.Pow(model[2] - item[2], 2));
+            return Math.Sqrt(Math.Pow(model[0] - item[0], 2) + Math.Pow(model[1] - item[1], 2));
         }
 
         /// <summary>
@@ -159,6 +159,11 @@ namespace NeoCortexApi.Classifiers
         ///         (1, 3): [1.23, 1.65, 2.23, ...],
         ///         (2, 0): [1.01, ...],
         ///         ...
+        ///     }
+        ///     This function only takes the indexes of active cells of both classifiedmatrix and unclassifiedmatrix.
+        ///     {
+        ///         List<int[]> classifiedMatrixIndexes = GetIndexes(classifiedMatrix);
+        ///         List<int[]> unclassifiedMatrixIndexes = GetIndexes(unclassifiedMatrix);
         ///     }
         /// </returns>
         Dictionary<int[], List<double>> GetDistanceTable(int[][] classifiedMatrix, int[][] unclassifiedMatrix)
