@@ -275,17 +275,14 @@ namespace NeoCortexApiSample
 
                     int rowNum = 1; // initialize row number to 1
                     string sequenceKey = sequenceKeyPair.Key;
-                    // Create a new Excel package and worksheet
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-                    using (var package = new ExcelPackage())
+                    using (var package = new ExcelPackage())// Create a new Excel package and worksheet
                     {
-                        var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");
-                        // Write the Debug output to the Excel worksheet
+                        var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");// Write the Debug output to the Excel worksheet
                         worksheet.Cells[rowNum, 1].Value = $"{sequenceKey} is having Accuracy: {accuracy}%";
                         rowNum++; // increment row number
-                        // Save the Excel package to a file
-                        FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");
+                        FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");// Save the Excel package to a file
                         package.SaveAs(fileInfo);
                     }
 
