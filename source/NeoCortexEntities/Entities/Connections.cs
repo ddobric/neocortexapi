@@ -1593,6 +1593,12 @@ namespace NeoCortexApi.Entities
 
         }
 
+        /// <summary>
+        /// Serialize Connection object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name"></param>
+        /// <param name="sw"></param>
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             if (obj is Connections connections)

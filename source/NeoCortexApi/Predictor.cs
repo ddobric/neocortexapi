@@ -76,17 +76,23 @@ namespace NeoCortexApi
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             if (obj is Predictor predictor)
-            {   
+            {
+                // Serialize the “Connections” object in the Predictor instance
+                // The “Connections” object is then serialized to Model_con.txt
                 var model_con = "Model_con.txt";
                 StreamWriter sw_con = new StreamWriter(model_con);
                 predictor.connections.Serialize(predictor.connections, null, sw_con);
                 sw_con.Close();
 
+                // Serialize the “CortexLayer” object in the Predictor instance
                 //var model_layer = "Model_layer.txt";
                 //StreamWriter sw_layer = new StreamWriter(model_layer);
                 predictor.layer.Serialize(predictor.layer, null, null);
                 //sw_layer.Close();
 
+
+                // Serialize the “HtmClassifier” object in the Predictor
+                // The “HtmClassifier” object is then serialized to the Model_cls.txt
                 var model_cls = "Model_cls.txt";
                 StreamWriter sw_cls = new StreamWriter(model_cls);
                 var cls = predictor.classifier;
