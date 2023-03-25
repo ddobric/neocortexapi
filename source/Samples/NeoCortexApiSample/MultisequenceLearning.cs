@@ -84,7 +84,7 @@ namespace NeoCortexApiSample
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            
+
 
 
             int maxMatchCnt = 0;
@@ -144,7 +144,7 @@ namespace NeoCortexApiSample
             //
             // Training SP to get stable. New-born stage.
             //
-            
+
 
             for (int i = 0; i < maxCycles && isInStableState == false; i++)
             {
@@ -177,7 +177,7 @@ namespace NeoCortexApiSample
             // We activate here the Temporal Memory algorithm.
             layer1.HtmModules.Add("tm", tm);
 
-            
+
             // Loop over all sequences.
             foreach (var sequenceKeyPair in sequences)
             {
@@ -282,8 +282,8 @@ namespace NeoCortexApiSample
                         swr.WriteLine($"{sequenceKeyPair.Key} is having accuracy , {accuracy}%");
                     }
 
-                    /* writing accuracy logs in .xlsx file
-                     
+                    /* Writing accuracy in .xlsx file
+                     * 
                     string sequenceKey = sequenceKeyPair.Key;
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -293,10 +293,21 @@ namespace NeoCortexApiSample
                         var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");// Write the Debug output to the Excel worksheet
                         worksheet.Cells[rowNum, 1].Value = $"{sequenceKey} is having Accuracy: {accuracy}%";
                         rowNum++; // increment row number
+
+                        //ExcelWorksheet ws = package.Workbook.Worksheets[0];
+                        //var worksheet = package.Workbook.Worksheets[0];
+
+                        //int row = worksheet.Dimension.End.Row + 1;
+
+                        //worksheet.Cells[row, 1].Value = sequenceKey;
+                        //worksheet.Cells[row, 2].Value = accuracy;
+
+
                         FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");// Save the Excel package to a file
                         package.SaveAs(fileInfo);
                     }
                     */
+
 
 
 
