@@ -275,7 +275,6 @@ namespace NeoCortexApiSample
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
                     Debug.WriteLine($"{sequenceKeyPair.Key} is having Accuracy: {accuracy}% ");
-
                     using (var swr = new StreamWriter("Accuracy Logs.csv", true)) // the "true" flag appends to the file instead of overwriting it
                     {
                         // write the sequence accuracy to the CSV file
