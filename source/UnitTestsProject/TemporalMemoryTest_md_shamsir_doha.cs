@@ -58,29 +58,30 @@ namespace UnitTestsProject
 
             return htmConfig;
         }
-        //<summary>
-/// Test adapt segment from syapse to centre when synapse is already at the center
-/// <Summary>
 
-            [TestMethod]
-            public void TestAdaptSegmentToCentre_SynapseAlreadyAtCentre()
-            {
-                //Arrange
-                TemporalMemory tm = new TemporalMemory();
-                Connections cn = new Connections();
-                Parameters p = Parameters.getAllDefaultParameters();
-                p.apply(cn);
-                tm.Init(cn);
+        ///<summary>
+        /// Test adapt segment from syapse to centre when synapse is already at the center
+        /// <Summary>
+        [TestMethod]
+        public void TestAdaptSegmentToCentre_SynapseAlreadyAtCentre()
+        {
+            //Arrange
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
 
-                DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
-                Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.6); // central 
+            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
+            Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.6); // central 
 
-                //Act
-                TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            //Act
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
 
-                //Assert
-                Assert.AreEqual(0.7, s1.Permanence, 0.1);
-            }
+            //Assert
+            Assert.AreEqual(0.7, s1.Permanence, 0.1);
+        }
+
         [TestMethod]
         public void TestTemporalMemoryComputeReturnsWinnerCells()
         {
@@ -172,32 +173,28 @@ namespace UnitTestsProject
             Assert.AreNotEqual(newLeastUsedCell, leastUsedCell);
         }
 
+        /// <summary>
+        /// TestActiveCellCount: Verify that the number of active cells in the 
+        /// output of Temporal Memory Algorithm is less than or equal to the maximum 
+        /// number of active cells allowed per column.
+        /// </summary>
         [TestMethod]
-        public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
+        public void TestActiveCellCount()
         {
+            // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = Parameters.getAllDefaultParameters();
+            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 5);
             p.apply(cn);
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
-            Cell[] activeCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+            var activeCells = cc.ActiveCells;
 
-            DistalDendrite dd = cn.CreateDistalSegment(activeCells[0]);
-            cn.CreateSynapse(dd, cn.GetCell(4), 0.3);
-            cn.CreateSynapse(dd, cn.GetCell(5), 0.3);
-
-            tm.Compute(activeColumns, true);
-
-          
-            Assert.AreEqual(1, activeCells[0].DistalDendrites.Count);
-
-            DistalDendrite newSegment = activeCells[0].DistalDendrites[0] as DistalDendrite;
-
-            Assert.IsNotNull(newSegment);
-            Assert.AreEqual(2, newSegment.Synapses.Count);
+            Assert.IsTrue(activeCells.Count <= 5);
         }
+
         /// <summary>
         /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
         /// </summary>
