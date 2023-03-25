@@ -160,11 +160,6 @@ namespace NeoCortexApi.Classifiers
         ///         (2, 0): [1.01, ...],
         ///         ...
         ///     }
-        ///     This function only takes the indexes of active cells of both classifiedmatrix and unclassifiedmatrix.
-        ///     {
-        ///         List<int[]> classifiedMatrixIndexes = GetIndexes(classifiedMatrix);
-        ///         List<int[]> unclassifiedMatrixIndexes = GetIndexes(unclassifiedMatrix);
-        ///     }
         /// </returns>
         Dictionary<int[], List<double>> GetDistanceTable(int[][] classifiedMatrix, int[][] unclassifiedMatrix)
         {
@@ -200,6 +195,11 @@ namespace NeoCortexApi.Classifiers
         ///         (2, 0): B,
         ///         ...
         ///     }
+        /// Handles if a variable contains the same value multiple times. 
+        /// {
+        ///     for (; coordinates.Value[i].Distance <= coordinates.Value[i + 1].Distance; i++)
+        ///           votes[coordinates.Value[i].Classification] += 1;
+        /// }
         /// </returns>
         Dictionary<int[], string> Voting(Dictionary<int[], List<ClassificationAndDistance>> table)
         {
@@ -208,7 +208,7 @@ namespace NeoCortexApi.Classifiers
             foreach (var coordinates in table)
             {
                 int i;
-                for (i = 0; i < _nNeighbors; i+=1)
+                for (i = 0; i < _nNeighbors; i++)
                 {
                     // Returns the Classification of [(ClassificationAndDistance 1), ...]
                     if (votes.ContainsKey(coordinates.Value[i].Classification))
@@ -257,7 +257,7 @@ namespace NeoCortexApi.Classifiers
             Console.WriteLine($"Verdict is: {classificationType}");
         }
 
-        void Learn(object x, string[] tags)
+        void Learn (object x, string[] tags)
         {
         }
     }
