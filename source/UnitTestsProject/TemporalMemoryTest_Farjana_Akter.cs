@@ -69,6 +69,41 @@ namespace UnitTestsProject
 
             return htmConfig;
         }
+        /// <summary>
+        /// Test the growth of a new dendrite segment when multiple matching segments are found
+        /// </summary>
+        [TestMethod]
+        public void TestNewSegmentGrowthWhenMultipleMatchingSegmentsFound()
+        {
+            // Initialize
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0 };
+            Cell[] activeCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
+
+            // create multiple matching segments
+            DistalDendrite dd1 = cn.CreateDistalSegment(activeCells[0]);
+            cn.CreateSynapse(dd1, cn.GetCell(4), 0.3);
+            cn.CreateSynapse(dd1, cn.GetCell(5), 0.3);
+
+            DistalDendrite dd2 = cn.CreateDistalSegment(activeCells[0]);
+            cn.CreateSynapse(dd2, cn.GetCell(6), 0.3);
+            cn.CreateSynapse(dd2, cn.GetCell(7), 0.3);
+
+            tm.Compute(activeColumns, true);
+
+            // new segment should be grown
+            Assert.AreEqual(2, activeCells[0].DistalDendrites.Count);
+
+            DistalDendrite newSegment = activeCells[0].DistalDendrites[0] as DistalDendrite;
+
+            Assert.IsNotNull(newSegment);
+            Assert.AreEqual(2, newSegment.Synapses.Count);
+        }
 
         [TestMethod]
         public void TestLowSparsitySequenceLearningAndRecall()
