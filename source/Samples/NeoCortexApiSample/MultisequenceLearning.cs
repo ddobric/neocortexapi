@@ -7,9 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using OfficeOpenXml;
 using System.IO;
-using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 
 namespace NeoCortexApiSample
