@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using OfficeOpenXml;
 using System.IO;
+using LearningFoundation;
 
 
 namespace NeoCortexApiSample
@@ -83,6 +84,7 @@ namespace NeoCortexApiSample
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
+            
 
 
             int maxMatchCnt = 0;
@@ -142,6 +144,7 @@ namespace NeoCortexApiSample
             //
             // Training SP to get stable. New-born stage.
             //
+            
 
             for (int i = 0; i < maxCycles && isInStableState == false; i++)
             {
@@ -273,18 +276,33 @@ namespace NeoCortexApiSample
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
                     Debug.WriteLine($"{sequenceKeyPair.Key} is having Accuracy: {accuracy}% ");
 
-                    int rowNum = 1; // initialize row number to 1
-                    string sequenceKey = sequenceKeyPair.Key;
-                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-                    using (var package = new ExcelPackage())// Create a new Excel package and worksheet
+                    using (var swr = new StreamWriter("Accuracy Logs.csv", true)) // the "true" flag appends to the file instead of overwriting it
                     {
-                        var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");// Write the Debug output to the Excel worksheet
-                        worksheet.Cells[rowNum, 1].Value = $"{sequenceKey} is having Accuracy: {accuracy}%";
-                        rowNum++; // increment row number
-                        FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");// Save the Excel package to a file
-                        package.SaveAs(fileInfo);
+                        // write the sequence accuracy to the CSV file
+                        swr.WriteLine($"{sequenceKeyPair.Key} is having accuracy , {accuracy}%");
                     }
+                    //string sequenceKey = sequenceKeyPair.Key;
+                    //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                    //using (var package = new ExcelPackage())// Create a new Excel package and worksheet
+                    //{
+                    //    int rowNum = 1; // initialize row number to 1
+                    //    var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");// Write the Debug output to the Excel worksheet
+                    //    worksheet.Cells[rowNum, 1].Value = $"{sequenceKey} is having Accuracy: {accuracy}%";
+                    //    rowNum++; // increment row number
+
+                    //    //ExcelWorksheet ws = package.Workbook.Worksheets[0];
+                    //    //var worksheet = package.Workbook.Worksheets[0];
+
+                    //    //int row = worksheet.Dimension.End.Row + 1;
+
+                    //    //worksheet.Cells[row, 1].Value = sequenceKey;
+                    //    //worksheet.Cells[row, 2].Value = accuracy;
+
+
+                    //    FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");// Save the Excel package to a file
+                    //    package.SaveAs(fileInfo);
+                    //}
 
 
 
