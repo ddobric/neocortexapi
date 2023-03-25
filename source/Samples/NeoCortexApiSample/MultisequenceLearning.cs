@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
 
 
 namespace NeoCortexApiSample
@@ -129,6 +130,8 @@ namespace NeoCortexApiSample
 
             //double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
+            StreamWriter writer = new StreamWriter("D:\\FUAS\\output.txt");
+
 
             int cycle = 0;
             int matches = 0;
@@ -272,6 +275,9 @@ namespace NeoCortexApiSample
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
 
+                    writer.WriteLine($"{sequenceKeyPair.Key}, Accuraccy = {accuracy} %");
+                    writer.NewLine= "\n";
+
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
 
                     if (accuracy >= maxPossibleAccuraccy)
@@ -298,6 +304,7 @@ namespace NeoCortexApiSample
                     tm.Reset(mem);
                 }
             }
+            writer.Close();
 
             Debug.WriteLine("------------ END ------------");
 
