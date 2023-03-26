@@ -1,71 +1,90 @@
-
-
 <h3 align="center">Project Name</h3>
 <h3 align="center">ML22/23- 2 Investigate and Implement KNN Classifier</h3>
 
-<!--The Project Problem Statement  -->
-## The Project Problem Statement 
+<!--Assigned Problem Statement:-->
+## The Assigned Problem Statement:
 1. Please first read about classifiers in general. Try to understand a difference and explain it. Also, explain why and how it can be used with HTM.
 2. Then investigate the KNN Classifier at [http://nupic.docs.numenta.org/1.0.0/api/algorithms/classifiers.html#knn-classifier](http://nupic.docs.numenta.org/1.0.0/api/algorithms/classifiers.html#knn-classifier) in detail and figure out how to implement it in C#
-3. Please take also a look at university implementation and see if that one can be used  [https://github.com/UniversityOfAppliedSciencesFrankfurt/LearningApi/blob/f713a28984e8f3115952c54cd9d60d53faa76ffe/LearningApi/src/MLAlgorithms/AnomDetect.KMeans/KMeansAlgorithm.cs](https://github.com/UniversityOfAppliedSciencesFrankfurt/LearningApi/blob/f713a28984e8f3115952c54cd9d60d53faa76ffe/LearningApi/src/MLAlgorithms/AnomDetect.KMeans/KMeansAlgorithm.cs)
+3. Please also take a look at university implementation and see if that one can be used  [https://github.com/UniversityOfAppliedSciencesFrankfurt/LearningApi/blob/f713a28984e8f3115952c54cd9d60d53faa76ffe/LearningApi/src/MLAlgorithms/AnomDetect.KMeans/KMeansAlgorithm.cs](https://github.com/UniversityOfAppliedSciencesFrankfurt/LearningApi/blob/f713a28984e8f3115952c54cd9d60d53faa76ffe/LearningApi/src/MLAlgorithms/AnomDetect.KMeans/KMeansAlgorithm.cs)
 
-<!--Getting Started  -->
-## Getting Started
+<!--The Assigned Problem Statement:-->
+## Getting Started:
+
+### Introduction:
+The K-Nearest-Neighbors(KNN) is a supervised machine learning algorithm and most widely used in different Recommendation Systems as it performs label-based predictions with very high accuracy. The goal was to develop a KNN Classifier model in C# and integrate it with NeoCortexApi. The KNN Classifier model has three important parts 1. Calculations of the distance of uncategorical label data with different techniques from all the surrounding points 2. Decide the value of K 3. Based on the voting table give the prediction for uncategorical data. Initially, all three stages are successfully developed on the hardcoded sequence and then integrated with the NeoCortexApi.
+
+### Project Stucture:
+
+The project is divided into 4 maojor Parts
+1. **Source Data Gathering and Preprocessing:**
+- Define the source data and perform the ETL(Extract, Trasform, Load) operation on the data
+- Visualize the data and get insights and setup the pipeline with KNN Machine Learning Model
+
+2. **Splitting Data for Train and Testing:**
+- Split the data in two sets i.e 80% of data should be train and 20% data should be train dataset(Depending on Application this can vary)
+
+3. **Building The KNN Machine Lerning Model:**
+- This is category/label classification based model so data should be well formated to predict the outcome.
+- Select the value of K to get the neighboring values
+- Calculate the distnace from all the points 
+- Vote the calculated distance label 
+- Predict the Outcome based on voting table
+
+4. **Train and Test The KNN Model:**
+- Train the model with train dataset
+- Use testing data to check the accuracy and if required fine tune the model
+
+  Fine tune the model by,
+  1. Using comparatively large data to train the model
+  2. Work on Distnace calculations and voting principle
+
+### Project Explaination:
+1. Define the value of K:\
+   Defining the value of K is the main trigger part to the KNN model as most of the computation is based on this part so KNeighborsClassifier helps to get the value of K this could be a user define value or based on the dataset prefixing of K value is possible
+    
+    ```csharp
+    public class KNeighborsClassifier
+    {
+    }
+    ```
+
+2. Distance Calculation \
+- This section calculates distance between the neighboring points and store the results in the distanceTable 
+- Act as input to next method to calculate the voting table and predication of unclassifiedCells  
+
+    ```csharp
+    public class ClassificationAndDistance : IComparable<ClassificationAndDistance>
+    {
+    }
+    ```
 
 
 
+### Contribution Details and links:
 
+1. **Ankush Laxman Patil**
+Branches [Ankush](https://github.com/ayan1948/neocortexapi/tree/Ankush)  &  [ankush_patil](https://github.com/ayan1948/neocortexapi/tree/ankush_patil)
+- Started with researching different machine learning techniques and KNN implementation in a python programming language
+- Build KNN Prototype for a 2D array to predict the outcome in the form of labels however the distance calculations are not appropriate
+- Explored the different methods used for Distance calculations such as Euclidian distance, Manhattan distance, Hamming distance
+- Build the KNN-based model for sequential input and fine-tuning the distance and voting mechanism in KNN Model and tried to link it with Neocortex API 
 
+2. **Ayan Borthakur**
+Branches [Ayan](https://github.com/ayan1948/neocortexapi/tree/master) & [Minor Refactoring](https://github.com/ayan1948/neocortexapi/tree/minor_refactoring)
+- Started with the creating Matrix-based KNN Implementation for hard coded data inputs and labels
+- Worked on the pipeline to integrate the different functionality of matrix and sequence data designed and Built for Sequence-based KNN prediction 
+- Integrated the Model with the Neocortex API and observed the output for accuracy calculation 
 
-<!-- Professor Review and Feedbcak  -->
-## Professor Review and Feedbcak 
+3. **Nasir Ishaq**
+Branch [Nasir-Ishaq](https://github.com/ayan1948/neocortexapi/tree/Nasir-Ishaq)
+- Initially Worked on deciding the K value and its different outcomes 
+- Started with writing the K value function and worked figuring out the k value and model accuracy
+- Explored the voting principle and HTM and Temporal Memory based input dataset
 
-
-
-<!-- Sources -->
-### Sources
-1.  Research Paper 
-   - A Brief Review of Nearest Neighbor Algorithm for Learning and Classification https://www.researchgate.net/publication/340693569_A_Brief_Review_of_Nearest_Neighbor_Algorithm_for_Learning_and_Classification
-   - Using KNN Algorithm for Classification of Textual
-Documents https://ieeexplore.ieee.org/document/8079924
-   - Investigation of Hierarchical Temporal Memory Spatial Pooler’s Noise Robustness against Gaussian noise https://www.researchgate.net/publication/261021625_A_robust_implementation_of_the_spatial_pooler_within_the_theory_of_Hierarchical_Temporal_Memory_HTM
-   - KNN Model-Based Approach in Classification https://www.researchgate.net/publication/2948052_KNN_Model-Based_Approach_in_Classification
-   - Research and Implementation of Machine Learning Classifier Based on KNN https://iopscience.iop.org/article/10.1088/1757-899X/677/5/052038/pdf
-   
-
-2. Documents
-   - Github https://docs.github.com/en/get-started
-   - A Machine Lerning Guide to HTM https://www.numenta.com/blog/2019/10/24/machine-learning-guide-to-htm/
-   - IBM's K-Nearest Neighbors Algorithm https://www.ibm.com/topics/knn
-https://www.javatpoint.com/k-nearest-neighbor-algorithm-for-machine-learning
-   - K-Nearest Neighbor(KNN) Algorithm for Machine Learning
-https://www.tutorialspoint.com/machine_learning_with_python/machine_learning_with_python_knn_algorithm_finding_nearest_neighbors.htm
-   - KNeighborsClassifierhttps://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
-   -  KNN Algorithm for Machine Learning https://serokell.io/blog/knn-algorithm-in-ml
-https://www.datacamp.com/tutorial/k-nearest-neighbor-classification-scikit-learn
-https://www.tutorialspoint.com/scikit_learn/scikit_learn_kneighbors_classifier.htm
-   - Weighted-k-nn-classification  https://visualstudiomagazine.com/articles/2022/05/19/weighted-k-nn-classification.aspx
-
-3. Videos
-   - All basics for Temporial Memory, HTM https://www.youtube.com/@NumentaTheory
-   - StatQuest: K-nearest neighbors, Clearly Explained https://www.youtube.com/watch?v=HVXime0nQeI
-   - Working of KNN Algorithm https://www.youtube.com/watch?v=UqYde-LULfs
-   - How to Choose the K Value into consideration https://www.youtube.com/watch?v=4HKqjENq9OU&t=1470s
-
-<!--About Team_KNN  -->
-## About Team_KNN 
-	1. Ankush Patil 
-	 - Started with reading the documnetaion and Understood the Working of KNN
-	 - Build KNN Prototype for 2D array which can predict the outcome in the form of lables however the distnacee calclations are not appropriate
-	 - Explored the diffrent methods used for Distance calculations such as Euclidian distance,Manhattan distance, Hamming distance
-	 - Build the KNN based model for sequntial input and fine tuning the distnace and voting mechanism in KNN Model and tried to link it with Neocortix API
-
-	2. Ayan Borthakur
-	 - Started with the creating Matrix based KNN Implementation for hard coded data inputs and labels
-	 - Worked on the pipeline to integrated the diffrenrent funtionality of matrix and sequnce data designed by Ankush and Build for Sequance based KNN predicaton 
-	 - Integrated the Model with the Neo cortix API and observed the output and for accuracy calculation 
-
-	3. Nasir Ishaq
-	 - Initially Worked of decideing the K value and its diffrent outcomes 
-	 - Started with the writing the K value funcation and worked figiring out the k value and model accuract
-	 - Explored the voating principle and HTM and Temporial Memory based inout dataset
+### Past Reviews and Suggestions : 
+- **Explained the KNN Classifier in detail and it's working with help of Example**
+**Suggestions:**  Work on Neocortex API instead of Learning API and try creating a prototype on hard-coded sequence and then try to integrate it with Neocortex API
+- **Setting up Neocortex API for writing the model and issues while debugging the model**
+**Suggestions:**  Create a model first then debug it from the Neocortex API solution and rectified issues related to the reference 
+- **Code Reviewing for KNN Classifier**
+**Suggestions:**  Integrate the model with the  Neocortex API and observe the predication on TM or Hierarchical Partial Pooler Data instead on Hardcoded sequence 
