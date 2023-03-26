@@ -8,9 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using OfficeOpenXml;
-using System.IO;
-using LearningFoundation;
+
 
 
 namespace NeoCortexApiSample
@@ -58,7 +56,7 @@ namespace NeoCortexApiSample
                 PredictedSegmentDecrement = 0.1
             };
 
-            double max = 20;
+            double max = 99;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -84,8 +82,6 @@ namespace NeoCortexApiSample
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-
-
 
             int maxMatchCnt = 0;
 
@@ -139,7 +135,7 @@ namespace NeoCortexApiSample
 
             var lastPredictedValues = new List<string>(new string[] { "0" });
 
-            int maxCycles = 3500;
+            int maxCycles = 3550;
 
             //
             // Training SP to get stable. New-born stage.
@@ -275,7 +271,6 @@ namespace NeoCortexApiSample
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
                     Debug.WriteLine($"{sequenceKeyPair.Key} is having Accuracy: {accuracy}% ");
-
                     using (var swr = new StreamWriter("Accuracy Logs.csv", true)) // the "true" flag appends to the file instead of overwriting it
                     {
                         // write the sequence accuracy to the CSV file

@@ -39,8 +39,6 @@ namespace NeoCortexApiSample
             // Starts experiment that demonstrates how to learn spatial patterns.
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
-
-            // new RunPredictionMultiSequenceExperiment() 
             RunPredictionMultiSequenceExperiment(); /* This method is developed by Team_MSL to read arbitrary data from single txt file and improve CPU utilization*/
         }
 
@@ -51,19 +49,11 @@ namespace NeoCortexApiSample
             Dictionary<string, List<double>> sequences = new();
 
             sequences = GetInputFromExcelFile();
-
-            foreach (KeyValuePair<string, List<double>> kvp in sequences)
-            {
-                //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
-                Console.WriteLine(string.Format("Key = {0}, Value = {1}", kvp.Key,kvp.Value));
-            }
-
-           // Prototype for building the prediction engine.
+            // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new();
 
             var predictor = experiment.Run(sequences);
             List<List<double>> testSequences = new();
-            //testSequences = GetSubSequencesInputFromTextFiles();
             testSequences = GetSubSequencesInputFromExcelFile();
             predictor.Reset();
             foreach (var numberList in testSequences)
@@ -74,57 +64,16 @@ namespace NeoCortexApiSample
         }
 
 
-        /* Method to read the data from CSV file for comparing which file type is having less CPU utilization */
-
-        private static Dictionary<string, List<double>> GetInputFromCsvFile(string filePath)
-        {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-
-            using (StreamReader reader = new StreamReader(filePath))
-            {
-                int temp = 0;
-                List<double> inputList = new List<double>();
-                while (!reader.EndOfStream)
-                {
-                    var row = reader.ReadLine();
-                    var numbers = row.Split(',');
-                    Console.WriteLine(row);
-
-                    foreach (var digit in numbers)
-                    {
-                        if (double.TryParse(digit, out double number))
-                        {
-                            inputList.Add(number);
-                        }
-                        else
-                        {
-                            temp++;
-                            sequences.Add("Sequence: " + temp, inputList);
-                            inputList = new List<double>();
-                            break;
-                        }
-                    }
-                }
-                if (inputList.Count > 0)
-                {
-                    temp++;
-                    sequences.Add("Sequence: " + temp, inputList);
-                }
-            }
-            return sequences;
-        }
-
 
         /* This code detects empty cell at the end of the row and it takes input from excel*/
 
         private static Dictionary<string, List<double>> GetInputFromExcelFile()
         {
-            string filePath = Path.Combine(Environment.CurrentDirectory, "input1.xlsx");
+            string filePath = Path.Combine(Environment.CurrentDirectory, "Input.xlsx");
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
-                Console.WriteLine("Inside GetInputFromExcelFile Method");
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     int temp = 0;
@@ -146,13 +95,13 @@ namespace NeoCortexApiSample
 
                             if (double.TryParse(digit, out double number))
                             {
-                                
-                                    if (number >= MinVal && number <= MaxVal)
-                                    {
-                                        inputList.Add(number);
-                                    }
-                                   rowHasData = true;
-                                
+
+                                if (number >= MinVal && number <= MaxVal)
+                                {
+                                    inputList.Add(number);
+                                }
+                                rowHasData = true;
+
                             }
 
                         }
@@ -187,7 +136,6 @@ namespace NeoCortexApiSample
         }
 
 
-       
 
         /* This method takes the input from Excel file */
 
@@ -221,13 +169,16 @@ namespace NeoCortexApiSample
 
 
 
-
         private static void PredictNextElement(Predictor predictor, List<double> list)
         {
             Debug.WriteLine("------------------------------");
+            int countOfMatches = 0;
+            int totalPredictions = 0;
 
-            foreach (var item in list)
+            for (int i = 0; i < list.Count - 1; i++)
             {
+                var item = list[i];
+                var nextItem = list[i + 1];
                 var res = predictor.Predict(item);
 
                 if (res.Count > 0)
@@ -240,12 +191,33 @@ namespace NeoCortexApiSample
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
                     Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+
+                    if (nextItem == double.Parse(tokens2.Last()))
+                    {
+                        countOfMatches++;
+                    }
                 }
                 else
+                {
                     Debug.WriteLine("Nothing predicted :(");
+                }
+
+                totalPredictions++;
+            }
+
+            double accuracy = (double)countOfMatches / totalPredictions * 100;
+            Debug.WriteLine($"Final Accuracy: {accuracy}%");
+            Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
+            string filePath = Path.Combine(Environment.CurrentDirectory, "Final Accuracy.csv");
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine($"Final Accuracy is ,{accuracy}%");
+                //writer.WriteLine($"{accuracy}");
             }
 
             Debug.WriteLine("------------------------------");
         }
+
+
     }
 }
