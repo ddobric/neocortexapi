@@ -55,10 +55,10 @@ namespace NeoCortexApiSample
             foreach (KeyValuePair<string, List<double>> kvp in sequences)
             {
                 //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
-                Console.WriteLine(string.Format("Key = {0}, Value = {1}", kvp.Key,kvp.Value));
+                //Console.WriteLine(string.Format("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
             }
 
-           // Prototype for building the prediction engine.
+            // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new();
 
             var predictor = experiment.Run(sequences);
@@ -146,13 +146,13 @@ namespace NeoCortexApiSample
 
                             if (double.TryParse(digit, out double number))
                             {
-                                
-                                    if (number >= MinVal && number <= MaxVal)
-                                    {
-                                        inputList.Add(number);
-                                    }
-                                   rowHasData = true;
-                                
+
+                                if (number >= MinVal && number <= MaxVal)
+                                {
+                                    inputList.Add(number);
+                                }
+                                rowHasData = true;
+
                             }
 
                         }
@@ -252,9 +252,13 @@ namespace NeoCortexApiSample
         private static void PredictNextElement(Predictor predictor, List<double> list)
         {
             Debug.WriteLine("------------------------------");
+            int countOfMatches = 0;
+            int totalPredictions = 0;
 
-            foreach (var item in list)
+            for (int i = 0; i < list.Count - 1; i++)
             {
+                var item = list[i];
+                var nextItem = list[i + 1];
                 var res = predictor.Predict(item);
 
                 if (res.Count > 0)
@@ -267,12 +271,27 @@ namespace NeoCortexApiSample
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
                     Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+
+                    if (nextItem == double.Parse(tokens2.Last()))
+                    {
+                        countOfMatches++;
+                    }
                 }
                 else
+                {
                     Debug.WriteLine("Nothing predicted :(");
+                }
+
+                totalPredictions++;
             }
+
+            double accuracy = (double)countOfMatches / totalPredictions * 100;
+            Debug.WriteLine($"Final Accuracy: {accuracy}%");
+            Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
 
             Debug.WriteLine("------------------------------");
         }
+
+
     }
 }
