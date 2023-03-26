@@ -104,7 +104,9 @@ namespace UnitTestsProject
             Assert.IsNotNull(newSegment);
             Assert.AreEqual(2, newSegment.Synapses.Count);
         }
-
+        /// <summary>
+        /// Test if the Temporal Memory can learn and recall patterns of sequences with a low sparsity rate.
+        /// </summary>
         [TestMethod]
         public void TestLowSparsitySequenceLearningAndRecall()
         {
@@ -142,7 +144,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void TestSynapsePermanenceUpdateWhenMatchingSegmentsFound()
         {
-            TemporalMemory tm = new TemporalMemory(); // TM class object
+            TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08); // Used Permanence decrement parameter 
             p.apply(cn);
