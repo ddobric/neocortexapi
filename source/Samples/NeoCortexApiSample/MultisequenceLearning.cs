@@ -83,8 +83,6 @@ namespace NeoCortexApiSample
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-
-
             int maxMatchCnt = 0;
 
             var mem = new Connections(cfg);

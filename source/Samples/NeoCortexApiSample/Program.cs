@@ -64,7 +64,7 @@ namespace NeoCortexApiSample
         }
 
 
-       
+
         /* This code detects empty cell at the end of the row and it takes input from excel*/
 
         private static Dictionary<string, List<double>> GetInputFromExcelFile()
