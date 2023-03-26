@@ -1,11 +1,12 @@
-### Project Title: ML22/23-15 Approve Prediction of Multisequence Learning.
+# Project Title: ML22/23-15 Approve Prediction of Multisequence Learning.
 
-**Group Name: Team_MSL**
+#### Group Name: Team_MSL
 
-**Link to Project:** [Team_MSL_Project_Link](https://github.com/pparaska/neocortexapi_Team_MSL/tree/Team_MSL)
-Please find project documentation here - [ML2223_15 Approve Prediction of Multisequence Learning.docx](https://github.com/pparaska/neocortexapi_Team_MSL/blob/Team_MSL/source/MySEProject/Documentation/ML2223_15%20Approve%20Prediction%20of%20Multisequence%20Learning.docx)
+### Link to Project: [Team_MSL_Project_Link](https://github.com/pparaska/neocortexapi_Team_MSL/tree/Team_MSL)
 
 **Summary of Project:**
+=======================================
+
 Implemented a new method RunPredictionMultiSequenceExperiment, that improves the existing RunMultiSequenceLearningExperiment. 
 The new method should automatically read learning sequences from a file and learn them. After learning is completed,
 the sample should read testing subsequences from another file and calculate the prediction accuracy.
@@ -25,19 +26,17 @@ In Program.cs file team has implemented new methods as mentioned below:
 	3. We are exporting this accuracy result in external csv file _Final Accuracy.csv_ for each run and result is getting appended at new line.
 	
 	```csharp
-				if (nextItem == double.Parse(tokens2.Last())){
-                    {
-                        countOfMatches++;
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine("Nothing predicted :(");
-                }
-
+			if (nextItem == double.Parse(tokens2.Last())){
+               {
+                countOfMatches++;
+               }
+            }
+            else
+            {
+				Debug.WriteLine("Nothing predicted :(");
+            }
                 totalPredictions++;
             }
-
             double accuracy = (double)countOfMatches / totalPredictions * 100;
             Debug.WriteLine($"Final Accuracy: {accuracy}%");
             Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
