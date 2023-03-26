@@ -318,10 +318,10 @@ namespace NeoCortexApi.Encoders
             throw new NotImplementedException();
         }
 
-        //public static object Deserialize<T>(StreamReader sr, string name)
-        //{
-        //    var excludeMembers = new List<string> { nameof(ScalarEncoder.Properties) };
-        //    return HtmSerializer2.DeserializeObject<T>(sr, name, excludeMembers);
-        //}
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            var excludeMembers = new List<string> { nameof(ScalarEncoder.Properties) };
+            return HtmSerializer.DeserializeObject<T>(sr, name, excludeMembers);
+        }
     }
 }

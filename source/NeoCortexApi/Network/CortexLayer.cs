@@ -172,12 +172,12 @@ namespace NeoCortexApi.Network
         /// <param name="sw">StreamWritter</param>
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-
+            // Serialize all the HtmModules in the CortexLayer
             if (obj is CortexLayer<object, object> layer)
             {
                 
                 HtmSerializer ser = new HtmSerializer();
-                /*
+                
                 foreach (var modulePair in layer.HtmModules)
                 {
                     ISerializable serializableModule = modulePair.Value as ISerializable;
@@ -195,48 +195,8 @@ namespace NeoCortexApi.Network
                     {
                         throw new NotImplementedException();
                     }
-
-                }
-                */
                 
-                
-                var model_en = "Model_en.txt";
-                StreamWriter sw_en = new StreamWriter(model_en);
-                var en = layer.HtmModules["encoder"];
-                if (en is ScalarEncoder encoder)
-                {
-                    ser.SerializeBegin(nameof(ScalarEncoder), sw_en);
-                    encoder.Serialize(en, null, sw_en);
-                    ser.SerializeEnd(nameof(ScalarEncoder), sw_en);
-                }                 
-                sw_en.Close();
-                
-
-                
-                var model_sp = "Model_sp.txt";
-                StreamWriter sw_sp = new StreamWriter(model_sp);
-                var sp = layer.HtmModules["sp"];
-                if (sp is SpatialPooler spMT)
-                {
-                    ser.SerializeBegin(nameof(SpatialPooler), sw_sp);
-                    spMT.Serialize(spMT, null, sw_sp);
-                    ser.SerializeEnd(nameof(SpatialPooler), sw_sp);
-                }
-                sw_sp.Close();
-                
-
-                
-                var model_tm = "Model_tm.txt";
-                StreamWriter sw_tm = new StreamWriter(model_tm);
-                var tm = (TemporalMemory)layer.HtmModules["tm"];
-                if (tm is TemporalMemory tmem)
-                {
-                    ser.SerializeBegin(nameof(TemporalMemory), sw_tm);
-                    tmem.Serialize(tmem, null, sw_tm);
-                    ser.SerializeEnd(nameof(TemporalMemory), sw_tm);
-                }             
-                sw_tm.Close();
-                
+                }                
             }
             
         }
@@ -250,7 +210,7 @@ namespace NeoCortexApi.Network
         /// <returns></returns>
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            
+            /*
             var model_en = "Model_en.txt";
             var model_tm = "Model_tm.txt";
             var model_sp = "Model_sp.txt";
@@ -277,9 +237,9 @@ namespace NeoCortexApi.Network
             layer.HtmModules.Add("encoder", (ScalarEncoder)encoder);
             layer.HtmModules.Add("sp", (SpatialPooler)sp);
             layer.HtmModules.Add("tm", (TemporalMemory)tm);
+            */
 
-            return layer;
-            /*
+            
 
             HtmSerializer ser = new HtmSerializer();
             CortexLayer<object, object> layer = new CortexLayer<object, object>("L");
@@ -310,8 +270,8 @@ namespace NeoCortexApi.Network
                     layer.HtmModules.Add("tm", (TemporalMemory)tm);
                 }
             }
+            return layer;
             
-            */
         }
         #region Private Methods
 

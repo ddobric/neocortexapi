@@ -333,12 +333,13 @@ namespace NeoCortexApi.Encoders
                 nameof(EncoderBase.topDownValues),
                 nameof(EncoderBase.bucketValues),
                 nameof(EncoderBase.topDownMapping),
+                
                 // Added properties
                 nameof(EncoderBase.IsForced),
                 nameof(EncoderBase.IsDelta),
                 nameof(EncoderBase.Offset),
                 nameof(EncoderBase.Width),
-
+                
             };
 
                 HtmSerializer.SerializeObject(encoder, name, sw, ignoreMembers: excludeMembers);
@@ -346,7 +347,7 @@ namespace NeoCortexApi.Encoders
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)
-        {
+        {           
             var excludeMembers = new List<string> { nameof(EncoderBase.Properties) };
             return HtmSerializer.DeserializeObject<T>(sr, name, excludeMembers);
         }

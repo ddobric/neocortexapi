@@ -142,6 +142,7 @@ namespace NeoCortexApiSample
             // All would also work fine with TM in layer, but it would work much slower.
             // So, to improve the speed of experiment, we first ommit the TM and then after the newborn-stage we add it to the layer.
             // First the Encoder and Spatial Pooler Instances are added to the CortexLayer. 
+            
             layer1.HtmModules.Add("encoder", encoder);
             layer1.HtmModules.Add("sp", sp);
 
@@ -386,6 +387,25 @@ namespace NeoCortexApiSample
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
 
             int inputBits = 100;
+            double max = 20;
+
+            // This dictionary defines a set of typical encoder parameters.
+            Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
+
+            // Create new instance of class ScalarEncoder with the pre-defined setting values. 
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+            
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -395,6 +415,7 @@ namespace NeoCortexApiSample
             Connections mem = predictor.connections;
             HtmClassifier<string, ComputeCycle> cls = predictor.classifier;
             CortexLayer<object, object> layer1 = predictor.layer;
+            layer1.HtmModules["encoder"] = encoder;
 
             bool isInStableState = false;
 
@@ -402,7 +423,7 @@ namespace NeoCortexApiSample
             var numUniqueInputs = GetNumberOfInputs(sequences);
 
             var tm = (TemporalMemory)layer1.HtmModules["tm"];
-            var encoder = (ScalarEncoder)layer1.HtmModules["encoder"];
+            
             var sp = (SpatialPooler)layer1.HtmModules["sp"];
 
             int[] prevActiveCols = new int[0];
