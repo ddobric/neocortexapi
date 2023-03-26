@@ -83,7 +83,6 @@ namespace NeoCortexApi
             this.layer.Serialize(this.layer, null, sw);
             // Serialize the HtmClassifier object in Predictor instance
             this.classifier.Serialize(this.classifier, null, sw);
-
         }
 
         /// <summary>
@@ -132,8 +131,8 @@ namespace NeoCortexApi
                     sr.DiscardBufferedData();
                     sr.BaseStream.Seek(0, SeekOrigin.Begin);
                 }
-                */
-               
+               */    
+                
                 // Deserialize Spatial Pooler object
                 if (data == ser.ReadBegin(nameof(SpatialPoolerMT)) && (layer.HtmModules["sp"] == null))
                 {
@@ -161,8 +160,8 @@ namespace NeoCortexApi
                     var cls = HtmClassifier<string, ComputeCycle>.Deserialize<HtmClassifier<string, ComputeCycle>>(sr, null);
                     predictor.classifier = (HtmClassifier<string, ComputeCycle>)cls;
 
-                    //sr.DiscardBufferedData();
-                    //sr.BaseStream.Seek(0, SeekOrigin.Begin);
+                    sr.DiscardBufferedData();
+                    sr.BaseStream.Seek(0, SeekOrigin.Begin);
                 }  
             }
             

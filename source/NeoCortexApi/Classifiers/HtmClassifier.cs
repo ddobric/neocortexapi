@@ -748,22 +748,15 @@ namespace NeoCortexApi.Classifiers
         /// <exception cref="NotImplementedException"></exception>
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            if (obj is HtmClassifier<TIN, TOUT> cls)
-            {
-                HtmSerializer ser = new HtmSerializer();
-                ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
+            //Serialization code below.
 
-                var ignoreMembers = new List<string>
-                {
-                    nameof(cls.inputSequence),
-                    nameof(cls.inputSequenceMap)
-
-                };
-                HtmSerializer.SerializeObject(cls, name, sw, ignoreMembers);
-                ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
-            }
-                
+            HtmSerializer ser = new HtmSerializer();
+            ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
+            ser.SerializeValue(maxRecordedElements, sw);
+            ser.SerializeDictionaryValue(m_AllInputs, sw);
+            ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
         }
+
         #endregion
 
         /// <summary>
@@ -775,6 +768,59 @@ namespace NeoCortexApi.Classifiers
         /// <returns></returns>
         public static object Deserialize<T>(StreamReader sr, string name)
         {
+            /*
+            // Create a new HtmSerializer and HtmClassifier
+            HtmSerializer ser = new HtmSerializer();
+            HtmClassifier<TIN, TOUT> cls = new HtmClassifier<TIN, TOUT>();
+
+            // Read the input stream line by line
+            while (!sr.EndOfStream)
+            {
+                // Read the current line
+                string data = sr.ReadLine();
+
+                // Skip empty lines and the beginning and end of the HtmClassifier
+                if (string.IsNullOrEmpty(data))
+                    continue;
+
+                if (data == ser.ReadBegin(nameof(HtmClassifier<TIN, TOUT>)))
+                    continue;
+
+                if (data == ser.ReadEnd(nameof(HtmClassifier<TIN, TOUT>)))
+                    break;
+
+                // If the line contains a key-value pair, deserialize it
+                if (data.Contains(HtmSerializer.KeyValueDelimiter))
+                {
+
+                    var kvp = ser.ReadDictSIarrayList<TIN>(cls.m_AllInputs, data);
+                    cls.m_AllInputs = kvp;
+
+                }
+                // Otherwise, parse the parameters in the line and set them in the HtmClassifier
+                else
+                {
+                    // Split the line into its parameters
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
+
+
+                    // Skip lines with no parameters
+                    foreach (string value in str)
+                    {
+                        String.IsNullOrWhiteSpace(value);
+                        continue;
+                    }
+
+
+                    // If the first parameter is an integer, set it as the maxRecordedElements property
+                    if (int.TryParse(str[0], out int maxRecordedElements))
+                        cls.maxRecordedElements = maxRecordedElements;
+                }
+            }
+
+            // Return the deserialized HtmClassifier
+            return cls;
+            */
             return HtmSerializer.DeserializeObject<T>(sr, name);
         }
     }
