@@ -58,7 +58,7 @@ namespace NeoCortexApiSample
                 PredictedSegmentDecrement = 0.1
             };
 
-            double max = 20;
+            double max = 99;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -84,8 +84,6 @@ namespace NeoCortexApiSample
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-
-
 
             int maxMatchCnt = 0;
 
