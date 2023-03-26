@@ -69,11 +69,11 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Function to fetch bucket index from encoders and store it in our dictionary
         /// </summary>summary>
-        private void getBucketEntries()
+/*        private void getBucketEntries()
         {
             bucketEntries = GetBucketIndex(Dictionary<int, List<object>>);
         }
-
+*/
         /// <summary>
         /// Method computes the result after the data is provided by the temporal memory.
         /// </summary>
