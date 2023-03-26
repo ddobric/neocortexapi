@@ -6,6 +6,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 namespace UnitTestsProject
 {
@@ -194,6 +195,142 @@ namespace UnitTestsProject
 
             Assert.IsTrue(activeCells.Count <= 5);
         }
+
+        /// <summary>
+        ///exsisting tests retested with various different data,,,
+        /// </summary>
+
+        [Category("Prod")]
+        [DataRow(0.5, 0.6)]
+        [DataRow(0.6, 0.7)]
+        public void TestAdaptSegmentToCentre(
+             double initialPermanence,
+             double expectedPermanence)
+        {
+            // Arrange
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
+            Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), initialPermanence);
+
+            // Act
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+
+            // Assert
+            Assert.AreEqual(expectedPermanence, s1.Permanence, 0.1);
+        }
+
+        /// <summary>
+        ///exsisting tests retested with various different data,,,
+        /// </summary>
+        [DataTestMethod]
+        [DataRow(new int[] { 4, 5 }, new int[] { 0, 1, 2, 3 })]
+        [DataRow(new int[] { 2, 3 }, new int[] { 1, 2, 3, 4 })]
+        public void TestArrayNotContainingCells(int[] activeColumns, int[] excludedCellIndices)
+        {
+            // Arrange
+            HtmConfig htmConfig = GetDefaultTMParameters();
+            Connections cn = new Connections(htmConfig);
+            TemporalMemory tm = new TemporalMemory();
+            tm.Init(cn);
+            Cell[] excludedCells = cn.GetCells(excludedCellIndices);
+
+            // Act
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            // Assert
+            CollectionAssert.DoesNotContain(cc.ActiveCells, excludedCells);
+        }
+
+        /// <summary>
+        ///exsisting tests retested with various different data,,,
+        /// </summary>
+        [TestMethod]
+        [DataRow(new int[] { 1, 2 }, new int[] { 0, 1, 2, 3 })]
+        [DataRow(new int[] { 3, 4 }, new int[] { 2, 3, 4, 5 })]
+        [TestCategory("Prod")]
+        public void TestBurstNotpredictedColumns(int[] activeColumns, int[] expectedBurstingCellIndexes)
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+            IList<Cell> expectedBurstingCells = cn.GetCells(expectedBurstingCellIndexes); //Expected bursting cells
+
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle; //Compute class object 
+
+            Assert.IsFalse(cc.ActiveCells.SequenceEqual(expectedBurstingCells));
+        }
+
+
+
+        /// <summary>
+        ///exsisting tests retested with various different data,,,
+        /// </summary>\
+        [TestMethod]
+        [DataRow(1, 0.30, 4)]
+        [DataRow(2, 0.25, 3)]
+        [DataRow(3, 0.40, 5)]
+        public void TestRandomMostUsedCell(int columnIdx, double permanence, int expectedIndex)
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 3 });
+            p = getDefaultParameters(p, KEY.CELLS_PER_COLUMN, 2);
+            p.apply(cn);
+            tm.Init(cn);
+
+            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(1));
+            cn.CreateSynapse(dd, cn.GetCell(0), permanence);
+
+            for (int i = 0; i < 10; i++)
+            {
+                Assert.AreEqual(expectedIndex, TemporalMemory.GetLeastUsedCell(cn, cn.GetColumn(columnIdx).Cells, cn.HtmConfig.Random).Index);
+            }
+        }
+
+        /// <summary>
+        ///exsisting tests retested with various different data,,,
+        /// </summary>\
+        [TestMethod]
+        [TestCategory("Prod")]
+        [DataRow(new int[] { 0 }, new int[] { 1 }, new int[] { 0, 1, 2, 3 }, new int[] { 4, 5 }, 0.3, 0.3)]
+        [DataRow(new int[] { 1 }, new int[] { 2 }, new int[] { 1, 2, 3, 4 }, new int[] { 5, 6 }, 0.4, 0.4)]
+        public void TestNoChangeToNoTSelectedMatchingSegmentsInBurstingColumn(int[] previousActiveColumns, int[] activeColumns, int[] previousActiveCellIndexes, int[] burstingCellIndexes, double as1Permanence, double is1Permanence)
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
+
+            p.apply(cn);
+            tm.Init(cn);
+
+            Cell[] previousActiveCells = cn.GetCells(previousActiveCellIndexes);
+            Cell[] burstingCells = cn.GetCells(burstingCellIndexes);
+
+            DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(burstingCells[0]);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
+            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
+            cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(81), 0.3);
+
+            DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(burstingCells[1]);
+            Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.3);
+            Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.3);
+
+            tm.Compute(previousActiveColumns, true);
+            tm.Compute(activeColumns, true);
+
+            Assert.AreEqual(as1Permanence, as1.Permanence, 0.01);
+            Assert.AreEqual(is1Permanence, is1.Permanence, 0.01);
+        }
+
+
 
         /// <summary>
         /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
