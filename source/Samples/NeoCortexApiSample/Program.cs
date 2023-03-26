@@ -1,4 +1,5 @@
 using ExcelDataReader;
+using Microsoft.Extensions.FileSystemGlobbing;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
 using static NeoCortexApiSample.MultiSequenceLearning;
@@ -246,13 +248,19 @@ namespace NeoCortexApiSample
         }
 
 
-
-
-
         private static void PredictNextElement(Predictor predictor, List<double> list)
         {
             Debug.WriteLine("------------------------------");
 
+            StreamWriter writer = new StreamWriter("D:\\FUAS\\output.txt");
+            double accuracy = 0.0;
+            // var inputSequence = "";
+            // var similarity = 0.0;
+            // var numberCounter = 0;
+            //double matches = 0;
+            int totalPredictions = 0;
+            int countOfMatches = 0;
+            List<string> seqKey = new();
             foreach (var item in list)
             {
                 var res = predictor.Predict(item);
@@ -261,17 +269,54 @@ namespace NeoCortexApiSample
                 {
                     foreach (var pred in res)
                     {
+                        //accuracy = (double)pred.Similarity / (double)res.Count * 100; 
+                        //inputSequence = pred.PredictedInput;
                         Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                        //writer.WriteLine($"{pred.PredictedInput}, Accruracy = {accuracy}%");
+                        //writer.NewLine = "\n";
+                        /*
+                        for (int j = 1; j < res.Count; j++) {
+                            if (pred.PredictedInput.Contains("Sequence: " + j)) { 
+                                similarity+= pred.Similarity; 
+                                numberCounter++;
+                            }
+                            avgAccuracy = similarity / numberCounter;
+                            break;
+                            
+                        }
+                        writer.WriteLine($"{pred.PredictedInput}, AverageAccruracy = {avgAccuracy}%");
+                        writer.NewLine = "\n";
+                        */
+
                     }
 
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
+                    totalPredictions++;
+                    countOfMatches++;
+
                     Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+
                 }
                 else
+                {
                     Debug.WriteLine("Nothing predicted :(");
-            }
+                    totalPredictions++;
 
+                }
+                
+               
+            }
+            accuracy = countOfMatches / (double)totalPredictions * 100;
+            //writer.WriteLine($"For digit {item}, Accruracy = {accuracy} %");
+            writer.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
+            writer.NewLine = "\n";
+            writer.WriteLine($"With Accuracy = {accuracy} %");
+
+            writer.NewLine = "\n";
+
+            //writer.WriteLine($" For test data: {list}, Accruracy = {accuracy} %");
+            writer.Close();
             Debug.WriteLine("------------------------------");
         }
     }
