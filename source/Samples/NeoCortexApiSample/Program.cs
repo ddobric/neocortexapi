@@ -254,10 +254,12 @@ namespace NeoCortexApiSample
 
             StreamWriter writer = new StreamWriter("D:\\FUAS\\output.txt");
             double accuracy = 0.0;
-           // var inputSequence = "";
-           // var similarity = 0.0;
-           // var numberCounter = 0;
+            // var inputSequence = "";
+            // var similarity = 0.0;
+            // var numberCounter = 0;
             //double matches = 0;
+            int totalPredictions = 0;
+            int countOfMatches = 0;
             List<string> seqKey = new();
             foreach (var item in list)
             {
@@ -267,11 +269,11 @@ namespace NeoCortexApiSample
                 {
                     foreach (var pred in res)
                     {
-                        accuracy = (double)pred.Similarity / (double)res.Count * 100; 
+                        //accuracy = (double)pred.Similarity / (double)res.Count * 100; 
                         //inputSequence = pred.PredictedInput;
                         Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
-                        writer.WriteLine($"{pred.PredictedInput}, Accruracy = {accuracy}%");
-                        writer.NewLine = "\n";
+                        //writer.WriteLine($"{pred.PredictedInput}, Accruracy = {accuracy}%");
+                        //writer.NewLine = "\n";
                         /*
                         for (int j = 1; j < res.Count; j++) {
                             if (pred.PredictedInput.Contains("Sequence: " + j)) { 
@@ -290,6 +292,8 @@ namespace NeoCortexApiSample
 
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
+                    totalPredictions++;
+                    countOfMatches++;
 
                     Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
 
@@ -297,7 +301,13 @@ namespace NeoCortexApiSample
                 else
                 {
                     Debug.WriteLine("Nothing predicted :(");
+                    totalPredictions++;
+
                 }
+                
+                accuracy = (double) countOfMatches / (double)totalPredictions  * 100;
+                writer.WriteLine($"For digit {item}, Accruracy = {accuracy} %");
+                writer.NewLine = "\n";
             }
             writer.Close();
             Debug.WriteLine("------------------------------");
