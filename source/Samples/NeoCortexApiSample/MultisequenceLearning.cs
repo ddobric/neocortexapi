@@ -8,9 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using OfficeOpenXml;
-using System.IO;
-using LearningFoundation;
+
 
 
 namespace NeoCortexApiSample
@@ -58,7 +56,7 @@ namespace NeoCortexApiSample
                 PredictedSegmentDecrement = 0.1
             };
 
-            double max = 20;
+            double max = 99;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -139,7 +137,7 @@ namespace NeoCortexApiSample
 
             var lastPredictedValues = new List<string>(new string[] { "0" });
 
-            int maxCycles = 3500;
+            int maxCycles = 3550;
 
             //
             // Training SP to get stable. New-born stage.
