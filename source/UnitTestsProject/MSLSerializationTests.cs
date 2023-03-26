@@ -139,8 +139,8 @@ namespace UnitTestsProject
         [TestCleanup]
 
         [TestMethod]
-        [TestCategory("prod")]
-        public void SerializationConnectionsCortexLayerHtmClassifierTests()
+        [TestCategory("ProjectUnitTests")]
+        public void SerializePredictorTest()
         {
 
             using (var sw = new StreamWriter(fileName))
@@ -252,7 +252,5 @@ namespace UnitTestsProject
 
             return cells;
         }
-
-
     }
 }

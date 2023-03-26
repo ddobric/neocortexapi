@@ -768,7 +768,7 @@ namespace NeoCortexApi.Classifiers
         /// <returns></returns>
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            /*
+            
             // Create a new HtmSerializer and HtmClassifier
             HtmSerializer ser = new HtmSerializer();
             HtmClassifier<TIN, TOUT> cls = new HtmClassifier<TIN, TOUT>();
@@ -820,8 +820,54 @@ namespace NeoCortexApi.Classifiers
 
             // Return the deserialized HtmClassifier
             return cls;
-            */
-            return HtmSerializer.DeserializeObject<T>(sr, name);
         }
+
+        /// <summary>
+        /// 
+        /// The default Equals is overide for HtmCLassifier parameters.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (typeof(HtmClassifier<TIN, TOUT>) != obj.GetType())
+                return false;
+            HtmClassifier<TIN, TOUT> other = (HtmClassifier<TIN, TOUT>)obj;
+            if (maxRecordedElements != other.maxRecordedElements)
+                return false;
+            if (m_AllInputs == null)
+            {
+                if (other.m_AllInputs != null)
+                    return false;
+            }
+
+            //check condition--> m_AllInputs.have same number of key value pairs as other.m_AllInputs 
+            if (m_AllInputs.Count != other.m_AllInputs.Count)
+                return false;
+            foreach (KeyValuePair<TIN, List<int[]>> val in other.m_AllInputs)
+            {
+
+                foreach (KeyValuePair<TIN, List<int[]>> kvp in m_AllInputs)
+                {
+                    if (kvp.Key.Equals(val.Key))
+                    {
+
+                        for (int i = 0; i < kvp.Value.Count; i++)
+                        {
+                            bool result = kvp.Value[i].ElementsEqual(val.Value[i]);
+
+                            if (result == false)
+                                return false;
+                        }
+
+                    }
+
+                }
+            }
+            return true;
+        }
+
     }
 }
