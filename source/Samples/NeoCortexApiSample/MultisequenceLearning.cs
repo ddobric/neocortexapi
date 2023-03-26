@@ -6,7 +6,11 @@ using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using OfficeOpenXml;
+using System.IO;
+using LearningFoundation;
 
 
 namespace NeoCortexApiSample
@@ -23,7 +27,6 @@ namespace NeoCortexApiSample
         public Predictor Run(Dictionary<string, List<double>> sequences)
         {
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
-            Console.WriteLine("Execution is in Main Run() method");
 
             int inputBits = 100;
             int numColumns = 1024;
@@ -70,7 +73,7 @@ namespace NeoCortexApiSample
             };
 
             EncoderBase encoder = new ScalarEncoder(settings);
-            Console.WriteLine("Calling RunExperiment Method");
+
             return RunExperiment(inputBits, cfg, encoder, sequences);
         }
 
@@ -82,6 +85,8 @@ namespace NeoCortexApiSample
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+
+
             int maxMatchCnt = 0;
 
             var mem = new Connections(cfg);
@@ -89,7 +94,6 @@ namespace NeoCortexApiSample
             bool isInStableState = false;
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-            Console.WriteLine("Inside RunExperiment() method");
 
             var numUniqueInputs = GetNumberOfInputs(sequences);
 
@@ -137,11 +141,10 @@ namespace NeoCortexApiSample
 
             int maxCycles = 3500;
 
-            Console.WriteLine($"Print last predicted values = {lastPredictedValues}");
-
             //
             // Training SP to get stable. New-born stage.
             //
+
 
             for (int i = 0; i < maxCycles && isInStableState == false; i++)
             {
@@ -174,7 +177,7 @@ namespace NeoCortexApiSample
             // We activate here the Temporal Memory algorithm.
             layer1.HtmModules.Add("tm", tm);
 
-            //
+
             // Loop over all sequences.
             foreach (var sequenceKeyPair in sequences)
             {
@@ -271,6 +274,42 @@ namespace NeoCortexApiSample
                     double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.Value.Count - 1) / (double)sequenceKeyPair.Value.Count * 100.0;
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
+                    Debug.WriteLine($"{sequenceKeyPair.Key} is having Accuracy: {accuracy}% ");
+
+                    using (var swr = new StreamWriter("Accuracy Logs.csv", true)) // the "true" flag appends to the file instead of overwriting it
+                    {
+                        // write the sequence accuracy to the CSV file
+                        swr.WriteLine($"{sequenceKeyPair.Key} is having accuracy , {accuracy}%");
+                    }
+
+                    /* Writing accuracy in .xlsx file
+                     * 
+                    string sequenceKey = sequenceKeyPair.Key;
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                    using (var package = new ExcelPackage())// Create a new Excel package and worksheet
+                    {
+                        int rowNum = 1; // initialize row number to 1
+                        var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");// Write the Debug output to the Excel worksheet
+                        worksheet.Cells[rowNum, 1].Value = $"{sequenceKey} is having Accuracy: {accuracy}%";
+                        rowNum++; // increment row number
+
+                        //ExcelWorksheet ws = package.Workbook.Worksheets[0];
+                        //var worksheet = package.Workbook.Worksheets[0];
+
+                        //int row = worksheet.Dimension.End.Row + 1;
+
+                        //worksheet.Cells[row, 1].Value = sequenceKey;
+                        //worksheet.Cells[row, 2].Value = accuracy;
+
+
+                        FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");// Save the Excel package to a file
+                        package.SaveAs(fileInfo);
+                    }
+                    */
+
+
+
 
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
 
@@ -313,12 +352,12 @@ namespace NeoCortexApiSample
         private int GetNumberOfInputs(Dictionary<string, List<double>> sequences)
         {
             int num = 0;
+
             foreach (var inputs in sequences)
             {
                 //num += inputs.Value.Distinct().Count();
                 num += inputs.Value.Count;
             }
-            Console.WriteLine($"Inside GetNumberOfInputs method and Printing the number of inputs = {num}");
 
             return num;
         }
