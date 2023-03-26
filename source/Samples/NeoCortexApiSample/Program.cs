@@ -305,10 +305,17 @@ namespace NeoCortexApiSample
 
                 }
                 
-                accuracy = (double) countOfMatches / (double)totalPredictions  * 100;
-                writer.WriteLine($"For digit {item}, Accruracy = {accuracy} %");
-                writer.NewLine = "\n";
+               
             }
+            accuracy = countOfMatches / (double)totalPredictions * 100;
+            //writer.WriteLine($"For digit {item}, Accruracy = {accuracy} %");
+            writer.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
+            writer.NewLine = "\n";
+            writer.WriteLine($"With Accuracy = {accuracy} %");
+
+            writer.NewLine = "\n";
+
+            //writer.WriteLine($" For test data: {list}, Accruracy = {accuracy} %");
             writer.Close();
             Debug.WriteLine("------------------------------");
         }
