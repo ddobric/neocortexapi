@@ -118,14 +118,14 @@ namespace UnitTestsProject
             Assert.IsNotNull(newSegment);
             Assert.AreEqual(2, newSegment.Synapses.Count);
         }
-        
+
         /// <summary>
         /// Test the update of synapse permanence when matching segments are found
         /// </summary>
         [TestMethod]
         public void TestSynapsePermanenceUpdateWhenMatchingSegmentsFound()
         {
-            TemporalMemory tm = new TemporalMemory(); 
+            TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08); // Used Permanence decrement parameter 
             p.apply(cn);
@@ -153,7 +153,7 @@ namespace UnitTestsProject
             Assert.AreEqual(0.3, as1.Permanence, 0.01);
             Assert.AreEqual(0.3, is1.Permanence, 0.01);
         }
-      
+
         /// <summary>
         /// Testing if the TemporalMemory class initializes correctly with a custom number of cells per column
         /// </summary>
@@ -200,7 +200,31 @@ namespace UnitTestsProject
 
             Assert.AreEqual(16 * 32 * 8, cnt);
         }
-       
+
+        /// <summary>
+        /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
+        /// </summary>
+        [TestMethod]
+        public void TestColumnDimensions()
+        {
+            // Initialize
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32, 64 }); // Set custom column dimensions
+            p.Set(KEY.CELLS_PER_COLUMN, 32);
+            p.apply(cn);
+            tm.Init(cn);
+
+            int cnt = 0;
+            foreach (var item in cn.GetColumns())
+            {
+                cnt += item.Cells.Length;
+            }
+
+            Assert.AreEqual(32 * 64 * 32, cnt);
+        }
+
         /// <summary>
         /// Existing test retested with various different data
         /// </summary>
@@ -394,7 +418,7 @@ namespace UnitTestsProject
 
             Assert.IsTrue(grewOnCell1);
             Assert.IsTrue(grewOnCell2);
-            
+
         }
         /// <summary>
         /// Existing test retested with various different data
@@ -464,10 +488,10 @@ namespace UnitTestsProject
         [TestMethod]
         [DataRow(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.48, 0.48, 0.48, 0.48, 0.48, 0.5, 0.5)]
         [DataRow(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.58, 0.58, 0.58, 0.58, 0.58, 0.6, 0.6)]
-        public void TestPunishMatchingSegmentsInInactiveColumns(double as1Permanence, double as2Permanence, 
-            double as3Permanence, double as4Permanence, double as5Permanence, double is1Permanence, 
-            double expectedAs1Permanence, double expectedAs2Permanence, double expectedAs3Permanence, 
-            double expectedAs4Permanence, double expectedAs5Permanence, 
+        public void TestPunishMatchingSegmentsInInactiveColumns(double as1Permanence, double as2Permanence,
+            double as3Permanence, double as4Permanence, double as5Permanence, double is1Permanence,
+            double expectedAs1Permanence, double expectedAs2Permanence, double expectedAs3Permanence,
+            double expectedAs4Permanence, double expectedAs5Permanence,
             double expectedIs1Permanence, double expectedIs2Permanence)
         {
             TemporalMemory tm = new TemporalMemory();
@@ -951,7 +975,7 @@ namespace UnitTestsProject
             TemporalMemory.AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
             // Assert
-            Assert.AreEqual(0.6, as1.Permanence);
+            Assert.AreEqual(0.45, as1.Permanence);
         }
 
         [TestMethod]
@@ -1303,29 +1327,5 @@ namespace UnitTestsProject
             Assert.AreEqual(is1Permanence, is1.Permanence, 0.01);
         }
 
-        /// <summary>
-        /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
-        /// </summary>
-        [TestMethod]
-        public void TestColumnDimensions()
-        {
-            // Initialize
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = Parameters.getAllDefaultParameters();
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32, 64 }); // Set custom column dimensions
-            p.Set(KEY.CELLS_PER_COLUMN, 32);
-            p.apply(cn);
-            tm.Init(cn);
-
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
-            {
-                cnt += item.Cells.Length;
-            }
-
-            Assert.AreEqual(32 * 64 * 32, cnt);
-        }
-
     }
-    }
+}

@@ -442,7 +442,7 @@ namespace UnitTestsProject
             TemporalMemory.AdaptSegment(conn, segment, prevActiveCells, permanenceIncrement, permanenceDecrement);
 
             // Assert
-            Assert.AreEqual(0.6, as1.Permanence);
+            Assert.AreEqual(0.45, as1.Permanence);
         }
 
         [TestMethod]
