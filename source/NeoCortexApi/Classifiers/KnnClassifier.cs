@@ -51,7 +51,13 @@ namespace NeoCortexApi.Classifiers
         public string Classification { get; }
         public int Distance { get; }
         public int ClassificationNo { get; }
-
+        
+        /// <summary>
+        ///     Constructor which initializes an object which store and handles comparison.
+        /// </summary>
+        /// <param name="classification">Comparison classification with respect to model data.</param>
+        /// <param name="distance">Distance with respect to classification of a model data.</param>
+        /// <param name="classificationNo">Storing the SDR number under the classification.</param>
         public ClassificationAndDistance(string classification, int distance, int classificationNo)
         {
             Classification = classification;
@@ -63,7 +69,7 @@ namespace NeoCortexApi.Classifiers
         ///   Implementation of the Method for sorting itself.
         /// </summary>
         /// <param name="other">Past object of the implementation for comparison</param>
-        /// <returns></returns>
+        /// <returns>CompareTo </returns>
         public int CompareTo(ClassificationAndDistance other)
         {
 <<<<<<< HEAD
@@ -82,14 +88,13 @@ namespace NeoCortexApi.Classifiers
     /// <summary>
     ///     This KNN classifier takes an input as a 2D array of on: 1, off: 0 which is provided for classification.
     /// 
-    ///     { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, } = Unclassified
+    ///     [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, ] = Unclassified
     ///
-    ///     Which then needs to run through a model of similar matrices to be classified which matrix it resembles
+    ///     Which then needs to run through a model of similar sequence to be classified which sequence it resembles
     ///     closest to. The K-nearest-neighbor 
     ///
     ///     models = { A = [[ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]],
-    ///                B = []
-    ///
+    ///                B = [] }
     /// </summary>
     public class KNeighborsClassifier
     {
@@ -144,13 +149,13 @@ namespace NeoCortexApi.Classifiers
         ///     A = [1.01, ...]
         /// </param>
         /// <param name="unclassifiedSequence">
-        ///     [1.23, 1.65, 2.23, ...] = Unclassified Matrix
+        ///     [1.23, 1.65, 2.23, ...] = Unclassified sequence
         /// </param>
         /// <returns>
-        ///     Returns a dictionary mapping of a int[] to List[floats].
+        ///     Returns a dictionary mapping of a int to int.
         ///     {
-        ///         0: [1.23, 1.65, 2.23, ...],
-        ///         2: [1.01, ...],
+        ///         0: 1.23,
+        ///         2: 1.01,
         ///         ...
         ///     }
         /// </returns>
@@ -256,7 +261,7 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         /// <param name="unclassifiedCells">
         ///     Takes in a sequence of numbers which needs to be classified and fed into the SDR.
-        ///     i.e { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }
+        ///     i.e [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, ...]
         /// </param>
         /// <param name="sdr">Number of SDRs stored under the same classification</param>
         public List<ClassifierResult<string>> GetPredictedInputValues(Cell[] unclassifiedCells, int sdr)
