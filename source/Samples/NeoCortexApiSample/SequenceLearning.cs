@@ -92,7 +92,7 @@ namespace NeoCortexApiSample
             bool isInStableState = false;
 
             // HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-            var cls = new KNeighborsClassifier();
+            var cls = new KNeighborsClassifier<string, ComputeCycle>();
 
             var numInputs = inputValues.Distinct<double>().ToList().Count;
 

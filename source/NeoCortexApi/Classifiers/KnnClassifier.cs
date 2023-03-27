@@ -51,9 +51,9 @@ namespace NeoCortexApi.Classifiers
         public string Classification { get; }
         public int Distance { get; }
         public int ClassificationNo { get; }
-        
+
         /// <summary>
-        ///     Constructor which initializes an object which store and handles comparison.
+        ///     Constructor which initializes an object to store and handles comparison data.
         /// </summary>
         /// <param name="classification">Comparison classification with respect to model data.</param>
         /// <param name="distance">Distance with respect to classification of a model data.</param>
@@ -96,7 +96,7 @@ namespace NeoCortexApi.Classifiers
     ///     models = { A = [[ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]],
     ///                B = [] }
     /// </summary>
-    public class KNeighborsClassifier
+    public class KNeighborsClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
 <<<<<<< HEAD
         private int _nNeighbors;
@@ -126,8 +126,8 @@ namespace NeoCortexApi.Classifiers
         ///     2
         /// </param>
         /// <returns>
-        ///     Returns the smallest value int.
-        ///         [1, 5, ...] => 1
+        ///     Returns the smallest value of type int from the list.
+        ///     [1, 5, ...] => 1
         /// </returns>
         int LeastValue(ref int[] classifiedSequence, int unclassifiedIdx)
         {
@@ -152,7 +152,7 @@ namespace NeoCortexApi.Classifiers
         ///     [1.23, 1.65, 2.23, ...] = Unclassified sequence
         /// </param>
         /// <returns>
-        ///     Returns a dictionary mapping of a int to int.
+        ///     i.e Returns a dictionary mapping of a int to int.
         ///     {
         ///         0: 1.23,
         ///         2: 1.01,
@@ -251,6 +251,29 @@ namespace NeoCortexApi.Classifiers
             _nNeighbors = modelLength % 2 != 0 ? modelLength : modelLength + 1;
         }
 
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
+        {
+            _sdrs = howMany;
+            var mappedElements = new DefaultDictionary<int, List<ClassificationAndDistance>>();
+
+            foreach (var model in _models)
+            {
+                foreach (var (sequence, idx) in model.Value.WithIndex())
+                {
+                    foreach (var index in GetDistanceTable(sequence, ref cellIndicies))
+                    {
+                        var value = new ClassificationAndDistance(model.Key, index.Value, idx);
+                        mappedElements[index.Key].Add(value);
+                    }
+                }
+            }
+
+            foreach (var coordinates in mappedElements)
+                coordinates.Value.Sort();
+
+            return Voting(mappedElements) as List<ClassifierResult<TIN>>;
+        }
+
         /// <summary>
 <<<<<<< HEAD
         ///     This function takes in the unclassified matrix and assigns a classification verdict. i.e:
@@ -267,25 +290,14 @@ namespace NeoCortexApi.Classifiers
         public List<ClassifierResult<string>> GetPredictedInputValues(Cell[] unclassifiedCells, int sdr)
         {
             var unclassifiedSequence = unclassifiedCells.Select(idx => idx.Index).ToArray();
-            _sdrs = sdr;
-            var mappedElements = new DefaultDictionary<int, List<ClassificationAndDistance>>();
 
-            foreach (var model in _models)
-            {
-                foreach (var (sequence, idx) in model.Value.WithIndex())
-                {
-                    foreach (var index in GetDistanceTable(sequence, ref unclassifiedSequence))
-                    {
-                        var value = new ClassificationAndDistance(model.Key, index.Value, idx);
-                        mappedElements[index.Key].Add(value);
-                    }
-                }
-            }
+            return GetPredictedInputValues(unclassifiedSequence, (short)sdr) as List<ClassifierResult<string>>;
+        }
 
-            foreach (var coordinates in mappedElements)
-                coordinates.Value.Sort();
-
-            return Voting(mappedElements);
+        public TIN GetPredictedInputValue(Cell[] predictiveCells)
+        {
+            throw new NotImplementedException(
+                "This method will be removed in the future. Use GetPredictedInputValues instead.");
         }
 
 <<<<<<< HEAD
@@ -311,8 +323,9 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         /// <param name="classification">The classification type</param>
         /// <param name="cells">object of type Cell</param>
-        public void Learn(string classification, Cell[] cells)
+        public void Learn(TIN input, Cell[] cells)
         {
+            var classification = input as string;
             int[] cellIndicies = cells.Select(idx => idx.Index).ToArray();
 
             if (_models.ContainsKey(classification) == false)
