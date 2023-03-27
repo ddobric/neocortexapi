@@ -2,6 +2,7 @@ using ExcelDataReader;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using Org.BouncyCastle.Ocsp;
 using System;
 using System.Buffers;
@@ -176,6 +177,8 @@ namespace NeoCortexApiSample
             int totalPredictions = 0;
             string predictedSequence = "";
             string predictedNextElement = "";
+            string[] tokens = null;
+            string[] tokens2 = null;
 
             for (int i = 0; i < list.Count - 1; i++)
             {
@@ -190,8 +193,8 @@ namespace NeoCortexApiSample
                         Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
                     }
 
-                    var tokens = res.First().PredictedInput.Split('_');
-                    var tokens2 = res.First().PredictedInput.Split('-');
+                    tokens = res.First().PredictedInput.Split('_');
+                    tokens2 = res.First().PredictedInput.Split('-');
                     predictedSequence = tokens[0];
                     predictedNextElement = tokens2.Last();
                     Debug.WriteLine($"Predicted Sequence: {predictedSequence}, predicted next element {predictedNextElement}");
@@ -218,9 +221,11 @@ namespace NeoCortexApiSample
             string filePath = Path.Combine(Environment.CurrentDirectory, fileName);
             using (StreamWriter writer = new StreamWriter(filePath))
             {
-                writer.WriteLine($"Predicted Sequence,{predictedSequence}");
-                writer.WriteLine($"Predicted Next Element,{predictedNextElement}");
-                writer.WriteLine($"Final Accuracy,{accuracy}%");
+                //writer.WriteLine($"Predicted Sequence,{predictedSequence}");
+                //writer.WriteLine($"Predicted Next Element,{predictedNextElement}");
+                //writer.WriteLine($"Final Accuracy,{accuracy}%");
+                writer.WriteLine("Predicted Sequence: " + string.Join(",", tokens) + ", Predicted Next Element: " + tokens2.Last() + ", Final Accuracy: " + accuracy + "%");
+
             }
 
             Debug.WriteLine("------------------------------");
