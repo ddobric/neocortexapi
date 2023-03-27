@@ -1,60 +1,57 @@
-Team MSL: 
-1. Ankita Talande
-2. Poonam Dashrath Paraskar
-3. Pratik Desai
+# Project Title: ML22/23-15 Approve Prediction of Multisequence Learning.
 
-Topic: ML22/23-15 Approve Prediction of Multisequence Learning
+#### Group Name: Team_MSL
 
-To-Do: Analyzing the existing project and method.
+### Link to Project: [Team_MSL_Project_Link](https://github.com/pparaska/neocortexapi_Team_MSL/tree/Team_MSL)
 
-Understanding the sequences and prediction using - https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/tree/master/Source/MySEProjectSample/MyProjectSample
+**Summary of Project:**
+=======================================
 
-We have finalized to use input type as Double, because in project ScalarEncoder is used which supports double as input type.
+Implemented a new method RunPredictionMultiSequenceExperiment, that improves the existing RunMultiSequenceLearningExperiment. 
+The new method should automatically read learning sequences from a file and learn them. After learning is completed,
+the sample should read testing subsequences from another file and calculate the prediction accuracy.
 
-Each member will work on - 
-1. Understanding the exsiting methods present in SequenceLearning.cs
-// Removing specification added for LSTM with the help of professor's comment on the issue as the project is not related to LSTM directly.
-2. All team members will read about HTM/TemporalMemeory and how does sequence learning automatically works using these technologies.
-3. We have started understanding the HTM Algorithm
+In Program.cs file team has implemented new methods as mentioned below:
+1. _RunPredictionMultiSequenceExperiment()_ - This method automatically reads the training sequences from a file and learning them. 
+											https://github.com/pparaska/neocortexapi_Team_MSL/blob/Team_MSL/source/Samples/NeoCortexApiSample/Program.cs
+2. _GetInputFromExcelFile()_ - To avoid user intervention, we are taking input samples from external Excel file, before this method team has also tried to implement 
+[GetInputFromTextFile(),](https://github.com/ddobric/neocortexapi/commit/584195c394160724a467aa48c2c42d7a1feddcd6) 
+[GetInputFromCSVFile()](https://github.com/pparaska/neocortexapi_Team_MSL/commit/589e1feedcc7ea0db28973ee0ddb11585483c744)
+	Link for modified – [Program.cs](https://github.com/pparaska/neocortexapi_Team_MSL/blob/Team_MSL/source/Samples/NeoCortexApiSample/Program.cs), [MultisequenceLearning.cs](https://github.com/pparaska/neocortexapi_Team_MSL/blob/Team_MSL/source/Samples/NeoCortexApiSample/MultisequenceLearning.cs)
+							 
+3. _GetSubSequencesInputFromExcelFile()_ - This method has implemented to avoid user intervention for subSequnces/test data inputs.
+4. In Program.cs file for _PredictNextElement()_, method team has implemented below changes:
+	1. In the method argument instead of passing double[], we have changed it to List<double> elements and calling this _PredictNextElement()_ method inside of for loop of _RunPredictionMultiSequenceExperiment()_, method where we can pass multiple test sequences/subsequences, and for each subSequnces/test sequence, _PredictNextElement()_ method will execute.
+	2. In _PredictNextElement()_, method accuracy calculation logic is added. Accuracy is getting calculated by increasing the matches (which is counter), this counter is getting incremented by comparing the next appearing value with the last predicted value. These matches are getting divided by total number of predictions. 
+	3. We are exporting this accuracy result in external csv file _Final Accuracy.csv_ for each run and result is getting appended at new line.
+	
+	```csharp
+			if (nextItem == double.Parse(tokens2.Last())){
+               {
+                countOfMatches++;
+               }
+            }
+            else
+            {
+				Debug.WriteLine("Nothing predicted :(");
+            }
+                totalPredictions++;
+            }
+            double accuracy = (double)countOfMatches / totalPredictions * 100;
+            Debug.WriteLine($"Final Accuracy: {accuracy}%");
+            Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
+            string filePath = Path.Combine(Environment.CurrentDirectory, "Final Accuracy.csv");
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine($"Final Accuracy is ,{accuracy}%");
+            }
+	```
+5. In [MultisequenceLearning.cs](https://github.com/pparaska/neocortexapi_Team_MSL/blob/Team_MSL/source/Samples/NeoCortexApiSample/MultisequenceLearning.cs) encoder setting is updated to the range of min-max value 0-99, for the same input validation has been introduced in [Program.cs](https://github.com/pparaska/neocortexapi_Team_MSL/blob/Team_MSL/source/Samples/NeoCortexApiSample/Program.cs),  file.
 
-HTM Algorith:
+```csharp
+			if (reader.GetDouble(i) >= MinVal && reader.GetDouble(i) <= MaxVal)
+                            {
+                                TestSubSequences.Add(reader.GetDouble(i));
+                            }
+```
 
-The HTM algorithm is based on the well understood principles and core building blocks of the Thousand Brains Theory. In particular, it focuses on three main properties: sequence learning, continual learning and sparse distributed representations.
-
-Even if substantially different in terms of algorithmic approach and learning rule, at a higher level, it may be possible to associate Hierarchical Temporal Memories to Recurrent Neural Networks. In fact, HTMs are particularly suited for sequence learning modeling as the latest RNNs incarnation such as LSTMs or GRUs.
---- HTM algorithm supports by design several properties every learning algorithm should possess:
-
-1. Sequence learning
-2. High-order predictions
-3. Multiple simultaneous predictions
-4. Continual Learning
-5. Online learning
-6. Noise robustness and fault tolerance
-7. No hyperparameter tuning
-
-https://www.numenta.com/blog/2019/10/24/machine-learning-guide-to-htm/
-
-
-https://demotoshow.github.io/
-
-========================================Project Progress ============================================================
-All team Members are able to fork neocortexapi, build and run the multisequence learning application on local system.
-
-Ankita - 
-1. Forked "neocortexapi multisequence Learning" code from Github. Run the program code in visual studio. 
-
-Poonam -
-1. Forked "NeocoterxAPI" open source project.
-2. Resolved build errors while trying to run the Multisequecne Learning application - by installing .Net 5.0
-3. Added Nuget Package plugin while running the application. Existing application is up and running now in local system.
-
-Pratik - 
-1. Forked "NeocoterxAPI" open source project.
-2. Installed compatible version of .Net 5.0 to run the application
-3. Resolved the issue of Nugget package by giving the source as local path.
-======================================================================================================================
-
-Testing Phase:
-Please find performance testing report in attached link: https://docs.google.com/spreadsheets/d/1DefOwD5Xcg0SZ9lGAKfDWmm9pbE3M-xHERitR8tOLTg/edit#gid=0
-
-======================================================================================================================
