@@ -2,6 +2,7 @@ using ExcelDataReader;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using Org.BouncyCastle.Ocsp;
 using System;
 using System.Buffers;
@@ -174,6 +175,10 @@ namespace NeoCortexApiSample
             Debug.WriteLine("------------------------------");
             int countOfMatches = 0;
             int totalPredictions = 0;
+            string predictedSequence = "";
+            string predictedNextElement = "";
+            string[] tokens = null;
+            string[] tokens2 = null;
 
             for (int i = 0; i < list.Count - 1; i++)
             {
@@ -188,11 +193,13 @@ namespace NeoCortexApiSample
                         Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
                     }
 
-                    var tokens = res.First().PredictedInput.Split('_');
-                    var tokens2 = res.First().PredictedInput.Split('-');
-                    Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                    tokens = res.First().PredictedInput.Split('_');
+                    tokens2 = res.First().PredictedInput.Split('-');
+                    predictedSequence = tokens[0];
+                    predictedNextElement = tokens2.Last();
+                    Debug.WriteLine($"Predicted Sequence: {predictedSequence}, predicted next element {predictedNextElement}");
 
-                    if (nextItem == double.Parse(tokens2.Last()))
+                    if (nextItem == double.Parse(predictedNextElement))
                     {
                         countOfMatches++;
                     }
@@ -208,11 +215,17 @@ namespace NeoCortexApiSample
             double accuracy = (double)countOfMatches / totalPredictions * 100;
             Debug.WriteLine($"Final Accuracy: {accuracy}%");
             Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
-            string filePath = Path.Combine(Environment.CurrentDirectory, "Final Accuracy.csv");
+
+            // Generate file name with current date and time
+            string fileName = string.Format("Final Accuracy ({0:dd-MM-yyyy HH-mm-ss}).csv", DateTime.Now);
+            string filePath = Path.Combine(Environment.CurrentDirectory, fileName);
             using (StreamWriter writer = new StreamWriter(filePath))
             {
-                writer.WriteLine($"Final Accuracy is ,{accuracy}%");
-                //writer.WriteLine($"{accuracy}");
+                //writer.WriteLine($"Predicted Sequence,{predictedSequence}");
+                //writer.WriteLine($"Predicted Next Element,{predictedNextElement}");
+                //writer.WriteLine($"Final Accuracy,{accuracy}%");
+                writer.WriteLine("Predicted Sequence: " + string.Join(",", tokens) + ", Predicted Next Element: " + tokens2.Last() + ", Final Accuracy: " + accuracy + "%");
+
             }
 
             Debug.WriteLine("------------------------------");
