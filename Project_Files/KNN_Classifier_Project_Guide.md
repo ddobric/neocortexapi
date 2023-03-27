@@ -48,7 +48,7 @@ The project is divided into 4 maojor Parts
     }
     ```
 
-2. Distance Calculation \
+2. Distance Calculation\
 - This section calculates distance between the neighboring points and store the results in the distanceTable 
 - Act as input to next method to calculate the voting table and predication of unclassifiedCells  
 
@@ -58,7 +58,13 @@ The project is divided into 4 maojor Parts
     }
     ```
 
+3. Input\
+-  The KNN Model is integrated with te SequenceLearning.cs for learning the input sequences  
 
+    ```csharp
+            var cls = new KNeighborsClassifier();
+
+    ```
 
 ### Contribution Details and links:
 
