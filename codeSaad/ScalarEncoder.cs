@@ -48,8 +48,37 @@ namespace NeoCortexApi.Encoders
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.
         /// </summary>
-        public ScalarEncoder()
+        public ScalarEncoder(double minValue, double maxValue, int numBits, double period = 0, double periodicRadius = 0)
         {
+            BucketWidth = (maxValue - minValue) / (numBits - (period > 0 ? 2 : 1));
+            this.NumBuckets = numBits - (period > 0 ? 1 : 0);
+            this.NumBits = numBits;
+            this.PeriodicRadius = periodicRadius;
+
+            if (period > 0)
+            {
+                // Calculate the centers for a periodic encoder
+                this.Centers = new double[this.NumBuckets];
+                double halfWidth = this.BucketWidth / 2.0;
+                double periodOffset = period / 2.0;
+                for (int i = 0; i < this.NumBuckets; i++)
+                {
+                    double center = minValue + halfWidth + i * this.BucketWidth;
+                    this.Centers[i] = ((center + periodOffset) % period) - periodOffset;
+                }
+            }
+            else
+            {
+                // Calculate the centers for a non-periodic encoder
+                this.Centers = new double[this.NumBuckets];
+                double halfWidth = this.BucketWidth / 2.0;
+                for (int i = 0; i < this.NumBuckets; i++)
+                {
+                    this.Centers[i] = minValue + halfWidth + i * this.BucketWidth;
+                }
+            }
+        }
+
 
         }
         private const double SENTINEL_VALUE_FOR_MISSING_DATA = double.NaN;
