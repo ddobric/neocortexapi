@@ -217,7 +217,7 @@ namespace UnitTestsProject.Sdr
             // HTM parameters
             HtmConfig htmConfig = new HtmConfig(new int[] { imgSize, imgSize }, new int[] { 128, 128 })
             {
-                PotentialRadius = 10,
+                PotentialRadius = 15,
                 PotentialPct = 1,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1.0,
@@ -230,8 +230,8 @@ namespace UnitTestsProject.Sdr
                 MinPctActiveDutyCycles = 0.001,
                 DutyCyclePeriod = 100,
                 MaxBoost = 10.0,
-                RandomGenSeed = 42,
-                Random = new ThreadSafeRandom(42)
+                RandomGenSeed = 88,
+                Random = new ThreadSafeRandom(88)
 
             };
 
@@ -391,7 +391,37 @@ namespace UnitTestsProject.Sdr
         [TestMethod]
         public void OverlapArraFunTest1()
         {
+            int[] a1 = new int[] { 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1,1,1,1 };
+            int[] a2 = new int[] { 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0 ,0,1,1,1};
+
+            Assert.ThrowsException<IndexOutOfRangeException>(() => SdrRepresentation.OverlapArraFun(a1, a2));
+            var res = SdrRepresentation.OverlapArraFun(a2, a1);
+
+            Assert.IsNotNull(res);
+        }
+
+        /// <summary>
+        /// Vaildate method <see cref="SdrRepresentation.OverlapArraFun(int[], int[])"/>
+        /// </summary>
+        [TestMethod]
+        public void OverlapArraFunTest2()
+        {
             int[] a1 = new int[] { 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1 };
+            int[] a2 = new int[] { 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0 };
+
+            Assert.ThrowsException<IndexOutOfRangeException>(() => SdrRepresentation.OverlapArraFun(a1, a2));
+            var res = SdrRepresentation.OverlapArraFun(a2, a1);
+
+            Assert.IsNotNull(res);
+        }
+
+        /// <summary>
+        /// Vaildate method <see cref="SdrRepresentation.OverlapArraFun(int[], int[])"/>
+        /// </summary>
+        [TestMethod]
+        public void OverlapArraFunTest3()
+        {
+            int[] a1 = new int[] { 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1 };
             int[] a2 = new int[] { 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0 };
 
             Assert.ThrowsException<IndexOutOfRangeException>(() => SdrRepresentation.OverlapArraFun(a1, a2));

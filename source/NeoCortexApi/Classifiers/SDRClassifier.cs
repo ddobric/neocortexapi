@@ -37,6 +37,7 @@ namespace NeoCortexApi.Classifiers
 
         /// <summary>
         /// Represents the default constructor
+        /// Alpha value is taken from nupic standard values
         /// </summary>
         public SdrClassifier() : this(0.001)
         {
@@ -57,7 +58,7 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        /// Initializes the global variables.
+        /// Initializes the global variables when the class is initialized.
         /// </summary>
         private void InitializeEntries()
         {
@@ -69,7 +70,7 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Method computes the result after the data is provided by the temporal memory.
         /// </summary>
-        /// <param name="recordNum"> the nth number of the iteration </param>
+        /// <param name="recordNum"> the nth number of the iteration to be performed </param>
         /// <param name = "classification"> represents list of object with 2 values one is bucket index and second is the actual value that came into the bucket
         /// This information is from the encoder itself and using this classifier checks the error. key is the bucket-index and value
         /// is the entry that went into the bucket</param>>
@@ -84,15 +85,21 @@ namespace NeoCortexApi.Classifiers
             }
 
             // throws object should not be null exception if patternNZ is null or its length is zero
-            if (patternNz == null || patternNz.Length == 0)
+            else if (patternNz == null || patternNz.Length == 0)
             {
                 throw new ObjectShouldNotBeNUllException(ExceptionConstants.PATTERN_NZ_CANNOT_BE_NULL);
             }
 
-            if (recordNumMinusLearnIteration == -1)
+            else if (recordNumMinusLearnIteration == -1)
             {
                 recordNumMinusLearnIteration = recordNum - learnIteration;
             }
+
+            else
+            {
+                //No problems in input, proceed normally
+            }
+
             learnIteration = recordNum - recordNumMinusLearnIteration;
             patternNzHistory.Add(Tuple.Create(learnIteration, (object)patternNz));
 
@@ -112,12 +119,13 @@ namespace NeoCortexApi.Classifiers
 
         /// <summary>
         /// Learns after the computation is done successfully.
+        /// Done for training from dataset
         /// </summary>
         /// <param name = "classification"> represents list of object with 2 values one is bucket index and second is the actual value that came into the bucket
         /// </param>
         private void Learn(List<object> classification)
         {
-            int bucketIdx = (int)GetBucketIndex(classification[0]); // gives bucket index
+            int bucketIdx = (int)GetBucketIndex(classification[0]); // gives bucket index from encoders
             object actValue = classification[1];// gives actual value in the bucket
             if (bucketIdx > maxBucketIdx)
             {
@@ -169,7 +177,7 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        /// Method calculates the error
+        /// Method calculates the error between target and probability of distribution elements
         /// </summary>
         /// <param name = "classification"> represents list of object with 2 values one is bucket index and second is the actual value that came into the bucket
         /// </param>
@@ -247,7 +255,7 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        /// Initializes the weight matrix with 0 values
+        /// Initializes the weight matrix with 0 values(Null matrix)
         /// </summary>
         /// <param name="startingPoint"> represents the starting point of the matrix </param>>
         /// <param name="endingPoint"> represents the ending point of the matrix </param>>
