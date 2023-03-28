@@ -547,14 +547,8 @@ namespace UnitTestsProject
             var seq1ActiveColumns = new int[] { 0, 10, 20, 30, 40, 50, 60 };
             var seq2ActiveColumns = new int[] { 40, 50, 60 };
 
-            var desiredResult = new int[] { 200, 201 };
-
-            // Learn the sequences multiple times
-            for (int i = 0; i < 10; i++)
-            {
-                tm.Compute(seq1ActiveColumns, true);
-                tm.Compute(seq2ActiveColumns, true);
-            }
+            tm.Compute(seq1ActiveColumns, true);
+            tm.Compute(seq2ActiveColumns, true);
 
             // Recall the first sequence
             var recall1 = tm.Compute(seq1ActiveColumns, false);
@@ -581,17 +575,13 @@ namespace UnitTestsProject
 
             var desiredResult = new int[] { 27, 28, 30 };
 
-            // Learn the sequences multiple times
-            for (int i = 0; i < 10; i++)
-            {
-                tm.Compute(seq1ActiveColumns, true);
-                tm.Compute(seq2ActiveColumns, true);
-            }
+            tm.Compute(seq1ActiveColumns, true);
+            tm.Compute(seq2ActiveColumns, true);
 
             // Recall the first sequence
             var recall1 = tm.Compute(seq1ActiveColumns, false);
             Assert.IsTrue(desiredResult.All(des => recall1.ActiveCells.Select(c => c.Index).Contains(des)));
-            
+
             // Recall the second sequence
             var recall2 = tm.Compute(seq2ActiveColumns, false);
             Assert.IsTrue(desiredResult.All(des => recall2.ActiveCells.Select(c => c.Index).Contains(des)));
