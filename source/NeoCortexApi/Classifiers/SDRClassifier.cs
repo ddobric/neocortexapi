@@ -355,7 +355,7 @@ namespace NeoCortexApi.Classifiers
             throw new NotImplementedException();
         }
 
-        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
         {
             throw new NotImplementedException();
         }

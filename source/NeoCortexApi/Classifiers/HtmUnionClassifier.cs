@@ -30,7 +30,7 @@ namespace NeoCortexApi.Classifiers
             return (TIN)charOutput;
         }
 
-        public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
         {
             throw new System.NotImplementedException();
         }

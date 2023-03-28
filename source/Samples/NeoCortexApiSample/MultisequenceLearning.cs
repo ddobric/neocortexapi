@@ -88,7 +88,8 @@ namespace NeoCortexApiSample
 
             bool isInStableState = false;
 
-            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            // HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            var cls = new KNeighborsClassifier<string, ComputeCycle>();
 
             var numUniqueInputs = GetNumberOfInputs(sequences);
 
@@ -101,10 +102,10 @@ namespace NeoCortexApiSample
             {
                 if (isStable)
                     // Event should be fired when entering the stable state.
-                    Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                    Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
                 else
                     // Ideal SP should never enter unstable state after stable state.
-                    Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                    Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
                 // We are not learning in instable state.
                 isInStableState = isStable;
@@ -146,13 +147,13 @@ namespace NeoCortexApiSample
 
                 cycle++;
 
-                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+                Console.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
                 foreach (var inputs in sequences)
                 {
                     foreach (var input in inputs.Value)
                     {
-                        Debug.WriteLine($" -- {inputs.Key} - {input} --");
+                        Console.WriteLine($" -- {inputs.Key} - {input} --");
                     
                         var lyrOut = layer1.Compute(input, true);
 
@@ -175,7 +176,7 @@ namespace NeoCortexApiSample
             // Loop over all sequences.
             foreach (var sequenceKeyPair in sequences)
             {
-                Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
+                Console.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
 
                 int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
 
@@ -194,14 +195,14 @@ namespace NeoCortexApiSample
 
                     cycle++;
 
-                    Debug.WriteLine("");
+                    Console.WriteLine("");
 
-                    Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
-                    Debug.WriteLine("");
+                    Console.WriteLine($"-------------- Cycle {cycle} ---------------");
+                    Console.WriteLine("");
 
                     foreach (var input in sequenceKeyPair.Value)
                     {
-                        Debug.WriteLine($"-------------- {input} ---------------");
+                        Console.WriteLine($"-------------- {input} ---------------");
 
                         var lyrOut = layer1.Compute(input, true) as ComputeCycle;
 
@@ -234,8 +235,8 @@ namespace NeoCortexApiSample
 
                         cls.Learn(key, actCells.ToArray());
 
-                        Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
-                        Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+                        Console.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                        Console.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
                         //
                         // If the list of predicted values from the previous step contains the currently presenting value,
@@ -243,10 +244,10 @@ namespace NeoCortexApiSample
                         if (lastPredictedValues.Contains(key))
                         {
                             matches++;
-                            Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValues.FirstOrDefault(key)}.");
+                            Console.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValues.FirstOrDefault(key)}.");
                         }
                         else
-                            Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValues)}");
+                            Console.WriteLine($"Missmatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValues)}");
 
                         if (lyrOut.PredictiveCells.Count > 0)
                         {
@@ -255,14 +256,14 @@ namespace NeoCortexApiSample
 
                             foreach (var item in predictedInputValues)
                             {
-                                Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
+                                Console.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
                             }
 
                             lastPredictedValues = predictedInputValues.Select(v=>v.PredictedInput).ToList();
                         }
                         else
                         {
-                            Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                            Console.WriteLine($"NO CELLS PREDICTED for next cycle.");
                             lastPredictedValues = new List<string> ();
                         }
                     }
@@ -272,26 +273,26 @@ namespace NeoCortexApiSample
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
 
-                    Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
+                    Console.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
 
                     if (accuracy >= maxPossibleAccuraccy)
                     {
                         maxMatchCnt++;
-                        Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
+                        Console.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
 
                         //
                         // Experiment is completed if we are 30 cycles long at the 100% accuracy.
                         if (maxMatchCnt >= 30)
                         {
                             sw.Stop();
-                            Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
+                            Console.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
                             isLearningCompleted = true;
                             break;
                         }
                     }
                     else if (maxMatchCnt > 0)
                     {
-                        Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with accuracy {accuracy}. This indicates instable state. Learning will be continued.");
+                        Console.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with accuracy {accuracy}. This indicates instable state. Learning will be continued.");
                         maxMatchCnt = 0;
                     }
 
@@ -303,7 +304,7 @@ namespace NeoCortexApiSample
                     throw new Exception($"The system didn't learn with expected acurracy!");
             }
 
-            Debug.WriteLine("------------ END ------------");
+            Console.WriteLine("------------ END ------------");
            
             return new Predictor(layer1, mem, cls);
         }
