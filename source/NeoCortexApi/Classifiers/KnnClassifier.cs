@@ -60,13 +60,22 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        ///     Implementation of the Method for sorting itself.
+        ///   Implementation of the Method for sorting itself.
         /// </summary>
         /// <param name="other">Past object of the implementation for comparison</param>
         /// <returns></returns>
         public int CompareTo(ClassificationAndDistance other)
         {
+<<<<<<< HEAD
+            if (Distance < other.Distance)  
+                return -1;
+            else if (Distance > other.Distance)
+                return +1;
+            else
+                return 0;
+=======
             return Distance.CompareTo(other.Distance);
+>>>>>>> 380161f82b0fb1dbf497dd5ae1e5ef5325010eea
         }
     }
 
@@ -84,9 +93,20 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     public class KNeighborsClassifier
     {
+<<<<<<< HEAD
+        private int _nNeighbors;
+        private Dictionary<string, int[][]> _model = new Dictionary<string, int[][]>();
+
+        KNeighborsClassifier(int nNeighbors = 3)
+        {
+            Debug.Assert(nNeighbors % 2 != 0);
+            _nNeighbors = nNeighbors;
+        }
+=======
         private int _nNeighbors = 1; // From Numenta's example 1 is default
         private Dictionary<string, List<int[]>> _models = new Dictionary<string, List<int[]>>();
         private int _sdrs = 10;
+>>>>>>> 380161f82b0fb1dbf497dd5ae1e5ef5325010eea
 
         /// <summary>
         ///     This function compares the a single value with a sequence of values
@@ -164,6 +184,11 @@ namespace NeoCortexApi.Classifiers
         ///     {
         ///         [ClassifierResult 1, ClassifierResult 2, ...]
         ///     }
+        /// Handles if a variable contains the same value multiple times. 
+        /// {
+        ///     for (; coordinates.Value[i].Distance <= coordinates.Value[i + 1].Distance; i++)
+        ///           votes[coordinates.Value[i].Classification] += 1;
+        /// }
         /// </returns>
         List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> table)
         {
@@ -222,7 +247,12 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
+<<<<<<< HEAD
+        ///     This function takes in the unclassified matrix and assigns a classification verdict. i.e:
+        ///  A = 30%, B = 30%, C = 40%
+=======
         ///     This function needs to classify the sequence of numbers that is provided to it.
+>>>>>>> 380161f82b0fb1dbf497dd5ae1e5ef5325010eea
         /// </summary>
         /// <param name="unclassifiedCells">
         ///     Takes in a sequence of numbers which needs to be classified and fed into the SDR.
@@ -253,6 +283,9 @@ namespace NeoCortexApi.Classifiers
             return Voting(mappedElements);
         }
 
+<<<<<<< HEAD
+        void Learn (object x, string[] tags)
+=======
         /// <summary>
         ///     Checks if the same SDR is already stored under the given key.
         /// </summary>
@@ -260,6 +293,7 @@ namespace NeoCortexApi.Classifiers
         /// <param name="sdr">A sequence of cell positions</param>
         /// <returns>true if the sequence exist false if it doesn't</returns>
         private bool ContainsSdr(string classification, int[] sdr)
+>>>>>>> 380161f82b0fb1dbf497dd5ae1e5ef5325010eea
         {
             foreach (var item in _models[classification])
                 return item.SequenceEqual(sdr);
