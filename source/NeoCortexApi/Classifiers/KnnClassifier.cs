@@ -210,7 +210,7 @@ namespace NeoCortexApi.Classifiers
                 result.Add(cls);
             }
 
-            return result;
+            return result.GetRange(0, _sdrs).ToList();
         }
 
         void DynamicKnnAdjustment()
@@ -227,6 +227,9 @@ namespace NeoCortexApi.Classifiers
         /// <returns>Returns a list of ClassifierResult objects ranked based on the closest resemblances</returns>
         public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] unclassifiedCells, short howMany = 1)
         {
+            if (unclassifiedCells.Length == 0)
+                return new List<ClassifierResult<TIN>>();
+            
             var unclassifiedSequence = unclassifiedCells.Select(idx => idx.Index).ToArray();
             _sdrs = howMany;
             DynamicKnnAdjustment();
@@ -248,17 +251,6 @@ namespace NeoCortexApi.Classifiers
                 coordinates.Value.Sort();
 
             return Voting(mappedElements) as List<ClassifierResult<TIN>>;
-        }
-
-        /// <summary>
-        ///  Implement in the IClassifier.cs file.
-        /// </summary>
-        /// <param name="predictiveCells"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public TIN GetPredictedInputValue(Cell[] predictiveCells)
-        {
-            throw new NotImplementedException("This method will be removed in the future.");
         }
 
         /// <summary>

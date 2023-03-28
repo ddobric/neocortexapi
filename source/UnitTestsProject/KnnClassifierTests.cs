@@ -48,7 +48,7 @@ namespace UnitTestsProject
             var tokens2 = res.First().PredictedInput.Split('-');
             Debug.WriteLine($"->{tokens2[tokens.Length - 1]}");
             var predictValue = Convert.ToInt32(tokens2[tokens.Length - 1]);
-            Assert.IsTrue(predictValue > 0);
+            Assert.IsTrue(predictValue > 0, $"{predictValue}");
         }
 
         /// <summary>
@@ -59,14 +59,14 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void NoExceptionIfCellsCountIsZero()
         {
-            Cell[] cells = new Cell[0];
+            var cells = new Cell[] { };
             var res = knnClassifier.GetPredictedInputValues(cells, 3);
-            Assert.AreEqual(res.Count, 0);
+            Assert.AreEqual(res.Count, 0, $"{res.Count} != 0");
         }
 
 
         /// <summary>
-        ///Check how many prediction results will be retrieved.
+        /// Check how many prediction results will be retrieved.
         /// </summary>
         [DataTestMethod]
         [TestCategory("Prod")]
@@ -79,7 +79,7 @@ namespace UnitTestsProject
 
             var res = knnClassifier.GetPredictedInputValues(predictiveCells.ToArray(), Convert.ToInt16(howMany));
 
-            Assert.IsTrue(res.Count == howMany);
+            Assert.IsTrue(res.Count == howMany, $"{res.Count} != {howMany}");
         }
 
         private void LearnknnClassifier()
