@@ -177,8 +177,8 @@ namespace NeoCortexApiSample
             int totalPredictions = 0;
             string predictedSequence = "";
             string predictedNextElement = "";
-            string[] tokens = null;
-            string[] tokens2 = null;
+            string predictedNextElementsList = "";
+            
 
             for (int i = 0; i < list.Count - 1; i++)
             {
@@ -193,10 +193,12 @@ namespace NeoCortexApiSample
                         Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
                     }
 
-                    tokens = res.First().PredictedInput.Split('_');
-                    tokens2 = res.First().PredictedInput.Split('-');
+                    var tokens = res.First().PredictedInput.Split('_');
+                    var tokens2 = res.First().PredictedInput.Split('-');
+                    var tokens3 = res.Last().PredictedInput.Split('_');
                     predictedSequence = tokens[0];
                     predictedNextElement = tokens2.Last();
+                    predictedNextElementsList= string.Join("-", tokens3.Skip(1));
                     Debug.WriteLine($"Predicted Sequence: {predictedSequence}, predicted next element {predictedNextElement}");
 
                     if (nextItem == double.Parse(predictedNextElement))
@@ -224,7 +226,8 @@ namespace NeoCortexApiSample
                 //writer.WriteLine($"Predicted Sequence,{predictedSequence}");
                 //writer.WriteLine($"Predicted Next Element,{predictedNextElement}");
                 //writer.WriteLine($"Final Accuracy,{accuracy}%");
-                writer.WriteLine("Predicted Sequence: " + string.Join(",", tokens) + ", Predicted Next Element: " + tokens2.Last() + ", Final Accuracy: " + accuracy + "%");
+                //writer.WriteLine("Predicted Sequence: " + string.Join(",", predictedSequence) +",",predictedNextElementsList+ ", Predicted Next Element: " + predictedNextElement.Last() + ", Final Accuracy: " + accuracy + "%");
+                writer.WriteLine("Predicted Sequence: " + string.Join(",", predictedSequence) + ", Predicted Sequence: " + string.Join(",", predictedNextElementsList) + ", Predicted Next Element: " + predictedNextElement.Last() + ", Final Accuracy: " + accuracy + "%");
 
             }
 
