@@ -314,6 +314,12 @@ namespace NeoCortexApi.Encoders
         /// <returns>The <see cref="int[]"/></returns>
         //public abstract int[] Encode(object inputData);
 
+         public IModuleData Compute(int[] input, bool learn)
+        {
+            var result = Encode(input);
+
+            return null;
+        }
 
 
 
