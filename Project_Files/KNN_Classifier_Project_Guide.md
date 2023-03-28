@@ -93,4 +93,4 @@ Branch [Nasir-Ishaq](https://github.com/ayan1948/neocortexapi/tree/Nasir-Ishaq)
 - **Setting up Neocortex API for writing the model and issues while debugging the model**
 **Suggestions:**  Create a model first then debug it from the Neocortex API solution and rectified issues related to the reference 
 - **Code Review for KNN Classifier**
-**Suggestions:**  Integrate the model with the  Neocortex API and observe the predication on TM or Hierarchical Partial Pooler Data instead on Hardcoded sequence 
+**Suggestions:**  Integrate the model with the  Neocortex API and observe the predication on TM or Hierarchical Partial Pooler Data instead on Hardcoded sequence. 
