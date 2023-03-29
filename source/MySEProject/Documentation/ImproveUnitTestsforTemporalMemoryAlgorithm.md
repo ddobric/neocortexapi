@@ -9,7 +9,9 @@ Here is the general architecture of this project,
 
 ## Run the project
 
-In order to run the project, [repository](https://github.com/Mostainahmed/variable-i.git) can be cloned in the local system. After that, go to the source folder ![1](https://user-images.githubusercontent.com/62109347/228389657-60034ea0-920d-4af3-a018-f923e8b010fd.png)
+In order to run the project, [repository](https://github.com/Mostainahmed/variable-i.git) can be cloned in the local system. After that, go to the source folder 
+
+![1](https://user-images.githubusercontent.com/62109347/228389657-60034ea0-920d-4af3-a018-f923e8b010fd.png)
 
 Open neocortexapi.sln with visual studio.
 
@@ -40,4 +42,5 @@ Right click on the TemporalMemoryTest2 file and click run as shown in below figu
 ![8](https://user-images.githubusercontent.com/62109347/228392574-10b2e7cd-e328-412b-91bc-8306911fa7fb.png)
 
 In addition, all the successfull Unit Tests are in below at a glance,
+
 ![Screenshot (92)](https://user-images.githubusercontent.com/62109347/228382345-b024e782-129e-44ef-80ca-14aef99b086a.png)
