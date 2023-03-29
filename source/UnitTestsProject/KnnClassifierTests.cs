@@ -48,7 +48,7 @@ namespace UnitTestsProject
             var tokens2 = res.First().PredictedInput.Split('-');
             Debug.WriteLine($"->{tokens2[tokens.Length - 1]}");
             var predictValue = Convert.ToInt32(tokens2[tokens.Length - 1]);
-            Assert.IsTrue(predictValue > 0, $"{predictValue}");
+            Assert.IsTrue(predictValue > 0, $"{predictValue} is not > 0");
         }
 
         /// <summary>

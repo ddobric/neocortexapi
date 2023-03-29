@@ -160,10 +160,11 @@ namespace NeoCortexApi.Classifiers
         ///                     ...
         ///                  }
         /// </param>
+        /// <para name="howMany">The amount of desired outputs</para>
         /// <returns>
         /// Returns a list of ClassifierResult objects ranked based on the closest resemblances.
         /// </returns>
-        List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> mapping)
+        List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> mapping, short howMany)
         {
             var votes = new DefaultDictionary<string, int>();
             var overLaps = new Dictionary<string, int>();
@@ -175,10 +176,11 @@ namespace NeoCortexApi.Classifiers
 
             foreach (var coordinates in mapping)
             {
-                for (int i = 0; i < _nNeighbors && i < coordinates.Value.Count; i++)
-                {
+                for (int i = 0; i < _nNeighbors; i++)
                     votes[coordinates.Value[i].Classification] += 1;
 
+                for (int i = 0;  i < coordinates.Value.Count; i++)
+                {
                     if (coordinates.Value[i].Distance.Equals(0))
                         overLaps[coordinates.Value[i].Classification] += 1;
                 }
@@ -210,20 +212,14 @@ namespace NeoCortexApi.Classifiers
                 result.Add(cls);
             }
 
-            return result.GetRange(0, _sdrs).ToList();
-        }
-
-        void DynamicKnnAdjustment()
-        {
-            var modelLength = _models.Values.Select(value => value.Count).Aggregate(0, (acc, x) => acc + x);
-            _nNeighbors = modelLength % 2 != 0 ? modelLength : modelLength + 1;
+            return result.GetRange(0, howMany).ToList();
         }
 
         /// <summary>
         /// This method is called in the pipeline when an unknown sequence needs to be classified.
         /// </summary>
         /// <param name="unclassifiedCells">A sequence of Cell objects</param>
-        /// <param name="howMany">The number of sdr per classification to be stored</param>
+        /// <param name="howMany">NUmber f desired outputs</param>
         /// <returns>Returns a list of ClassifierResult objects ranked based on the closest resemblances</returns>
         public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] unclassifiedCells, short howMany = 1)
         {
@@ -231,8 +227,7 @@ namespace NeoCortexApi.Classifiers
                 return new List<ClassifierResult<TIN>>();
             
             var unclassifiedSequence = unclassifiedCells.Select(idx => idx.Index).ToArray();
-            _sdrs = howMany;
-            DynamicKnnAdjustment();
+            _nNeighbors = _models.Values.Count;
             var mappedElements = new DefaultDictionary<int, List<ClassificationAndDistance>>();
 
             foreach (var model in _models)
@@ -250,7 +245,7 @@ namespace NeoCortexApi.Classifiers
             foreach (var coordinates in mappedElements)
                 coordinates.Value.Sort();
 
-            return Voting(mappedElements) as List<ClassifierResult<TIN>>;
+            return Voting(mappedElements, howMany) as List<ClassifierResult<TIN>>;
         }
 
         /// <summary>
@@ -268,7 +263,7 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        /// This Function adds and removes SDR's to the model
+        /// This Function adds and removes SDRs to the model
         /// </summary>
         /// <param name="input">The classification type</param>
         /// <param name="cells">object of type Cell</param>
