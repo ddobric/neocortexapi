@@ -2,6 +2,12 @@
 
 #### Group Name: Team_MSL
 
+Group Members - 
+
+1.Poonam Paraskar
+2.Pratik Desai
+3.Ankita Talande
+
 ### Link to Project: [Team_MSL_Project_Link](https://github.com/pparaska/neocortexapi_Team_MSL/tree/Team_MSL)
 
 **Summary of Project:**
@@ -10,6 +16,7 @@
 Implemented a new method RunPredictionMultiSequenceExperiment, that improves the existing RunMultiSequenceLearningExperiment. 
 The new method should automatically read learning sequences from a file and learn them. After learning is completed,
 the sample should read testing subsequences from another file and calculate the prediction accuracy.
+Project's aim - To calculate the accuracy of matched sequences and write the accuracy into CSV file.
 
 In Program.cs file team has implemented new methods as mentioned below:
 1. _RunPredictionMultiSequenceExperiment()_ - This method automatically reads the training sequences from a file and learning them. 
