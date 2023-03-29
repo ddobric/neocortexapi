@@ -2,6 +2,22 @@
 ## Introduction
 We describe the approach to evaluate the performance of given Temporal Memory algorithm. The project's objective was to test the algorithm's ability to learn and predict spatio-temporal patterns. To achieve this, we performed a series of experiments using unit tests, which allowed us to systematically evaluate the algorithm's behavior under different conditions. All the Unit Tests which have been build on existing algorithm can be found [_here_](https://github.com/Mostainahmed/variable-i/blob/f0e1d25aa6bead46ca2cc20be7fa2dcec9131b5a/source/UnitTestsProject/TemporalMemoryTest2.cs)
 
+## Brief Sumary
+Here the summary of the improvement of UNIT TESTS on TemporalMemory Algorithm done so far in this project:
+
+1. Creation, removal, and update of synapses in distal segments
+2. Growth of new dendrite segments when no or multiple matching segments are found
+3. Activation of cells in columns and detection/handling of duplicate active columns
+4. Learning and recalling patterns of sequences with different sparsity rates
+5. Initialization of TemporalMemory with custom parameters (number of cells per column, number of column dimensions)
+6. Adaptation of segments and increase of permanence of active synapses
+7. Limitation of the number of active cells per column
+8. Retrieval of winner cells from TemporalMemory Compute
+9. Least used cell selection and correct initialization of Connections object
+10. Using different parameters for existing unit tests to re-enforce the testing.
+11. Fix one issue with a method GetLeastUsedCell in TemporalMemory and ran UnitTest on it.
+12. Fix some typo on Documentation of TemporalMemoryTest and TemporalMemory file
+
 ## Architecture
 Here is the general architecture of this project,
 
