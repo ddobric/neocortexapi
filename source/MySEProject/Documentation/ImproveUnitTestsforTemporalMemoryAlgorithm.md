@@ -13,7 +13,7 @@ Here the summary of the improvement of UNIT TESTS on TemporalMemory Algorithm do
 6. Adaptation of segments and increase of permanence of active synapses
 7. Limitation of the number of active cells per column
 8. Retrieval of winner cells from TemporalMemory Compute
-9. Least used cell selection and correct initialization of Connections object
+9. Least used cell selection
 10. Using different parameters for existing unit tests to re-enforce the testing.
 11. Fix one issue with a method GetLeastUsedCell in TemporalMemory and ran UnitTest on it.
 12. Fix some typo on Documentation of TemporalMemoryTest and TemporalMemory file
