@@ -1,0 +1,4 @@
+Nothing is predicted, Accuracy is: 0%
+Predicted Sequence: Sequence: 5, Predicted Sequence: 0-1-2-3-4, Predicted Next Element: 55, Final Accuracy: 50%
+Predicted Sequence: Sequence: 5, Predicted Sequence: 0-1-2-3-4, Predicted Next Element: 65, Final Accuracy: 66.66666666666666%
+Predicted Sequence: Sequence: 5, Predicted Sequence: 0-1-2-3-4, Predicted Next Element: 49, Final Accuracy: 75%

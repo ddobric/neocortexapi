@@ -203,7 +203,7 @@ namespace NeoCortexApiSample
                     predictedNextElement = tokens2.Last();
                     predictedNextElementsList = string.Join("-", tokens3.Skip(1));
                     Debug.WriteLine($"Predicted Sequence: {predictedSequence}, predicted next element {predictedNextElement}");
-
+                   
                     if (nextItem == double.Parse(predictedNextElement))
                     {
                         countOfMatches++;
@@ -219,7 +219,7 @@ namespace NeoCortexApiSample
                 double accuracy = (double)countOfMatches / totalPredictions * 100;
                 Debug.WriteLine($"Final Accuracy: {accuracy}%");
                 Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
-
+                
                 // Append to file in each iteration
                 if (predictedNextElementsList != "")
                 {
