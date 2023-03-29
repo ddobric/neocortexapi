@@ -3,7 +3,7 @@
 We describe the approach to evaluate the performance of given Temporal Memory algorithm. The project's objective was to test the algorithm's ability to learn and predict spatio-temporal patterns. To achieve this, we performed a series of experiments using unit tests, which allowed us to systematically evaluate the algorithm's behavior under different conditions. All the Unit Tests which have been build on existing algorithm can be found [_here_](https://github.com/Mostainahmed/variable-i/blob/f0e1d25aa6bead46ca2cc20be7fa2dcec9131b5a/source/UnitTestsProject/TemporalMemoryTest2.cs)
 
 ## Brief Sumary
-Here the summary of the improvement of UNIT TESTS on TemporalMemory Algorithm we have done so far:
+Here the summary of the improvement of UNIT TESTS on TemporalMemory Algorithm done so far in this project:
 
 1. Creation, removal, and update of synapses in distal segments
 2. Growth of new dendrite segments when no or multiple matching segments are found
