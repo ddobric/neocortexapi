@@ -1,0 +1,4 @@
+Predicted Sequence: Sequence: 2, Predicted Sequence: 1-2-3-4-0, Predicted Next Element: 10, Final Accuracy: 0%
+Predicted Sequence: Sequence: 2, Predicted Sequence: -1.0-0-1-2-3, Predicted Next Element: 2, Final Accuracy: 50%
+Predicted Sequence: Sequence: 2, Predicted Sequence: 0-1-2-3-4, Predicted Next Element: 9, Final Accuracy: 66.66666666666666%
+Predicted Sequence: Sequence: 2, Predicted Sequence: 0-1-2-3-4, Predicted Next Element: 10, Final Accuracy: 75%
