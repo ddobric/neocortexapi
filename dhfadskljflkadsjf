@@ -1,0 +1,1069 @@
+[33mcommit e313d88bffc968c109ab2470c055257506c932ea[m[33m ([m[1;36mHEAD -> [m[1;32mNasir-Ishaq[m[33m)[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Sat Mar 4 10:12:14 2023 +0100
+
+    K nearest values
+
+[33mcommit f3765e68d515a46f44084af9bd9485c138aed403[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Mon Feb 27 22:47:58 2023 +0100
+
+    Demo KNN program
+
+[33mcommit 005e05a3285b12916efc5226e33207cc511247c8[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Mon Feb 27 22:46:03 2023 +0100
+
+    Euclidean Distance formula in C#
+
+[33mcommit 0d9985c3f7aefc1d325fd1f428ca705595a6c4c5[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Sun Feb 26 22:28:39 2023 +0100
+
+    KNN explanation GitHub Repo
+
+[33mcommit 9b00071f3b0f928f54e7a77235baf7dcea029641[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Sun Feb 26 22:17:56 2023 +0100
+
+    Understanding Demo KNN classifier using C#
+
+[33mcommit 1ed1c8664fa3e0b668a62c6dace96eda2d8df4e6[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Fri Feb 24 11:12:23 2023 +0100
+
+    updated project documentation file (HTM)
+
+[33mcommit 80a97a3ff265347a4182afd3210147aae385621e[m[33m ([m[1;32mmaster[m[33m)[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Mon Mar 13 09:28:09 2023 +0100
+
+    Unit Testing video
+
+[33mcommit b2e7e23df8a90c6c9ce191d9e2622354303ef532[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Mon Mar 13 09:25:42 2023 +0100
+
+    Change value of k=7
+
+[33mcommit 3d55bf12c836d7ed0d63d0bbcbcbf5f0679bf140[m
+Merge: 5b0601ef a52979f2
+Author: Ayan <39504666+ayan1948@users.noreply.github.com>
+Date:   Sat Mar 11 18:32:25 2023 +0100
+
+    Merge pull request #2 from ayan1948/minor_refactoring
+    
+    Refactoring
+
+[33mcommit a52979f2334899cc3c1896718736d476551fa55b[m[33m ([m[1;31morigin/minor_refactoring[m[33m)[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Sat Mar 11 18:31:54 2023 +0100
+
+    Refactoring
+
+[33mcommit 5b0601efc041d56cc75a78dd72853aeef794e093[m
+Merge: a3b4d31d 279d1c69
+Author: Ayan <39504666+ayan1948@users.noreply.github.com>
+Date:   Sat Mar 11 18:13:41 2023 +0100
+
+    Merge pull request #1 from ayan1948/refinement
+    
+    Refinement
+
+[33mcommit 279d1c69d51af13490a3e6928a9ea662cea87ec4[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Sat Mar 11 18:08:18 2023 +0100
+
+    Done with the implementation.
+
+[33mcommit f9786a98c1d89d709ba3db42080e6c96dba01681[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Wed Mar 8 23:19:47 2023 +0100
+
+    Major Changes to the Implementation.
+
+[33mcommit a3b4d31da24bc5cee689821033461933cb7eba88[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Fri Feb 24 22:52:27 2023 +0100
+
+    Minor Changes
+
+[33mcommit 35e72422437e118b75e8fcd9fd58ddb47dd3d119[m[33m ([m[1;31morigin/extension[m[33m)[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Wed Feb 22 23:28:03 2023 +0100
+
+    Updated Docs & implementation
+
+[33mcommit 456b4fdf55656c1ff50e51b45850564a459977b8[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Mon Feb 20 12:39:32 2023 +0100
+
+    Streamlining the whole process and adding comments for better understanding the calc
+
+[33mcommit 349064ebdc233e60f0219b0fcadd03717b4ae0d7[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Fri Feb 17 17:05:16 2023 +0100
+
+    Latest Changes
+
+[33mcommit 55f9777ea700395333f06e18a10a2c53467f3c8c[m
+Merge: 9834ef07 08131370
+Author: Ayan <39504666+ayan1948@users.noreply.github.com>
+Date:   Wed Feb 15 13:44:25 2023 +0100
+
+    Merge branch 'ddobric:master' into master
+
+[33mcommit 0813137007ed21f02ace8a601b33c451192f098d[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Feb 13 15:04:53 2023 +0100
+
+    Multiseqyence Experiment extended for exit condition. The experiment will throw if the sequence cannot learned.
+
+[33mcommit b7ebca28a0fc2c1715af5ce49aba94cc7e245a5d[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Feb 12 14:53:46 2023 +0100
+
+    NAA unittests refactoring
+
+[33mcommit 9834ef07de1770ecc83c7315b51dd145750ae871[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Sat Feb 11 23:49:14 2023 +0100
+
+    Thoughts on Async
+
+[33mcommit 30aca23678b8be8a46f5a17cd27e0090a4a8d002[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sat Feb 11 14:15:54 2023 +0100
+
+    added more unit tests to NAA
+
+[33mcommit 4f1251187bcb83c019eded3d48d8c7b3ed411cdb[m
+Merge: 3ea87394 754cd2b3
+Author: Ayan <39504666+ayan1948@users.noreply.github.com>
+Date:   Fri Feb 10 12:44:52 2023 +0100
+
+    Merge branch 'ddobric:master' into master
+
+[33mcommit 3ea873947f2f8d4c8aef83c6755e530761b95c53[m
+Author: Nasir Ishaq <nasirishaq64@gmail.com>
+Date:   Thu Feb 9 16:16:04 2023 +0100
+
+    How to select the value of K
+
+[33mcommit 754cd2b3178f9f60b8f4b651387d869293ce7c9d[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Feb 6 17:34:05 2023 +0100
+
+    Synapse Bug fixed in NAA algorithm.
+
+[33mcommit 6f5c46ca86f8402dae37aa0059b7958593e6358c[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Feb 6 17:15:00 2023 +0100
+
+    Added nuget packages again
+
+[33mcommit 60c47630f81adca0a321b26c791b5a7b9bc862cb[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Feb 6 16:30:31 2023 +0100
+
+    predictor serialization discussion
+
+[33mcommit 33390c56304b6be911ce408936f0eefe707f7d6d[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Feb 6 16:27:21 2023 +0100
+
+    discussion about serialization of predictor and CortexLayer
+
+[33mcommit 13e759f9347803677cd825462d32301cd6a1e6dc[m
+Merge: 75103cf3 b987499e
+Author: unknown <ankushpatil2201@gmail.com>
+Date:   Mon Feb 6 15:20:51 2023 +0100
+
+    Merge branch 'master' of https://github.com/ayan1948/neocortexapi
+
+[33mcommit b987499eb0eb0ca9f565885aafd239ad1c0db9f5[m
+Author: ayan1 <ayan1948@outlook.com>
+Date:   Mon Feb 6 15:20:30 2023 +0100
+
+    Added some comments
+
+[33mcommit 75103cf3d1a78dfc33b06a767a2db079854cfad0[m
+Author: unknown <ankushpatil2201@gmail.com>
+Date:   Mon Feb 6 15:19:55 2023 +0100
+
+    Discussion with Professor on KNN Classifer Implementaion Approch 30012023
+
+[33mcommit d48927094e498b532184431c379e5b77878283fe[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Sat Feb 4 00:58:09 2023 +0100
+
+    Thoughts and some implementation of the data types and components.
+
+[33mcommit f576e409e75b7a98306c76c862de3fa782e26cdc[m
+Merge: 07c87665 b0a291c8
+Author: Ayan <39504666+ayan1948@users.noreply.github.com>
+Date:   Fri Feb 3 12:14:36 2023 +0100
+
+    Merge branch 'ddobric:master' into master
+
+[33mcommit b0a291c8defbc2115a2c03aa60953b8f2877de6f[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Fri Feb 3 01:58:34 2023 +0100
+
+    FormSynapses on inactive segments.
+
+[33mcommit 4852f34396475ca710c6bf208dabc03b7c3d3a20[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Fri Feb 3 01:22:13 2023 +0100
+
+    Synapse UnitTests added.
+
+[33mcommit b1ed6284b29bc89efa775a34eb65dd8b76567f33[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Fri Feb 3 00:54:43 2023 +0100
+
+    Added new constructor for Synapse.
+
+[33mcommit b41f1662365f6882db855249434a7d572bfd8694[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Thu Feb 2 17:43:05 2023 +0100
+
+    Merged naa to master.
+
+[33mcommit 07c876652cb7e15b053d015c039fa996ced41a40[m
+Merge: c7c77f60 9ca2d3fe
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Wed Feb 1 12:42:32 2023 +0100
+
+    Merge remote-tracking branch 'origin/master'
+    
+    # Conflicts:
+    #       source/NeoCortexApi/Classifiers/KnnClassifier.cs
+
+[33mcommit 9ca2d3fef0bdb8609f3bd3d50a24ea5af925178d[m
+Merge: 67fe3477 368b4880
+Author: Ayan <39504666+ayan1948@users.noreply.github.com>
+Date:   Mon Jan 30 23:10:40 2023 +0100
+
+    Merge branch 'ddobric:master' into master
+
+[33mcommit 67fe3477f9bda373d0c38f5257e0fa3cb76ae067[m
+Author: ankush-patil22 <ankushpatil2201@gmail.com>
+Date:   Mon Jan 30 21:23:21 2023 +0100
+
+    Implimentation of KNN prototype for algorithm and concpet understanding
+
+[33mcommit b83dc4806c329a05af6d0cee74aa234d54f71725[m
+Author: ankush-patil22 <ankushpatil2201@gmail.com>
+Date:   Mon Jan 30 20:59:14 2023 +0100
+
+    Added some Images of previous commits in the current working directory of Projects
+
+[33mcommit 7ff41c9ab79526d3bcadd63f207453cdbbf298ac[m
+Author: ayan1 <ayan1948@outlook.com>
+Date:   Mon Jan 30 15:21:43 2023 +0100
+
+    Implementation intro #3
+
+[33mcommit c7c77f606b72ebce4148518cb944d279fcc3995c[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Mon Jan 30 00:10:39 2023 +0100
+
+    Trying to use inbuilt datatype to accelerate.
+
+[33mcommit ae3a40c42cb42e5c5e7875c7bed3fa09c70c3460[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Sun Jan 29 16:37:00 2023 +0100
+
+    Implementation Intro #2
+
+[33mcommit 368b4880372cf2fcfd34242039dbcfd1782dd5c1[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 29 15:11:16 2023 +0100
+
+    first version NAA is running
+
+[33mcommit 458be7b6a4e2b9d859a1ed59637350908eb3437e[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 29 12:39:50 2023 +0100
+
+    Added CellCompareTest
+
+[33mcommit 28c6e8db040dd5e7367ccd10cea36d7353b7c655[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 29 12:32:56 2023 +0100
+
+    Refactoring CorticalArea and Cell. Cell has now a simplified constructor for NAA.
+
+[33mcommit 5e79b3c15bffd39b0df9818316e27b52f6d52c35[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sat Jan 28 22:30:30 2023 +0100
+
+    AdaptIncativeSegments change
+
+[33mcommit dd71e70fd48d6f527eb4465956b501acddebdeab[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sat Jan 28 22:20:54 2023 +0100
+
+    AdaptIncativeSegments changed to add segment to every active cell.
+
+[33mcommit 1004e53a4853f223e80cf6ff0aba6c18dcde4da8[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sat Jan 28 14:42:42 2023 +0100
+
+    merge
+
+[33mcommit 72d0d38bd7a21397d94c4674814cdecb18442d0a[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Fri Jan 27 16:40:12 2023 +0100
+
+    Added missing packages
+
+[33mcommit bae0d728ac8e1f4b0796455d1f99e1fc48f3b0e2[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Fri Jan 27 16:05:38 2023 +0100
+
+    added nuget folder
+
+[33mcommit 8b68bc491cc0397e6b677099cd8ab28ad3de0dea[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Fri Jan 27 15:40:38 2023 +0100
+
+    changed test signature
+
+[33mcommit f0a0a2c7dee8f2245eb8ec78a77d5f2bb8f5aeb8[m
+Author: Ayan Borthakur <ayan1948@outlook.com>
+Date:   Wed Jan 25 14:02:21 2023 +0100
+
+    Implementation intro.
+
+[33mcommit 482374230d4949b9f228219d3a48447c195dfe4e[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Jan 23 18:18:02 2023 +0100
+
+    added readme.md to nuget folder
+
+[33mcommit 177cd5765a91658016254b26c5363c16da01ab48[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Jan 23 18:17:32 2023 +0100
+
+    Added readme.md to nuget folder. The folder is no no more empty
+
+[33mcommit c9c2892ed1a11f745edcae8dc0fee5e2dbac070b[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Jan 23 17:27:35 2023 +0100
+
+    working on NAA
+
+[33mcommit 6060e59c0acbdd96136867b67596637a9f9b47ee[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 22 16:26:47 2023 +0100
+
+    Corrected bugs in Matching Segent search function.
+
+[33mcommit c2839710a4786c97ffa2ca5847dfbffe48a85bcc[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 22 15:58:27 2023 +0100
+
+    Chenged MinThreshold from 9 to 6.
+
+[33mcommit 6e2aeaab6edf000df9fabb3f48e43da2ee58d049[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 22 15:53:49 2023 +0100
+
+    method name changed
+
+[33mcommit ff08df701f4e3419f79572c48c06e87e7397cf78[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 22 15:51:18 2023 +0100
+
+    unittests changed for NAA
+
+[33mcommit d89a347940520051fc4e0f6112aee2ae82f0cb98[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 22 15:45:53 2023 +0100
+
+    Working on NAA. Small refactoring tasks.
+
+[33mcommit 7002303d607be27da2df7989e8e0c72fd88eb13b[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Jan 16 20:10:33 2023 +0100
+
+    removed unneded nuget packages
+
+[33mcommit dbc5e2072638fcd1913134d5bac1e7e0e923a035[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Jan 16 20:09:35 2023 +0100
+
+    removed nuget packages. Added Persistence Sample.
+
+[33mcommit 52199eeb5b1d3063abe73c82ca0e0c0089909255[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Mon Jan 16 17:18:02 2023 +0100
+
+    Added persistence sample
+
+[33mcommit faf692e0a1f45a37619cb95dbb44cc77d4ca47e2[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sun Jan 15 13:55:08 2023 +0100
+
+    Working on NAA
+
+[33mcommit 25fc17ad370e34de20f25765963860e9d0ce3fc2[m
+Author: Damir Dobric <ddobric@daenet.com>
+Date:   Sat Jan 14 22:48:46 2023 +0100
+
+    NAA Code complete first attempt
+
+[33mcommit f79daa255296da5fcc72ef5ef8ece75b6d02a392[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Jan 8 21:03:34 2023 +0100
+
+    work in progress
+
+[33mcommit 259842e85e56870d8e345ed7911e8c1dd6b42f96[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Jan 7 12:28:01 2023 +0100
+
+    added code change recommendation for TM
+
+[33mcommit ff15aa96e6351945043a975b557823d422410ea1[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Jan 7 12:27:32 2023 +0100
+
+    work in progress
+
+[33mcommit 2617481b521dd7bcada31db42090c2958263c484[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Jan 7 10:52:41 2023 +0100
+
+    SynapsePermConnected set on private one
+
+[33mcommit 995a70bd07017bb8aa060ccf28ec8b49659789cc[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Jan 7 10:48:21 2023 +0100
+
+    EPSILON refactoring
+
+[33mcommit 0a5501650dc9ee3737d3dcbbf376171a6c2757a9[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Jan 7 10:23:53 2023 +0100
+
+    work in progress
+
+[33mcommit b571d3f473d1de072ce17fb6893dfb20927f9e0d[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Fri Jan 6 11:03:51 2023 +0100
+
+    work in progress
+
+[33mcommit 90a827e8c12a82d11dee93bfe9778787949f2d89[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Jan 1 18:19:52 2023 +0100
+
+    working on naa
+
+[33mcommit b704f4736ee40f81ff6646e88baf5efe7b53ef73[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 25 13:28:25 2022 +0100
+
+    removed active synapces from ComputeCycle
+
+[33mcommit 6db4a09f99627fc5450892deb4a86bce9fc658f9[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 25 13:06:24 2022 +0100
+
+    Working on NAA
+
+[33mcommit e60d3949f19914ce9e75d7fc514cdbcc17fc4324[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 25 13:06:00 2022 +0100
+
+    working on NAA
+
+[33mcommit 1a1135f03c1030f506487fa6e140ac07d09044b4[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Fri Dec 23 15:57:44 2022 +0100
+
+    working on NAA
+
+[33mcommit 1c1e142ed2418765323fb7e497942d81e420aca4[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Fri Dec 23 15:46:02 2022 +0100
+
+    Aded corticalcolumn
+
+[33mcommit 037eb4668d7101757e700187fd2a0e56a94d1c60[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 18 16:09:54 2022 +0100
+
+    local inhibition density changed
+
+[33mcommit 26839da420b21bbf72d9979bba2fd2ef43259080[m
+Merge: 56aa3e0d da8ef39c
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 18 14:38:17 2022 +0100
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit 56aa3e0db798ab7f05f0802af2989164bd3b7611[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 18 14:38:12 2022 +0100
+
+    refactoring Serializer Unit Tests
+
+[33mcommit da8ef39c700dafd0fd349f7feb04bcfea8aaf03c[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 18 12:17:48 2022 +0100
+
+    Update README.md
+
+[33mcommit 3ae893e8209a05018c1f97aa5a25dfc92e420749[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 18 12:02:02 2022 +0100
+
+    HtmSerializer2 renamed to HtmSerializer
+
+[33mcommit 722a0259cee34c2a603d360f8591a03b54d5838f[m
+Merge: 91a4edf6 195d3135
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 18 11:56:43 2022 +0100
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit 91a4edf6dc243d0d803fe8fb87df86c8ff867a0a[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 18 11:56:38 2022 +0100
+
+    Old serializer renamed to HtmSerializerOld
+
+[33mcommit 195d3135c0f1cd3407c2f1f15c6ffcc841bd885f[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Dec 17 11:16:58 2022 +0100
+
+    Update README.md
+
+[33mcommit 34c75b00bf0e8512af6f3538d33fafb0c05b3972[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Dec 17 11:16:22 2022 +0100
+
+    Update README.md
+
+[33mcommit 7117e1fd6e2d663d05525b4844d8e30c611786ec[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Dec 17 11:13:37 2022 +0100
+
+    Update Cortex.md
+
+[33mcommit 63ca5769375747ce9da95defc7f46fc4623ac94e[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Dec 17 11:08:45 2022 +0100
+
+    Update Cortex.md
+
+[33mcommit 2b25f1e371defe001d2029575a8fb59b480f1a2f[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Dec 17 11:07:32 2022 +0100
+
+    Update README.md
+
+[33mcommit abb54ab6ce5ddcf2afe04b4c571d87d4e0f6771b[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sat Dec 17 10:52:27 2022 +0100
+
+    upgrade SDK to n3t.7.0
+
+[33mcommit 74ff979d1d8f3218aa79044de46ba037d78705b1[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 11 15:58:53 2022 +0100
+
+    comment change
+
+[33mcommit 4e66a98303fa5c9d44f379919ce22a42eb9c7b8f[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 11 15:58:18 2022 +0100
+
+    small changes in review
+
+[33mcommit 420e0ac1db2c5949f0ae7937c1be531e287bf719[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Dec 11 10:56:57 2022 +0100
+
+    work on NAA and persistence
+
+[33mcommit 3d9a78967095ae2206683435534aec98af63b5e7[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Sun Oct 30 00:05:20 2022 +0200
+
+    add method to trace the permance values from the SDR
+
+[33mcommit 2ffcf07323a1595d4cc9ec9bc119a6915255fa61[m
+Merge: 55653f71 b74770af
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Oct 16 22:07:07 2022 +0200
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit 55653f710b7ad7134b30b5fe4d3c2040516d76ff[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Sun Oct 16 22:07:04 2022 +0200
+
+    review of GrowSynapses
+
+[33mcommit b74770af3e96e90d468855cf0ecca013b493561e[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Thu Oct 6 10:22:54 2022 +0200
+
+    working on persistence sample
+
+[33mcommit acdda51230e83b872abaa544b8b919c7002ca4aa[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Tue Oct 4 16:02:00 2022 +0200
+
+    add save and load methods
+
+[33mcommit 69d65ec21eaf632aea132798b9e43998410781ae[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Tue Oct 4 15:46:57 2022 +0200
+
+    add test measure time
+
+[33mcommit 64e5c8bf2970079ea4429c50ba69082e8e620db3[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Oct 3 16:56:30 2022 +0200
+
+    add more unit tests
+
+[33mcommit eb5e33e5e14bebe005464d8a822e2c27ca98aac7[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Oct 3 02:18:33 2022 +0200
+
+    rename unit tests
+
+[33mcommit d392646349b58da74e426bb6e4e26a55716265aa[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Oct 3 01:39:34 2022 +0200
+
+    working on HTM serialization
+
+[33mcommit 157c3e49e084bf3a9aef1a777e177f6eac1623b1[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Wed Aug 24 16:48:45 2022 +0200
+
+    Compare two multidimensional arrays
+
+[33mcommit e3a16d7cc681a104b5a9eb8aaa1e2224de16b471[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Wed Aug 24 13:48:04 2022 +0200
+
+    compare active columns of SP and the deserialized SP
+
+[33mcommit 5cdd7ea80ac672a560b5ae9dbc59d4ed2ba56ff3[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Aug 22 17:55:14 2022 +0200
+
+    add Id for serialized object to track duplicate
+
+[33mcommit 322fded8cb4f3b3b8ecb5cbc3eeccd2ae9dd6db3[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Fri Aug 19 18:28:00 2022 +0200
+
+    serialization works
+
+[33mcommit 104b1d145e4938b5dfdc6d3906da4de3aa0dc113[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Fri Aug 19 03:01:02 2022 +0200
+
+    Working on Serialize CortexLayer
+
+[33mcommit 565ba28cf8d0ca3bb74d6e2149ecda28e00f21f3[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Thu Aug 18 18:23:17 2022 +0200
+
+    implement more equal methods
+
+[33mcommit 82a0a1a2b4364eef40f95e3d3a214fcdd9353ac4[m
+Merge: 9a38e665 e8bcaf1c
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Thu Aug 18 17:26:58 2022 +0200
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit 9a38e66596d59ec45acb5543674539cf2d05798c[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Thu Aug 18 17:26:54 2022 +0200
+
+    removed boxedindex from synapse
+
+[33mcommit e8bcaf1cbfa27f9dd737f503ebbf86a640f9892f[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Wed Aug 17 10:41:13 2022 +0200
+
+    working on serialize Connection memory
+
+[33mcommit 2d71005e03cfdd01fba794a4ac49c03129343602[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Tue Aug 16 21:34:42 2022 +0200
+
+    move memory from htmConfig to Connections
+
+[33mcommit ffe5f850ca422405f1948abd33c9d8ae307393ae[m
+Merge: e692a7b4 5b7c5f92
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Tue Aug 16 20:25:43 2022 +0200
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit e692a7b4b7c06b35b5de2b4f6b99b5830d713dc7[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Tue Aug 16 20:25:40 2022 +0200
+
+    serialize cortexLayer after running SP
+
+[33mcommit 5b7c5f9274ab28eb5dc6906b86aa7f1b1641aee0[m
+Merge: e5b4c3a9 3ca7395f
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Tue Aug 16 18:21:09 2022 +0200
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit e5b4c3a9a9eb0daed6e01eae4fca1db6b3577932[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Tue Aug 16 18:21:06 2022 +0200
+
+    Added editor configurration
+
+[33mcommit 3ca7395fcfa3bc3884dd1601d5463356646f5a26[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Tue Aug 16 11:03:02 2022 +0200
+
+    clean up
+
+[33mcommit d2186f4c33ec312efd1975eba788b1fe647506fd[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Tue Aug 16 00:34:31 2022 +0200
+
+    serialize cortex layer
+
+[33mcommit c736e16237a17ac5ee8cf0eb44b9cefb1e198dde[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Sun Aug 14 17:35:54 2022 +0200
+
+    make deserialize method generic
+
+[33mcommit f67106479180d512e50f178d202aec938a214ee8[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Sat Aug 13 16:06:58 2022 +0200
+
+    serialize Connections works with initialization of SP and TM
+
+[33mcommit f54d6facfc399eebb6746f554855c1521c5adbce[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Fri Aug 12 03:00:06 2022 +0200
+
+    serialization of classes related to Connections
+
+[33mcommit 1b1e62953cf9f75a81ff28f8969de902295c1963[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Thu Aug 4 23:12:06 2022 +0200
+
+    Implement ISerializable for entities
+
+[33mcommit 562402e748bbe1f07800a3dfd31e0ffca9926abb[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Wed Aug 3 01:07:33 2022 +0200
+
+    Working on model persistance
+
+[33mcommit 612f9ad04bcad21c86a349c7b8162ac948c11c22[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Jul 25 16:41:52 2022 +0200
+
+    add ISerializable interface for all
+
+[33mcommit 48e4c8296841bd322a398b99293a9fae7cd90a2a[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Fri Jul 22 15:15:53 2022 +0200
+
+    Trying to call delegate de-/serialization by type
+
+[33mcommit dc13fe020682fe93992246b6335e2bceb8d055ff[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Wed Jul 20 17:13:39 2022 +0200
+
+    Serialization review
+
+[33mcommit e9265636791ffd16a7db4de5adf9f3d4a9c347dd[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Wed Jul 20 01:38:59 2022 +0200
+
+    add regions to serialization code
+
+[33mcommit 76dbcace53b0477bf7bfb01644be5e7a564fcd73[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Tue Jul 19 20:08:35 2022 +0200
+
+    serialization without type
+
+[33mcommit 4ab0b26de1b4e7e5f029f217af510ece2208a24d[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Thu Jul 14 17:25:54 2022 +0200
+
+    working on serialization of connections
+
+[33mcommit 0e4d6a220d1e106408edf6d3785c5a75e8439f78[m
+Merge: 35b35469 d437277b
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Wed Jul 13 02:24:22 2022 +0200
+
+    merge
+
+[33mcommit 35b3546903f1089a1a16a6e6630b55037c769980[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Wed Jul 13 02:21:10 2022 +0200
+
+    Working on HTM serialization
+
+[33mcommit d437277b01d12b2668c5907ad3940884428390c0[m
+Merge: 7533f0ce 7f3b0098
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jul 11 10:02:39 2022 +0200
+
+    Merge pull request #78 from ddobric/HtmClassifierIntArray
+    
+    Htm classifier int array
+
+[33mcommit 7533f0cea445c3b7e41d2250683cb42c2f110ca4[m
+Merge: 0093a5aa 001d1a3d
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jul 11 09:57:20 2022 +0200
+
+    Merge pull request #79 from ddobric/IndividualProjectDuyNguyen
+    
+    update doc from Duy Individual Project
+
+[33mcommit 001d1a3d62378484319ad57b9bd7ea8c134eb84a[m
+Author: Noath2302 <noath2302@gmail.com>
+Date:   Fri Jul 8 16:03:47 2022 +0200
+
+    update doc from Duy Individual Project
+
+[33mcommit 7f3b0098709b61634d9e2f3d7106327df2389eef[m
+Author: Noath2302 <noath2302@gmail.com>
+Date:   Mon Jul 4 11:36:45 2022 +0200
+
+    adding summary description for Learn and GetPredictedInputValues with int array
+
+[33mcommit cc57ee7c57ab7a2a2bc21c71da3c21c8b275dc8c[m
+Author: Noath2302 <noath2302@gmail.com>
+Date:   Mon Jul 4 11:24:21 2022 +0200
+
+    using current TraceState from master in HtmClassifier
+
+[33mcommit ea66dd6ea7c7c6e507269d9b91b8444527dfb24d[m
+Author: Noath2302 <noath2302@gmail.com>
+Date:   Mon Jul 4 11:16:20 2022 +0200
+
+    adding HtmClassifier with seperated Learn/GetPredictedInputValues function
+
+[33mcommit 0093a5aa97524a56a3b7361365390d9152fe4949[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Fri Jul 1 18:17:50 2022 +0200
+
+    working on NAA
+
+[33mcommit 81b35f7626ee3f5141c72480f6dbd4a5ac275986[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jun 20 15:40:41 2022 +0200
+
+    TraseState uses now TraceSdr with arrangement.
+
+[33mcommit 69aababc8adaf21e94558e9cb5bc4faf78ed4a2b[m
+Merge: 2577c272 7e794c13
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jun 20 15:23:05 2022 +0200
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit 2577c27246505b1c69f5b4375d9900db6f0d608d[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jun 20 15:23:02 2022 +0200
+
+    TraceState method changed.
+
+[33mcommit 7e794c13027cb2d03da4791aaf2329242e464954[m
+Merge: 82615fa3 951a3056
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jun 20 15:22:17 2022 +0200
+
+    Merge pull request #72 from ddobric/SDRTraceMerge
+    
+    Add ML-21-22-26_Implement_Trace_SDR_Method
+
+[33mcommit 82615fa3f791f845f5f65fada585e4d4e8fb7e3b[m
+Author: Sabin <sabinbajracharya@users.noreply.github.com>
+Date:   Mon Jun 20 06:08:13 2022 +0545
+
+    Add SDR brief description
+
+[33mcommit 951a30566b36d65a3eec763e54e63ef3d1d29890[m
+Author: Sabin <sabinbajracharya@users.noreply.github.com>
+Date:   Mon Jun 20 05:48:12 2022 +0545
+
+    Update Readme TraceSDR: Link fix and format code
+
+[33mcommit c2578d28d251e55d5d1030dc8bbe2bc68a93a5fc[m
+Author: Sabin <sabinbajracharya@users.noreply.github.com>
+Date:   Mon Jun 20 05:33:10 2022 +0545
+
+    Doc Update: Remove result image of Stringify_TraceSDR
+
+[33mcommit cc6404e3ec211df3523dd738afd9c49c9df5ab2f[m
+Author: Sabin <sabinbajracharya@users.noreply.github.com>
+Date:   Mon Jun 20 05:31:15 2022 +0545
+
+    Create ML-21-22-26_Implement_Trace_SDR_Method.md
+
+[33mcommit 5bc6df4021b1b7e7f99714d10d02d923f21ea1d4[m
+Author: सबिन (Sabin) <sabin.bajracharya@gmail.com>
+Date:   Mon Jun 20 01:37:55 2022 +0200
+
+    Add Doc: ML-21-22-26_Implement_Trace_SDR_Method.pdf
+
+[33mcommit 84e013f4d8cfa816025b895d568d61c1b6f4fdb7[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Tue Jun 14 17:27:37 2022 +0200
+
+    Removed the CellId from the Cell class
+
+[33mcommit 2eb2e03da456b4a881eb24f235cf703673948582[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Tue Jun 14 12:46:29 2022 +0200
+
+    Working on ApicalSegments.
+
+[33mcommit 7a3be94aa1dea04cbbe1be5ad5b74a95b49fe12c[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jun 13 16:54:38 2022 +0200
+
+    Added comments to Predictor
+
+[33mcommit 9cdad4c71542bd62205fa3bf06e43d15ff63217e[m
+Author: Noath2302 <noath2302@gmail.com>
+Date:   Mon Jun 13 10:49:24 2022 +0200
+
+    adding Cref placeholder
+
+[33mcommit b51d919df5860538071d0619c69308274bd9e4ef[m
+Author: Noath2302 <noath2302@gmail.com>
+Date:   Mon Jun 13 10:36:45 2022 +0200
+
+    SDRTrace merge
+
+[33mcommit 4fc6bd7f723ab33a63883cc1ed3ee4d5dc2a4eb7[m
+Merge: 2a0efd6a df614dbd
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jun 13 09:39:36 2022 +0200
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit 2a0efd6a9e93f71a27400454d781eb6ed8ae8e0a[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Mon Jun 13 09:39:32 2022 +0200
+
+    Rereferencing to GetPredictedInputValues
+
+[33mcommit df614dbdf5af904a696243e51f298185877fb286[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Jun 13 00:36:28 2022 +0200
+
+    revert changes
+
+[33mcommit 19a13a199a0f4ea17889a0a1f61bfbf00d0ca2a1[m
+Merge: d29ac825 a93205fd
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Jun 13 00:14:16 2022 +0200
+
+    Merge branch 'master' of https://github.com/ddobric/neocortexapi
+
+[33mcommit d29ac8258f3f3fb523300d0812fd0aef6e26e111[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Jun 13 00:14:13 2022 +0200
+
+    change to static field
+
+[33mcommit 15cfff17c3b7e1217c0ff1de659fb6f64cb0aafe[m
+Author: QuangBui3101 <buinhatquang31011996@gmail.com>
+Date:   Mon Jun 13 00:12:43 2022 +0200
+
+    add github icon
+
+[33mcommit a93205fdc22fb187dc44a1561b9d9258600288ae[m
+Merge: 194efc2b 4d4b1f39
+Author: Sabin <sabinbajracharya@users.noreply.github.com>
+Date:   Fri Jun 10 20:39:17 2022 +0545
+
+    Merge pull request #70 from sabinbajracharya/master
+    
+    Change HTMClassifierTest TestCategory to "Prod"
+
+[33mcommit 4d4b1f3905c464a7647d65a6f9f9a06d69080440[m
+Author: सबिन (Sabin) <sabin.bajracharya@gmail.com>
+Date:   Fri Jun 10 16:49:47 2022 +0200
+
+    Change HTMClassifierTest TestCategory to "Prod"
+
+[33mcommit 194efc2b1237fc2e579b4c14281009f9b2a0227f[m
+Merge: 541f49d1 a01b2093
+Author: Sabin <sabinbajracharya@users.noreply.github.com>
+Date:   Fri Jun 10 20:27:14 2022 +0545
+
+    Merge pull request #69 from sabinbajracharya/master
+    
+    Mock the Active and Predicate cell for HTMClassifier Test
+
+[33mcommit a01b2093ecf6aa068be80f9275e532363cd1c81a[m
+Merge: f27b0ac1 541f49d1
+Author: सबिन (Sabin) <sabin.bajracharya@gmail.com>
+Date:   Fri Jun 10 16:37:02 2022 +0200
+
+    Merge branch 'master' of https://github.com/sabinbajracharya/neocortexapi
+
+[33mcommit f27b0ac11c0f6ba7c3cfdef275170faaaf922b4d[m
+Author: सबिन (Sabin) <sabin.bajracharya@gmail.com>
+Date:   Fri Jun 10 06:12:52 2022 +0200
+
+    Mock the Active and Predicate cell for HTMClassifier Test
+     - The cells are randomly generated
+     - The HTM learning is removed and instead the cells generated randomly are used
+
+[33mcommit 541f49d17fd1b19193398f9d7162e671bfee2a7d[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Thu Jun 9 09:32:25 2022 +0200
+
+    removed HtmClassifier tests
+
+[33mcommit b7a390b65b149c420eaf507c023a1805f51ded4d[m
+Merge: b4ffd27f 7729f330
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Tue Jun 7 12:25:28 2022 +0200
+
+    Merge pull request #68 from sabinbajracharya/master
+    
+    HtmClassifierUnitTest: Reduce Test duration
+
+[33mcommit b4ffd27f4e6ea14e377c72cd5b7cdf473125b92b[m
+Author: Damir Dobric <ddobric@daenet.de>
+Date:   Tue Jun 7 12:15:35 2022 +0200
+
+    Created Predictor Class in the API
+
+[33mcommit 7729f330b46de36f22f4ac5581999d5fbfba8d1b[m
+Author: सबिन (Sabin) <sabin.bajracharya@gmail.com>
+Date:   Sun Jun 5 23:17:20 2022 +0200
+
+    HtmClassifierUnitTest: Reduce Test duration
+     - Remove redundant learning loop
+     - Run the HTM learning only once during class initialization instead of running it over an over agiain for each test
+
+[33mcommit 82459d2d4e4259c0748e5
