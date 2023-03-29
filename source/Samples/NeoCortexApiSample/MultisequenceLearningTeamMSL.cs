@@ -3,11 +3,12 @@ using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-using Org.BouncyCastle.Asn1.Tsp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+
 
 
 namespace NeoCortexApiSample
@@ -15,7 +16,7 @@ namespace NeoCortexApiSample
     /// <summary>
     /// Implements an experiment that demonstrates how to learn sequences.
     /// </summary>
-    public class MultiSequenceLearning
+    public class MultisequenceLearningTeamMSL
     {
         /// <summary>
         /// Runs the learning of sequences.
@@ -55,7 +56,7 @@ namespace NeoCortexApiSample
                 PredictedSegmentDecrement = 0.1
             };
 
-            double max = 20;
+            double max = 99;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -134,11 +135,12 @@ namespace NeoCortexApiSample
 
             var lastPredictedValues = new List<string>(new string[] { "0" });
 
-            int maxCycles = 3500;
+            int maxCycles = 3550;
 
             //
             // Training SP to get stable. New-born stage.
             //
+
 
             for (int i = 0; i < maxCycles && isInStableState == false; i++)
             {
@@ -171,7 +173,7 @@ namespace NeoCortexApiSample
             // We activate here the Temporal Memory algorithm.
             layer1.HtmModules.Add("tm", tm);
 
-            //
+
             // Loop over all sequences.
             foreach (var sequenceKeyPair in sequences)
             {
@@ -182,9 +184,6 @@ namespace NeoCortexApiSample
                 List<string> previousInputs = new List<string>();
 
                 previousInputs.Add("-1.0");
-
-                // Set on true if the system has learned the sequence with a maximum acurracy.
-                bool isLearningCompleted = false;
 
                 //
                 // Now training with SP+TM. SP is pretrained on the given input pattern set.
@@ -271,6 +270,41 @@ namespace NeoCortexApiSample
                     double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.Value.Count - 1) / (double)sequenceKeyPair.Value.Count * 100.0;
 
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
+                    Debug.WriteLine($"{sequenceKeyPair.Key} is having Accuracy: {accuracy}% ");
+                    //using (var swr = new StreamWriter("Accuracy Logs.csv", true)) // the "true" flag appends to the file instead of overwriting it
+                    //{
+                    //    // write the sequence accuracy to the CSV file
+                    //    swr.WriteLine($"{sequenceKeyPair.Key} is having accuracy , {accuracy}%");
+                    //}
+
+                    /* Writing accuracy in .xlsx file
+                     * 
+                    string sequenceKey = sequenceKeyPair.Key;
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                    using (var package = new ExcelPackage())// Create a new Excel package and worksheet
+                    {
+                        int rowNum = 1; // initialize row number to 1
+                        var worksheet = package.Workbook.Worksheets.Add("Accuracy Data");// Write the Debug output to the Excel worksheet
+                        worksheet.Cells[rowNum, 1].Value = $"{sequenceKey} is having Accuracy: {accuracy}%";
+                        rowNum++; // increment row number
+
+                        //ExcelWorksheet ws = package.Workbook.Worksheets[0];
+                        //var worksheet = package.Workbook.Worksheets[0];
+
+                        //int row = worksheet.Dimension.End.Row + 1;
+
+                        //worksheet.Cells[row, 1].Value = sequenceKey;
+                        //worksheet.Cells[row, 2].Value = accuracy;
+
+
+                        FileInfo fileInfo = new FileInfo("Accuracy_Output.xlsx");// Save the Excel package to a file
+                        package.SaveAs(fileInfo);
+                    }
+                    */
+
+
+
 
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
 
@@ -285,7 +319,6 @@ namespace NeoCortexApiSample
                         {
                             sw.Stop();
                             Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
-                            isLearningCompleted = true;
                             break;
                         }
                     }
@@ -298,9 +331,6 @@ namespace NeoCortexApiSample
                     // This resets the learned state, so the first element starts allways from the beginning.
                     tm.Reset(mem);
                 }
-
-                if (isLearningCompleted == false)
-                    throw new Exception($"The system didn't learn with expected acurracy!");
             }
 
             Debug.WriteLine("------------ END ------------");

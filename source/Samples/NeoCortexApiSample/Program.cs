@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
-using static NeoCortexApiSample.MultiSequenceLearning;
+using static NeoCortexApiSample.MultisequenceLearningTeamMSL;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NeoCortexApiSample
@@ -51,7 +51,7 @@ namespace NeoCortexApiSample
 
             sequences = GetInputFromExcelFile();
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new();
+            MultisequenceLearningTeamMSL experiment = new();
 
             var predictor = experiment.Run(sequences);
             List<List<double>> testSequences = new();
@@ -132,7 +132,7 @@ namespace NeoCortexApiSample
 
             //
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
+            MultisequenceLearningTeamMSL experiment = new MultisequenceLearningTeamMSL();
             var predictor = experiment.Run(sequences);
         }
 
@@ -178,7 +178,10 @@ namespace NeoCortexApiSample
             string predictedSequence = "";
             string predictedNextElement = "";
             string predictedNextElementsList = "";
-            
+
+            // Generate file name with current date and time
+            string fileName = string.Format("Final Accuracy ({0:dd-MM-yyyy HH-mm-ss}).csv", DateTime.Now);
+            string filePath = Path.Combine(Environment.CurrentDirectory, fileName);
 
             for (int i = 0; i < list.Count - 1; i++)
             {
@@ -198,7 +201,7 @@ namespace NeoCortexApiSample
                     var tokens3 = res.Last().PredictedInput.Split('_');
                     predictedSequence = tokens[0];
                     predictedNextElement = tokens2.Last();
-                    predictedNextElementsList= string.Join("-", tokens3.Skip(1));
+                    predictedNextElementsList = string.Join("-", tokens3.Skip(1));
                     Debug.WriteLine($"Predicted Sequence: {predictedSequence}, predicted next element {predictedNextElement}");
 
                     if (nextItem == double.Parse(predictedNextElement))
@@ -212,28 +215,24 @@ namespace NeoCortexApiSample
                 }
 
                 totalPredictions++;
+
+                double accuracy = (double)countOfMatches / totalPredictions * 100;
+                Debug.WriteLine($"Final Accuracy: {accuracy}%");
+                Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
+
+                // Append to file in each iteration
+                if (predictedNextElementsList != "")
+                {
+                    string line = $"Predicted Sequence: {predictedSequence}, Predicted Sequence: {predictedNextElementsList}, Predicted Next Element: {predictedNextElement}, Final Accuracy: {accuracy}%";
+                    File.AppendAllText(filePath, line + Environment.NewLine);
+                }
+                else
+                {
+                    string line = $"Nothing is predicted, Accuracy is: {accuracy}%";
+                    File.AppendAllText(filePath, line + Environment.NewLine);
+                }
             }
-
-            double accuracy = (double)countOfMatches / totalPredictions * 100;
-            Debug.WriteLine($"Final Accuracy: {accuracy}%");
-            Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
-
-            // Generate file name with current date and time
-            string fileName = string.Format("Final Accuracy ({0:dd-MM-yyyy HH-mm-ss}).csv", DateTime.Now);
-            string filePath = Path.Combine(Environment.CurrentDirectory, fileName);
-            using (StreamWriter writer = new StreamWriter(filePath))
-            {
-                //writer.WriteLine($"Predicted Sequence,{predictedSequence}");
-                //writer.WriteLine($"Predicted Next Element,{predictedNextElement}");
-                //writer.WriteLine($"Final Accuracy,{accuracy}%");
-                //writer.WriteLine("Predicted Sequence: " + string.Join(",", predictedSequence) +",",predictedNextElementsList+ ", Predicted Next Element: " + predictedNextElement.Last() + ", Final Accuracy: " + accuracy + "%");
-                writer.WriteLine("Predicted Sequence: " + string.Join(",", predictedSequence) + ", Predicted Sequence: " + string.Join(",", predictedNextElementsList) + ", Predicted Next Element: " + predictedNextElement.Last() + ", Final Accuracy: " + accuracy + "%");
-
-            }
-
             Debug.WriteLine("------------------------------");
         }
-
-
     }
 }
