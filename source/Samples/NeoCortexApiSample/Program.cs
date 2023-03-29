@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
-using static NeoCortexApiSample.MultiSequenceLearning;
+using static NeoCortexApiSample.MultisequenceLearningTeamMSL;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NeoCortexApiSample
@@ -51,7 +51,7 @@ namespace NeoCortexApiSample
 
             sequences = GetInputFromExcelFile();
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new();
+            MultisequenceLearningTeamMSL experiment = new();
 
             var predictor = experiment.Run(sequences);
             List<List<double>> testSequences = new();
@@ -132,7 +132,7 @@ namespace NeoCortexApiSample
 
             //
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
+            MultisequenceLearningTeamMSL experiment = new MultisequenceLearningTeamMSL();
             var predictor = experiment.Run(sequences);
         }
 
@@ -232,11 +232,7 @@ namespace NeoCortexApiSample
                     File.AppendAllText(filePath, line + Environment.NewLine);
                 }
             }
-
             Debug.WriteLine("------------------------------");
         }
-
-
-
     }
 }
