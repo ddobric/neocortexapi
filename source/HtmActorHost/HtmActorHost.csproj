@@ -33,6 +33,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.4.10" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
 
   </ItemGroup>
 
