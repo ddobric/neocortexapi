@@ -1,0 +1,9 @@
+The SDR classifier takes the form of a single layer classification network that takes SDRs as input and outputs a predicted distribution.
+The SDR Classifier accepts a binary input pattern from the level below (the “activationPattern”) and information from the sensor and encoders (the “classification”) describing the true (target) input.
+
+The SDR classifier maps input patterns to class labels. There are as many output units as the number of class labels or buckets (in the case of scalar encoders). The output is a probabilistic distribution over all class labels.
+During inference, the output is calculated by first doing a weighted summation of all the inputs, and then perform a softmax nonlinear function to get the predicted distribution of class labels
+
+During learning, the connection weights between input units and output units are adjusted to maximize the likelihood of the model
+
+Encoders: An encoder converts a value to a sparse distributed representation.
