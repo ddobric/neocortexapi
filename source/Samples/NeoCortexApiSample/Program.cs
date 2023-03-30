@@ -56,9 +56,9 @@ namespace NeoCortexApiSample
             var predictor = experiment.Run(sequences);
             List<List<double>> testSequences = new();
             testSequences = GetSubSequencesInputFromExcelFile();
-            predictor.Reset();
             foreach (var numberList in testSequences)
             {
+                predictor.Reset();
                 PredictNextElement(predictor, numberList);
             }
 
