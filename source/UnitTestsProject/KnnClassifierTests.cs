@@ -9,6 +9,7 @@ using NeoCortexEntities.NeuroVisualizer;
 
 namespace UnitTestsProject
 {
+    [TestClass]
     public class KnnClassifierTests
     {
         private int numColumns = 1024;

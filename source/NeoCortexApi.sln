@@ -51,8 +51,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{9475B9AE
 		nuget\readme.md = nuget\readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnnUnitTest", "KnnUnitTest\KnnUnitTest.csproj", "{0A9671DF-CE11-4213-92FD-5CDDB5A2894A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,10 +105,6 @@ Global
 		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A9671DF-CE11-4213-92FD-5CDDB5A2894A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A9671DF-CE11-4213-92FD-5CDDB5A2894A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A9671DF-CE11-4213-92FD-5CDDB5A2894A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A9671DF-CE11-4213-92FD-5CDDB5A2894A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
