@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using NeoCortexApi.Entities;
-using System.Diagnostics;
 using System.Linq;
 
 
@@ -74,10 +73,7 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         /// <param name="other">Past object of the implementation for comparison</param>
         /// <returns>Comparison between past and present object</returns>
-        public int CompareTo(ClassificationAndDistance other)
-        {
-            return Distance.CompareTo(other.Distance);
-        }
+        public int CompareTo(ClassificationAndDistance other) => Distance.CompareTo(other.Distance);
     }
 
     /// <summary>
@@ -100,7 +96,7 @@ namespace NeoCortexApi.Classifiers
     public class KNeighborsClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
         private int _nNeighbors = 1; // From Numenta's example 1 is default
-        private Dictionary<string, List<int[]>> _models = new Dictionary<string, List<int[]>>();
+        private DefaultDictionary<string, List<int[]>> _models = new DefaultDictionary<string, List<int[]>>();
         private int _sdrs = 10;
 
         /// <summary>
@@ -115,7 +111,7 @@ namespace NeoCortexApi.Classifiers
         /// <returns>
         /// Returns the smallest value of type int from the list.
         /// </returns>
-        int LeastValue(ref int[] classifiedSequence, int unclassifiedIdx)
+        private int LeastValue(ref int[] classifiedSequence, int unclassifiedIdx)
         {
             int shortestDistance = unclassifiedIdx;
             foreach (var classifiedIdx in classifiedSequence)
@@ -137,9 +133,8 @@ namespace NeoCortexApi.Classifiers
         /// Returns a dictionary mapping of the Unclassified sequence index to the shortest distance. Done for all
         /// indices of the unclassified sequence.
         /// </returns>
-        Dictionary<int, int> GetDistanceTable(int[] classifiedSequence, ref int[] unclassifiedSequence)
+        private Dictionary<int, int> GetDistanceTable(int[] classifiedSequence, ref int[] unclassifiedSequence)
         {
-            // i.e: {1: [1.23, 1.65, 2.23, ...], ...}
             var distanceTable = new Dictionary<int, int>();
 
             foreach (var index in unclassifiedSequence)
@@ -160,12 +155,18 @@ namespace NeoCortexApi.Classifiers
         ///                     ...
         ///                  }
         /// </param>
-        /// <para name="howMany">The amount of desired outputs</para>
+        /// <param name="howMany">The amount of desired outputs</param>
         /// <returns>
         /// Returns a list of ClassifierResult objects ranked based on the closest resemblances.
         /// </returns>
-        List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> mapping, short howMany)
+        private List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> mapping,
+            short howMany)
         {
+            /*
+             * A Dictionary Mapping of:-
+             * Classifier label: <string>,
+             * Count: <int>
+             */
             var votes = new DefaultDictionary<string, int>();
             var overLaps = new Dictionary<string, int>();
             var similarity = new Dictionary<string, double>();
@@ -179,7 +180,7 @@ namespace NeoCortexApi.Classifiers
                 for (int i = 0; i < _nNeighbors; i++)
                     votes[coordinates.Value[i].Classification] += 1;
 
-                for (int i = 0;  i < coordinates.Value.Count; i++)
+                for (int i = 0; i < coordinates.Value.Count; i++)
                 {
                     if (coordinates.Value[i].Distance.Equals(0))
                         overLaps[coordinates.Value[i].Classification] += 1;
@@ -219,47 +220,38 @@ namespace NeoCortexApi.Classifiers
         /// This method is called in the pipeline when an unknown sequence needs to be classified.
         /// </summary>
         /// <param name="unclassifiedCells">A sequence of Cell objects</param>
-        /// <param name="howMany">NUmber f desired outputs</param>
+        /// <param name="howMany">Number of desired outputs</param>
         /// <returns>Returns a list of ClassifierResult objects ranked based on the closest resemblances</returns>
         public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] unclassifiedCells, short howMany = 1)
         {
             if (unclassifiedCells.Length == 0)
                 return new List<ClassifierResult<TIN>>();
-            
+
             var unclassifiedSequence = unclassifiedCells.Select(idx => idx.Index).ToArray();
             _nNeighbors = _models.Values.Count;
             var mappedElements = new DefaultDictionary<int, List<ClassificationAndDistance>>();
 
             foreach (var model in _models)
             {
+                /*
+                 * sequence: [<int>, <int>, ...]
+                 * idx: <int>
+                 */
                 foreach (var (sequence, idx) in model.Value.WithIndex())
                 {
-                    foreach (var index in GetDistanceTable(sequence, ref unclassifiedSequence))
-                    {
-                        var value = new ClassificationAndDistance(model.Key, index.Value, idx);
-                        mappedElements[index.Key].Add(value);
-                    }
+                    /* 
+                     * dict.Key: <int>
+                     * dict.Value: <int>,
+                     */
+                    foreach (var dict in GetDistanceTable(sequence, ref unclassifiedSequence))
+                        mappedElements[dict.Key].Add(new ClassificationAndDistance(model.Key, dict.Value, idx));
                 }
             }
 
-            foreach (var coordinates in mappedElements)
-                coordinates.Value.Sort();
+            foreach (var mappings in mappedElements)
+                mappings.Value.Sort(); //Sorting values according to distance
 
             return Voting(mappedElements, howMany) as List<ClassifierResult<TIN>>;
-        }
-
-        /// <summary>
-        /// Checks if the same SDR is already stored under the given key.
-        /// </summary>
-        /// <param name="classification">The classification type</param>
-        /// <param name="sdr">A sequence of cell positions</param>
-        /// <returns>true if the sequence exist false if it doesn't</returns>
-        private bool ContainsSdr(string classification, int[] sdr)
-        {
-            foreach (var item in _models[classification])
-                return item.SequenceEqual(sdr);
-
-            return false;
         }
 
         /// <summary>
@@ -272,27 +264,17 @@ namespace NeoCortexApi.Classifiers
             var classification = input as string;
             int[] cellIndicies = cells.Select(idx => idx.Index).ToArray();
 
-            if (_models.ContainsKey(classification) == false)
-                _models.Add(classification, new List<int[]>());
-
-            if (!ContainsSdr(classification, cellIndicies))
-                _models[classification].Add(cellIndicies);
-
-            if (_models[classification].Count > _sdrs)
-                _models[classification].RemoveRange(_sdrs, _models[classification].Count - _sdrs);
-
-            var previousOne = _models[classification][Math.Max(0, _models[classification].Count - 2)];
-
-            if (!previousOne.SequenceEqual(cellIndicies))
+            if (!_models[classification].Exists(seq => cellIndicies.SequenceEqual(seq)))
             {
-                var numOfSameBitsPct = previousOne.Intersect(cellIndicies).Count();
-                Debug.WriteLine($"Prev/Now/Same={previousOne.Length}/{cellIndicies.Length}/{numOfSameBitsPct}");
+                if (_models[classification].Count > _sdrs)
+                    _models[classification].RemoveAt(0);
+                _models[classification].Add(cellIndicies);
             }
         }
 
-        public void ClearState()
-        {
-            _models.Clear();
-        }
+        /// <summary>
+        /// Clears the model from all the stored sequences.
+        /// </summary>
+        public void ClearState() => _models.Clear();
     }
 }
