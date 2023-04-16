@@ -41,12 +41,15 @@ namespace NeoCortexApi
         /// <summary>
         /// Get Active Apical Segments of currentlly active cells in the area.
         /// </summary>
+        /// <param name="activeCells">Associating population.</param>
+        /// <returns></returns>
         public List<ApicalDendrite> GetActiveApicalSegments(IList<Cell> activeCells)
         {
-
             List<ApicalDendrite> actSegs = new List<ApicalDendrite>();
 
-            foreach (var cell in this._area.ActiveCells)
+            var connectedCells = Helpers.GetApicalConnectedCells(activeCells, this._area.ActiveCells);
+
+            foreach (var cell in connectedCells)
             {
                // cell.ApicalDendrites.Where(s => s.Synapses.Where(ss => activeCells.Contains(ss.SourceCell)))
 
@@ -68,11 +71,15 @@ namespace NeoCortexApi
         /// Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
         /// more connected synapses than _cfg.MinThreshold.
         /// </summary>
-        public List<ApicalDendrite> GetMatchingApicalSegments()
+        /// <param name="activeCells">Associating population.</param>
+        /// <returns></returns>
+        public List<ApicalDendrite> GetMatchingApicalSegments(IList<Cell> activeCells)
         {
             List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
 
-            foreach (var cell in this._area.ActiveCells)
+            var connectedCells = Helpers.GetApicalConnectedCells(activeCells, this._area.ActiveCells);
+
+            foreach (var cell in connectedCells)
             {
                 foreach (var seg in cell.ApicalDendrites)
                 {
@@ -203,7 +210,7 @@ namespace NeoCortexApi
             if (learn == false)
                 return;
 
-            Segment[] activeSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : GetActiveApicalSegments(null).ToArray();
+            Segment[] activeSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : GetActiveApicalSegments(associatedArea.ActiveCells).ToArray();
 
             foreach (Segment segment in activeSegments)
             {
@@ -239,7 +246,7 @@ namespace NeoCortexApi
             // In previous cycle they are depolarized.
             //List<Cell> cellsOwnersOfActiveSegments = new List<Cell>();
 
-            Segment[] matchingSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : GetMatchingApicalSegments().ToArray();
+            Segment[] matchingSegments = DistalOrApical(associatedArea, this._area) ? throw new NotImplementedException() : GetMatchingApicalSegments(associatedArea.ActiveCells).ToArray();
 
             foreach (var matchSeg in matchingSegments)
             {
@@ -657,7 +664,7 @@ namespace NeoCortexApi
             sb.AppendLine($"Iteration {_iteration}");
 
             sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {GetActiveApicalSegments(null).Count}");
-            sb.AppendLine($"Matching Apical Segments: {GetMatchingApicalSegments().Count}");
+            sb.AppendLine($"Matching Apical Segments: {GetMatchingApicalSegments(this._area.ActiveCells).Count}"); // todo
             sb.AppendLine($"Inactive Apical Segments: {InactiveApicalSegments.Count}");
             sb.AppendLine($"Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}.");
             sb.AppendLine($"Synaptic Energy = {GetApicalSynapticEnergy()}");

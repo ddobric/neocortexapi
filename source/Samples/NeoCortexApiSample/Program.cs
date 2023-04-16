@@ -28,11 +28,13 @@ namespace NeoCortexApiSample
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
 
-            // RunMultiSimpleSequenceLearningExperiment();
-            //RunMultiSequenceLearningExperiment();
+            //GridCellSamples gridCells = new GridCellSamples();
+            //gridCells.Run();
 
-            GridCellSamples gridCells = new GridCellSamples();
-            gridCells.Run();
+            // RunMultiSimpleSequenceLearningExperiment();
+
+
+            RunMultiSequenceLearningExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()

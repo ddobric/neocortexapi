@@ -290,7 +290,7 @@ namespace UnitTestsProject
             Assert.IsTrue(naa.ActiveCellsWithoutApicalSegments.Count == 0);
 
             // The Y area of NAA must not have any matching segment for the current set of active cells.
-            Assert.IsTrue(naa.GetMatchingApicalSegments().Count == 0);
+            Assert.IsTrue(naa.GetMatchingApicalSegments(areaX.ActiveCells).Count == 0);
 
             // The Y area of NAA must not have 2 active segments for the current set of active cells.
             Assert.IsTrue(naa.GetActiveApicalSegments(null).Count == numCells * numActCellsPct);
