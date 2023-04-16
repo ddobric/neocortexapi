@@ -49,7 +49,7 @@ namespace NeoCortexApi.Experiments
             using (StreamWriter writer = new StreamWriter(filename))
             {
                 Debug.WriteLine($"Learning Cycles: {400}");
-                Debug.WriteLine("Cycle;Similarity");
+                Debug.WriteLine("Cycle;Similarity");da
 
                 // Parent Loop
                 //This loop defines the number of times the experiment will run for the given data

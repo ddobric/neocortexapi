@@ -310,12 +310,16 @@ namespace NeoCortexApi.Entities
         public int MaxSynapsesPerSegment { get; set; }
 
         /// <summary>
-        /// Amount by which permanences of synapses are incremented during learning.
+        /// Amount by which permanences of synapses are incremented during learning.This value is related to AMPA.
+        /// AMPA (α-amino-3-hydroxy-5-methyl-4-isoxazolepropionic acid) receptors are a type of 
+        /// ionotropic glutamate receptor that plays a key role in both long-term potentiation (LTP) 
+        /// and short-term potentiation (STP) at excitatory synapses in the brain.
         /// </summary>
         public double PermanenceIncrement { get; set; }
 
         /// <summary>
         /// Amount by which permanences of synapses are decremented during learning.
+        /// <seealso cref="PermanenceIncrement"/>
         /// </summary>
         public double PermanenceDecrement { get; set; }
 
