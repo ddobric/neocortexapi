@@ -40,6 +40,7 @@
 	<ItemGroup>
 		<Compile Remove="AkkaDictTests.cs" />
 		<Compile Remove="EncoderTests\SensorTests.cs" />
+		<Compile Remove="SdrRepresentation\SpatialPoolerColumnActivityTest_team_entropy.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -3815,6 +3816,7 @@
 	<ItemGroup>
 		<None Include="AkkaDictTests.cs" />
 		<None Include="EncoderTests\SensorTests.cs" />
+		<None Include="SdrRepresentation\SpatialPoolerColumnActivityTest_team_entropy.cs" />
 	</ItemGroup>
 
 </Project>

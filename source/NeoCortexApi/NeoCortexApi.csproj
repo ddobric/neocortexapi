@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Remove="Anomaly.cs" />
     <Compile Remove="Classification.cs" />
+    <Compile Remove="Classifiers\SDRClassifier_team_Entropy.cs" />
     <Compile Remove="DistributedCompute\HtmSparseIntDictionary.cs" />
     <Compile Remove="Encoders\EncoderBuilder.cs" />
     <Compile Remove="HtmSerializer2.cs" />
@@ -65,6 +66,7 @@
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
+    <None Include="Classifiers\SDRClassifier_team_Entropy.cs" />
     <None Include="DistributedCompute\HtmSparseIntDictionary.cs" />
     <None Include="Encoders\EncoderBuilder.cs" />
     <None Include="HtmSerializer2.cs" />

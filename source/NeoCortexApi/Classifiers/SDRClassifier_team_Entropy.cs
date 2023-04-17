@@ -150,7 +150,7 @@ namespace NeoCortexApi.Classifiers
             {
                 throw new EmptyBucketException(ExceptionConstants.EMPTY_BUCKET_EXCEPTION);
             }
-            double[] predictedValues = inferSingleStep(patternNz);
+            double[] predictedValues = InferSingleStep(patternNz);
             return predictedValues;
         }
 
@@ -193,7 +193,7 @@ namespace NeoCortexApi.Classifiers
             foreach (Tuple<int, object> t in patternNzHistory)
             {
                 var learnPatternNz = (int[])t.Item2;
-                double[] predictDist = inferSingleStep(learnPatternNz);
+                double[] predictDist = InferSingleStep(learnPatternNz);
                 double[] targetDistMinusPredictDist = new double[maxBucketIdx + 1];
                 for (int i = 0; i <= maxBucketIdx; i++)
                 {
@@ -209,7 +209,7 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         /// <param name = "patternNz"> represents 1-D array</param>>
         /// <returns>1-d array containing the prediction results after soft max normalization has been done</returns>
-        private double[] inferSingleStep(int[] patternNz)
+        private double[] InferSingleStep(int[] patternNz)
         {
             double[] outputActivationSum = new double[maxBucketIdx + 1];
             double[] predictDistribution = new double[outputActivationSum.Length];
