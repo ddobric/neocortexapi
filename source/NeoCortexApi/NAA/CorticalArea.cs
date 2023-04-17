@@ -44,13 +44,13 @@ namespace NeoCortexApi
         /// <summary>
         /// Get the list of active cells from indicies.
         /// </summary>
-        public ICollection<Cell> ActiveCells
+        public IList<Cell> ActiveCells
         {
             get
             {
                 var actCells = CurrActiveCells.Values;
 
-                return actCells;
+                return actCells.ToList();
             }
         }
 
