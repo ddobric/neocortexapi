@@ -106,7 +106,7 @@ namespace UnitTestsProject
 
         /// <summary>
         /// This unit tests creates two areas X and Y and it creates one SDR in each area.
-        /// Both SDRs represent tha set of active cells that will be associated with each other.
+        /// Both SDRs represent the set of active cells that will be associated with each other.
         /// </summary>
         /// <param name="numCells">A total number of cells in the Y area, that might learn associationas.</param>
         /// <param name="numActCellsPct">A number of active cells in percent in the area Y that will learn associations.</param>
@@ -150,19 +150,19 @@ namespace UnitTestsProject
 
         /// <summary>
         /// This test creates N SDRs inside area X and a single SDR inside area Y. 
-        /// Then it repeats learning over all SDRs in X and make sure that all patterns are learned correctlly.
-        /// This test assert that new synaptic connections are created when different populations in X
+        /// It repeats learning over all SDRs in X and make sure that all patterns are learned correctlly.
+        /// This test asserts that new synaptic connections are created when different populations in X
         /// connect to a single SDR in Y.
         /// </summary>
         /// <param name="numCells"></param>
         /// <param name="numActCellsPct"></param>
         [TestMethod]
         [TestCategory("NAA")]
-   
+
         public void RepeatingManyToOneAssociationTest()
         {
             int numCells = 100;
-            double numActCellsPct = 0.03;
+            // double numActCellsPct = 0.03;
 
             var cfg = UnitTestHelpers.GetHtmConfig(numCells, 1024);
 
@@ -181,13 +181,13 @@ namespace UnitTestsProject
 
             // Create specific SDRs in X area, that will be associated with the single SDR from Y area.
             List<long[]> srcSdrsInX = new List<long[]>();
-            srcSdrsInX.Add(new long[] { 10,20,30,40,50,60});
+            srcSdrsInX.Add(new long[] { 10, 20, 30, 40, 50, 60 });
             srcSdrsInX.Add(new long[] { 100, 110, 120, 130, 140, 150 });
             srcSdrsInX.Add(new long[] { 200, 210, 220, 230, 240, 250 });
             srcSdrsInX.Add(new long[] { 300, 310, 320, 330, 340, 350 });
 
             // Create a single SDR. All SDRs from X will be associated with this single SDR in Y
-            long[] destSdrY = new long[] { 0, 1, 2  };
+            long[] destSdrY = new long[] { 0, 1, 2 };
 
             //
             // Step trough all populations.
@@ -200,16 +200,18 @@ namespace UnitTestsProject
 
                 Debug.WriteLine(naa.TraceState());
 
+                Debug.WriteLine($" --- {n} ---");
+
                 //
                 // We train the same association between X and Y 10 times.
-               // for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     naa.Compute(areaX, true);
                     Debug.WriteLine(naa.TraceState());
                     // AssertApicalSynapsePermanences(areaY, cfg.InitialPermanence + (i) * cfg.PermanenceIncrement);
                 }
 
-               // AssertAssociations(srcSdrsInX[n].Length, numCells, numActCellsPct, areaY, areaX, naa);
+                // AssertAssociations(srcSdrsInX[n].Length, numCells, numActCellsPct, areaY, areaX, naa);
             }
         }
 
@@ -253,7 +255,7 @@ namespace UnitTestsProject
             for (int n = 0; n < srcSdrsInX.Count; n++)
             {
                 Debug.WriteLine($"-------------- Learning Pattern {n} in areay Y. ----------------");
-               
+
                 areaX.ActiveCellsIndicies = srcSdrsInX[n];
                 areaY.ActiveCellsIndicies = destSdrsY[n];
 
