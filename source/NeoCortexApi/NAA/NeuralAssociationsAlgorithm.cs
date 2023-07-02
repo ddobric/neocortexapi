@@ -3,6 +3,7 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Security;
 using System.Text;
@@ -41,18 +42,21 @@ namespace NeoCortexApi
         /// <summary>
         /// Get Active Apical Segments of currentlly active cells in the area.
         /// </summary>
-        /// <param name="activeCells">Associating population.</param>
+        /// <param name="associatingActCells">Associating population. If not null, then active segments of population cells are retrieved if the population cell is connected to the set of specified associating cells.</param>
         /// <returns></returns>
-        public List<ApicalDendrite> GetActiveApicalSegments(IList<Cell> activeCells)
+        public List<ApicalDendrite> GetActiveApicalSegments(IList<Cell> associatingActCells = null)
         {
             List<ApicalDendrite> actSegs = new List<ApicalDendrite>();
 
-            var connectedCells = Helpers.GetApicalConnectedCells(activeCells, this._area.ActiveCells);
+            IList<Cell> connectedCells;
+            
+            if(associatingActCells!=null)
+                connectedCells= Helpers.GetApicalConnectedCells(associatingActCells, this._area.ActiveCells);
+            else
+                connectedCells = this._area.ActiveCells;
 
             foreach (var cell in connectedCells)
             {
-               // cell.ApicalDendrites.Where(s => s.Synapses.Where(ss => activeCells.Contains(ss.SourceCell)))
-
                 foreach (var seg in cell.ApicalDendrites)
                 {
                     //if(seg.ParentCell)
@@ -67,18 +71,23 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Get Matchin Apical Segments of currentlly active cells in the area.
-        /// Segment is the mathcing one if it has less connected synapses than _cfg.ActivationThreshold and
+        /// Get Matching Apical Segments of currentlly active cells in the area.
+        /// Segment is the mathhcing one if it has less connected synapses than _cfg.ActivationThreshold and
         /// more connected synapses than _cfg.MinThreshold.
         /// </summary>
-        /// <param name="activeCells">Associating population.</param>
+        /// <param name="associatingActCells">Associating population. If not null, then segments of population cells are retrievd if the cell is connected to the associating cells.</param>
         /// <returns></returns>
-        public List<ApicalDendrite> GetMatchingApicalSegments(IList<Cell> activeCells)
+        public List<ApicalDendrite> GetMatchingApicalSegments(IList<Cell> associatingActCells = null)
         {
             List<ApicalDendrite> matchSegs = new List<ApicalDendrite>();
 
-            var connectedCells = Helpers.GetApicalConnectedCells(activeCells, this._area.ActiveCells);
-
+            IList<Cell> connectedCells;
+            
+            if(associatingActCells!=null)
+                connectedCells= Helpers.GetApicalConnectedCells(associatingActCells, this._area.ActiveCells);
+            else
+                connectedCells = this._area.ActiveCells;
+            
             foreach (var cell in connectedCells)
             {
                 foreach (var seg in cell.ApicalDendrites)
@@ -637,7 +646,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Calculates the synaptic energy of the segment. SUmmirizes all permanences of apical segments.
+        /// Calculates the synaptic energy of the segment. Summirizes all permanences of apical segments.
         /// </summary>
         /// <returns></returns>
         public double GetApicalSynapticEnergy()
@@ -663,8 +672,8 @@ namespace NeoCortexApi
 
             sb.AppendLine($"Iteration {_iteration}");
 
-            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {GetActiveApicalSegments(null).Count}");
-            sb.AppendLine($"Matching Apical Segments: {GetMatchingApicalSegments(this._area.ActiveCells).Count}"); // todo
+            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {GetActiveApicalSegments().Count}");
+            sb.AppendLine($"Matching Apical Segments: {GetMatchingApicalSegments().Count}"); // todo
             sb.AppendLine($"Inactive Apical Segments: {InactiveApicalSegments.Count}");
             sb.AppendLine($"Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}.");
             sb.AppendLine($"Synaptic Energy = {GetApicalSynapticEnergy()}");

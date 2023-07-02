@@ -453,27 +453,6 @@ namespace NeoCortexApi
         }
 
 
-
-        /// <summary>
-        /// Gets the cells from Distal Segment inside the population that are synaptically connected from the population defined by sourceCells.
-        /// </summary>
-        /// <param name="sourceCells"></param>
-        /// <param name="destinationCells"></param>
-        /// <returns></returns>
-        public static List<Cell> GetDistalConnectedCells(IList<Cell> sourceCells, IList<Cell> destinationCells)
-        {
-            List<Cell> cennectedCells = new List<Cell>();
-
-            foreach (var cell in sourceCells)
-            {
-                cennectedCells.AddRange(GetDistalConnectedCells(cell, destinationCells));
-            }
-
-            return cennectedCells;
-        }
-
-
-
         /// <summary>
         /// Gets the cells from Apical Segment inside the population that are synaptically connected from the cell.
         /// </summary>
@@ -484,11 +463,13 @@ namespace NeoCortexApi
         {
             List<Cell> connectedCells = new List<Cell>();
 
-            var populationSynapses = population.SelectMany(c=>c.ApicalDendrites.SelectMany(s=>s.Synapses)).ToList();
+            // Get all synapses in the population.
+            var populationSynapses = population.SelectMany(c => c.ApicalDendrites.SelectMany(s => s.Synapses)).ToList();
 
+            // Gets intersecting synapses.
             var intersected = cell.ReceptorSynapses.Intersect(populationSynapses).ToList();
 
-            intersected.ForEach((s) => connectedCells.Add(population.FirstOrDefault(c => c.ApicalDendrites.Count(d => d.SegmentIndex == s.SegmentIndex && c.Index == s.SegmentParentCellIndex)>0)));
+            intersected.ForEach((syn) => connectedCells.Add(population.FirstOrDefault(cell => cell.ApicalDendrites.Count(seg => seg.SegmentIndex == syn.SegmentIndex && cell.Index == syn.SegmentParentCellIndex) > 0)));
 
 
             //foreach (var syn in cell.ReceptorSynapses)
@@ -510,6 +491,27 @@ namespace NeoCortexApi
 
             return connectedCells;
         }
+
+        /// <summary>
+        /// Gets the cells from Distal Segment inside the population that are synaptically connected from the population defined by sourceCells.
+        /// </summary>
+        /// <param name="sourceCells"></param>
+        /// <param name="destinationCells"></param>
+        /// <returns></returns>
+        public static List<Cell> GetDistalConnectedCells(IList<Cell> sourceCells, IList<Cell> destinationCells)
+        {
+            List<Cell> cennectedCells = new List<Cell>();
+
+            foreach (var cell in sourceCells)
+            {
+                cennectedCells.AddRange(GetDistalConnectedCells(cell, destinationCells));
+            }
+
+            return cennectedCells;
+        }
+
+
+
 
 
         /// <summary>
