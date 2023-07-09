@@ -221,6 +221,11 @@ namespace UnitTestsProject
 
                 // AssertAssociations(srcSdrsInX[n].Length, numCells, numActCellsPct, areaY, areaX, naa);
             }
+
+            foreach (var cellX in areaX.AllCellsSparse)
+            {
+
+            }
         }
 
 

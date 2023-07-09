@@ -32,7 +32,7 @@ namespace NeoCortexApi
         /// <summary>
         /// Sparse map of cells that have been involved in learning. Their indexes in the virtual sparse array.
         /// </summary>
-        private ConcurrentDictionary<long, Cell> _allCellsSparse = new ConcurrentDictionary<long, Cell>();
+        public ConcurrentDictionary<long, Cell> AllCellsSparse {get; private set; } = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
         /// The name of the _area. It must be unique in the application.
@@ -66,11 +66,11 @@ namespace NeoCortexApi
                 {
                     Cell cell;
 
-                    if (!_allCellsSparse.TryGetValue(cellIndex, out cell))
+                    if (!AllCellsSparse.TryGetValue(cellIndex, out cell))
                     {
                         cell = new Cell(CreateIdFromString(Name), (int)cellIndex);
 
-                        _allCellsSparse.TryAdd(cellIndex, cell);                       
+                        AllCellsSparse.TryAdd(cellIndex, cell);                       
                     }
 
                     _currActiveCells.TryAdd(cellIndex, cell);                    

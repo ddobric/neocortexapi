@@ -653,14 +653,19 @@ namespace NeoCortexApi
         /// <returns></returns>
         public double GetApicalSynapticEnergy()
         {
+            //TODO: Consider definition of microsynenergy and macrosynenergy
+            // micro: percentual energy inside active segments by active synapses.
+            // macro: percentual energy inside all segments by all synapses.
             double energy = 0;
+            double numSyn = 0;
 
             foreach (var seg in this.GetActiveApicalSegments(null))
             {
+                numSyn += seg.Synapses.Count;
                 seg.Synapses.ForEach(s => energy += s.Permanence);
             }
 
-            return energy;
+            return energy / numSyn;
         }
 
 
