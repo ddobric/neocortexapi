@@ -172,7 +172,7 @@ namespace NeoCortexApi
             {
                 // This makes sure that every active cell will be synaptically connected during learning. With this no information lose will happen.
                 if (this._cfg.MaxSynapsesPerSegment < area.ActiveCells.Count)
-                    throw new ArgumentException("associatedArea.ActiveCells.Count must be less than MaxSynapsesPerSegment.");
+                    throw new ArgumentException("associatedArea.ActiveCells.Count must be less than MaxSynapsesPerSegment. If MaxSynapsesPerSegment is less than the number of activ cells in the area X, then not all active neurons will not be connected and information loss will happen.");
 
                 ActivateCells(area, learn: learn);
 
@@ -360,7 +360,7 @@ namespace NeoCortexApi
 
 
         /// <summary>
-        /// Creates the segment at the cell with a given number of synapses.
+        /// Creates the segment at the cell with a given number of synapses and connect them from active cells in <see cref="associatedArea"/>.
         /// </summary>
         /// <param name="associatedArea"></param>
         /// <param name="segOwnerCell"></param>

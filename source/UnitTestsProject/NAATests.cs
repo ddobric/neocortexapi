@@ -96,6 +96,7 @@ namespace UnitTestsProject
 
                     segment.Synapses.Add(synapse);
 
+                    // Connects the pre-synaptic cell (neuron) with the segment.
                     preSynapticNeuron.ReceptorSynapses.Add(synapse);
                 }
 
@@ -104,6 +105,7 @@ namespace UnitTestsProject
 
             var maxSeg = HtmCompute.GetSegmentWithHighesPotential(segments);
 
+            // We know that the lasy segment must have most synapses.
             Assert.AreEqual(numSegments - 1, maxSeg.SegmentIndex);
 
             Assert.IsTrue(numSegments == maxSeg.Synapses.Count);

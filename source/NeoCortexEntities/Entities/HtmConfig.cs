@@ -295,7 +295,7 @@ namespace NeoCortexApi.Entities
         public int[] InputDimensions { get; set; } = new int[] { 100 };
 
         /// <summary>
-        /// The maximum number of synapses added to a segment during learning.
+        /// The maximum number of synapses added to a segment during single learning cycle.
         /// </summary>
         public int MaxNewSynapseCount { get; set; }
 
