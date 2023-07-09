@@ -567,7 +567,7 @@ namespace NeoCortexApi
         /// <summary>
         /// <summary>
         /// Gets the segment with maximal potential from all segments in the last cycle. 
-        /// Segment's potential is measured by number of potential synapses.
+        /// Segment's potential is measured by number of potential synapses. Note, potential synapse is any synapse on segment.
         /// </summary>
         /// <param name="matchingSegments"></param>
         /// <returns>The segment with mot synapses.</returns>

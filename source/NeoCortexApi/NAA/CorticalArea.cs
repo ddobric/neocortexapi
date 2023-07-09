@@ -1,4 +1,7 @@
-﻿using NeoCortexApi.DataMappers;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using NeoCortexApi.DataMappers;
 using NeoCortexApi.Entities;
 using System;
 using System.Collections.Concurrent;
@@ -24,17 +27,12 @@ namespace NeoCortexApi
         /// <summary>
         /// Map of active cells and their indexes in the virtual sparse array.
         /// </summary>
-        private ConcurrentDictionary<long, Cell> CurrActiveCells { get; set; } = new ConcurrentDictionary<long, Cell>();
+        private ConcurrentDictionary<long, Cell> _currActiveCells = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
         /// Sparse map of cells that have been involved in learning. Their indexes in the virtual sparse array.
         /// </summary>
-        private ConcurrentDictionary<long, Cell> AllCellsSparse { get; set; } = new ConcurrentDictionary<long, Cell>();
-
-        /// <summary>
-        /// The index of the area.
-        /// </summary>
-        //public int Index { get; set; }
+        private ConcurrentDictionary<long, Cell> _allCellsSparse = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
         /// The name of the _area. It must be unique in the application.
@@ -48,7 +46,7 @@ namespace NeoCortexApi
         {
             get
             {
-                var actCells = CurrActiveCells.Values;
+                var actCells = _currActiveCells.Values;
 
                 return actCells.ToList();
             }
@@ -58,24 +56,24 @@ namespace NeoCortexApi
         {
             get
             {
-                return CurrActiveCells.Keys.ToArray();
+                return _currActiveCells.Keys.ToArray();
             }
             set
             {
-                CurrActiveCells = new ConcurrentDictionary<long, Cell>();
+                _currActiveCells = new ConcurrentDictionary<long, Cell>();
 
                 foreach (var cellIndex in value)
                 {
                     Cell cell;
 
-                    if (!AllCellsSparse.TryGetValue(cellIndex, out cell))
+                    if (!_allCellsSparse.TryGetValue(cellIndex, out cell))
                     {
                         cell = new Cell(CreateIdFromString(Name), (int)cellIndex);
 
-                        AllCellsSparse.TryAdd(cellIndex, cell);                       
+                        _allCellsSparse.TryAdd(cellIndex, cell);                       
                     }
 
-                    CurrActiveCells.TryAdd(cellIndex, cell);                    
+                    _currActiveCells.TryAdd(cellIndex, cell);                    
                 }
             }
         }
@@ -109,12 +107,12 @@ namespace NeoCortexApi
 
             this._numCells = numCells;
 
-            CurrActiveCells = new ConcurrentDictionary<long, Cell>();
+            _currActiveCells = new ConcurrentDictionary<long, Cell>();
         }
 
         public override string ToString()
         {
-            return $"{Name} - Cells: {_numCells} - Active Cells : {CurrActiveCells.Count}";
+            return $"{Name} - Cells: {_numCells} - Active Cells : {_currActiveCells.Count}";
         }
 
         /// <summary>

@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Copyright (c) Damir Dobric. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +19,9 @@ namespace UnitTestsProject
     [TestClass]
     public class NAATests
     {
+        /// <summary>
+        /// Creates the associating area X as defined in the PhD.
+        /// </summary>
         [TestMethod]
         [TestCategory("Prod")]
         [TestCategory("NAA")]
@@ -38,11 +44,11 @@ namespace UnitTestsProject
         [DataRow(2048, 0.02)]
         [DataRow(10000, 0.03)]
         [DataRow(10000, 0.05)]
-        public void CreateCoCreateRandonSdrTest(int numCells, double sparsity)
+        public void CreateRandomSdrTest(int numCells, double sparsity)
         {
-            var sdr1 = UnitTestHelpers.CreateRandomSdr(numCells, sparsity);
+            var sdr = UnitTestHelpers.CreateRandomSdr(numCells, sparsity);
 
-            Assert.IsTrue(sdr1.Length == (int)(numCells * sparsity));
+            Assert.IsTrue(sdr.Length == (int)(numCells * sparsity));
         }
 
         /// <summary>
