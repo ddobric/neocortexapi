@@ -77,7 +77,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="synapsePermConnected">Permanence threshold value to declare synapse as connected.</param>
         /// <param name="index">Index of segment.</param>
-        /// <param name="numInputs">Number of input neorn cells.</param>
+        /// <param name="numInputs">Number of input cells.</param>
         public Segment(int index, long lastUsedIteration, double synapsePermConnected, int numInputs)
         {
             this.NumInputs = numInputs;
@@ -164,7 +164,7 @@ namespace NeoCortexApi.Entities
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.Append($"\tseg {this.SegmentIndex} cell:{this.ParentCell.Index}, Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}, [Permanences: {sbPerms}]");
+            sb.Append($"\tcell:{this.ParentCell.Index}/seg {this.SegmentIndex}, Synapses: {this.Synapses.Count}, Active Synapses: {this.Synapses.Where(s => s.Permanence > SynapsePermConnected).Count()}, [Permanences: {sbPerms}]");
                      
             return sb.ToString();
 

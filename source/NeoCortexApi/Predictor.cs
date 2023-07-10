@@ -3,6 +3,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -11,11 +12,11 @@ namespace NeoCortexApi
     /// <summary>
     /// Implements the class that helps inferring (prediction). It is typically used by the Sequence Learning algorithm.
     /// After the learning process, the algorithm returns the instance of this class. This class provides a method <see cref="nameof(Predictor.Predict)"/> with a list of input elements.
-    /// For every presented input element the predictor tries to predict the next element. The more element provided in a sequence the predictor returns wit the higher score.
+    /// For every presented input element the predictor tries to predict the next element. The more element provided in a sequence the predictor returns with the higher score.
     /// For example, assume there ar two sequences: ABCD and ABGHI. By presenting the element B, the predictor is not sure if the next element is C or D. 
     /// When presenting after B the element C, the predictor knows that the next element must be C.
     /// </summary>
-    public class Predictor
+    public class Predictor : ISerializable
     {
         private Connections connections { get; set; }
 
@@ -59,6 +60,18 @@ namespace NeoCortexApi
             List<ClassifierResult<string>> predictedInputValues = this.classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
 
             return predictedInputValues;
+        }
+
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+           this.connections.Serialize(obj, name, sw);
+            //this.layer.Serialize(??);
+            //this.classifier.Ser
+        }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

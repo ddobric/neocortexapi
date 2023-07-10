@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace NeoCortexApi
@@ -23,7 +24,12 @@ namespace NeoCortexApi
         /// <summary>
         /// Map of active cells and their indexes in the virtual sparse array.
         /// </summary>
-        private ConcurrentDictionary<long, Cell> Cells { get; set; } = new ConcurrentDictionary<long, Cell>();
+        private ConcurrentDictionary<long, Cell> CurrActiveCells { get; set; } = new ConcurrentDictionary<long, Cell>();
+
+        /// <summary>
+        /// Sparse map of cells that have been involved in learning. Their indexes in the virtual sparse array.
+        /// </summary>
+        private ConcurrentDictionary<long, Cell> AllCellsSparse { get; set; } = new ConcurrentDictionary<long, Cell>();
 
         /// <summary>
         /// The index of the area.
@@ -38,13 +44,13 @@ namespace NeoCortexApi
         /// <summary>
         /// Get the list of active cells from indicies.
         /// </summary>
-        public ICollection<Cell> ActiveCells
+        public IList<Cell> ActiveCells
         {
             get
             {
-                var actCells = Cells.Values;
+                var actCells = CurrActiveCells.Values;
 
-                return actCells;
+                return actCells.ToList();
             }
         }
 
@@ -52,22 +58,50 @@ namespace NeoCortexApi
         {
             get
             {
-                return Cells.Keys.ToArray();
+                return CurrActiveCells.Keys.ToArray();
             }
             set
             {
-                Cells = new ConcurrentDictionary<long, Cell>();
+                CurrActiveCells = new ConcurrentDictionary<long, Cell>();
 
-                int indx = 0;
-              
-                foreach (var item in value)
+                foreach (var cellIndex in value)
                 {
-                    Cells.TryAdd(item, new Cell(-1, indx++));
+                    Cell cell;
+
+                    if (!AllCellsSparse.TryGetValue(cellIndex, out cell))
+                    {
+                        cell = new Cell(CreateIdFromString(Name), (int)cellIndex);
+
+                        AllCellsSparse.TryAdd(cellIndex, cell);                       
+                    }
+
+                    CurrActiveCells.TryAdd(cellIndex, cell);                    
                 }
             }
-        } 
+        }
 
 
+        /// <summary>
+        /// Gets the number of outgoing synapses of all active cells.
+        /// </summary>
+        public int NumOutgoingSynapses
+        {
+            get
+            {
+                return this.ActiveCells.SelectMany(el => el.ReceptorSynapses).Count();
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of incoming synapses at apical segments.
+        /// </summary>
+        public int NumIncomingApicalSynapses
+        {
+            get
+            {
+                return this.ActiveCells.SelectMany(cell => cell.ApicalDendrites).SelectMany(aSeg => aSeg.Synapses).Count();                
+            }
+        }
 
         public CorticalArea(int index, string name, int numCells)
         {
@@ -75,13 +109,30 @@ namespace NeoCortexApi
 
             this._numCells = numCells;
 
-            Cells = new ConcurrentDictionary<long, Cell>();
+            CurrActiveCells = new ConcurrentDictionary<long, Cell>();
         }
 
         public override string ToString()
         {
-            return $"{Name} - Cells: {_numCells} - Active Cells : {Cells.Count}";
+            return $"{Name} - Cells: {_numCells} - Active Cells : {CurrActiveCells.Count}";
         }
-              
+
+        /// <summary>
+        /// Creates the ID from the string.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private int CreateIdFromString(string input)
+        {
+            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+
+            MD5 md5 = MD5.Create();
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            // Convert the hash value to an integer
+            int numericId = BitConverter.ToInt32(hashBytes, 0);
+
+            return numericId;
+        }
     }
 }
