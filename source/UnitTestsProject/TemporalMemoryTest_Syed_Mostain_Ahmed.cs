@@ -113,6 +113,10 @@ namespace UnitTestsProject
         ///is crucial in verifying the HTM algorithm's 
         ///ability to learn and recognize previously unseen
         ///patterns by growing new dendrite segments
+        ///when no matching segments are found.It
+        ///ensures that the algorithm can continue learning
+        ///and adapting to new data inputs without being
+        ///limited by its existing knowledge.
         /// </summary>
         [TestMethod]
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
