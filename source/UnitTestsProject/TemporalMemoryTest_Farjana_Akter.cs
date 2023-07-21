@@ -1,9 +1,14 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using GemBox.Spreadsheet.Tables;
+using IronXL;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
+using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -417,7 +422,19 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Existing test retested with various different data
+        /// The test is performed with different 
+        /// initial permanence values of the synapse, and
+        /// the expected permanence value after adaptation 
+        /// is also specified in the test.The test method
+        ///creates a new instance of the TemporalMemory
+        ///and Connections classes, initializes them with 
+        ///default parameters, and creates a new distal
+        ///dendrite segment with a synapse connecting it to
+        /// a cell.The AdaptSegment method of the
+        ///TemporalMemory class is then called with the
+        ///specified parameters to adapt the permanence
+        ///value of the synapse to the maximum value.The
+        ///test method asserts that the permanence value of
         /// </summary>
         [TestMethod]
         [DataRow(0.9, 1.0, DisplayName = "Permanence at 0.9, should adapt to max")]
