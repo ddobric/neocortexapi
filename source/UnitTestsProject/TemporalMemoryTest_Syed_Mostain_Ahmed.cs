@@ -1,17 +1,24 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Microsoft.Azure.Amqp.Framing;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Spatial;
 using Microsoft.Azure.Documents.SystemFunctions;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
+using NeoCortexEntities.NeuroVisualizer;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 
 namespace UnitTestsProject
 {
@@ -91,7 +98,21 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Test the growth of a new dendrite segment when no matching segments are found
+        /// This test method 
+        //// first initializes the TM object, connections, and
+        /// parameters with default values.It then creates a
+        ///distal dendrite segment and adds two synapses
+        ///to it.The TM is then fed with a single active
+        ///column and four active cells.Since there are no
+        ///existing segments that match the active cells' 
+        ///pattern, a new dendrite segment should grow.
+        ///The assertions made in the code check whether
+        ///the new segment has indeed been created and
+        ///has the expected number of synapses.The test
+        ///passes if all the assertions are true. This test case 
+        ///is crucial in verifying the HTM algorithm's 
+        ///ability to learn and recognize previously unseen
+        ///patterns by growing new dendrite segments
         /// </summary>
         [TestMethod]
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
