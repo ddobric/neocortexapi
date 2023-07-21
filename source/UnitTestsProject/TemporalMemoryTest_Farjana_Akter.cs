@@ -435,6 +435,18 @@ namespace UnitTestsProject
         ///specified parameters to adapt the permanence
         ///value of the synapse to the maximum value.The
         ///test method asserts that the permanence value of
+        ///the synapse is equal to the expected value within
+        ///a tolerance of 0.1. The test is repeated with the
+        ///same segment and cell, and the AdaptSegment
+        ///method is called again to ensure that the
+        ///permanence value remains at the maximum
+        ///value.The test method again asserts that the
+        ///permanence value of the synapse is equal to the
+        ///expected value within a tolerance of 0.1. So, this
+        ///test method verifies that the TemporalMemory
+        ///class is able to correctly adapt the permanence
+        ///value of a synapse to the maximum value
+        ///specified in the HTM configuration parameters.
         /// </summary>
         [TestMethod]
         [DataRow(0.9, 1.0, DisplayName = "Permanence at 0.9, should adapt to max")]
