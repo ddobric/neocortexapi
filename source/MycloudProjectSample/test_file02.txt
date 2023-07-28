@@ -141,3 +141,111 @@
 
             // Assert
             CollectionAssert.DoesNotCo
+\
+
+
+  [TestMethod]
+        public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
+        {
+            // Initialize
+            TemporalMemory tm = new TemporalMemory(); // TM class object
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0 };
+            Cell[] activeCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
+
+            DistalDendrite dd = cn.CreateDistalSegment(activeCells[0]);
+            cn.CreateSynapse(dd, cn.GetCell(4), 0.3);
+            cn.CreateSynapse(dd, cn.GetCell(5), 0.3);
+
+            tm.Compute(activeColumns, true);
+
+            // no matching segment should be found, so a new dendrite segment should be grown
+            Assert.AreEqual(1, activeCells[0].DistalDendrites.Count);
+
+            DistalDendrite newSegment = activeCells[0].DistalDendrites[0] as DistalDendrite;
+
+            Assert.IsNotNull(newSegment);
+            Assert.AreEqual(2, newSegment.Synapses.Count);
+        }
+
+        /// <summary>
+        /// Verify that no active cell is present in more than one column in 
+        /// the output of Temporal Memory Algorithm.
+        /// </summary>
+        [TestMethod]
+        public void TestNoOverlapInActiveCells()
+        {
+            // Initialize
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+
+            // Compute active cells for two columns
+            int[] activeColumns = { 0, 1 };
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            // Get active cells for the first column
+            var activeCellsColumn0 = cc.ActiveCells
+                .Where(cell => cell.Index == activeColumns[0])
+                .ToList();
+
+            // Get active cells for the second column
+            var activeCellsColumn1 = cc.ActiveCells
+                .Where(cell => cell.Index == activeColumns[1])
+                .ToList();
+
+            // Check that no cell is active in both columns
+            foreach (var cell in activeCellsColumn0)
+            {
+                Assert.IsFalse(activeCellsColumn1.Contains(cell));
+            }
+        }
+
+        [TestMethod]
+        public void TestTemporalMemoryComputeReturnsWinnerCells()
+        {
+            // Initialize
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
+            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 2);
+            p.apply(cn);
+            tm.Init(cn);
+
+            int[] activeColumns = { 0, 1, 2, 3 };
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
+            Assert.AreEqual(4, winnerCells.Count);
+            Assert.AreEqual(0, winnerCells[0].ParentColumnIndex);
+            Assert.AreEqual(1, winnerCells[1].ParentColumnIndex);
+        }
+
+        [DataTestMethod]
+        [DataRow(new int[] { 0, 1, 2, 3 }, 4, new int[] { 0, 1, 2, 3 })]
+        [DataRow(new int[] { 4, 5, 6 }, 3, new int[] { 4, 5, 6 })]
+        public void TestTemporalMemoryComputeReturnsWinnerCellsWithDataRow(int[] activeColumns, int expectedWinnerCount, int[] expectedWinnerIndices)
+        {
+            // Initialize
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
+            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 2);
+            p.apply(cn);
+            tm.Init(cn);
+
+            ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
+
+            List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
+            Assert.AreEqual(expectedWinnerCount, winnerCells.Count);
+            for (int i = 0; i < expectedWinnerCount; i++)
+            {
+                Assert.AreEqual(expectedWinnerIndices[i], winnerCells[i].ParentColumnIndex);
+            }
+        }
