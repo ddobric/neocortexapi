@@ -90,7 +90,12 @@ namespace UnitTestsProject
             // Arrange TestIncreasePermanenceOfActiveSynapses unit test method tests the ability of a temporal memory algorithm to increase the permanence of
             // active synapses in response to a set of active columns. The test initializes a temporal memory object and applies the default parameters to it.
             // It then activates a set of cells in the temporal memory and stores them in a list.
-            // //Next, the algorithm is called again with a different set of active cells, and the permanence of the synapses in those active cells is increased. 
+            // Next, the algorithm is called again with a different set of active cells, and the permanence of the synapses in those active cells is increased.
+            // . Finally, the test checks that the permanence of the synapses in the active cells has increased above a certain threshold. The test is designed to ensure that the temporal memory algorithm can
+            // learn and adapt to changing input patterns by increasing the permanence of the synapses in active cells.
+            // This is an important feature of a successful temporal memory algorithm, as it allows the system to recognize and respond to patterns in a dynamic and adaptive way.
+            // The test also verifies that the algorithm is correctly updating the permanence values of the synapses, which is critical for accurate prediction and classification of input patterns.
+            // Overall, this unit test serves as a validation of the functionality and effectiveness of the temporal memory algorithm.
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.MIN_THRESHOLD, 2);
