@@ -2,7 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using GemBox.Spreadsheet.Tables;
 using IronXL;
+using Microsoft.Azure.Amqp.Framing;
+using Microsoft.Azure.Documents;
 using Microsoft.Extensions.Configuration;
+using Microsoft.OData.Edm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
@@ -471,9 +474,13 @@ namespace UnitTestsProject
             Assert.AreEqual(expectedPermanence, s1.Permanence, 0.1);
         }
 
+
+
         /// <summary>
-        /// Existing test retested with various different data
+        
         /// </summary>
+
+
         [TestMethod]
         [DataRow(0, 1, 2, 2, 0.015, 0.015, 0.015, 0.015, 0)]
         [DataRow(0, 1, 2, 2, 0.015, 0.015, 0.015, 0.009, 0)]
@@ -509,7 +516,23 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Existing test retested with various different data
+        /// This existing test method is 
+        /// modified by us to take 13 input parameters
+        /// dynamically.The purpose of the unit test is to
+        /// verify the behavior of a Temporal Memory
+        /// algorithm under various input conditions.It
+        /// takes various permanence values and expected
+        /// permanence values for a set of synapses.The
+        /// unit test creates an instance of the
+        /// TemporalMemory class and initializes it with 
+        /// default parameters.It then creates a set of active
+        /// and inactive cells, as well as two distal dendrites 
+        /// with multiple synapses.The algorithm is run on
+        /// these inputs and the permanence values of the
+        /// synapses are compared against the expected
+        /// values. The [DataRow] attribute is used to pass 
+        /// in multiple sets of input data to the same unit
+        /// test, allowing it to be retested with different data.
         /// </summary>
         [TestMethod]
         [TestCategory("Prod")]
