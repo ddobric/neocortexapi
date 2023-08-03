@@ -133,6 +133,10 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
+        //The purpose of TestGetLeastUsedCell1 unit test is to verify the correct functionality of the "GetLeastUsedCell" method. The unit test initializes a TemporalMemory object with a Connections object and applies default parameters.
+        //Then, a DistalDendrite object is created with two Synapse objects.
+        //The "GetLeastUsedCell" method is called with the Cells of a specified Column as a parameter to find the least used Cell in that Column.
+        //The returned Cell is then verified to ensure that it is not equal to the Cell with the lowest usage
         public void TestGetLeastUsedCell()
         {
             Connections cn = new Connections();
