@@ -137,6 +137,8 @@ namespace UnitTestsProject
         //Then, a DistalDendrite object is created with two Synapse objects.
         //The "GetLeastUsedCell" method is called with the Cells of a specified Column as a parameter to find the least used Cell in that Column.
         //The returned Cell is then verified to ensure that it is not equal to the Cell with the lowest usage
+        //count. The usage count of the returned Cell is then incremented, and the "GetLeastUsedCell" method is called again to ensure that a different Cell is returned.
+        //This unit test verifies the functionality of the "GetLeastUsedCell" method and ensures that the method returns the expected result. 
         public void TestGetLeastUsedCell()
         {
             Connections cn = new Connections();
