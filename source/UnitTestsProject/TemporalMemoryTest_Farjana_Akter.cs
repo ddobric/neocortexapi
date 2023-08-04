@@ -10,11 +10,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
+using NeoCortexEntities.NeuroVisualizer;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Microsoft.Azure.Amqp.Serialization.SerializableType;
+using static System.Net.Mime.MediaTypeNames;
+
+using System.Reflection.PortableExecutable;
+using Org.BouncyCastle.Crypto.IO;
+using System.ComponentModel.Design;
+using System.Drawing;
+
 namespace UnitTestsProject
 {
     [TestClass]
@@ -581,8 +590,31 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Test if the Temporal Memory can successfully learn and recall patterns of 
-        /// sequences with a high sparsity rate.
+        /// This test is designed to verify if the
+        /// Temporal Memory algorithm can successfully
+        /// learn and recall patterns of sequences with a
+        /// high sparsity rate.The test first initializes a
+        /// Temporal Memory object and a Connections
+        /// object, and applies default parameters to the
+        /// Connections object. Then, it sets the column
+        /// dimensions to be 64 and initializes the Temporal
+        /// Memory object with the Connections object. 
+        /// The test creates two sequences, each with a
+        /// different set of active columns.It then computes
+        /// the Temporal Memory algorithm for each of
+        /// these sequences to train the model. Next, the test
+        /// recalls the first sequence and the second
+        /// sequence using the Temporal Memory
+        /// algorithm with the "compute" method, and
+        /// checks if all the active cells in the second
+        /// sequence are also active in the first sequence.
+        /// This test is important because it validates the
+        /// ability of the Temporal Memory algorithm to
+        /// learn and recall patterns of sequences with a
+        /// high sparsity rate, which is a crucial capability 
+        /// for machine learning algorithms that are
+        /// designed to process high-dimensional data, such
+        /// as images or speech signals.
         /// </summary>
         [TestMethod]
         public void TestHighSparsitySequenceLearningAndRecall()
