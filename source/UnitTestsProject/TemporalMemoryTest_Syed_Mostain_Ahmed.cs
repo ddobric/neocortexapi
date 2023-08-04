@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using IronXL;
 using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Spatial;
@@ -11,6 +12,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
 using NeoCortexEntities.NeuroVisualizer;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using static SkiaSharp.SKImageFilter;
 
 namespace UnitTestsProject
 {
@@ -147,8 +150,34 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Verify that no active cell is present in more than one column in 
-        /// the output of Temporal Memory Algorithm.
+  
+        /// This unit test verifies that the output of the Temporal
+        /// Memory algorithm does not contain any active
+        /// cell that is present in more than one column.
+        /// The test initializes a Temporal Memory object,
+        /// sets up connections and parameters, and then
+        /// computes active cells for two columns. The test
+        /// then separates the active cells for each column
+        /// and checks that no cell is active in both
+        /// columns. The purpose of this test is to ensure
+        /// that the Temporal Memory algorithm is 
+        /// correctly processing the input and producing an
+        /// output that conforms to the constraints of the
+        /// algorithm. The constraint that no active cell
+        /// should be present in more than one column is a
+        /// key aspect of the algorithm and must be strictly
+        /// enforced for the algorithm to work correctly.
+        /// This test is useful for detecting errors in the
+        /// implementation of the Temporal Memory
+        /// algorithm that might cause cells to be active in
+        /// more than one column. If such errors are
+        /// present, they can lead to incorrect predictions
+        /// and reduce the accuracy of the algorithm.In
+        /// conclusion, the above code implements a unit
+        /// test that verifies the correct behavior of the
+        /// Temporal Memory algorithm with respect to the
+        /// constraint that no active cell should be present
+        /// in more than one column.
         /// </summary>
         [TestMethod]
         public void TestNoOverlapInActiveCells()
