@@ -16,12 +16,16 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 using static SkiaSharp.SKImageFilter;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace UnitTestsProject
 {
@@ -210,7 +214,28 @@ namespace UnitTestsProject
             }
         }
 
-        [TestMethod]
+        /// <summary>
+        /// This unit test method is 
+        //designed to verify that the Temporal Memory
+        //algorithm returns the correct winner cells.The
+        //Temporal Memory object is initialized and the
+        //connections and parameters are set.The method
+        //then creates an array of active columns and calls
+        //the Compute method of the Temporal Memory
+        //object with these columns as input.The
+        //Compute method returns a ComputeCycle
+        //object, which contains the winner cells for each
+        //column. The method verifies that the number of
+        //winner cells is correct and that their parent
+        //column indices are as expected.Specifically, the
+        //method tests that the first active column has the
+        //first winner cell, and the second active column
+        //has the second winner cell. If the test passes, it
+        //indicates that the Temporal Memory algorithm
+        //is functioning correctly in identifying the winner
+        //cells for the given input columns.
+        /// </summary>
+                [TestMethod]
         public void TestTemporalMemoryComputeReturnsWinnerCells()
         {
             // Initialize
