@@ -174,6 +174,11 @@ namespace UnitTestsProject
         /// TestActiveCellCount: Verify that the number of active cells in the 
         /// output of Temporal Memory Algorithm is less than or equal to the maximum 
         /// number of active cells allowed per column.
+        /// TestActiveCellCount verifies the functionality of the active cell count feature of the Temporal Memory algorithm. 
+        /// The purpose of this test is to ensure that the number of active cells in the output of the algorithm does not exceed the maximum number of active cells allowed per column. 
+        /// The test initializes the Temporal Memory algorithm and the Connections object using default parameters. 
+        /// It then sets the active columns to a single column (column 0), and computes the output of the algorithm with the "learn" parameter set to true. 
+        /// The number of active cells in the output is then checked to ensure that it is less than or equal to the maximum number of active cells allowed per column, which in this case is 5
         /// </summary>
         [TestMethod]
         public void TestActiveCellCount()
