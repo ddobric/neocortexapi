@@ -254,6 +254,8 @@ namespace UnitTestsProject
         ///The purpose of the method is to test whether the Temporal Memory algorithm can correctly identify the bursting cells in the active columns, given the current input.
         ///To perform the test, the method creates a new instance of the Temporal Memory class and initializes it with a set of default parameters. 
         ///It then computes the active cells for the specified set of active columns and checks whether the resulting set of active cells matches the expected set of bursting cells.
+        ///The method uses the "ComputeCycle" class to perform the computation and compare the two sets of cells. 
+        ///The test is designed to be repeatable and reusable with different input data, as indicated by the annotation. 
         /// </summary>
         [TestMethod]
         [DataRow(new int[] { 1, 2 }, new int[] { 0, 1, 2, 3 })]
