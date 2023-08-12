@@ -249,6 +249,11 @@ namespace UnitTestsProject
 
         /// <summary>
         ///exsisting tests retested with various different data,,,
+        ///TestBurstNotpredictedColumns activeColumns" array, which specifies the columns that are active in the current iteration of the algorithm, and the "expectedBurstingCellIndexes" array,
+        ///which contains the indices of the cells that are expected to be bursting in the current iteration.
+        ///The purpose of the method is to test whether the Temporal Memory algorithm can correctly identify the bursting cells in the active columns, given the current input.
+        ///To perform the test, the method creates a new instance of the Temporal Memory class and initializes it with a set of default parameters. 
+        ///It then computes the active cells for the specified set of active columns and checks whether the resulting set of active cells matches the expected set of bursting cells.
         /// </summary>
         [TestMethod]
         [DataRow(new int[] { 1, 2 }, new int[] { 0, 1, 2, 3 })]
