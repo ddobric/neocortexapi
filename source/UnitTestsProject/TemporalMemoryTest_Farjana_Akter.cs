@@ -504,9 +504,15 @@ namespace UnitTestsProject
         //TemporalMemory object. Finally, the test
         //method asserts that the number of segments
         //associated with the expected active cell matches
+        //the expected number of segments.The purpose
+        //of this test method is to ensure that the
+        //TemporalMemory class is correctly identifying
+        //segments with too few synapses and destroying
+        //them.By parameterizing the test method with
+        //different input values, the test method verifies
+        //that the TemporalMemory class can correctly
+        //handle a variety of different scenarios
         /// </summary>
-
-
         [TestMethod]
         [DataRow(0, 1, 2, 2, 0.015, 0.015, 0.015, 0.015, 0)]
         [DataRow(0, 1, 2, 2, 0.015, 0.015, 0.015, 0.009, 0)]
