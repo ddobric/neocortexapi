@@ -348,7 +348,9 @@ namespace UnitTestsProject
         /// The first test checks if the class initializes correctly with a custom number of cells per column, while the second test checks if it initializes correctly with custom column dimensions and cells per column.
         /// The third test checks if the class initializes correctly with a custom number of column dimensions. 
         /// To perform the tests, the TemporalMemory class is initialized with a Connections object and the Parameters object, which contains the default parameters for the temporal memory algorithm. 
-        /// The custom parameters are then set using the Set() method of the Parameters object and applied to the Connections object using the apply()
+        /// The custom parameters are then set using the Set() method of the Parameters object and applied to the Connections object using the apply()method.
+        /// The TemporalMemory class is then initialized using the initialized Connections object. To check if the initialization was successful, the number of cells in each column is counted and compared to the expected value using the Assert.AreEqual() method. If the number of cells is equal to the expected value, the initialization is considered successful. These tests help to ensure that the TemporalMemory class is properly initialized with the desired custom parameters,
+        /// which is necessary for the proper functioning of the temporal memory algorithm. Note that these are extensions of original existing test methods 
         /// </summary>
         [TestMethod]
         public void TestColumnDimensions()
