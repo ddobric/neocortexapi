@@ -344,6 +344,11 @@ namespace UnitTestsProject
 
         /// <summary>
         /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
+        /// unit tests written to test the initialization of the TemporalMemory class with custom parameters.
+        /// The first test checks if the class initializes correctly with a custom number of cells per column, while the second test checks if it initializes correctly with custom column dimensions and cells per column.
+        /// The third test checks if the class initializes correctly with a custom number of column dimensions. 
+        /// To perform the tests, the TemporalMemory class is initialized with a Connections object and the Parameters object, which contains the default parameters for the temporal memory algorithm. 
+        /// The custom parameters are then set using the Set() method of the Parameters object and applied to the Connections object using the apply()
         /// </summary>
         [TestMethod]
         public void TestColumnDimensions()
