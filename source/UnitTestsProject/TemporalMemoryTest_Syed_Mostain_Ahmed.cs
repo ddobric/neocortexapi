@@ -6,6 +6,7 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Spatial;
 using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
@@ -23,6 +24,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using System.Text.RegularExpressions;
 using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 using static SkiaSharp.SKImageFilter;
 using static System.Net.Mime.MediaTypeNames;
@@ -235,7 +237,7 @@ namespace UnitTestsProject
         //is functioning correctly in identifying the winner
         //cells for the given input columns.
         /// </summary>
-                [TestMethod]
+        [TestMethod]
         public void TestTemporalMemoryComputeReturnsWinnerCells()
         {
             // Initialize
@@ -255,6 +257,24 @@ namespace UnitTestsProject
             Assert.AreEqual(1, winnerCells[1].ParentColumnIndex);
         }
 
+        /// <summary>
+        /// This is an existing tests 
+        // which we modified to take multiple data in 
+        //order to re-enforce the test and verify how the
+        //algorithm was supposed to work.Each set of
+        //test data consists of an array of active column
+        //indices, the expected number of winner cells,
+        //and an array of expected winner cell indices. 
+        //The method initializes the Temporal Memory
+        //object, creates connections, applies parameters,
+        //and then computes the winner cells using the 
+        //input active column indices.The method then
+        //checks whether the number of winner cells and
+        //their parent column indices match the expected
+        /// </summary>
+        /// <param name="activeColumns"></param>
+        /// <param name="expectedWinnerCount"></param>
+        /// <param name="expectedWinnerIndices"></param>
         [DataTestMethod]
         [DataRow(new int[] { 0, 1, 2, 3 }, 4, new int[] { 0, 1, 2, 3 })]
         [DataRow(new int[] { 4, 5, 6 }, 3, new int[] { 4, 5, 6 })]
@@ -360,7 +380,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] activeColumns = { 0, 1, 2 };
-            Cell[] activeCells = cn.GetCells(activeColumns);
+            NeoCortexApi.Entities.Cell[] activeCells = cn.GetCells(activeColumns);
 
             TestContext.WriteLine("activeCells ===>>>>> " + string.Join(",", activeCells[2]));
 
