@@ -271,6 +271,12 @@ namespace UnitTestsProject
         //input active column indices.The method then
         //checks whether the number of winner cells and
         //their parent column indices match the expected
+        //values for each set of test data.The test passes if 
+        //all checks are successful. This unit test method
+        //helps to ensure that the Temporal Memory
+        //algorithm's Compute method correctly identifies 
+        //the winner cells based on the input active
+        //column indices.
         /// </summary>
         /// <param name="activeColumns"></param>
         /// <param name="expectedWinnerCount"></param>
