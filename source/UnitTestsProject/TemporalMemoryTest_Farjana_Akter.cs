@@ -487,7 +487,23 @@ namespace UnitTestsProject
 
 
         /// <summary>
-        
+        //  The method
+        //tests the ability of the TemporalMemory class to
+        //destroy a segment with too few synapses to be
+        //considered a match.The modified test method is 
+        //parameterized using the DataRow attribute to
+        //retest the method with different sets of input
+        //parameters.The test method sets up a new
+        //instance of the TemporalMemory class and its
+        //related objects such as Connections and
+        //Parameters.The test method then creates a new
+        //DistalDendrite object with a matching segment
+        //and synapses using the Connection object. The
+        //test method then computes the active columns
+        //and the expected active cell using the 
+        //TemporalMemory object. Finally, the test
+        //method asserts that the number of segments
+        //associated with the expected active cell matches
         /// </summary>
 
 
