@@ -1,0 +1,28 @@
+public void TestGetLeastUsedCell()
+        {
+            // Create a Connections object with some Cells and Segments
+            TemporalMemory tm = new TemporalMemory();
+            Parameters p = getDefaultParameters();
+          
+            p.apply(conn);
+            tm.Init(conn);
+
+            Cell c1 = conn.GetCell(1);
+            Cell c2 = conn.GetCell(2);
+            Cell c3 = conn.GetCell(3);
+            DistalDendrite s1 = conn.CreateDistalSegment(c1);
+            DistalDendrite s2 = conn.CreateDistalSegment(c1);
+            DistalDendrite s3 = conn.CreateDistalSegment(c2);
+            DistalDendrite s4 = conn.CreateDistalSegment(c3);
+            Synapse syn1 = conn.CreateSynapse(s1, c1, 0.5);
+            Synapse syn2 = conn.CreateSynapse(s1, c2, 0.5);
+            Synapse syn3 = conn.CreateSynapse(s2, c3, 0.5);
+            Synapse syn4 = conn.CreateSynapse(s3, c2, 0.5);
+            Synapse syn5 = conn.CreateSynapse(s4, c1, 0.5);
+
+            
+
+            // Verify that the least used Cell is c3
+            Assert.AreEqual(c3.ParentColumnIndex, leastUsedCell.ParentColumnIndex);
+            Assert.AreEqual(c3.Index, leastUsedCell.Index);
+        }
