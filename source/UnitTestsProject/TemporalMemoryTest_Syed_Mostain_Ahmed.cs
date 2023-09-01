@@ -24,7 +24,6 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
-using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 using static SkiaSharp.SKImageFilter;
 using static System.Net.Mime.MediaTypeNames;
 
