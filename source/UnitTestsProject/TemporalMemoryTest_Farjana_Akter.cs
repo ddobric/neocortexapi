@@ -15,7 +15,6 @@ using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 using static System.Net.Mime.MediaTypeNames;
 
 using System.Reflection.PortableExecutable;
