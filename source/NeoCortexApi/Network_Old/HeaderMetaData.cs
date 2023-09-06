@@ -3,7 +3,7 @@
 using NeoCortexApi.Encoders;
 using System.Collections.Generic;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi.Network_Old
 {
     public class HeaderMetaData
     {

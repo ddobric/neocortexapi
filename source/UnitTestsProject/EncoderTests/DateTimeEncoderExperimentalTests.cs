@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
+using NeoCortexApi.Network_Old;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.Entities;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace NeoCortexApi.Entities
+namespace NeoCortexApi
 {
     /// <summary>
     /// Serialization class used for serialization and deserialization of primitive types.
@@ -47,7 +48,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="typeName"></param>
         /// <param name="sw"></param>
-        public void SerializeBegin(String typeName, StreamWriter sw)
+        public void SerializeBegin(string typeName, StreamWriter sw)
         {
             //
             // -- BEGIN ---
@@ -57,9 +58,9 @@ namespace NeoCortexApi.Entities
             sw.WriteLine();
 
         }
-        public String ReadBegin(string typeName)
+        public string ReadBegin(string typeName)
         {
-            string val = ($"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}");
+            string val = $"{TypeDelimiter} BEGIN '{typeName}' {TypeDelimiter}";
             return val;
         }
 
@@ -105,15 +106,15 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="typeName"></param>
         /// <param name="sw"></param>
-        public void SerializeEnd(String typeName, StreamWriter sw)
+        public void SerializeEnd(string typeName, StreamWriter sw)
         {
             sw.WriteLine();
             sw.Write($"{TypeDelimiter} END '{typeName}' {TypeDelimiter}");
             sw.WriteLine();
         }
-        public String ReadEnd(String typeName)
+        public string ReadEnd(string typeName)
         {
-            string val = ($"{TypeDelimiter} END '{typeName}' {TypeDelimiter}");
+            string val = $"{TypeDelimiter} END '{typeName}' {TypeDelimiter}";
             return val;
         }
 
@@ -133,7 +134,7 @@ namespace NeoCortexApi.Entities
         #region NewImplementation
         #region Serialization
 
-        
+
         private static void SerializeKeyValuePair(string name, object obj, StreamWriter sw)
         {
             var type = obj.GetType();
@@ -222,7 +223,7 @@ namespace NeoCortexApi.Entities
 
                 }
 
-                var enumerable = ((IEnumerable)obj);
+                var enumerable = (IEnumerable)obj;
 
                 foreach (var item in enumerable)
                 {
@@ -251,7 +252,7 @@ namespace NeoCortexApi.Entities
                 listString.Add(type.FullName.Replace(" ", ""));
             }
 
-            sw.WriteLine(String.Join(' ', listString));
+            sw.WriteLine(string.Join(' ', listString));
         }
 
         private static void SerializeEnd(string propName, StreamWriter sw, Type type)
@@ -268,7 +269,7 @@ namespace NeoCortexApi.Entities
                 listString.Add(type.FullName.Replace(" ", ""));
             }
 
-            sw.WriteLine(String.Join(' ', listString));
+            sw.WriteLine(string.Join(' ', listString));
         }
 
         private static string ReadGenericBegin(string propName, Type type = null)
@@ -283,7 +284,7 @@ namespace NeoCortexApi.Entities
                 listString.Add(type.FullName.Replace(" ", ""));
             }
 
-            return String.Join(' ', listString);
+            return string.Join(' ', listString);
         }
 
         private static string ReadGenericEnd(string propName, Type type = null)
@@ -298,7 +299,7 @@ namespace NeoCortexApi.Entities
                 listString.Add(type.FullName.Replace(" ", ""));
             }
 
-            return String.Join(' ', listString);
+            return string.Join(' ', listString);
         }
 
 
@@ -315,7 +316,7 @@ namespace NeoCortexApi.Entities
             sw.Write(content);
         }
 
- 
+
         private static void SerializeIEnumerable(string propertyName, object obj, StreamWriter sw, List<string> ignoreMembers = null)
         {
             var type = obj.GetType();
@@ -325,9 +326,9 @@ namespace NeoCortexApi.Entities
                 return;
             }
 
-            var enumerable = ((IEnumerable)obj);
+            var enumerable = (IEnumerable)obj;
 
-            if (type.GetElementType() == typeof(int) || (type.IsGenericType && type.GetGenericArguments()[0] == typeof(int)))
+            if (type.GetElementType() == typeof(int) || type.IsGenericType && type.GetGenericArguments()[0] == typeof(int))
             {
                 StringBuilder sb = new StringBuilder();
                 foreach (var item in enumerable)
@@ -512,7 +513,7 @@ namespace NeoCortexApi.Entities
                 else
                 {
                     Serialize(Id, cIdString, sw);
-                    HtmSerializer.SerializedHashCodes.Add(obj, Id++);
+                    SerializedHashCodes.Add(obj, Id++);
                     (obj as ISerializable).Serialize(obj, name, sw);
                 }
             }
@@ -541,7 +542,7 @@ namespace NeoCortexApi.Entities
                 else
                 {
                     Serialize(Id, cIdString, sw);
-                    HtmSerializer.SerializedHashCodes.Add(obj, Id++);
+                    SerializedHashCodes.Add(obj, Id++);
                     SerializeObject(obj, name, sw, ignoreMembers);
                 }
             }
@@ -549,7 +550,7 @@ namespace NeoCortexApi.Entities
             SerializeEnd(name, sw, isSerializeWithType ? type : null);
         }
 
-        
+
 
         public static void SerializeObject(object obj, string name, StreamWriter sw, List<string> ignoreMembers = null)
         {
@@ -816,17 +817,17 @@ namespace NeoCortexApi.Entities
                 elementType = type.GetGenericArguments()[0];
                 if (IsSet(type))
                 {
-                    convertMethodName = nameof(System.Linq.Enumerable.ToHashSet);
+                    convertMethodName = nameof(Enumerable.ToHashSet);
                 }
                 else
                 {
-                    convertMethodName = nameof(System.Linq.Enumerable.ToList);
+                    convertMethodName = nameof(Enumerable.ToList);
                 }
             }
             else
             {
                 elementType = type.GetElementType();
-                convertMethodName = nameof(System.Linq.Enumerable.ToArray);
+                convertMethodName = nameof(Enumerable.ToArray);
             }
 
             Type specifiedType = elementType;
@@ -1227,7 +1228,7 @@ namespace NeoCortexApi.Entities
 
         public static StreamReader ToStreamReader(string content)
         {
-            var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
+            var ms = new MemoryStream(Encoding.UTF8.GetBytes(content));
             var reader = new StreamReader(ms);
             return reader;
         }
@@ -1263,7 +1264,7 @@ namespace NeoCortexApi.Entities
             }
             else
             {
-                var method = type.GetMethod("Serialize", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var method = type.GetMethod("Serialize", BindingFlags.Public | BindingFlags.Instance);
                 if (method != null)
                 {
                     method.Invoke(val, new object[] { sw });
@@ -1301,7 +1302,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>Int</returns>
-        public int ReadIntValue(String reader)
+        public int ReadIntValue(string reader)
         {
             reader = reader.Trim();
             if (string.IsNullOrEmpty(reader))
@@ -1391,10 +1392,10 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>Double</returns>
-        public Double ReadDoubleValue(String reader)
+        public double ReadDoubleValue(string reader)
         {
             reader = reader.Trim();
-            Double val = Convert.ToDouble(reader);
+            double val = Convert.ToDouble(reader);
             return val;
         }
 
@@ -1403,7 +1404,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="val"></param>
         /// <param name="sw"></param>
-        public void SerializeValue(String val, StreamWriter sw)
+        public void SerializeValue(string val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
             sw.Write(val);
@@ -1415,7 +1416,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>String</returns>
-        public String ReadStringValue(String reader)
+        public string ReadStringValue(string reader)
         {
             string value = reader.Trim();
             if (value == LineDelimiter)
@@ -1441,7 +1442,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>Long</returns>
-        public long ReadLongValue(String reader)
+        public long ReadLongValue(string reader)
         {
             reader = reader.Trim();
             long val = Convert.ToInt64(reader);
@@ -1457,7 +1458,7 @@ namespace NeoCortexApi.Entities
         public void SerializeValue(bool val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
-            String value = val ? "True" : "False";
+            string value = val ? "True" : "False";
             sw.Write(value);
             sw.Write(ValueDelimiter);
             sw.Write(ParameterDelimiter);
@@ -1467,7 +1468,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>Bool</returns>
-        public bool ReadBoolValue(String reader)
+        public bool ReadBoolValue(string reader)
         {
             reader = reader.Trim();
             bool val = bool.Parse(reader);
@@ -1479,7 +1480,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>Bool</returns>
-        public Random ReadRandomValue(String reader)
+        public Random ReadRandomValue(string reader)
         {
             int val = Convert.ToInt16(reader);
             Random rnd = new ThreadSafeRandom(val);
@@ -1509,12 +1510,12 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="val"></param>
         /// <param name="sw"></param>
-        public void SerializeValue(Double[] val, StreamWriter sw)
+        public void SerializeValue(double[] val, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
             if (val != null)
             {
-                foreach (Double i in val)
+                foreach (double i in val)
                 {
                     sw.Write(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", i));
                     sw.Write(ElementsDelimiter);
@@ -1528,7 +1529,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// <param name="reader"></param>
         /// <returns>Double[]</returns>
-        public Double[] ReadArrayDouble(string reader)
+        public double[] ReadArrayDouble(string reader)
         {
             string value = reader.Trim();
             if (value == LineDelimiter)
@@ -1536,7 +1537,7 @@ namespace NeoCortexApi.Entities
             else
             {
                 string[] str = reader.Split(ElementsDelimiter);
-                Double[] vs = new double[str.Length - 1];
+                double[] vs = new double[str.Length - 1];
                 for (int i = 0; i < str.Length - 1; i++)
                 {
 
@@ -1705,7 +1706,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="keyValues"></param>
         /// <param name="sw"></param>
-        public void SerializeValue(Dictionary<String, int> keyValues, StreamWriter sw)
+        public void SerializeValue(Dictionary<string, int> keyValues, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
             foreach (KeyValuePair<string, int> i in keyValues)
@@ -1722,10 +1723,10 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// <param name="reader"></param>
         /// <returns>Dictionary<String, int></returns>
-        public Dictionary<String, int> ReadDictSIValue(string reader)
+        public Dictionary<string, int> ReadDictSIValue(string reader)
         {
             string[] str = reader.Split(ElementsDelimiter);
-            Dictionary<String, int> keyValues = new Dictionary<String, int>();
+            Dictionary<string, int> keyValues = new Dictionary<string, int>();
             for (int i = 0; i < str.Length - 1; i++)
             {
                 string[] tokens = str[i].Split(KeyValueDelimiter);
@@ -1771,7 +1772,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="keyValues"></param>
         /// <param name="sw"></param>
-        public void SerializeValue(Dictionary<String, int[]> keyValues, StreamWriter sw)
+        public void SerializeValue(Dictionary<string, int[]> keyValues, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
             foreach (KeyValuePair<string, int[]> i in keyValues)
@@ -1792,10 +1793,10 @@ namespace NeoCortexApi.Entities
         ///</summary>
         ///<param name="reader"></param>
         /// <returns>Dictionary<string, int[]></returns>
-        public Dictionary<String, int[]> ReadDictSIarray(String reader)
+        public Dictionary<string, int[]> ReadDictSIarray(string reader)
         {
             string[] str = reader.Split(ElementsDelimiter);
-            Dictionary<String, int[]> keyValues = new Dictionary<String, int[]>();
+            Dictionary<string, int[]> keyValues = new Dictionary<string, int[]>();
             for (int i = 0; i < str.Length - 1; i++)
             {
                 string[] tokens = str[i].Split(KeyValueDelimiter);
@@ -1898,7 +1899,7 @@ namespace NeoCortexApi.Entities
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>List<int></returns>
-        public List<int> ReadListInt(String reader)
+        public List<int> ReadListInt(string reader)
         {
             string[] str = reader.Split(ElementsDelimiter);
             List<int> keyValues = new List<int>();
@@ -2010,7 +2011,7 @@ namespace NeoCortexApi.Entities
             {
                 return true;
             }
-            else if ((obj1 == null && obj2 != null) || (obj1 != null && obj2 == null))
+            else if (obj1 == null && obj2 != null || obj1 != null && obj2 == null)
             {
                 return false;
             }
@@ -2018,7 +2019,7 @@ namespace NeoCortexApi.Entities
             var type = obj1.GetType();
 
 
-            if (type.IsPrimitive || type == typeof(Decimal) || type == typeof(String))
+            if (type.IsPrimitive || type == typeof(decimal) || type == typeof(string))
             {
                 var obj1Value = obj1.ToString();
                 var obj2Value = obj2.ToString();
@@ -2084,7 +2085,7 @@ namespace NeoCortexApi.Entities
             }
             else
             {
-                const System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                const BindingFlags bindingAttr = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
                 var props1 = obj1.GetType().GetFields(bindingAttr); //GetProperties(bindingAttr);
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
+using NeoCortexUtils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 
-namespace UnitTestsProject.Sdr
+namespace UnitTestsProject.SdrRepresentation
 {
     /// <summary>
     /// Describe how to create SDRs
@@ -109,24 +109,24 @@ namespace UnitTestsProject.Sdr
 
                             sp.compute(inputVector, activeArray, true);
 
-                            var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                            var activeCols = activeArray.IndexWhere((el) => el == 1);
 
                             if (isInStableState)
                             {
                                 CalculateResult(sdrs, inputVectors, numOfCols, activeCols, outFolder, trainingImage, inputVector);
 
-                                overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.ToDoubleArray(connections.Overlaps), colDims[0], colDims[1]));
+                                overlapArrays.Add(ArrayUtils.Make2DArray(ArrayUtils.ToDoubleArray(connections.Overlaps), colDims[0], colDims[1]));
 
-                                bostArrays.Add(ArrayUtils.Make2DArray<double>(connections.BoostedOverlaps, colDims[0], colDims[1]));
+                                bostArrays.Add(ArrayUtils.Make2DArray(connections.BoostedOverlaps, colDims[0], colDims[1]));
 
                                 var activeStr = Helpers.StringifyVector(activeArray);
                                 swActCol.WriteLine("Active Array: " + activeStr);
 
-                                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, colDims[0], colDims[1]);
+                                int[,] twoDimenArray = ArrayUtils.Make2DArray(activeArray, colDims[0], colDims[1]);
                                 twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
                                 List<int[,]> arrays = new List<int[,]>();
                                 arrays.Add(twoDimenArray);
-                                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
+                                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
 
                                 //Calculating the max value of the overlap in the OverlapArray
                                 int max = SdrRepresentation.TraceColumnsOverlap(overlapArrays, swActCol1, fI.Name);

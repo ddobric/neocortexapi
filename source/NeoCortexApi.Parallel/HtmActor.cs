@@ -3,7 +3,7 @@
 using AkkaSb.Net;
 using Microsoft.Extensions.Logging;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

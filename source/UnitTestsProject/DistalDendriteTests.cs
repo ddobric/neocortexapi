@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi.Entities;
+using NeoCortexApi.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,9 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void CompareDentrites()
         {
-            Cell c1 = new Cell(1, 1, 10, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
-            Cell c2 = new Cell(1, 1, 10, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
-            Cell c3 = new Cell(2, 1, 10, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
+            Cell c1 = new Cell(1, 1, 10, CellActivity.ActiveCell);
+            Cell c2 = new Cell(1, 1, 10, CellActivity.ActiveCell);
+            Cell c3 = new Cell(2, 1, 10, CellActivity.ActiveCell);
 
             DistalDendrite d1 = new DistalDendrite(c1, 1, 1, 1, 0.5, 10);
             DistalDendrite d2 = new DistalDendrite(c1, 1, 1, 1, 0.5, 10);
@@ -35,9 +36,9 @@ namespace UnitTestsProject
         [TestCategory("Prod")]
         public void CompareDentriteList()
         {
-            Cell c1 = new Cell(1, 1, 10, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
-            Cell c2 = new Cell(1, 1, 10, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
-            Cell c3 = new Cell(2, 1, 10, NeoCortexEntities.NeuroVisualizer.CellActivity.ActiveCell);
+            Cell c1 = new Cell(1, 1, 10, CellActivity.ActiveCell);
+            Cell c2 = new Cell(1, 1, 10, CellActivity.ActiveCell);
+            Cell c3 = new Cell(2, 1, 10, CellActivity.ActiveCell);
 
             DistalDendrite d1 = new DistalDendrite(c1, 1, 1, 1, 0.5, 10);
             DistalDendrite d2 = new DistalDendrite(c1, 1, 1, 1, 0.5, 10);

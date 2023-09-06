@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace NeoCortexApi.Entities
+namespace NeoCortexApi
 {
     public interface IDistributedArray //:// ICollection//ICollection, IEnumerable//, IList
     {

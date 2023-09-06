@@ -1,8 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
-using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
+using NeoCortexUtils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 
-namespace UnitTestsProject.Sdr
+namespace UnitTestsProject.SdrRepresentation
 {
     [TestClass]
     public class ScalarEncoderTestOverBitmap
@@ -31,7 +31,7 @@ namespace UnitTestsProject.Sdr
             Console.WriteLine("SDR Representation using ScalarEncoder");
 
 
-            for (int input = 1; input < (int)6; input++)
+            for (int input = 1; input < 6; input++)
             {
                 //double input = 1.10;
 
@@ -39,8 +39,8 @@ namespace UnitTestsProject.Sdr
                 ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
                     {
                         { "W", 25},
-                        { "N", (int)0},
-                        { "Radius", (double)2.5},
+                        { "N", 0},
+                        { "Radius", 2.5},
                         { "MinVal", (double)1},
                         { "MaxVal", (double)50},
                         { "Periodic", false},
@@ -50,10 +50,10 @@ namespace UnitTestsProject.Sdr
 
                 var result = encoder.Encode(input);
                 Debug.WriteLine($"Input = {input}");
-                Debug.WriteLine($"SDRs Generated = {NeoCortexApi.Helpers.StringifyVector(result)}");
-                Debug.WriteLine($"SDR As Indices = {NeoCortexApi.Helpers.StringifyVector(ArrayUtils.IndexWhere(result, k => k == 1))}");
+                Debug.WriteLine($"SDRs Generated = {Helpers.StringifyVector(result)}");
+                Debug.WriteLine($"SDR As Indices = {Helpers.StringifyVector(result.IndexWhere(k => k == 1))}");
 
-                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
+                int[,] twoDimenArray = ArrayUtils.Make2DArray(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
                 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
                 NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{input}.png", Color.Yellow, Color.Black, text: input.ToString());
@@ -82,11 +82,11 @@ namespace UnitTestsProject.Sdr
                 int[] result = encoder.Encode(input);
 
                 Console.WriteLine($"Input = {input}");
-                Console.WriteLine($"SDRs Generated = {NeoCortexApi.Helpers.StringifyVector(result)}");
-                Console.WriteLine($"SDR As Text = {NeoCortexApi.Helpers.StringifyVector(ArrayUtils.IndexWhere(result, k => k == 1))}");
+                Console.WriteLine($"SDRs Generated = {Helpers.StringifyVector(result)}");
+                Console.WriteLine($"SDR As Text = {Helpers.StringifyVector(result.IndexWhere(k => k == 1))}");
 
 
-                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
+                int[,] twoDimenArray = ArrayUtils.Make2DArray(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
                 int[,] twoDimArray = ArrayUtils.Transpose(twoDimenArray);
                 NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{input}.png", Color.PaleGreen, Color.Blue, text: input.ToString());
 
@@ -104,14 +104,14 @@ namespace UnitTestsProject.Sdr
             /// </summary>
             Console.WriteLine("Encoder Binary array Created");
             Console.WriteLine("Enter the two elements you want to Compare");
-            String a = Console.ReadLine();
-            String b = Console.ReadLine();
+            string a = Console.ReadLine();
+            string b = Console.ReadLine();
 
             SimilarityResult(Convert.ToInt32(a), Convert.ToInt32(b), sdrs, outFolder);
 
         }
 
-        private void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, String folder)                // Function to check similarity between Inputs 
+        private void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, string folder)                // Function to check similarity between Inputs 
         {
 
             List<int[,]> arrayOvr = new List<int[,]>();
@@ -133,7 +133,7 @@ namespace UnitTestsProject.Sdr
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_Union\\Overlap_{h}_{w}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
             var unionArr = sdrs[h].Union(sdrs[w]).ToArray();
-            int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, (int)Math.Sqrt(unionArr.Length), (int)Math.Sqrt(unionArr.Length));
+            int[,] twoDimenArray4 = ArrayUtils.Make2DArray(unionArr, (int)Math.Sqrt(unionArr.Length), (int)Math.Sqrt(unionArr.Length));
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
 
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Overlap_Union\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Overlap_{h}_{w}.png");
@@ -146,12 +146,12 @@ namespace UnitTestsProject.Sdr
         [TestMethod]
         public void CreateSdrAsBitmapTest()
         {
-            Object[] d1 = new Object[] { "05/02/2020 22:58:06", "06/04/2020 01:28:07", "07/09/2019 21:15:07", "08/01/2017 11:27:07" };
+            object[] d1 = new object[] { "05/02/2020 22:58:06", "06/04/2020 01:28:07", "07/09/2019 21:15:07", "08/01/2017 11:27:07" };
 
             this.DateTimeEncoderTest(d1);
 
 
-            Object[] inputs = { "05/02/2020 22:58:07", "06/04/2020 01:28:07", "07/09/2019 21:15:07", "08/01/2018 11:27:07" };
+            object[] inputs = { "05/02/2020 22:58:07", "06/04/2020 01:28:07", "07/09/2019 21:15:07", "08/01/2018 11:27:07" };
 
 
 
@@ -180,10 +180,10 @@ namespace UnitTestsProject.Sdr
                 var result = encoder.Encode(DateTimeOffset.Parse(input.ToString()));
 
                 Debug.WriteLine($"Input = {input}");
-                Debug.WriteLine($"SDRs Generated = {NeoCortexApi.Helpers.StringifyVector(result)}");
-                Debug.WriteLine($"SDR As Indices = {NeoCortexApi.Helpers.StringifyVector(ArrayUtils.IndexWhere(result, k => k == 1))}");
+                Debug.WriteLine($"SDRs Generated = {Helpers.StringifyVector(result)}");
+                Debug.WriteLine($"SDR As Indices = {Helpers.StringifyVector(result.IndexWhere(k => k == 1))}");
 
-                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, 32, 32);
+                int[,] twoDimenArray = ArrayUtils.Make2DArray(result, 32, 32);
                 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
                 NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{input.ToString().Replace("/", "-").Replace(":", "-")}_32x32-N-{encoderSettings["DateTimeEncoder"]["N"]}-W-{encoderSettings["DateTimeEncoder"]["W"]}.png");
@@ -193,7 +193,7 @@ namespace UnitTestsProject.Sdr
         }
 
         [TestMethod]
-        public void DateTimeEncoderTest(Object[] inputs)
+        public void DateTimeEncoderTest(object[] inputs)
         {
             var outFolder = @"..\..\..\..\ScalarEncoderResults";
 
@@ -214,22 +214,22 @@ namespace UnitTestsProject.Sdr
 
             var encoder = new DateTimeEncoder(encoderSettings, DateTimeEncoder.Precision.Days);
 
-            Dictionary<Object, int[]> sdrs = new Dictionary<Object, int[]>();
+            Dictionary<object, int[]> sdrs = new Dictionary<object, int[]>();
 
 
-            foreach (Object input in inputs)
+            foreach (object input in inputs)
             {
                 int[] result = encoder.Encode(DateTimeOffset.Parse(input.ToString()));
 
-                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, 32, 32);
+                int[,] twoDimenArray = ArrayUtils.Make2DArray(result, 32, 32);
                 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
                 NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{input.ToString().Replace("/", "-").Replace(":", "-")}_32x32-N-{encoderSettings["DateTimeEncoder"]["N"]}-W-{encoderSettings["DateTimeEncoder"]["W"]}.png");
 
 
                 Console.WriteLine($"Input = {input}");
-                Console.WriteLine($"SDRs Generated = {NeoCortexApi.Helpers.StringifyVector(result)}");
-                Console.WriteLine($"SDR As Text = {NeoCortexApi.Helpers.StringifyVector(ArrayUtils.IndexWhere(result, k => k == 1))}");
+                Console.WriteLine($"SDRs Generated = {Helpers.StringifyVector(result)}");
+                Console.WriteLine($"SDR As Text = {Helpers.StringifyVector(result.IndexWhere(k => k == 1))}");
 
                 sdrs.Add(input, result);
 
@@ -260,12 +260,12 @@ namespace UnitTestsProject.Sdr
 
         }
 
-        public void SimilarityResult1(int[] arr1, int[] arr2, Dictionary<Object, int[]> sdrs, String folder, Object input0, Object input1)                // Function to check similarity between Inputs 
+        public void SimilarityResult1(int[] arr1, int[] arr2, Dictionary<object, int[]> sdrs, string folder, object input0, object input1)                // Function to check similarity between Inputs 
         {
             List<int[,]> arrayOvr = new List<int[,]>();
 
-            Object h = input0;
-            Object w = input1;
+            object h = input0;
+            object w = input1;
 
             var Overlaparray = SdrRepresentation.OverlapArraFun(arr1, arr2);
 
@@ -276,7 +276,7 @@ namespace UnitTestsProject.Sdr
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_Union\\Overlap_{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
             var unionArr = arr1.Union(arr2).ToArray();
-            int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, 32, 32);
+            int[,] twoDimenArray4 = ArrayUtils.Make2DArray(unionArr, 32, 32);
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
 
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Overlap_Union\\Union{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.PaleGreen, Color.Green, text: $"Overlap_{h}_{w}.png");
@@ -297,28 +297,28 @@ namespace UnitTestsProject.Sdr
             Dictionary<string, object> encoderSetting = getDefaultSettings(); // creaing default constructor
             static Dictionary<string, object> getDefaultSettings()
             {
-                Dictionary<String, Object> encoderSetting = new Dictionary<string, object>();
+                Dictionary<string, object> encoderSetting = new Dictionary<string, object>();
                 encoderSetting.Add("W", 3);
                 encoderSetting.Add("Radius", (double)1);
                 return encoderSetting;
             }
 
             CategoryEncoder categoryEncoder = new CategoryEncoder(inputs, encoderSetting); // passing the input array here
-            Dictionary<Object, int[]> sdrs = new Dictionary<Object, int[]>();
+            Dictionary<object, int[]> sdrs = new Dictionary<object, int[]>();
 
 
-            foreach (Object input in inputs)
+            foreach (object input in inputs)
             {
                 int[] result = categoryEncoder.Encode(input);
 
-                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, 32, 32);
+                int[,] twoDimenArray = ArrayUtils.Make2DArray(result, 32, 32);
                 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
                 NeoCortexUtils.DrawBitmap(twoDimArray, 512, 512, $"{outFolder}\\{input}.png", Color.Gold, Color.Silver, text: input.ToString());
 
                 Console.WriteLine($"Input = {input}");
-                Console.WriteLine($"SDRs Generated = {NeoCortexApi.Helpers.StringifyVector(result)}");
-                Console.WriteLine($"SDR As Text = {NeoCortexApi.Helpers.StringifyVector(ArrayUtils.IndexWhere(result, k => k == 1))}");
+                Console.WriteLine($"SDRs Generated = {Helpers.StringifyVector(result)}");
+                Console.WriteLine($"SDR As Text = {Helpers.StringifyVector(result.IndexWhere(k => k == 1))}");
 
                 sdrs.Add(input, result);
 
@@ -349,13 +349,13 @@ namespace UnitTestsProject.Sdr
 
         }
 
-        public void SimilarityResult2(int[] arr1, int[] arr2, Dictionary<Object, int[]> sdrs, String folder, Object input0, Object input1)                // Function to check similarity between Inputs 
+        public void SimilarityResult2(int[] arr1, int[] arr2, Dictionary<object, int[]> sdrs, string folder, object input0, object input1)                // Function to check similarity between Inputs 
         {
 
             List<int[,]> arrayOvr = new List<int[,]>();
 
-            Object h = input0;
-            Object w = input1;
+            object h = input0;
+            object w = input1;
 
             var Overlaparray = SdrRepresentation.OverlapArraFun(arr1, arr2);
 
@@ -366,7 +366,7 @@ namespace UnitTestsProject.Sdr
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_Union\\Overlap_{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
             var Unionarray = arr1.Union(arr2).ToArray();
-            int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(Unionarray, 32, 32);
+            int[,] twoDimenArray4 = ArrayUtils.Make2DArray(Unionarray, 32, 32);
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
 
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Overlap_Union\\Union{h.ToString().Replace("/", "-").Replace(":", "-")}_{w.ToString().Replace("/", "-").Replace(":", "-")}.png", Color.PaleGreen, Color.Green, text: $"Union_{h}_{w}.png");

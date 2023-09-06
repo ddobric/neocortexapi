@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using IronXL;
 using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Spatial;
@@ -25,7 +24,6 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
-using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 using static SkiaSharp.SKImageFilter;
 using static System.Net.Mime.MediaTypeNames;
 

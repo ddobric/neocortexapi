@@ -8,8 +8,9 @@ using System.Text;
 using System.Linq;
 using System.Diagnostics;
 using System.IO;
+using NeoCortexApi.Entities;
 
-namespace NeoCortexApi.Entities
+namespace NeoCortexApi
 {
     /// <summary>
     /// Implementation of a sparse matrix which contains binary integer values only.
@@ -23,7 +24,7 @@ namespace NeoCortexApi.Entities
         /// Holds the matrix with connections between columns and inputs.
         /// </summary>
         public IDistributedArray backingArray;
-        
+
 
         public SparseBinaryMatrix()
         {
@@ -50,9 +51,9 @@ namespace NeoCortexApi.Entities
         {
             // We  create here a simple array on a single node.
             if (distArray == null)
-                this.backingArray = new InMemoryArray(1, typeof(int), dimensions);
+                backingArray = new InMemoryArray(1, typeof(int), dimensions);
             else
-                this.backingArray = distArray;
+                backingArray = distArray;
         }
 
         /**
@@ -80,12 +81,12 @@ namespace NeoCortexApi.Entities
         /// <param name="coordinates">the coordinates which specify the returned array</param>
         /// <returns>the array specified. Throws <see cref="ArgumentException"/> if the specified coordinates address an actual value instead of the array holding it.</returns>
         /// <exception cref="ArgumentException"/>
-        public override Object GetSlice(params int[] coordinates)
+        public override object GetSlice(params int[] coordinates)
         {
             //Object slice = DistributedArrayHelpers.getValue(this.backingArray, coordinates);
-            Object slice;
+            object slice;
             if (coordinates.Length == 1)
-                slice = GetRow<int>(this.backingArray, coordinates[0]);
+                slice = GetRow<int>(backingArray, coordinates[0]);
 
             // DistributedArrayHelpers.GetRow<int>((int[,])this.backingArray, coordinates[0]);
             //else if (coordinates.Length == 1)
@@ -133,12 +134,12 @@ namespace NeoCortexApi.Entities
         /// <param name="results">the results array</param>
         public override void RightVecSumAtNZ(int[] inputVector, int[] results)
         {
-            for (int i = 0; i < this.ModuleTopology.Dimensions[0]; i++)
+            for (int i = 0; i < ModuleTopology.Dimensions[0]; i++)
             {
-                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? GetSlice(i) : backingArray);
+                int[] slice = (int[])(ModuleTopology.Dimensions.Length > 1 ? GetSlice(i) : backingArray);
                 for (int j = 0; j < slice.Length; j++)
                 {
-                    results[i] += (inputVector[j] * slice[j]);
+                    results[i] += inputVector[j] * slice[j];
                 }
             }
         }
@@ -152,10 +153,10 @@ namespace NeoCortexApi.Entities
         /// <param name="stimulusThreshold"></param>
         public override void RightVecSumAtNZ(int[] inputVector, int[] results, double stimulusThreshold)
         {
-            for (int colIndx = 0; colIndx < this.ModuleTopology.Dimensions[0]; colIndx++)
+            for (int colIndx = 0; colIndx < ModuleTopology.Dimensions[0]; colIndx++)
             {
                 // Gets the synapse mapping between column-i with input vector.
-                int[] slice = (int[])(this.ModuleTopology.Dimensions.Length > 1 ? GetSlice(colIndx) : backingArray);
+                int[] slice = (int[])(ModuleTopology.Dimensions.Length > 1 ? GetSlice(colIndx) : backingArray);
 
                 // Go through all connections (synapses) between column and input vector.
                 for (int inpBit = 0; inpBit < slice.Length; inpBit++)
@@ -163,7 +164,7 @@ namespace NeoCortexApi.Entities
                     //Debug.WriteLine($"Slice {i} - {String.Join("","", slice )}");
 
                     // Result (overlapp) is 1 if 
-                    results[colIndx] += (inputVector[inpBit] * slice[inpBit]);
+                    results[colIndx] += inputVector[inpBit] * slice[inpBit];
                     if (inpBit == slice.Length - 1)
                     {
                         // If the overlap (num of connected synapses to TRUE input) is less than stimulusThreshold then we set result on 0.
@@ -185,7 +186,7 @@ namespace NeoCortexApi.Entities
         public override AbstractFlatMatrix<int> set(int index, int value)
         {
             set(index, value);
-            return (AbstractFlatMatrix<int>)this;
+            return this;
         }
 
         /// <summary>
@@ -200,9 +201,9 @@ namespace NeoCortexApi.Entities
             //back(value, coordinates);
 
             //update true counts
-            this.backingArray.SetValue(value, coordinates);
+            backingArray.SetValue(value, coordinates);
 
-            var aggVal = this.backingArray.AggregateArray(coordinates[0]);
+            var aggVal = backingArray.AggregateArray(coordinates[0]);
 
             SetTrueCount(coordinates[0], aggVal);
 
@@ -245,7 +246,7 @@ namespace NeoCortexApi.Entities
         //  @Override
         public override AbstractSparseBinaryMatrix setForTest(int index, int value)
         {
-            this.backingArray.SetValue(value, ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
+            backingArray.SetValue(value, ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
 
             //DistributedArrayHelpers.setValue(this.backingArray, value,
             //    ComputeCoordinates(getNumDimensions(), getDimensionMultiples(), ModuleTopology.IsMajorOrdering, index));
@@ -262,13 +263,13 @@ namespace NeoCortexApi.Entities
         // @Override
         public override int GetColumn(int index)
         {
-            int[] coordinates = ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), this.ModuleTopology.IsMajorOrdering, index);
+            int[] coordinates = ComputeCoordinates(GetNumDimensions(), GetDimensionMultiples(), ModuleTopology.IsMajorOrdering, index);
             if (coordinates.Length == 1)
             {
-                return (Int32)backingArray.GetValue(index);
+                return (int)backingArray.GetValue(index);
             }
             else
-                return (Int32)backingArray.GetValue(coordinates);
+                return (int)backingArray.GetValue(coordinates);
         }
 
         public override AbstractFlatMatrix<int> set(List<KeyPair> updatingValues)
@@ -310,7 +311,7 @@ namespace NeoCortexApi.Entities
             }
             else if (!ModuleTopology.Equals(obj.ModuleTopology))
                 return false;
-            if (!this.trueCounts.SequenceEqual(obj.trueCounts))
+            if (!trueCounts.SequenceEqual(obj.trueCounts))
                 return false;
 
             return true;
@@ -322,13 +323,13 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(SparseBinaryMatrix), writer);
 
-            ser.SerializeValue(this.trueCounts, writer);
-            
-            if(this.ModuleTopology != null)
-            { this.ModuleTopology.Serialize(writer); }
-            
-            if (this.backingArray != null)
-            { this.backingArray.Serialize(writer); }
+            ser.SerializeValue(trueCounts, writer);
+
+            if (ModuleTopology != null)
+            { ModuleTopology.Serialize(writer); }
+
+            if (backingArray != null)
+            { backingArray.Serialize(writer); }
 
             ser.SerializeEnd(nameof(SparseBinaryMatrix), writer);
         }
@@ -340,7 +341,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
+                if (data == string.Empty || data == ser.ReadBegin(nameof(SparseBinaryMatrix)))
                 {
                     continue;
                 }

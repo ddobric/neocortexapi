@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.IO;
+using NeoCortexApi.Entities;
 
-namespace NeoCortexApi.Entities
+namespace NeoCortexApi
 {
     public class InMemoryArray : IDistributedArray, ISerializable
     {
@@ -17,9 +18,9 @@ namespace NeoCortexApi.Entities
 
         public int numOfNodes;
 
-        public int Rank => this.backingArray.Rank;
+        public int Rank => backingArray.Rank;
 
-        long IDistributedArray.Count => this.backingArray.Length;
+        long IDistributedArray.Count => backingArray.Length;
 
         /// <summary>
         /// Gets dimensions of distributed array.
@@ -31,7 +32,7 @@ namespace NeoCortexApi.Entities
                 int[] dims = new int[Rank];
                 for (int i = 0; i < dims.Length; i++)
                 {
-                    dims[i] = this.backingArray.GetUpperBound(i);
+                    dims[i] = backingArray.GetUpperBound(i);
                 }
 
                 return dims;
@@ -42,26 +43,26 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                return this.backingArray.GetValue(row, col);
+                return backingArray.GetValue(row, col);
             }
             set
             {
-                this.backingArray.SetValue(value, row, col);
+                backingArray.SetValue(value, row, col);
             }
         }
 
 
         public object this[int index]
         {
-            get => this.backingArray.GetValue(index);
+            get => backingArray.GetValue(index);
 
-            set => this.backingArray.SetValue(value, index);
+            set => backingArray.SetValue(value, index);
         }
 
         public InMemoryArray(int numOfNodes, Type type, int[] dimensions)
         {
             this.numOfNodes = numOfNodes;
-            this.backingArray = Array.CreateInstance(typeof(int), dimensions);
+            backingArray = Array.CreateInstance(typeof(int), dimensions);
             this.dimensions = dimensions;
         }
 
@@ -142,11 +143,11 @@ namespace NeoCortexApi.Entities
 
         public int AggregateArray(int row)
         {
-            int cols = this.backingArray.GetUpperBound(1) + 1;
+            int cols = backingArray.GetUpperBound(1) + 1;
 
-            if (this.backingArray is System.Int32[,])
+            if (backingArray is int[,])
             {
-                int[,] arr = (int[,])this.backingArray;
+                int[,] arr = (int[,])backingArray;
 
                 int sum = 0;
                 for (int i = 0; i < cols; i++)
@@ -162,12 +163,12 @@ namespace NeoCortexApi.Entities
 
         public int AggregateArraySlow(int row)
         {
-            int cols = this.backingArray.GetUpperBound(1) + 1;
+            int cols = backingArray.GetUpperBound(1) + 1;
 
             int sum = 0;
             for (int i = 0; i < cols; i++)
             {
-                sum += (Int32)this.backingArray.GetValue(row, i);
+                sum += (int)backingArray.GetValue(row, i);
             }
 
             return sum;
@@ -175,22 +176,22 @@ namespace NeoCortexApi.Entities
 
         public object GetValue(int index)
         {
-            return this.backingArray.GetValue(index);
+            return backingArray.GetValue(index);
         }
 
         public object GetValue(int[] indexes)
         {
-            return this.backingArray.GetValue(indexes);
+            return backingArray.GetValue(indexes);
         }
 
         public void SetValue(int value, int[] indexes)
         {
-            this.backingArray.SetValue(value, indexes);
+            backingArray.SetValue(value, indexes);
         }
 
         public int GetUpperBound(int v)
         {
-            return this.backingArray.GetUpperBound(v);
+            return backingArray.GetUpperBound(v);
         }
 
         public void SetRowValuesTo(int rowIndex, object newVal)
@@ -218,13 +219,13 @@ namespace NeoCortexApi.Entities
                 return false;
             //if (!this.dimensions.SequenceEqual(obj.dimensions))
             //    return false;
-            else if (!ArrayEquals(this.backingArray, obj.backingArray))
+            else if (!ArrayEquals(backingArray, obj.backingArray))
                 return false;
-            else if (this.numOfNodes != obj.numOfNodes)
+            else if (numOfNodes != obj.numOfNodes)
                 return false;
-            else if (this.Rank != obj.Rank)
+            else if (Rank != obj.Rank)
                 return false;
-            else if (!this.Dimensions.SequenceEqual(obj.Dimensions))
+            else if (!Dimensions.SequenceEqual(obj.Dimensions))
                 return false;
 
             return true;
@@ -274,9 +275,9 @@ namespace NeoCortexApi.Entities
 
             ser.SerializeBegin(nameof(InMemoryArray), writer);
 
-            ser.SerializeValue(this.backingArray, writer);
-            ser.SerializeValue(this.dimensions, writer);
-            ser.SerializeValue(this.numOfNodes, writer);
+            ser.SerializeValue(backingArray, writer);
+            ser.SerializeValue(dimensions, writer);
+            ser.SerializeValue(numOfNodes, writer);
 
             ser.SerializeEnd(nameof(InMemoryArray), writer);
         }
@@ -289,7 +290,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(InMemoryArray)))
+                if (data == string.Empty || data == ser.ReadBegin(nameof(InMemoryArray)))
                 {
                     continue;
                 }
@@ -327,8 +328,8 @@ namespace NeoCortexApi.Entities
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var ignoreMembers = new List<string> 
-            { 
+            var ignoreMembers = new List<string>
+            {
                 "Item",
                 //nameof(Dimensions),
                 //nameof(IDistributedArray.Count),

@@ -1,15 +1,16 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
-namespace NeoCortexApi.Experiments
+namespace UnitTestsProject.Similarity
 {
     /// <summary>
     /// 
@@ -55,7 +56,7 @@ namespace NeoCortexApi.Experiments
             };
 
             int width = 15;
- 
+
             //
             // We create here 100 random input values.
             List<int[]> inputValues = GetTrainingvectors(0, inputBits, width);
@@ -182,14 +183,14 @@ namespace NeoCortexApi.Experiments
 
                     double similarity;
 
-                    int[] activeColumns = new int[(int)cfg.NumColumns];
+                    int[] activeColumns = new int[cfg.NumColumns];
 
                     // Learn the input pattern.
                     // Output lyrOut is the output of the last module in the layer.
                     sp.compute(input, activeColumns, true);
                     // DrawImages(cfg, inputKey, input, activeColumns);
 
-                    var actColsIndicies = ArrayUtils.IndexWhere(activeColumns, c => c == 1);
+                    var actColsIndicies = activeColumns.IndexWhere(c => c == 1);
 
                     similarity = MathHelpers.CalcArraySimilarity(actColsIndicies, prevActiveColIndicies[inputKey]);
 
@@ -225,7 +226,7 @@ namespace NeoCortexApi.Experiments
 
             for (int k = 0; k < inputValues.Count; k++)
             {
-                inpVectorsMap.Add(GetInputGekFromIndex(k), ArrayUtils.IndexWhere(inputValues[k], c => c == 1));
+                inpVectorsMap.Add(GetInputGekFromIndex(k), inputValues[k].IndexWhere(c => c == 1));
             }
 
             var outRes = MathHelpers.CalculateSimilarityMatrix(activeColIndicies);
@@ -264,9 +265,9 @@ namespace NeoCortexApi.Experiments
         private static void DrawBitmaps(HtmConfig cfg, string inputKey, int[] input, int inpLen, int[] activeColumns)
         {
             List<int[,]> twoDimArrays = new List<int[,]>();
-            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, inpLen, inpLen);
+            int[,] twoDimInpArray = ArrayUtils.Make2DArray(input, inpLen, inpLen);
             twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
-            int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
+            int[,] twoDimOutArray = ArrayUtils.Make2DArray(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
             twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
 
             NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);
@@ -275,9 +276,9 @@ namespace NeoCortexApi.Experiments
         private static void DrawImages(HtmConfig cfg, string inputKey, int[] input, int[] activeColumns)
         {
             List<int[,]> twoDimArrays = new List<int[,]>();
-            int[,] twoDimInpArray = ArrayUtils.Make2DArray<int>(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
+            int[,] twoDimInpArray = ArrayUtils.Make2DArray(input, (int)(Math.Sqrt(input.Length) + 0.5), (int)(Math.Sqrt(input.Length) + 0.5));
             twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimInpArray));
-            int[,] twoDimOutArray = ArrayUtils.Make2DArray<int>(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
+            int[,] twoDimOutArray = ArrayUtils.Make2DArray(activeColumns, (int)(Math.Sqrt(cfg.NumColumns) + 0.5), (int)(Math.Sqrt(cfg.NumColumns) + 0.5));
             twoDimArrays.Add(twoDimInpArray = ArrayUtils.Transpose(twoDimOutArray));
 
             NeoCortexUtils.DrawBitmaps(twoDimArrays, $"{inputKey}.png", Color.Yellow, Color.Gray, 1024, 1024);

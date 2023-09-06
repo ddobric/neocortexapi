@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Storage.Queues" Version="12.10.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.8.3" />
+		<PackageReference Include="Azure.Data.Tables" Version="12.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MyCloudProject.Common\MyCloudProject.Common.csproj" />
+	</ItemGroup>
+
+</Project>

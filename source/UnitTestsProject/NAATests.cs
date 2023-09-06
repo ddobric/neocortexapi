@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using System.Net.Http.Headers;
-using Naa = NeoCortexApi.NeuralAssociationAlgorithm;
+using Naa = NeoCortexApi.NAA.NeuralAssociationAlgorithm;
 using System.Diagnostics;
 using GemBox.Spreadsheet.Drawing;
+using NeoCortexApi.NAA;
 
 namespace UnitTestsProject
 {

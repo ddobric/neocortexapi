@@ -1,5 +1,4 @@
-﻿using NeoCortexApi.DataMappers;
-using NeoCortexApi.Entities;
+﻿using NeoCortexApi.Entities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NeoCortexApi
+namespace NeoCortexApi.NAA
 {
     /// <summary>
     /// Cortical column that consists of cells. It does not contain mini-columns.
@@ -72,10 +71,10 @@ namespace NeoCortexApi
                     {
                         cell = new Cell(CreateIdFromString(Name), (int)cellIndex);
 
-                        AllCellsSparse.TryAdd(cellIndex, cell);                       
+                        AllCellsSparse.TryAdd(cellIndex, cell);
                     }
 
-                    CurrActiveCells.TryAdd(cellIndex, cell);                    
+                    CurrActiveCells.TryAdd(cellIndex, cell);
                 }
             }
         }
@@ -88,7 +87,7 @@ namespace NeoCortexApi
         {
             get
             {
-                return this.ActiveCells.SelectMany(el => el.ReceptorSynapses).Count();
+                return ActiveCells.SelectMany(el => el.ReceptorSynapses).Count();
             }
         }
 
@@ -99,15 +98,15 @@ namespace NeoCortexApi
         {
             get
             {
-                return this.ActiveCells.SelectMany(cell => cell.ApicalDendrites).SelectMany(aSeg => aSeg.Synapses).Count();                
+                return ActiveCells.SelectMany(cell => cell.ApicalDendrites).SelectMany(aSeg => aSeg.Synapses).Count();
             }
         }
 
         public CorticalArea(int index, string name, int numCells)
         {
-            this.Name = name;
+            Name = name;
 
-            this._numCells = numCells;
+            _numCells = numCells;
 
             CurrActiveCells = new ConcurrentDictionary<long, Cell>();
         }
