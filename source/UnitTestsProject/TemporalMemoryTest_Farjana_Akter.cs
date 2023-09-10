@@ -660,7 +660,25 @@ namespace UnitTestsProject
 
         }
 
-        
+        /// <summary>
+        /// The purpose of the test is to verify 
+        //if the model can learn and recall patterns of
+        //sequences with a low sparsity rate, which refers
+        //to the proportion of active columns in a given
+        //input.The test initializes a Temporal Memory
+        //model and sets up connections with default 
+        //parameters, including column dimensions of 64. 
+        //The test then generates two sequences of active
+        //columns, one with 7 active columns and another
+        //with 5 active columns, and feeds them to the
+        //model.The test then attempts to recall both
+        //sequences and checks if the model can
+        //accurately recall the desired result, which is a
+        //set of 3 specific active columns that should be
+        //present in both sequences.As those columns are
+        //re-enforced in both cycle, the Compute()
+        //method should match our given desired output.
+        /// </summary>
         [TestMethod]
         public void TestLowSparsitySequenceLearningAndRecall()
         {
