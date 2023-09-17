@@ -135,7 +135,7 @@ namespace UnitTestsProject
 
             int[] output = new int[32 * 32];
 
-            int[] inputVector = Helpers.GetRandomVector(16 * 16, parameters.Get<Random>(KEY.RANDOM));
+            int[] inputVector = Helpers.GetRandomVector(16 * 16, rnd: parameters.Get<Random>(KEY.RANDOM));
             /*  int [] inputVector =  {
                                              1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                                              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

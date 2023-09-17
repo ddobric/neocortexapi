@@ -137,13 +137,16 @@ namespace UnitTestsProject.NoiseExperiments
             const int noiseStepPercent = 5;
 
             var parameters = GetDefaultParams();
-            parameters.Set(KEY.POTENTIAL_RADIUS, 32 * 32);
+            // Must be set to the input width if using Gloabal Inhibition
+            parameters.Set(KEY.POTENTIAL_RADIUS, 32*32);
             parameters.Set(KEY.POTENTIAL_PCT, 1.0);
             parameters.Set(KEY.GLOBAL_INHIBITION, true);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 0.5);
-            parameters.Set(KEY.INHIBITION_RADIUS, (int)0.01 * colDimSize * colDimSize);
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 50);
+            //parameters.Set(KEY.INHIBITION_RADIUS, (int)0.01 * colDimSize * colDimSize);
             parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
             parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * colDimSize * colDimSize);
+            // This is where boosting happen.
+            // The eperiment operates under 1000 cycles and with this the instability is not observed.
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
             parameters.Set(KEY.MAX_BOOST, 0.0);
             parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
@@ -162,80 +165,94 @@ namespace UnitTestsProject.NoiseExperiments
             sp.Init(mem);
 
             List<int[]> inputVectors = new List<int[]>();
-
+           
             inputVectors.Add(getInputVector1());
             inputVectors.Add(getInputVector2());
+            //inputVectors.Add(Helpers.GetRandomVector(1024, 5));
+            //inputVectors.Add(Helpers.GetRandomVector(1024, 10));
+            //inputVectors.Add(Helpers.GetRandomVector(1024, 15));
+            //inputVectors.Add(Helpers.GetRandomVector(1024, 20));
 
             int vectorIndex = 0;
 
             int[][] activeColumnsWithZeroNoise = new int[inputVectors.Count][];
 
-            foreach (var inputVector in inputVectors)
+            using (StreamWriter sw = new StreamWriter("noise_experiment_result.csv"))
             {
-                var x = getNumBits(inputVector);
-
-                Debug.WriteLine("");
-                Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
-
-                // Array of active columns with zero noise. The reference (ideal) output.
-                activeColumnsWithZeroNoise[vectorIndex] = new int[colDimSize * colDimSize];
-
-                int[] activeArray = null;
-
-                for (int j = 0; j < 25; j += noiseStepPercent)
+                foreach (var inputVector in inputVectors)
                 {
-                    Debug.WriteLine($"--- Vector {0} - Noise Iteration {j} ----------");
+                    var x = getNumBits(inputVector);
 
-                    int[] noisedInput;
+                    Debug.WriteLine("");
+                    Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
+                    sw.WriteLine($"----- VECTOR {vectorIndex} ----------");
 
-                    if (j > 0)
+                    // Array of active columns with zero noise. The reference (ideal) output.
+                    activeColumnsWithZeroNoise[vectorIndex] = new int[colDimSize * colDimSize];
+
+                    int[] activeArray = null;
+
+                    for (int j = 0; j < 100; j += noiseStepPercent)
                     {
-                        noisedInput = ArrayUtils.FlipBit(inputVector, (double)((double)j / 100.00));
-                    }
-                    else
-                        noisedInput = inputVector;
+                        Debug.WriteLine($"--- Vector {0} - Noise Iteration {j} ----------");
 
-                    // TODO: Try CalcArraySimilarity
-                    var d = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
-                    Debug.WriteLine($"Input with noise {j} - HamDist: {d}");
-                    Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
-                    Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
-
-                    for (int i = 0; i < 10; i++)
-                    {
-                        activeArray = sp.Compute(noisedInput, true, returnActiveColIndiciesOnly: false) as int[];
+                        int[] noisedInput;
 
                         if (j > 0)
-                            Debug.WriteLine($"{ MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+                        {
+                            noisedInput = ArrayUtils.FlipBit(inputVector, (double)((double)j / 100.00));
+                        }
+                        else
+                            noisedInput = inputVector;
+
+                        // Similarity between input and reference (ideal) input without noise.
+                        var inputSimilarity = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
+                        Debug.WriteLine($"Input with noise {j} - HamDist: {inputSimilarity}");
+                        Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
+                        Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
+
+                        // We train just few steps to avoid boosting. This issue was solved with homeostatic plascticity controller,
+                        // which is not used in this experiment.
+                        for (int i = 0; i < 10; i++)
+                        {
+                            activeArray = sp.Compute(noisedInput, true, returnActiveColIndiciesOnly: false) as int[];
+
+                            if (j > 0)
+                                Debug.WriteLine($"{MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+                        }
+
+                        if (j == 0)
+                        {
+                            Array.Copy(activeArray, activeColumnsWithZeroNoise[vectorIndex], activeColumnsWithZeroNoise[vectorIndex].Length);
+                        }
+
+                        var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                        // Similarity between output and reference (ideal) output without noise.
+                        var outputSimilarity = MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true);
+
+                        Debug.WriteLine($"Output with noise {j} - Ham Dist: {outputSimilarity}");
+                        Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeColumnsWithZeroNoise[vectorIndex], (el) => el == 1))}");
+                        Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+
+                        List<int[,]> arrays = new List<int[,]>();
+
+                        int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 64, 64);
+                        twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+
+                        arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(noisedInput, 32, 32)));
+                        arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(activeArray, 64, 64)));
+
+                        //   NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
+                        NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j * 10}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+
+                        sw.WriteLine($"{j};{inputSimilarity};{outputSimilarity}");
                     }
 
-                    if (j == 0)
-                    {
-                        Array.Copy(activeArray, activeColumnsWithZeroNoise[vectorIndex], activeColumnsWithZeroNoise[vectorIndex].Length);
-                    }
-
-                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
-
-                    var d2 = MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true);
-                    Debug.WriteLine($"Output with noise {j} - Ham Dist: {d2}");
-                    Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeColumnsWithZeroNoise[vectorIndex], (el) => el == 1))}");
-                    Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
-
-                    List<int[,]> arrays = new List<int[,]>();
-
-                    int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 64, 64);
-                    twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
-
-                    arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(noisedInput, 32, 32)));
-                    arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(activeArray, 64, 64)));
-
-                    //   NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
-                    NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j * 10}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+                    vectorIndex++;
                 }
-
-                vectorIndex++;
             }
-
+            
             vectorIndex = OutputPredictionResult(sp, inputVectors, activeColumnsWithZeroNoise);
         }
 

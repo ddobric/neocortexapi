@@ -17,18 +17,31 @@ namespace NeoCortexApi
         /// Creates random vector of specified dimension.
         /// </summary>
         /// <param name="numOfBits"></param>
+        /// <param name="activeBits">How many bits should be active. <=0 means 50% of 'numOfBits' will be active.</param>
         /// <param name="rnd"></param>
         /// <returns></returns>
-        public static int[] GetRandomVector(int numOfBits, Random rnd = null)
+        public static int[] GetRandomVector(int numOfBits, int activeBits = -1, Random rnd = null)
         {
             if (rnd == null)
                 rnd = new Random();
 
+            if (activeBits <= 0)
+                activeBits = numOfBits/2;
+
+
             int[] vector = new int[numOfBits];
 
-            for (int i = 0; i < numOfBits; i++)
+            for (int i = 0; i < activeBits; i++)
             {
-                vector[i] = rnd.Next(0, 2);
+                while (true)
+                {
+                    int index = rnd.Next(0, numOfBits);
+                    if (vector[index] == 0)
+                    {
+                        vector[index] = 1;
+                        break;
+                    }
+                }                
             }
 
             return vector;

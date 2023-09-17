@@ -128,7 +128,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[64 * 64];
 
-            int[] inputVector = Helpers.GetRandomVector(32 * 32, parameters.Get<Random>(KEY.RANDOM));
+            int[] inputVector = Helpers.GetRandomVector(32 * 32, rnd: parameters.Get<Random>(KEY.RANDOM));
 
             string str1 = String.Empty;
 
