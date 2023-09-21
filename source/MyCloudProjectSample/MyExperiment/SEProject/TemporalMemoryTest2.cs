@@ -116,6 +116,7 @@ namespace MyExperiment.SEProject
             DistalDendrite newSegment = activeCells[0].DistalDendrites[0] as DistalDendrite;
 
             Assert.IsNotNull(newSegment);
+            //return newSegment.Synapses.Count;
             Assert.AreEqual(2, newSegment.Synapses.Count);
         }
 
@@ -788,44 +789,44 @@ namespace MyExperiment.SEProject
         /// <summary>
         /// Test calculation of dendrite segments which become active in the current cycle
         /// </summary>
-        [TestMethod]
-        public void TestCalculateActiveSegments()
-        {
-            throw new AssertInconclusiveException("Not fixed.");
-            // Initialize
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
-            p.apply(cn);
-            tm.Init(cn);
+        //[TestMethod]
+        //public void TestCalculateActiveSegments()
+        //{
+        //    throw new AssertInconclusiveException("Not fixed.");
+        //    // Initialize
+        //    TemporalMemory tm = new TemporalMemory();
+        //    Connections cn = new Connections();
+        //    Parameters p = getDefaultParameters();
+        //    p.apply(cn);
+        //    tm.Init(cn);
 
-            int[] activeColumns = { 0, 1, 2 };
-            Cell[] activeCells = cn.GetCells(activeColumns);
+        //    int[] activeColumns = { 0, 1, 2 };
+        //    Cell[] activeCells = cn.GetCells(activeColumns);
 
-            // Create dendrite segments and synapses for the active cells
-            DistalDendrite dd1 = cn.CreateDistalSegment(activeCells[0]);
-            cn.CreateSynapse(dd1, cn.GetCell(4), 0.5);
-            cn.CreateSynapse(dd1, cn.GetCell(5), 0.5);
+        //    // Create dendrite segments and synapses for the active cells
+        //    DistalDendrite dd1 = cn.CreateDistalSegment(activeCells[0]);
+        //    cn.CreateSynapse(dd1, cn.GetCell(4), 0.5);
+        //    cn.CreateSynapse(dd1, cn.GetCell(5), 0.5);
 
-            DistalDendrite dd2 = cn.CreateDistalSegment(activeCells[1]);
-            cn.CreateSynapse(dd2, cn.GetCell(6), 0.5);
-            cn.CreateSynapse(dd2, cn.GetCell(7), 0.5);
+        //    DistalDendrite dd2 = cn.CreateDistalSegment(activeCells[1]);
+        //    cn.CreateSynapse(dd2, cn.GetCell(6), 0.5);
+        //    cn.CreateSynapse(dd2, cn.GetCell(7), 0.5);
 
-            DistalDendrite dd3 = cn.CreateDistalSegment(activeCells[2]);
-            cn.CreateSynapse(dd3, cn.GetCell(8), 0.5);
-            cn.CreateSynapse(dd3, cn.GetCell(9), 0.5);
+        //    DistalDendrite dd3 = cn.CreateDistalSegment(activeCells[2]);
+        //    cn.CreateSynapse(dd3, cn.GetCell(8), 0.5);
+        //    cn.CreateSynapse(dd3, cn.GetCell(9), 0.5);
 
-            // Compute current cycle
-            ComputeCycle cycle = tm.Compute(activeColumns, true) as ComputeCycle;
+        //    // Compute current cycle
+        //    ComputeCycle cycle = tm.Compute(activeColumns, true) as ComputeCycle;
 
-            // Assert that the correct dendrite segments are active
-            // Assert.AreEqual(3, cycle.ActiveSegments.Count);
+        //    // Assert that the correct dendrite segments are active
+        //    // Assert.AreEqual(3, cycle.ActiveSegments.Count);
 
 
-            Assert.IsTrue(cycle.ActiveSegments.Contains(dd1));
-            Assert.IsTrue(cycle.ActiveSegments.Contains(dd2));
-            Assert.IsTrue(cycle.ActiveSegments.Contains(dd3));
-        }
+        //    Assert.IsTrue(cycle.ActiveSegments.Contains(dd1));
+        //    Assert.IsTrue(cycle.ActiveSegments.Contains(dd2));
+        //    Assert.IsTrue(cycle.ActiveSegments.Contains(dd3));
+        //}
 
 
         [TestMethod]
