@@ -5,8 +5,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
+using NeoCortexApi.NeuroVisualizer;
 using NeoCortexApi.Types;
-using NeoCortexEntities.NeuroVisualizer;
 
 namespace UnitTestsProject
 {
