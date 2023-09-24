@@ -2,11 +2,8 @@
 using Azure.Storage.Queues.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyCloudProject.Common;
 using MyExperiment.SEProject;
-using MyExperiment.Utilities;
-using NeoCortexApi;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -59,7 +56,11 @@ namespace MyExperiment
 
             if (inputFile == "runccproject") {
                 res.TestName = "Temporal Memory Algorithm tests";
+                List<TestInfo> testResults = this.RunTests();
 
+                // Serialize the test results to JSON
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(testResults, Newtonsoft.Json.Formatting.Indented);
+                res.TestData = Encoding.UTF8.GetBytes(json);
             }
 
             return Task.FromResult<IExperimentResult>(res);
@@ -138,8 +139,24 @@ namespace MyExperiment
 
             // Run each test and accumulate the results
             testResults.Add(temporalMemoryTests.TestNewSegmentGrowthWhenMultipleMatchingSegmentsFound());
-            //testResults.Add();
-            // Add more tests here
+            testResults.Add(temporalMemoryTests.TestSynapsePermanenceUpdateWhenMatchingSegmentsFound());
+            testResults.Add(temporalMemoryTests.TestColumnDimensions());
+            testResults.Add(temporalMemoryTests.TestRecycleLeastRecentlyActiveSegmentToMakeRoomForNewSegment(new int[] { 0, 1, 2, 3 }, new int[] { 4, 5, 6, 7 }, new int[] { 8, 9, 10, 11 }, new int[] { 12 }));
+            testResults.Add(temporalMemoryTests.TestNewSegmentAddSynapsesToAllWinnerCells(1, 3));
+            testResults.Add(temporalMemoryTests.TestDestroyWeakSynapseOnWrongPrediction(0.017));
+            testResults.Add(temporalMemoryTests.TestAddSegmentToCellWithFewestSegments(1, 4));
+            testResults.Add(temporalMemoryTests.TestAdaptSegmentToMax(0.9, 1.0));
+            testResults.Add(temporalMemoryTests.TestDestroySegmentsWithTooFewSynapsesToBeMatching(0, 1, 2, 2, 0.015, 0.3, 0.009, 0.009, 1));
+            testResults.Add(temporalMemoryTests.TestPunishMatchingSegmentsInInactiveColumns(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.48, 0.48, 0.48, 0.48, 0.48, 0.5, 0.5));
+            testResults.Add(temporalMemoryTests.TestHighSparsitySequenceLearningAndRecall());
+            testResults.Add(temporalMemoryTests.TestLowSparsitySequenceLearningAndRecall());
+            testResults.Add(temporalMemoryTests.TestCreateSynapseInDistalSegment());
+            testResults.Add(temporalMemoryTests.TestNewSegmentGrowthWhenNoMatchingSegmentFound());
+            testResults.Add(temporalMemoryTests.TestNoOverlapInActiveCells());
+            testResults.Add(temporalMemoryTests.TestActiveSegmentGrowSynapsesAccordingToPotentialOverlap(new int[] { 0, 1, 2, 3 }, new int[] { 5 }, new int[] { 0, 1, 2, 3 }, 4));
+            testResults.Add(temporalMemoryTests.TestDestroyWeakSynapseOnActiveReinforce(2, 0, 4));
+            testResults.Add(temporalMemoryTests.TestAdaptSegment_IncreasePermanence());
+            testResults.Add(temporalMemoryTests.TestAdaptSegment_PrevActiveCellsContainPresynapticCell_IncreasePermanence());
 
             return testResults;
         }
