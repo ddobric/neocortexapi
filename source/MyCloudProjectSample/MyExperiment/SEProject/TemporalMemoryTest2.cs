@@ -143,10 +143,27 @@ namespace MyExperiment.SEProject
             p.apply(cn);
             tm.Init(cn);
 
-        // Test logic is here
+                // Test logic is here
+                int[] previousActiveColumns = { 0 };
+                int[] activeColumns = { 1 };
+                Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
+                Cell[] activeCells = { cn.GetCell(4), cn.GetCell(5) };
 
-        // synapse permanence of matching synapses should be updated
-            Assert.AreEqual(0.3, as1.Permanence, 0.01);
+                DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(activeCells[0]);
+                cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
+                cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
+                cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
+                cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(81), 0.3);
+
+                DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(activeCells[1]);
+                Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.3);
+                Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.3);
+
+                tm.Compute(previousActiveColumns, true);
+                tm.Compute(activeColumns, true);
+
+                // synapse permanence of matching synapses should be updated
+                Assert.AreEqual(0.3, as1.Permanence, 0.01);
             Assert.AreEqual(0.3, is1.Permanence, 0.01);
 
         // If the test completes without errors, set IsPassing to true
@@ -1387,4 +1404,12 @@ namespace MyExperiment.SEProject
         }
 
     }
+
+    public class TestInfo
+    {
+        public string TestName { get; set; }
+        public bool IsPassing { get; set; }
+    }
+
+
 }
