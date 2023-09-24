@@ -166,71 +166,137 @@ namespace MyExperiment.SEProject
         /// Testing if the TemporalMemory class initializes correctly with a custom number of cells per column
         /// </summary>
         [TestMethod]
-        public void TestCellsPerColumn()
+        public TestInfo TestCellsPerColumn()
         {
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = Parameters.getAllDefaultParameters();
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
-            p.Set(KEY.CELLS_PER_COLUMN, 16); // Set custom number of cells per column
-            p.apply(cn);
-            tm.Init(cn);
-
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
+            TestInfo result = new TestInfo
             {
-                cnt += item.Cells.Length;
+                TestName = "TestCellsPerColumn",
+                IsPassing = false
+            };
+
+            try
+            {
+                // Initialize
+                TemporalMemory tm = new TemporalMemory();
+                Connections cn = new Connections();
+                Parameters p = Parameters.getAllDefaultParameters();
+                p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
+                p.Set(KEY.CELLS_PER_COLUMN, 16); // Set custom number of cells per column
+                p.apply(cn);
+                tm.Init(cn);
+
+                int cnt = 0;
+                foreach (var item in cn.GetColumns())
+                {
+                    cnt += item.Cells.Length;
+                }
+
+                // Assert the test condition
+                Assert.AreEqual(64 * 64 * 16, cnt);
+
+                // If the test completes without errors, set IsPassing to true
+                result.IsPassing = true;
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                // You can log the exception details if needed
+                Console.WriteLine($"Test failed: {ex.Message}");
             }
 
-            Assert.AreEqual(64 * 64 * 16, cnt);
+            return result;
         }
+
 
         /// <summary>
         /// Testing if the TemporalMemory class initializes correctly 
         /// with a custom number of column dimensions and cells per column
         /// </summary>
         [TestMethod]
-        public void TestCustomDimensionsAndCells()
+        public TestInfo TestCustomDimensionsAndCells()
         {
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = Parameters.getAllDefaultParameters();
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 16, 32 }); // Set custom column dimensions
-            p.Set(KEY.CELLS_PER_COLUMN, 8); // Set custom number of cells per column
-            p.apply(cn);
-            tm.Init(cn);
-
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
+            TestInfo result = new TestInfo
             {
-                cnt += item.Cells.Length;
+                TestName = "TestCustomDimensionsAndCells",
+                IsPassing = false
+            };
+
+            try
+            {
+                // Initialize
+                TemporalMemory tm = new TemporalMemory();
+                Connections cn = new Connections();
+                Parameters p = Parameters.getAllDefaultParameters();
+                p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 16, 32 }); // Set custom column dimensions
+                p.Set(KEY.CELLS_PER_COLUMN, 8); // Set custom number of cells per column
+                p.apply(cn);
+                tm.Init(cn);
+
+                int cnt = 0;
+                foreach (var item in cn.GetColumns())
+                {
+                    cnt += item.Cells.Length;
+                }
+
+                // Assert the test condition
+                Assert.AreEqual(16 * 32 * 8, cnt);
+
+                // If the test completes without errors, set IsPassing to true
+                result.IsPassing = true;
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                // You can log the exception details if needed
+                Console.WriteLine($"Test failed: {ex.Message}");
             }
 
-            Assert.AreEqual(16 * 32 * 8, cnt);
+            return result;
         }
 
         /// <summary>
         /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
         /// </summary>
         [TestMethod]
-        public void TestColumnDimensions()
+        public TestInfo TestColumnDimensions()
         {
-            // Initialize
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = Parameters.getAllDefaultParameters();
-            p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32, 64 }); // Set custom column dimensions
-            p.Set(KEY.CELLS_PER_COLUMN, 32);
-            p.apply(cn);
-            tm.Init(cn);
-
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
+            TestInfo result = new TestInfo
             {
-                cnt += item.Cells.Length;
+                TestName = "TestColumnDimensions",
+                IsPassing = false
+            };
+
+            try
+            {
+                // Initialize
+                TemporalMemory tm = new TemporalMemory();
+                Connections cn = new Connections();
+                Parameters p = Parameters.getAllDefaultParameters();
+                p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 32, 64 }); // Set custom column dimensions
+                p.Set(KEY.CELLS_PER_COLUMN, 32);
+                p.apply(cn);
+                tm.Init(cn);
+
+                int cnt = 0;
+                foreach (var item in cn.GetColumns())
+                {
+                    cnt += item.Cells.Length;
+                }
+
+                // Assert the test condition
+                Assert.AreEqual(32 * 64 * 32, cnt);
+
+                // If the test completes without errors, set IsPassing to true
+                result.IsPassing = true;
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                // You can log the exception details if needed
+                Console.WriteLine($"Test failed: {ex.Message}");
             }
 
-            Assert.AreEqual(32 * 64 * 32, cnt);
+            return result;
         }
 
         /// <summary>
