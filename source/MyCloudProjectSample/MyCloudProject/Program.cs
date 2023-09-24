@@ -13,7 +13,7 @@ namespace MyCloudProject
         /// <summary>
         /// Your project ID from the last semester.
         /// </summary>
-        private static string projectName = "ML19/20-5.8";
+        private static string projectName = "ML22/23-11";
 
         string test;
 
@@ -42,7 +42,7 @@ namespace MyCloudProject
 
             IStorageProvider storageProvider = new AzureStorageProvider(cfgSec);
 
-            Experiment experiment = new Experiment(cfgSec, storageProvider, logger/* put some additional config here */);
+            Experiment experiment = new Experiment(cfgSec, storageProvider, projectName, logger/* put some additional config here */);
             
             await experiment.RunQueueListener(tokeSrc.Token);
 

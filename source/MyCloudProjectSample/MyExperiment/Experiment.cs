@@ -3,12 +3,17 @@ using Azure.Storage.Queues.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyCloudProject.Common;
+using MyExperiment.Models;
+using MyExperiment.Utilities;
+using NeoCortexApi;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace MyExperiment
 {
@@ -23,28 +28,43 @@ namespace MyExperiment
 
         private MyConfig config;
 
-        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log)
+        private string expectedProjectName;
+        /// <summary>
+        /// construct the class
+        /// </summary>
+        /// <param name="configSection"></param>
+        /// <param name="storageProvider"></param>
+        /// <param name="expectedPrjName"></param>
+        /// <param name="log"></param>
+        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, string expectedPrjName, ILogger log)
         {
             this.storageProvider = storageProvider;
             this.logger = log;
-
+            this.expectedProjectName = expectedPrjName;
             config = new MyConfig();
             configSection.Bind(config);
         }
 
-        public Task<IExperimentResult> Run(string inputFile)
+        /// <summary>
+        /// Run Software Engineering project method
+        /// </summary>
+        /// <param name="inputFile">The input file.</param>
+        /// <returns>experiment result object</returns>
+        public Task<ExperimentResult> Run(string inputFile)
         {
-            // TODO read file
+            var inputData =
+                Newtonsoft.Json.JsonConvert.DeserializeObject<InputModel>(FileUtilities.ReadFile(inputFile));
 
-            // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
-
-            ExperimentResult res = new ExperimentResult(this.config.GroupId, null);
-
+            this.logger?.LogInformation("Starting of software engineering code");
+            ExperimentResult res = new ExperimentResult(this.config.GroupId, Guid.NewGuid().ToString());
+            res.OutputFiles = new string[2];
             res.StartTimeUtc = DateTime.UtcNow;
+            this.logger?.LogInformation("Running software engineering code");
+            res.OutputFiles[0] = RunSoftwareEngineeringCode(inputData);
+            res.EndTimeUtc = DateTime.UtcNow;
+            this.logger?.LogInformation("Finished execution of software engineering code");
 
-            // Run your experiment code here.
-
-            return Task.FromResult<IExperimentResult>(res); // TODO...
+            return Task.FromResult(res);
         }
 
 
@@ -106,7 +126,26 @@ namespace MyExperiment
             this.logger?.LogInformation("Cancel pressed. Exiting the listener loop.");
         }
 
+        Task<IExperimentResult> IExperiment.Run(string inputFile)
+        {
+            throw new NotImplementedException();
+        }
 
+        /// <summary>
+        /// Method to run software engineering code
+        /// </summary>
+        /// <param name="inputs">Inputs from azure blob storage</param>
+        /// <returns></returns>
+        private string RunSoftwareEngineeringCode(InputModel input)
+        {
+            var temporalMemory = new TemporalMemory();
+            var filename = $"output-{Guid.NewGuid()}.txt";
+            //var predictionResult = temporalMemory.PunishPredictedColumn();
+            //var outputModel = new OutputModel(predictionResult);
+            //var outputAsByte = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(outputModel));
+            //FileUtilities.WriteDataInFile(Path.Combine(FileUtilities.GetLocalStorageFilePath(config.LocalPath), filename), predictionResult, input.NextValueParameter);
+            return filename;
+        }
         #region Private Methods
 
 
