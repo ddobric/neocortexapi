@@ -44,6 +44,10 @@ namespace MyExperiment
 
         public float Accuracy { get; set; }
 
+        public string TestStatus { get; set; }
+
+        public string TestName { get; set; } 
+
 
     }
 }

@@ -13,9 +13,7 @@ namespace MyCloudProject
         /// <summary>
         /// Your project ID from the last semester.
         /// </summary>
-        private static string projectName = "ML22/23-11";
-
-        string test;
+        private static string projectName = "ML22/23-11. Implement UnitTests on HTM Theo(Temporal Memory Algorithm)";
 
         static async Task Main(string[] args)
         {

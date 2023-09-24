@@ -1,6 +1,6 @@
 {
   "ExperimentId": "1",
-  "InputFile": "InputData.json",
+  "InputFile": "runccproject",
   "Description": "Cloud Computing Implementation",
   "ProjectName": "ML22/23-11. Implement UnitTests on HTM Theo(Temporal Memory Algorithm)",
   "GroupName": "variabl-i",

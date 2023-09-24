@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using MyCloudProject.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,20 +38,23 @@ namespace MyExperiment
 
         public async Task UploadExperimentResult(IExperimentResult result)
         {
-            var client = new TableClient(this.config.StorageConnectionString, this.config.ResultTable);
+            var experimentLabel = result.Name;
 
-            await client.CreateIfNotExistsAsync();
+            BlobServiceClient blobServiceClient = new BlobServiceClient(this.config.StorageConnectionString);
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("adaptsegmentsunittests-teamas");
 
-            ExperimentResult res = new ExperimentResult("damir", "123")
+            // Write encoded data to text file
+            string textData = result.Description;
+
+            // Generate a unique blob name (you can customize this logic)
+            string blobName = $"Test_data_{DateTime.UtcNow.ToString("yyyyMMddHHmmssfff")}.txt";
+
+            // Upload the text data to the blob container
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+            using (MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(textData)))
             {
-                //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-
-                Accuracy = (float)0.5,
-            };
-
-         
-            await client.UpsertEntityAsync((ExperimentResult)result);
-
+                await blobClient.UploadAsync(memoryStream);
+            }
         }
 
         public async Task<byte[]> UploadResultFile(string fileName, byte[] data)

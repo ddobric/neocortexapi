@@ -2,8 +2,9 @@
 using Azure.Storage.Queues.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyCloudProject.Common;
-using MyExperiment.Models;
+using MyExperiment.SEProject;
 using MyExperiment.Utilities;
 using NeoCortexApi;
 using System;
@@ -50,21 +51,18 @@ namespace MyExperiment
         /// </summary>
         /// <param name="inputFile">The input file.</param>
         /// <returns>experiment result object</returns>
-        public Task<ExperimentResult> Run(string inputFile)
+        public Task<IExperimentResult> Run(string inputFile)
         {
-            var inputData =
-                Newtonsoft.Json.JsonConvert.DeserializeObject<InputModel>(FileUtilities.ReadFile(inputFile));
+            ExperimentResult res = new ExperimentResult(this.config.GroupId, null);
 
-            this.logger?.LogInformation("Starting of software engineering code");
-            ExperimentResult res = new ExperimentResult(this.config.GroupId, Guid.NewGuid().ToString());
-            res.OutputFiles = new string[2];
             res.StartTimeUtc = DateTime.UtcNow;
-            this.logger?.LogInformation("Running software engineering code");
-            res.OutputFiles[0] = RunSoftwareEngineeringCode(inputData);
-            res.EndTimeUtc = DateTime.UtcNow;
-            this.logger?.LogInformation("Finished execution of software engineering code");
 
-            return Task.FromResult(res);
+            if (inputFile == "runccproject") {
+                res.TestName = "Temporal Memory Algorithm tests";
+
+            }
+
+            return Task.FromResult<IExperimentResult>(res);
         }
 
 
@@ -72,19 +70,20 @@ namespace MyExperiment
         /// <inheritdoc/>
         public async Task RunQueueListener(CancellationToken cancelToken)
         {
-            ExperimentResult res = new ExperimentResult("damir", "123")
-            {
-                //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-                
-                Accuracy = (float)0.5,
-            };
+            //ExperimentResult res = new ExperimentResult("damir", "123")
+            //{
+            //    //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
 
-            await storageProvider.UploadExperimentResult(res);
+            //    Accuracy = (float)0.5,
+            //};
+
+            //await storageProvider.UploadExperimentResult(res);
 
 
             QueueClient queueClient = new QueueClient(this.config.StorageConnectionString, this.config.Queue);
 
-            
+            //
+            // Implements the step 3 in the architecture picture.
             while (cancelToken.IsCancellationRequested == false)
             {
                 QueueMessage message = await queueClient.ReceiveMessageAsync();
@@ -93,20 +92,25 @@ namespace MyExperiment
                 {
                     try
                     {
-
                         string msgTxt = Encoding.UTF8.GetString(message.Body.ToArray());
 
                         this.logger?.LogInformation($"Received the message {msgTxt}");
 
+                        // The message in the step 3 on architecture picture.
                         ExerimentRequestMessage request = JsonSerializer.Deserialize<ExerimentRequestMessage>(msgTxt);
 
-                        var inputFile = await this.storageProvider.DownloadInputFile(request.InputFile);
+                        // Step 4.
+                        //var inputFile = await this.storageProvider.DownloadInputFile(request.InputFile);
+                        var inputFile = request.InputFile;
 
+                        // Here is your SE Project code started.(Between steps 4 and 5).
                         IExperimentResult result = await this.Run(inputFile);
 
+                        // Step 4 (oposite direction)
                         //TODO. do serialization of the result.
-                        await storageProvider.UploadResultFile("outputfile.txt", null);
+                        //await storageProvider.UploadResultFile("outputfile.txt", null);
 
+                        // Step 5.
                         await storageProvider.UploadExperimentResult(result);
 
                         await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
@@ -126,25 +130,18 @@ namespace MyExperiment
             this.logger?.LogInformation("Cancel pressed. Exiting the listener loop.");
         }
 
-        Task<IExperimentResult> IExperiment.Run(string inputFile)
-        {
-            throw new NotImplementedException();
-        }
 
-        /// <summary>
-        /// Method to run software engineering code
-        /// </summary>
-        /// <param name="inputs">Inputs from azure blob storage</param>
-        /// <returns></returns>
-        private string RunSoftwareEngineeringCode(InputModel input)
+        public List<TestInfo> RunTests()
         {
-            var temporalMemory = new TemporalMemory();
-            var filename = $"output-{Guid.NewGuid()}.txt";
-            //var predictionResult = temporalMemory.PunishPredictedColumn();
-            //var outputModel = new OutputModel(predictionResult);
-            //var outputAsByte = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(outputModel));
-            //FileUtilities.WriteDataInFile(Path.Combine(FileUtilities.GetLocalStorageFilePath(config.LocalPath), filename), predictionResult, input.NextValueParameter);
-            return filename;
+            TemporalMemoryTest2 temporalMemoryTests = new TemporalMemoryTest2();
+            List<TestInfo> testResults = new List<TestInfo>();
+
+            // Run each test and accumulate the results
+            testResults.Add(temporalMemoryTests.TestNewSegmentGrowthWhenMultipleMatchingSegmentsFound());
+            //testResults.Add();
+            // Add more tests here
+
+            return testResults;
         }
         #region Private Methods
 
