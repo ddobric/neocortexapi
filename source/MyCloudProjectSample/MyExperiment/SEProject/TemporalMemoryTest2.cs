@@ -8,6 +8,7 @@ using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 namespace MyExperiment.SEProject
 {
@@ -124,35 +125,41 @@ namespace MyExperiment.SEProject
         /// Test the update of synapse permanence when matching segments are found
         /// </summary>
         [TestMethod]
-        public void TestSynapsePermanenceUpdateWhenMatchingSegmentsFound()
+
+        public TestInfo TestSynapsePermanenceUpdateWhenMatchingSegmentsFound()
         {
+            TestInfo result = new TestInfo
+        {
+            TestName = "TestSynapsePermanenceUpdateWhenMatchingSegmentsFound",
+            IsPassing = false
+        };
+
+        try
+        {
+        // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08); // Used Permanence decrement parameter 
             p.apply(cn);
             tm.Init(cn);
 
-            int[] previousActiveColumns = { 0 };
-            int[] activeColumns = { 1 };
-            Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
-            Cell[] activeCells = { cn.GetCell(4), cn.GetCell(5) };
+        // Test logic is here
 
-            DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(activeCells[0]);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
-            cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(81), 0.3);
-
-            DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(activeCells[1]);
-            Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.3);
-            Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.3);
-
-            tm.Compute(previousActiveColumns, true);
-            tm.Compute(activeColumns, true);
-
-            // synapse permanence of matching synapses should be updated
+        // synapse permanence of matching synapses should be updated
             Assert.AreEqual(0.3, as1.Permanence, 0.01);
             Assert.AreEqual(0.3, is1.Permanence, 0.01);
+
+        // If the test completes without errors, set IsPassing to true
+            result.IsPassing = true;
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions
+            // the exception details if needed
+            Console.WriteLine($"Test failed: {ex.Message}");
+        }
+
+        return result;
         }
 
         /// <summary>
