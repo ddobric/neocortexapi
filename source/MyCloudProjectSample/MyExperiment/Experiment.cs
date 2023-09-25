@@ -2,11 +2,13 @@
 using Azure.Storage.Queues.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyCloudProject.Common;
 using MyExperiment.SEProject;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -48,22 +50,38 @@ namespace MyExperiment
         /// </summary>
         /// <param name="inputFile">The input file.</param>
         /// <returns>experiment result object</returns>
-        public Task<IExperimentResult> Run(string inputFile)
+        public Task<ExperimentResult> Run(string inputFile)
         {
-            ExperimentResult res = new ExperimentResult(this.config.GroupId, null);
+            Random rnd = new Random();
+            int rowKeyNumber = rnd.Next(0, 1000);
+            string rowKey = "variable-i-" + rowKeyNumber.ToString();
+
+            ExperimentResult res = new ExperimentResult(this.config.GroupId, rowKey);
 
             res.StartTimeUtc = DateTime.UtcNow;
+            res.ExperimentId = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
+            res.RowKey= rowKey;
+            res.PartitionKey= "cc-proj-" + rowKey;
 
             if (inputFile == "runccproject") {
                 res.TestName = "Temporal Memory Algorithm tests";
-                List<TestInfo> testResults = this.RunTests();
+                List<TestInfo> testResults = RunTests();
+
+                float totalTests = testResults.Count;
+                float passingTests = testResults.Count(info => info.IsPassing);
+                float accuracy = (passingTests / totalTests) * 100;
 
                 // Serialize the test results to JSON
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(testResults, Newtonsoft.Json.Formatting.Indented);
-                res.TestData = Encoding.UTF8.GetBytes(json);
+                res.Description = json;
+                this.logger?.LogInformation($"The file result we got {json}");
+                res.TestData = string.IsNullOrEmpty(json) ? null : Encoding.UTF8.GetBytes(json);
+                res.Accuracy = accuracy;
             }
+            res.EndTimeUtc = DateTime.UtcNow;
 
-            return Task.FromResult<IExperimentResult>(res);
+            this.logger?.LogInformation("The process successfully completed");
+            return Task.FromResult<ExperimentResult>(res);
         }
 
 
@@ -71,7 +89,8 @@ namespace MyExperiment
         /// <inheritdoc/>
         public async Task RunQueueListener(CancellationToken cancelToken)
         {
-            //ExperimentResult res = new ExperimentResult("damir", "123")
+
+            //ExperimentResult res = new ExperimentResult("damir", "123");
             //{
             //    //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
 
@@ -105,14 +124,20 @@ namespace MyExperiment
                         var inputFile = request.InputFile;
 
                         // Here is your SE Project code started.(Between steps 4 and 5).
-                        IExperimentResult result = await this.Run(inputFile);
+                        ExperimentResult result = await this.Run(inputFile);
 
                         // Step 4 (oposite direction)
                         //TODO. do serialization of the result.
                         //await storageProvider.UploadResultFile("outputfile.txt", null);
 
                         // Step 5.
+                        this.logger?.LogInformation($"{DateTime.Now} -  UploadExperimentResultFile...");
+                        await storageProvider.UploadResultFile($"Test_data_{DateTime.UtcNow.ToString("yyyyMMddHHmmssfff")}.txt", result.TestData);                        
+                        
+                        
+                        this.logger?.LogInformation($"{DateTime.Now} -  UploadExperimentResult...");
                         await storageProvider.UploadExperimentResult(result);
+                        this.logger?.LogInformation($"{DateTime.Now} -  Experiment Completed Successfully...");
 
                         await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
                     }

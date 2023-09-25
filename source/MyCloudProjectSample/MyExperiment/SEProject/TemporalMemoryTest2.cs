@@ -86,7 +86,6 @@ namespace MyExperiment.SEProject
         /// <summary>
         /// Test the growth of a new dendrite segment when multiple matching segments are found
         /// </summary>
-        [TestMethod]
         public TestInfo TestNewSegmentGrowthWhenMultipleMatchingSegmentsFound()
         {
             // Initialize
@@ -184,10 +183,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
-        /// </summary>
-        [TestMethod]
         public TestInfo TestColumnDimensions()
         {
             TestInfo result = new TestInfo
@@ -218,12 +213,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Existing test retested with various different data
-        /// </summary>
-        [TestMethod]
-        [DataRow(new int[] { 0, 1, 2 }, new int[] { 3, 4, 5 }, new int[] { 6, 7, 8 }, new int[] { 9 })]
-        [DataRow(new int[] { 0, 1, 2, 3 }, new int[] { 4, 5, 6, 7 }, new int[] { 8, 9, 10, 11 }, new int[] { 12 })]
         public TestInfo TestRecycleLeastRecentlyActiveSegmentToMakeRoomForNewSegment(int[] prevActiveColumns1, int[] prevActiveColumns2, int[] prevActiveColumns3, int[] activeColumns)
         {
             TestInfo result = new TestInfo
@@ -276,13 +265,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Existing test retested with various different data
-        /// </summary>
-        [TestMethod]
-        [DataRow(3, 1)]
-        [DataRow(2, 2)]
-        [DataRow(1, 3)]
         public TestInfo TestNewSegmentAddSynapsesToAllWinnerCells(int numPrevActiveCols, int numActiveCols)
         {
             TestInfo result = new TestInfo
@@ -333,15 +315,6 @@ namespace MyExperiment.SEProject
         }
 
 
-        /// <summary>
-        /// Existing test retested with various different data
-        /// </summary>
-        [TestMethod]
-        [DataRow(0.015)]
-        [DataRow(0.017)]
-        [DataRow(0.018)]
-        [DataRow(0.019)]
-        [DataRow(0.009)]
         public TestInfo TestDestroyWeakSynapseOnWrongPrediction(Double weakSynapsePermanence)
         {
             TestInfo result = new TestInfo
@@ -382,13 +355,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Existing test retested with various different data
-        /// </summary>
-        [TestMethod]
-        [DataRow(0, 3)]
-        [DataRow(1, 4)]
-        [DataRow(2, 5)]
         public TestInfo TestAddSegmentToCellWithFewestSegments(int seed, int expectedNumSegments)
         {
             TestInfo result = new TestInfo
@@ -462,12 +428,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Existing test retested with various different data
-        /// </summary>
-        [TestMethod]
-        [DataRow(0.9, 1.0, DisplayName = "Permanence at 0.9, should adapt to max")]
-        [DataRow(1.0, 1.0, DisplayName = "Permanence at 1.0, should remain at max")]
         public TestInfo TestAdaptSegmentToMax(double initialPermanence, double expectedPermanence)
         {
             TestInfo result = new TestInfo
@@ -500,15 +460,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Existing test retested with various different data
-        /// </summary>
-        [TestMethod]
-        [DataRow(0, 1, 2, 2, 0.015, 0.015, 0.015, 0.015, 0)]
-        [DataRow(0, 1, 2, 2, 0.015, 0.015, 0.015, 0.009, 0)]
-        [DataRow(0, 1, 2, 2, 0.015, 0.3, 0.009, 0.009, 1)]  // testing if our test is running properly
-        [DataRow(0, 1, 2, 2, 0.015, 0.009, 0.009, 0.009, 0)]
-        [DataRow(0, 1, 2, 2, 0.3, 0.015, 0.015, 0.009, 1)]   // testing if our test is running properly
         public TestInfo TestDestroySegmentsWithTooFewSynapsesToBeMatching(int c1, int c2, int c3, int c4,
                                                         double p1, double p2, double p3, double p4, int expectedNumSegments)
         {
@@ -550,12 +501,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Existing test retested with various different data
-        /// </summary>
-        [TestMethod]
-        [DataRow(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.48, 0.48, 0.48, 0.48, 0.48, 0.5, 0.5)]
-        [DataRow(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.58, 0.58, 0.58, 0.58, 0.58, 0.6, 0.6)]
         public TestInfo TestPunishMatchingSegmentsInInactiveColumns(double as1Permanence, double as2Permanence,
             double as3Permanence, double as4Permanence, double as5Permanence, double is1Permanence,
             double expectedAs1Permanence, double expectedAs2Permanence, double expectedAs3Permanence,
@@ -611,11 +556,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Test if the Temporal Memory can successfully learn and recall patterns of 
-        /// sequences with a high sparsity rate.
-        /// </summary>
-        [TestMethod]
         public TestInfo TestHighSparsitySequenceLearningAndRecall()
         {
             TestInfo result = new TestInfo
@@ -650,10 +590,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Test if the Temporal Memory can learn and recall patterns of sequences with a low sparsity rate.
-        /// </summary>
-        [TestMethod]
         public TestInfo TestLowSparsitySequenceLearningAndRecall()
         {
             TestInfo result = new TestInfo
@@ -692,10 +628,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Test the creation of a new synapse in a distal segment
-        /// </summary>
-        [TestMethod]
         public TestInfo TestCreateSynapseInDistalSegment()
         {
             TestInfo result = new TestInfo
@@ -726,10 +658,7 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Test the growth of a new dendrite segment when no matching segments are found
-        /// </summary>
-        [TestMethod]
+        
         public TestInfo TestNewSegmentGrowthWhenNoMatchingSegmentFound()
         {
             TestInfo result = new TestInfo
@@ -770,11 +699,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        /// <summary>
-        /// Verify that no active cell is present in more than one column in 
-        /// the output of Temporal Memory Algorithm.
-        /// </summary>
-        [TestMethod]
         public TestInfo TestNoOverlapInActiveCells()
         {
             TestInfo result = new TestInfo
@@ -818,9 +742,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        [TestMethod]
-        [DataRow(new int[] { 0, 1, 2, 3 }, new int[] { 5 }, new int[] { 0, 1, 2, 3 }, 4)]
-        [DataRow(new int[] { 0, 1, 2, 3, 4 }, new int[] { 5 }, new int[] { 0, 1, 2, 4 }, 4)]
         public TestInfo TestActiveSegmentGrowSynapsesAccordingToPotentialOverlap(int[] previousActiveColumns, int[] activeColumns, int[] expectedPresynapticCells, int expectedCount)
         {
             TestInfo result = new TestInfo
@@ -870,12 +791,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        [TestMethod]
-        [DataTestMethod]
-        [DataRow(0, 2, 3)]
-        [DataRow(1, 3, 4)]
-        [DataRow(2, 0, 4)]
-        [DataRow(3, 1, 4)]
         public TestInfo TestDestroyWeakSynapseOnActiveReinforce(int prevActive, int active, int expectedSynapseCount)
         {
             TestInfo result = new TestInfo
@@ -917,7 +832,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        [TestMethod]
         public TestInfo TestAdaptSegment_IncreasePermanence()
         {
             TestInfo result = new TestInfo
@@ -956,7 +870,6 @@ namespace MyExperiment.SEProject
             return result;
         }
 
-        [TestMethod]
         public TestInfo TestAdaptSegment_PrevActiveCellsContainPresynapticCell_IncreasePermanence()
         {
             TestInfo result = new TestInfo
