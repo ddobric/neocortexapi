@@ -72,7 +72,7 @@ namespace MyExperiment
 
         }
 
-        public async Task UploadResultFile(string fileName, byte[] data)
+        public async Task<byte[]> UploadResultFile(string fileName, byte[] data)
         {
             var experimentLabel = fileName;
 

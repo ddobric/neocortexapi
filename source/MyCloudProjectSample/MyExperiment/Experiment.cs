@@ -63,7 +63,8 @@ namespace MyExperiment
             res.RowKey= rowKey;
             res.PartitionKey= "cc-proj-" + rowKey;
 
-            if (inputFile == "runccproject") {
+            if (inputFile == "runccproject")
+            {
                 res.TestName = "Temporal Memory Algorithm tests";
                 List<TestInfo> testResults = RunTests();
 
