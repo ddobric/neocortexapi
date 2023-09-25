@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
+using NeoCortexApi.Types;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 
 namespace MyExperiment.SEProject
@@ -148,12 +151,14 @@ namespace MyExperiment.SEProject
 
             try
             {
+        // Initialize
                 TemporalMemory tm = new TemporalMemory();
                 Connections cn = new Connections();
                 Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
                 p.apply(cn);
                 tm.Init(cn);
 
+                // Test logic is here
                 int[] previousActiveColumns = { 0 };
                 int[] activeColumns = { 1 };
                 Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
@@ -175,6 +180,9 @@ namespace MyExperiment.SEProject
                 // Verify the synapse permanence
                 Assert.AreEqual(0.3, as1.Permanence, 0.01);
                 Assert.AreEqual(0.3, is1.Permanence, 0.01);
+
+        // If the test completes without errors, set IsPassing to true
+            result.IsPassing = true;
             }
             catch (Exception ex)
             {
@@ -211,10 +219,18 @@ namespace MyExperiment.SEProject
                     cnt += item.Cells.Length;
                 }
 
+                // Assert the test condition
                 Assert.AreEqual(32 * 64 * 32, cnt);
             } catch (Exception ex) { 
                 result.IsPassing = false;
             }
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                // You can log the exception details if needed
+                Console.WriteLine($"Test failed: {ex.Message}");
+            }
+
             return result;
         }
 
@@ -454,6 +470,7 @@ namespace MyExperiment.SEProject
 
                 Assert.IsTrue(grewOnCell1);
                 Assert.IsTrue(grewOnCell2);
+
             }
             catch (Exception ex)
             {
@@ -642,6 +659,7 @@ namespace MyExperiment.SEProject
                 // Recall the second sequence
                 var recall2 = tm.Compute(seq2ActiveColumns, false);
                 Assert.IsTrue(recall2.ActiveCells.Select(c => c.Index).All(rc => recall1.ActiveCells.Select(c => c.Index).Contains(rc)));
+
             }
             catch (Exception ex)
             {
@@ -818,6 +836,7 @@ namespace MyExperiment.SEProject
             return result;
         }
 
+
         [TestMethod]
         [DataRow(new int[] { 0, 1, 2, 3 }, new int[] { 5 }, new int[] { 0, 1, 2, 3 }, 4)]
         [DataRow(new int[] { 0, 1, 2, 3, 4 }, new int[] { 5 }, new int[] { 0, 1, 2, 4 }, 4)]
@@ -869,6 +888,7 @@ namespace MyExperiment.SEProject
             }
             return result;
         }
+
 
         [TestMethod]
         [DataTestMethod]
@@ -990,6 +1010,7 @@ namespace MyExperiment.SEProject
             }
             return result;
         }
+
     }
 
     public class TestInfo
@@ -997,4 +1018,6 @@ namespace MyExperiment.SEProject
         public string TestName { get; set; }
         public bool IsPassing { get; set; }
     }
+
+
 }

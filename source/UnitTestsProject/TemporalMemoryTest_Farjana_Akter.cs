@@ -1,12 +1,28 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using GemBox.Spreadsheet.Tables;
+using Microsoft.Azure.Amqp.Framing;
+using Microsoft.Azure.Documents;
+using Microsoft.Extensions.Configuration;
+using Microsoft.OData.Edm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
+using NeoCortexEntities.NeuroVisualizer;
+using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
+
+using System.Reflection.PortableExecutable;
+using Org.BouncyCastle.Crypto.IO;
+using System.ComponentModel.Design;
+using System.Drawing;
+using Microsoft.ML;
+
 namespace UnitTestsProject
 {
     [TestClass]
@@ -417,7 +433,31 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Existing test retested with various different data
+        /// The test is performed with different 
+        /// initial permanence values of the synapse, and
+        /// the expected permanence value after adaptation 
+        /// is also specified in the test.The test method
+        ///creates a new instance of the TemporalMemory
+        ///and Connections classes, initializes them with 
+        ///default parameters, and creates a new distal
+        ///dendrite segment with a synapse connecting it to
+        /// a cell.The AdaptSegment method of the
+        ///TemporalMemory class is then called with the
+        ///specified parameters to adapt the permanence
+        ///value of the synapse to the maximum value.The
+        ///test method asserts that the permanence value of
+        ///the synapse is equal to the expected value within
+        ///a tolerance of 0.1. The test is repeated with the
+        ///same segment and cell, and the AdaptSegment
+        ///method is called again to ensure that the
+        ///permanence value remains at the maximum
+        ///value.The test method again asserts that the
+        ///permanence value of the synapse is equal to the
+        ///expected value within a tolerance of 0.1. So, this
+        ///test method verifies that the TemporalMemory
+        ///class is able to correctly adapt the permanence
+        ///value of a synapse to the maximum value
+        ///specified in the HTM configuration parameters.
         /// </summary>
         [TestMethod]
         [DataRow(0.9, 1.0, DisplayName = "Permanence at 0.9, should adapt to max")]
@@ -442,8 +482,34 @@ namespace UnitTestsProject
             Assert.AreEqual(expectedPermanence, s1.Permanence, 0.1);
         }
 
+
+
         /// <summary>
-        /// Existing test retested with various different data
+        //  The method
+        //tests the ability of the TemporalMemory class to
+        //destroy a segment with too few synapses to be
+        //considered a match.The modified test method is 
+        //parameterized using the DataRow attribute to
+        //retest the method with different sets of input
+        //parameters.The test method sets up a new
+        //instance of the TemporalMemory class and its
+        //related objects such as Connections and
+        //Parameters.The test method then creates a new
+        //DistalDendrite object with a matching segment
+        //and synapses using the Connection object. The
+        //test method then computes the active columns
+        //and the expected active cell using the 
+        //TemporalMemory object. Finally, the test
+        //method asserts that the number of segments
+        //associated with the expected active cell matches
+        //the expected number of segments.The purpose
+        //of this test method is to ensure that the
+        //TemporalMemory class is correctly identifying
+        //segments with too few synapses and destroying
+        //them.By parameterizing the test method with
+        //different input values, the test method verifies
+        //that the TemporalMemory class can correctly
+        //handle a variety of different scenarios
         /// </summary>
         [TestMethod]
         [DataRow(0, 1, 2, 2, 0.015, 0.015, 0.015, 0.015, 0)]
@@ -480,7 +546,23 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Existing test retested with various different data
+        /// This existing test method is 
+        /// modified by us to take 13 input parameters
+        /// dynamically.The purpose of the unit test is to
+        /// verify the behavior of a Temporal Memory
+        /// algorithm under various input conditions.It
+        /// takes various permanence values and expected
+        /// permanence values for a set of synapses.The
+        /// unit test creates an instance of the
+        /// TemporalMemory class and initializes it with 
+        /// default parameters.It then creates a set of active
+        /// and inactive cells, as well as two distal dendrites 
+        /// with multiple synapses.The algorithm is run on
+        /// these inputs and the permanence values of the
+        /// synapses are compared against the expected
+        /// values. The [DataRow] attribute is used to pass 
+        /// in multiple sets of input data to the same unit
+        /// test, allowing it to be retested with different data.
         /// </summary>
         [TestMethod]
         [TestCategory("Prod")]
@@ -529,8 +611,31 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Test if the Temporal Memory can successfully learn and recall patterns of 
-        /// sequences with a high sparsity rate.
+        /// This test is designed to verify if the
+        /// Temporal Memory algorithm can successfully
+        /// learn and recall patterns of sequences with a
+        /// high sparsity rate.The test first initializes a
+        /// Temporal Memory object and a Connections
+        /// object, and applies default parameters to the
+        /// Connections object. Then, it sets the column
+        /// dimensions to be 64 and initializes the Temporal
+        /// Memory object with the Connections object. 
+        /// The test creates two sequences, each with a
+        /// different set of active columns.It then computes
+        /// the Temporal Memory algorithm for each of
+        /// these sequences to train the model. Next, the test
+        /// recalls the first sequence and the second
+        /// sequence using the Temporal Memory
+        /// algorithm with the "compute" method, and
+        /// checks if all the active cells in the second
+        /// sequence are also active in the first sequence.
+        /// This test is important because it validates the
+        /// ability of the Temporal Memory algorithm to
+        /// learn and recall patterns of sequences with a
+        /// high sparsity rate, which is a crucial capability 
+        /// for machine learning algorithms that are
+        /// designed to process high-dimensional data, such
+        /// as images or speech signals.
         /// </summary>
         [TestMethod]
         public void TestHighSparsitySequenceLearningAndRecall()
@@ -556,7 +661,23 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Test if the Temporal Memory can learn and recall patterns of sequences with a low sparsity rate.
+        /// The purpose of the test is to verify 
+        //if the model can learn and recall patterns of
+        //sequences with a low sparsity rate, which refers
+        //to the proportion of active columns in a given
+        //input.The test initializes a Temporal Memory
+        //model and sets up connections with default 
+        //parameters, including column dimensions of 64. 
+        //The test then generates two sequences of active
+        //columns, one with 7 active columns and another
+        //with 5 active columns, and feeds them to the
+        //model.The test then attempts to recall both
+        //sequences and checks if the model can
+        //accurately recall the desired result, which is a
+        //set of 3 specific active columns that should be
+        //present in both sequences.As those columns are
+        //re-enforced in both cycle, the Compute()
+        //method should match our given desired output.
         /// </summary>
         [TestMethod]
         public void TestLowSparsitySequenceLearningAndRecall()
