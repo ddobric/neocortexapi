@@ -60,8 +60,8 @@ namespace MyExperiment
 
             res.StartTimeUtc = DateTime.UtcNow;
             res.ExperimentId = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
-            res.RowKey = rowKey;
-            res.PartitionKey = "cc-proj-" + rowKey;
+            res.RowKey= rowKey;
+            res.PartitionKey= "cc-proj-" + rowKey;
 
             if (inputFile == "runccproject")
             {
@@ -133,9 +133,9 @@ namespace MyExperiment
 
                         // Step 5.
                         this.logger?.LogInformation($"{DateTime.Now} -  UploadExperimentResultFile...");
-                        await storageProvider.UploadResultFile($"Test_data_{DateTime.UtcNow.ToString("yyyyMMddHHmmssfff")}.txt", result.TestData);
-
-
+                        await storageProvider.UploadResultFile($"Test_data_{DateTime.UtcNow.ToString("yyyyMMddHHmmssfff")}.txt", result.TestData);                        
+                        
+                        
                         this.logger?.LogInformation($"{DateTime.Now} -  UploadExperimentResult...");
                         await storageProvider.UploadExperimentResult(result);
                         this.logger?.LogInformation($"{DateTime.Now} -  Experiment Completed Successfully...");
