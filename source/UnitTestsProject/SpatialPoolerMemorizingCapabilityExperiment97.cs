@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
+using NeoCortexApi.Network_Old;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

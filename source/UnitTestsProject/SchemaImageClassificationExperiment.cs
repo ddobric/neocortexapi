@@ -7,13 +7,13 @@ using IronXL;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace UnitTestProject
+namespace UnitTestsProject
 {
     /// <summary>
     /// 
@@ -83,7 +83,7 @@ namespace UnitTestProject
                      if two sequences are the same the return value will be 100. Therefore, the similarity is (100==distance).
                      To give a four digit precision, < is used instead of ==.
                      */
-                    if ((100.0 - d) < 0.00001)
+                    if (100.0 - d < 0.00001)
                     {
                         for (int i_x = 0; i_x < tempArr[id].Length; i_x++)
                             activeArray[i][i_x] = tempArr[id][i_x];
@@ -129,14 +129,14 @@ namespace UnitTestProject
         /// <summary>
         /// Read csv file from the given file path.    
         /// </summary> 
-        private List<int> ReadCsvFileTest(String path)
+        private List<int> ReadCsvFileTest(string path)
         {
             string fileContent = File.ReadAllText(path);
             string[] integerStrings = fileContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             List<int> intList = new List<int>();
             for (int n = 0; n < integerStrings.Length; n++)
             {
-                String s = integerStrings[n];
+                string s = integerStrings[n];
                 char[] sub = s.ToCharArray();
                 for (int j = 0; j < sub.Length; j++)
                 {
@@ -199,11 +199,11 @@ namespace UnitTestProject
                     //hammingDistance[i] = ((originArray[i].Length - numOfDifferentBits) * 100 / originArray[i].Length);
                     if (countNoneZerosOnly == true)
                     {
-                        hammingDistance[i] = ((originArray[i].Count(b => b == 1) - numOfDifferentBits) * 100.0 / originArray[i].Count(b => b == 1));
+                        hammingDistance[i] = (originArray[i].Count(b => b == 1) - numOfDifferentBits) * 100.0 / originArray[i].Count(b => b == 1);
                     }
                     else
                     {
-                        hammingDistance[i] = ((originArray[i].Length - numOfDifferentBits) * 100.0 / originArray[i].Length);
+                        hammingDistance[i] = (originArray[i].Length - numOfDifferentBits) * 100.0 / originArray[i].Length;
                     }
 
                 }
@@ -220,7 +220,7 @@ namespace UnitTestProject
         /// <param name="activeArray"></param>
         /// <param name="path"></param>
         /// <param name="imageNames"></param>
-        private void SaveOutput(List<int[]> activeArray, String path, string[] imageNames)
+        private void SaveOutput(List<int[]> activeArray, string path, string[] imageNames)
         {
             var doc = "outputval.txt";
             var docpath = Path.Combine(path, "..", doc);
@@ -231,7 +231,7 @@ namespace UnitTestProject
 
             for (int jj = 0; jj < activeArray.Count; jj++)
             {
-                String val = String.Format("{0} {1}", imageNames[jj], jj);
+                string val = string.Format("{0} {1}", imageNames[jj], jj);
                 ff.WriteLine(val);
                 ff.Flush();
             }
@@ -249,7 +249,7 @@ namespace UnitTestProject
             if (!Directory.Exists(destinationPath)) Directory.CreateDirectory(destinationPath);
 
             string imgDestinationPath = Path.Combine(destinationPath, $"{name}.jpg");
-            
+
             string _sourcePath = Path.Combine(sourcepath, $"{name}.jpg");
             if (File.Exists(destinationPath))
                 File.Delete(destinationPath);
@@ -411,7 +411,7 @@ namespace UnitTestProject
                 }
             }*/
             for (int i = 0; i < activeArray.Count; i++) groups[i] = groups[i] == -1 ? group++ : groups[i];
-            String dPath = Path.Combine(path, "..", "output"); // output folder
+            string dPath = Path.Combine(path, "..", "output"); // output folder
             if (Directory.Exists(dPath)) DeleteDirectory(dPath);
             for (int i = 0; i < groups.Length; i++)
             {

@@ -1,6 +1,7 @@
 using NeoCortexApi.Entities;
 using NeoCortexApi.Exception;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 

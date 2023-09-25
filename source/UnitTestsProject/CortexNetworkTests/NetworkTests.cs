@@ -6,8 +6,8 @@ using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
+using NeoCortexApi.NeuroVisualizer;
 using NeoCortexApi.Utility;
-using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebSocketNeuroVisualizer;
 
-namespace UnitTestsProject
+namespace UnitTestsProject.CortexNetworkTests
 {
     [TestClass]
     public class NetworkTests
@@ -82,7 +82,7 @@ namespace UnitTestsProject
                 Debug.WriteLine($" ** {input} **");
                 for (int i = 0; i < 3; i++)
                 {
-                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                 }
             }
 
@@ -205,7 +205,7 @@ namespace UnitTestsProject
                 Debug.WriteLine($" ** {input} **");
                 for (int i = 0; i < 3; i++)
                 {
-                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                 }
             }
 
@@ -325,7 +325,7 @@ namespace UnitTestsProject
                 Debug.WriteLine($" ** {input} **");
                 for (int i = 0; i < 3; i++)
                 {
-                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                 }
             }
 
@@ -383,7 +383,7 @@ namespace UnitTestsProject
 
                 //tm1.reset(mem);
 
-                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {(double)matches / (double)inputs.Length * 100.0}%");
+                Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {matches / (double)inputs.Length * 100.0}%");
             }
 
             cls.TraceState();
@@ -449,7 +449,7 @@ namespace UnitTestsProject
 
                 for (int i = 0; i < maxSPLearningCycles; i++)
                 {
-                    var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                    var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
                     var activeColumns = layer1.GetResult("sp") as int[];
 
@@ -551,7 +551,7 @@ namespace UnitTestsProject
 
                 //tm1.reset(mem);
 
-                double accuracy = (double)matches / (double)inputs.Length * 100.0;
+                double accuracy = matches / (double)inputs.Length * 100.0;
 
                 Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {accuracy}%");
 
@@ -782,7 +782,7 @@ namespace UnitTestsProject
 
                     for (int cycle = 0; cycle < maxSPLearningCycles; cycle++)
                     {
-                        var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                        var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
                         var activeColumns = layer1.GetResult("sp") as int[];
 
@@ -864,7 +864,7 @@ namespace UnitTestsProject
 
 
             await vis.ConnectToWSServerAsync();
-            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, new long[10, 1], 6));
 
         }
         [TestMethod]
@@ -874,7 +874,7 @@ namespace UnitTestsProject
             int[] areas = new int[] { 1 };
             GenerateNeuroModel model = new GenerateNeuroModel();
             await vis.ConnectToWSServerAsync();
-            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, new long[10, 1], 6));
 
 
             List<Synapse> synapses = new List<Synapse>();
@@ -892,7 +892,7 @@ namespace UnitTestsProject
             int[] areas = new int[] { 1 };
             GenerateNeuroModel model = new GenerateNeuroModel();
             await vis.ConnectToWSServerAsync();
-            await vis.InitModelAsync(model.CreateNeuroModel(areas, (new long[10, 1]), 6));
+            await vis.InitModelAsync(model.CreateNeuroModel(areas, new long[10, 1], 6));
 
             List<MiniColumn> columnList = new List<MiniColumn>();
             MiniColumn minCol = new MiniColumn(0, 0.80, 8, 0, ColumnActivity.Active);

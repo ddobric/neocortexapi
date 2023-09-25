@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using NeoCortexEntities.NeuroVisualizer;
+using NeoCortexApi.NeuroVisualizer;
 
-namespace HtmClassifierUnitTest
+namespace UnitTestsProject
 {
 
     /// <summary>
@@ -47,11 +47,11 @@ namespace HtmClassifierUnitTest
         {
             Setup();
             List<string> input1 = new List<string> { "S1_4-2-5-0-1-2-3", "S1_2-3-4-2-5-0-1" };
-            List<string> input2 = new List<string> { "S1_0-1-2-3-4-2-5", "S1_1-2-3-4-2-5-0", "S1_2-5-0-1-2-3-4"};
+            List<string> input2 = new List<string> { "S1_0-1-2-3-4-2-5", "S1_1-2-3-4-2-5-0", "S1_2-5-0-1-2-3-4" };
 
             // testing trace sdr 
             htmClassifier.TraceSimilarities();
-            htmClassifier.TraceSimilarities(input2,input1);
+            htmClassifier.TraceSimilarities(input2, input1);
             htmClassifier.TraceSimilarities(input2);
 
             // testing cross correlation
@@ -60,7 +60,7 @@ namespace HtmClassifierUnitTest
 
             // testing csv generator
             var a = htmClassifier.RenderCorrelationMatrixToCSVFormat();
-            foreach(string input in a)
+            foreach (string input in a)
             {
                 Debug.WriteLine(input);
             }
@@ -195,7 +195,8 @@ namespace HtmClassifierUnitTest
             if (cellActivity == CellActivity.ActiveCell)
             {
                 lastActiveCells = cells;
-            } else if (cellActivity == CellActivity.PredictiveCell)
+            }
+            else if (cellActivity == CellActivity.PredictiveCell)
             {
                 // Append one of the cell from lastActiveCells to the randomly generated preditive cells to have some similarity
                 cells.AddRange(lastActiveCells.GetRange
@@ -204,7 +205,7 @@ namespace HtmClassifierUnitTest
                     )
                 );
             }
-            
+
             return cells;
         }
 

@@ -6,7 +6,6 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using NeoCortexApi.Types;
 using NeoCortexApi.Utility;
-using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

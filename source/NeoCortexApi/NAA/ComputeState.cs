@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NeoCortexApi
+namespace NeoCortexApi.NAA
 {
     public class ComputeState
     {

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace UnitTestsProject
+namespace UnitTestsProject.CortexNetworkTests
 {
     [TestClass]
     public class TMStabilityExperiments
@@ -82,7 +82,7 @@ namespace UnitTestsProject
 
             for (int i = 0; i < (int)max; i++)
             {
-                inputValues.Add((double)i);
+                inputValues.Add(i);
             }
 
             RunSpStabilityExperiment(maxBoost, minPctOverlapCycles, inputBits, p, encoder, inputValues);
@@ -186,7 +186,7 @@ namespace UnitTestsProject
                             {
                                 Debug.WriteLine($"Input: {input}");
 
-                                var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                                var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
 
                                 var activeColumns = layer1.GetResult("sp") as int[];
 
@@ -225,7 +225,7 @@ namespace UnitTestsProject
                         if (!boostedOverlaps.ContainsKey(input))
                             boostedOverlaps.Add(input, new List<string[]>());
 
-                        ArrayUtils.RememberArray<string>(boostedOverlaps[input], 4, GetBoostedValues(mem.BoostedOverlaps));
+                        ArrayUtils.RememberArray(boostedOverlaps[input], 4, GetBoostedValues(mem.BoostedOverlaps));
 
                     }
 
@@ -284,12 +284,12 @@ namespace UnitTestsProject
 
             int[] activeArray = ArrayUtils.FillAtIndexes(activeArrayIndxes, columnTopology, 1);
 
-            int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 1 + (int)Math.Sqrt(columnTopology), 1 + (int)Math.Sqrt(columnTopology));
+            int[,] twoDimenArray = ArrayUtils.Make2DArray(activeArray, 1 + (int)Math.Sqrt(columnTopology), 1 + (int)Math.Sqrt(columnTopology));
 
             twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
             List<int[,]> arrays = new List<int[,]>();
             arrays.Add(twoDimenArray);
-            arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
+            arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
 
             const int OutImgSize = 1024;
             NeoCortexUtils.DrawBitmaps(arrays, $"Input_{input}.png", Color.LightGray, Color.Black, OutImgSize, OutImgSize);

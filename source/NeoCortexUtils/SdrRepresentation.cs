@@ -8,7 +8,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace NeoCortex
+namespace NeoCortexUtils
 {
     /// <summary>
     /// Sparse distributed representations 
@@ -54,8 +54,8 @@ namespace NeoCortex
         {
             // The length of the Union array is the length of the maximum length of array in the list
             int arrayLengthUnion = 0;
-            
-            foreach(int[] arr in arrList)
+
+            foreach (int[] arr in arrList)
             {
                 if (arr.Length > arrayLengthUnion)
                 {
@@ -67,7 +67,7 @@ namespace NeoCortex
             {
                 for (int i = 0; i < arr.Length; i++)
                 {
-                    unionArray[i] = ((unionArray[i] + arr[i]) >= 1) ? 1 : 0;
+                    unionArray[i] = unionArray[i] + arr[i] >= 1 ? 1 : 0;
                 }
             }
             return unionArray;
@@ -219,12 +219,12 @@ namespace NeoCortex
         /// <param twoDimArray="Overlap array of SDR"></param>
         /// <param woDimArray2="Union array of SDR"></param>
         /// <returns></returns>
-        public static void DrawIntersections(int[,] twoDimArray, int[,] twoDimArray2, int scale, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
+        public static void DrawIntersections(int[,] twoDimArray, int[,] twoDimArray2, int scale, string filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
         {
             int w = twoDimArray.GetLength(0);
             int h = twoDimArray.GetLength(1);
 
-            System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(w * scale, h * scale);
+            Bitmap myBitmap = new Bitmap(w * scale, h * scale);
             int k = 0;
             for (int Xcount = 0; Xcount < w; Xcount++)
             {
@@ -276,8 +276,8 @@ namespace NeoCortex
         /// </summary>
         public enum TraceFormat
         {
-            Text, 
-            Excel, 
+            Text,
+            Excel,
             Graph,
         }
         /// <summary>
@@ -372,7 +372,7 @@ namespace NeoCortex
                 {
                     for (int j = 0; j < colDims[1]; ++j)
                     {
-                        var overlapValue = (entry[i, j]);
+                        var overlapValue = entry[i, j];
                         if (overlapValue > threshold)
                         {
                             Pen penthreshold = new Pen(aboveThreshold);
@@ -390,7 +390,7 @@ namespace NeoCortex
             {
                 Directory.CreateDirectory("SdrRepresentation_Output");
             }
-            image.Save("SdrRepresentation_Output/trace_col_overlap_graph.png", System.Drawing.Imaging.ImageFormat.Png);
+            image.Save("SdrRepresentation_Output/trace_col_overlap_graph.png", ImageFormat.Png);
         }
 
         /// <summary>

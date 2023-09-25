@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NeoCortexApi
+namespace NeoCortexApi.NAA
 {
     public class MinicolumnArea
     {
@@ -14,13 +14,13 @@ namespace NeoCortexApi
 
         public MinicolumnArea(string name, HtmConfig config)
         {
-            this.Name = name;
+            Name = name;
             Init(config);
         }
 
         public override string ToString()
         {
-            return $"{Name} - Cols: {this.Columns.Count}";
+            return $"{Name} - Cols: {Columns.Count}";
         }
 
         private void Init(HtmConfig config)
@@ -46,7 +46,7 @@ namespace NeoCortexApi
         {
             get
             {
-                return this.Columns.SelectMany(c => c.Cells).ToList();             
+                return Columns.SelectMany(c => c.Cells).ToList();
             }
         }
 

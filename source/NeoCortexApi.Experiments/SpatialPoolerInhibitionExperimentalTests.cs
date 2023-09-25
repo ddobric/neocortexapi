@@ -3,9 +3,9 @@
 using Daenet.ImageBinarizerLib;
 using Daenet.ImageBinarizerLib.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System.Diagnostics;
 using System.IO;
 

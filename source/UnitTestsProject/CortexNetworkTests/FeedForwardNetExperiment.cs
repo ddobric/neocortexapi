@@ -4,7 +4,7 @@ using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
