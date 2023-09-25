@@ -1,16 +1,16 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace UnitTestProject
+namespace UnitTestsProject
 {
     /// <summary>
     /// Project work: https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2019-2020/tree/PRD1/PRD1%20Group%20SE%20Project(WS-2019)/NoiseTestSpatialPooler
@@ -182,7 +182,7 @@ namespace UnitTestProject
         /// <returns>Returns nothing</returns>
         public void ProcessTestCase(List<double[]> inputSequences, InputParameters inputs)
         {
-            string path = System.IO.Directory.GetCurrentDirectory();
+            string path = Directory.GetCurrentDirectory();
             string parentDir = path.Substring(0, path.IndexOf("bin") - 1);
             string resultDir = parentDir.Substring(0, parentDir.LastIndexOf(@"\"));
 
@@ -378,7 +378,7 @@ namespace UnitTestProject
         /// <param name="width">Width of the plane</param>
         /// <param name="filePath">Path where the generated file to be kept</param>
         /// <param name="text">Test to be written on the top left side of the generated file</param>
-        public static void DrawBitmapOverlap(int[,] twoDimArray1, int[,] twoDimArray2, int length, int width, String filePath, string text = null)
+        public static void DrawBitmapOverlap(int[,] twoDimArray1, int[,] twoDimArray2, int length, int width, string filePath, string text = null)
         {
             int w = twoDimArray1.GetLength(0);
             int h = twoDimArray1.GetLength(1);
@@ -388,7 +388,7 @@ namespace UnitTestProject
             if (scale * w < width)
                 scale++;
 
-            System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(w * scale, h * scale);
+            Bitmap myBitmap = new Bitmap(w * scale, h * scale);
             int k = 0;
             for (int Xcount = 0; Xcount < w; Xcount++)
             {
@@ -466,7 +466,7 @@ namespace UnitTestProject
 
                 sdrList.Add(result);
 
-                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
+                int[,] twoDimenArray = ArrayUtils.Make2DArray(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
                 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
                 int counter = 0;
@@ -496,7 +496,7 @@ namespace UnitTestProject
         /// <param name="height">Height of the array</param>
         /// <param name="filePath">Path where the generated file to be placed</param>
         /// <param name="text">Test to be written on the top left side of the generated file</param>
-        public static void DrawBitmapHamming(int[,] twoDimArray, int width, int height, String filePath, string text = null)
+        public static void DrawBitmapHamming(int[,] twoDimArray, int width, int height, string filePath, string text = null)
         {
             int w = twoDimArray.GetLength(0);
             int h = twoDimArray.GetLength(1);
@@ -506,7 +506,7 @@ namespace UnitTestProject
             if (scale * w < width)
                 scale++;
 
-            System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(w * scale, h * scale);
+            Bitmap myBitmap = new Bitmap(w * scale, h * scale);
             ColorConverter convert = new ColorConverter();
             int k = 0;
             for (int Xcount = 0; Xcount < w; Xcount++)
@@ -622,7 +622,7 @@ namespace UnitTestProject
         {
             return new DistributedMemory()
             {
-                ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1),
+                ColumnDictionary = new InMemoryDistributedDictionary<int, Column>(1),
                 //PoolDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Pool>(1),
             };
         }
@@ -639,38 +639,38 @@ namespace UnitTestProject
 
         public void setWidth(int value)
         {
-            this.width = value;
+            width = value;
         }
         public int getWidth()
         {
-            return this.width;
+            return width;
         }
 
         public void setMaxIndex(double value)
         {
-            this.maxIndex = value;
+            maxIndex = value;
         }
         public double getMaxIndex()
         {
-            return this.maxIndex;
+            return maxIndex;
         }
 
         public void setRadius(double value)
         {
-            this.radius = value;
+            radius = value;
         }
         public double getRadius()
         {
-            return this.radius;
+            return radius;
         }
 
         public void setCompareNumber(double value)
         {
-            this.compareNumber = value;
+            compareNumber = value;
         }
         public double getCompareNumber()
         {
-            return this.compareNumber;
+            return compareNumber;
         }
 
     }

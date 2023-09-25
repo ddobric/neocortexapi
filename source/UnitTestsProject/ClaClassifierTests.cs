@@ -6,7 +6,7 @@ using NeoCortexApi.Classifiers;
 using System;
 using System.Collections.Generic;
 
-namespace UnitTestsProject.CortexNetworkTests
+namespace UnitTestsProject
 {
     [TestClass]
     public class ClaClassifierTest
@@ -19,7 +19,7 @@ namespace UnitTestsProject.CortexNetworkTests
         /// <param name="index">value of particular bucket index</param>
         /// <param name="value">expected value</param>
         /// <param name="probability">expected probability</param>
-        public void checkValue<T>(ClassificationExperiment<T> retVal, int index, Object value, double probability)
+        public void checkValue<T>(ClassificationExperiment<T> retVal, int index, object value, double probability)
         {
             Assert.AreEqual(retVal.getActualValue(index), value);
             Assert.AreEqual(probability, retVal.getStat(1, index), 0.01);
@@ -35,7 +35,7 @@ namespace UnitTestsProject.CortexNetworkTests
         /// <param name="bucket">bucket index</param>
         /// <param name="value">value of predicted field</param>
         /// <returns>classification object</returns>
-        public ClassificationExperiment<T> compute<T>(CLAClassifier<T> classifier, int recordNum, int[] pattern, int bucket, Object value) where T : struct
+        public ClassificationExperiment<T> compute<T>(CLAClassifier<T> classifier, int recordNum, int[] pattern, int bucket, object value) where T : struct
         {
             Dictionary<string, object> classification = new Dictionary<string, object>();
             classification.Add("bucketIdx", bucket);
@@ -52,7 +52,7 @@ namespace UnitTestsProject.CortexNetworkTests
         {
             var classifier = new CLAClassifier<double>();
 
-            ClassificationExperiment<Double> retVal = null;
+            ClassificationExperiment<double> retVal = null;
             for (int recordNum = 0; recordNum < 10; recordNum++)
             {
                 retVal = compute(classifier, recordNum, new int[] { 1, 5 }, 0, 10);
@@ -70,7 +70,7 @@ namespace UnitTestsProject.CortexNetworkTests
         {
             var classifier = new CLAClassifier<double>();
 
-            ClassificationExperiment<Double> retVal = null;
+            ClassificationExperiment<double> retVal = null;
             for (int recordNum = 0; recordNum < 20; recordNum++)
             {
                 int bucketIndex = recordNum % 2;
@@ -210,7 +210,7 @@ namespace UnitTestsProject.CortexNetworkTests
         {
             var classifier = new CLAClassifier<double>();
 
-            ClassificationExperiment<Double> result = compute(classifier, 0, new int[] { 1, 5 }, 9, 9);
+            ClassificationExperiment<double> result = compute(classifier, 0, new int[] { 1, 5 }, 9, 9);
             result = compute(classifier, 1, new int[] { 1, 5 }, 9, 9);
             result = compute(classifier, 1, new int[] { 1, 5 }, 9, 9);
             result = compute(classifier, 2, new int[] { 3, 5 }, 2, 2);

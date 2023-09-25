@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace NeoCortexApi.Experiments
+namespace NeoCortexApi.Experiments.SequenceLearningExperiments
 {
     [TestClass]
     public class MuscNotesExperiment

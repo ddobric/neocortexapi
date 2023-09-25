@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace NeoCortexApi.Entities
+namespace NeoCortexApi.Types
 {
 
     //[Serializable]
@@ -21,10 +21,10 @@ namespace NeoCortexApi.Entities
 
 
         // Custom cast from "int":
-        public static implicit operator Integer(Int32 x) { return new Integer(x); }
+        public static implicit operator Integer(int x) { return new Integer(x); }
 
         // Custom cast to "int":
-        public static implicit operator Int32(Integer x) { return x.Value; }
+        public static implicit operator int(Integer x) { return x.Value; }
 
 
         public override string ToString()
@@ -56,12 +56,12 @@ namespace NeoCortexApi.Entities
 
         public bool Equals(Integer other)
         {
-            return this.Value == other.Value;
+            return Value == other.Value;
         }
 
         public int CompareTo(Integer other)
         {
-            return Comparer<int>.Default.Compare(this.Value, other.Value);
+            return Comparer<int>.Default.Compare(Value, other.Value);
         }
 
         #region Serialization
@@ -70,8 +70,8 @@ namespace NeoCortexApi.Entities
             HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(Integer), writer);
-            
-            ser.SerializeValue(this.Value,writer);
+
+            ser.SerializeValue(Value, writer);
 
             ser.SerializeEnd(nameof(Integer), writer);
         }
@@ -86,7 +86,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(Integer)))
+                if (data == string.Empty || data == ser.ReadBegin(nameof(Integer)))
                 {
                     continue;
                 }
@@ -122,7 +122,7 @@ namespace NeoCortexApi.Entities
 
         public override int GetHashCode()
         {
-            return this.Value.GetHashCode();
+            return Value.GetHashCode();
         }
     }
 }

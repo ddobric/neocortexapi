@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace SPTestForInvLearning
+namespace UnitTestsProject
 {
     [TestClass]
     public class SPConsistencyTest
@@ -74,8 +74,8 @@ namespace SPTestForInvLearning
             sp1.Init(mem1);
             sp2.Init(mem2);
 
-            var SDRlist1 = RecordOutput(sp1, input, ref this.isInStableState1, path1);
-            var SDRlist2 = RecordOutput(sp2, input, ref this.isInStableState2, path2);
+            var SDRlist1 = RecordOutput(sp1, input, ref isInStableState1, path1);
+            var SDRlist2 = RecordOutput(sp2, input, ref isInStableState2, path2);
 
             CheckSame(SDRlist1, SDRlist2, outputFolder);
         }
@@ -89,12 +89,12 @@ namespace SPTestForInvLearning
         private void CheckSame(List<int[]> sDRlist1, List<int[]> sDRlist2, string outputFolder)
         {
             Debug.WriteLine($"length of SDRlist 1: {sDRlist1.Count}, length of SDRlist 2: {sDRlist2}");
-            for (int i = 0; i < ((sDRlist1.Count <= sDRlist2.Count) ? sDRlist1.Count : sDRlist2.Count); i += 1)
+            for (int i = 0; i < (sDRlist1.Count <= sDRlist2.Count ? sDRlist1.Count : sDRlist2.Count); i += 1)
             {
                 double correlation = MathHelpers.CalcArraySimilarity(sDRlist1[i], sDRlist2[i]);
                 Debug.WriteLine($"pair number {i}: {correlation}");
                 double[] temp = new double[] { correlation };
-                WriteArray<double>(temp, Path.Combine(outputFolder, "correlation.txt"));
+                WriteArray(temp, Path.Combine(outputFolder, "correlation.txt"));
             }
         }
 
@@ -122,7 +122,7 @@ namespace SPTestForInvLearning
                 var lyrOut = sp.Compute(input, true);
 
                 // Displaying on output and record
-                WriteArray<int>(lyrOut, path);
+                WriteArray(lyrOut, path);
 
                 // saving SDRs list
                 output.Add(lyrOut);

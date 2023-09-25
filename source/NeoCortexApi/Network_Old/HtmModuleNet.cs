@@ -4,7 +4,7 @@ using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi.Network_Old
 {
     public class HtmModuleNet
     {
@@ -12,7 +12,7 @@ namespace NeoCortexApi.Network
         List<Connections> m_Connections = new List<Connections>();
         List<int[]> m_ActiveArrays = new List<int[]>();
 
-        public int Layers { get { return this.m_Connections.Count; } }
+        public int Layers { get { return m_Connections.Count; } }
 
         public HtmModuleNet(Parameters parameters, int[] levels)
         {
@@ -36,9 +36,9 @@ namespace NeoCortexApi.Network
                 var mem = new Connections();
                 parameters.apply(mem);
 
-                this.m_ActiveArrays.Add(new int[levelOut * levelOut]);
+                m_ActiveArrays.Add(new int[levelOut * levelOut]);
 
-                this.m_Connections.Add(mem);
+                m_Connections.Add(mem);
 
                 SpatialPooler sp = new SpatialPooler();
                 sp.Init(mem, null);
@@ -61,9 +61,9 @@ namespace NeoCortexApi.Network
                     numCols *= colDims[i];
                 }
 
-                this.m_ActiveArrays.Add(new int[numCols]);
+                m_ActiveArrays.Add(new int[numCols]);
 
-                this.m_Connections.Add(mem);
+                m_Connections.Add(mem);
 
                 SpatialPooler sp = new SpatialPooler();
 
@@ -85,18 +85,18 @@ namespace NeoCortexApi.Network
 
         public int[] GetActiveColumns(int levelIndx)
         {
-            if (levelIndx >= this.m_Poolers.Count)
+            if (levelIndx >= m_Poolers.Count)
                 throw new ArgumentException("Invalid level index.");
 
-            return this.m_ActiveArrays[levelIndx];
+            return m_ActiveArrays[levelIndx];
         }
 
         public Connections GetMemory(int levelIndx)
         {
-            if (levelIndx >= this.m_Connections.Count)
+            if (levelIndx >= m_Connections.Count)
                 throw new ArgumentException("Invalid level index.");
 
-            return this.m_Connections[levelIndx];
+            return m_Connections[levelIndx];
         }
 
     }

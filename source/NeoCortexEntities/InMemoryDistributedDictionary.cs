@@ -4,10 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NeoCortexApi.Entities;
 using System.IO;
+using NeoCortexApi.Entities;
 
-namespace NeoCortexApi.Entities
+namespace NeoCortexApi
 {
     /// <summary>
     /// Distributes huge dictionary across mutliple dictionaries. Used mainly for testing purposes.
@@ -36,7 +36,7 @@ namespace NeoCortexApi.Entities
             {
                 int cnt = 0;
 
-                foreach (var item in this.dictList)
+                foreach (var item in dictList)
                 {
                     cnt += item.Values.Count;
                 }
@@ -64,10 +64,10 @@ namespace NeoCortexApi.Entities
 
         public InMemoryDistributedDictionary()
         {
-            
+
         }
 
-    
+
 
         public ICollection<KeyPair> GetObjects(TKey[] keys)
         {
@@ -85,7 +85,7 @@ namespace NeoCortexApi.Entities
         {
             get
             {
-                foreach (var item in this.dictList)
+                foreach (var item in dictList)
                 {
                     if (item.ContainsKey(key))
                         return item[key];
@@ -96,11 +96,11 @@ namespace NeoCortexApi.Entities
             set
             {
                 bool isSet = false;
-                for (int i = 0; i < this.dictList.Length; i++)
+                for (int i = 0; i < dictList.Length; i++)
                 {
-                    if (this.dictList[i].ContainsKey(key))
+                    if (dictList[i].ContainsKey(key))
                     {
-                        this.dictList[i][key] = value;
+                        dictList[i][key] = value;
                         isSet = true;
                         break;
                     }
@@ -113,7 +113,7 @@ namespace NeoCortexApi.Entities
 
         private int GetPartitionIndex(int elementIndx)
         {
-            return elementIndx % this.dictList.Length;
+            return elementIndx % dictList.Length;
         }
 
         public ICollection<TKey> Keys
@@ -121,7 +121,7 @@ namespace NeoCortexApi.Entities
             get
             {
                 List<TKey> keys = new List<TKey>();
-                foreach (var item in this.dictList)
+                foreach (var item in dictList)
                 {
                     foreach (var k in item.Keys)
                     {
@@ -139,7 +139,7 @@ namespace NeoCortexApi.Entities
             get
             {
                 List<TValue> keys = new List<TValue>();
-                foreach (var item in this.dictList)
+                foreach (var item in dictList)
                 {
                     foreach (var k in item.Values)
                     {
@@ -152,7 +152,7 @@ namespace NeoCortexApi.Entities
         }
 
 
-        
+
         /// <summary>
         /// Adds list of objects to dictioanary.
         /// </summary>
@@ -168,18 +168,18 @@ namespace NeoCortexApi.Entities
         public void Add(TKey key, TValue value)
         {
             int partitionInd = GetPartitionIndex(numElements++);
-            this.dictList[partitionInd].Add(key, value);
+            dictList[partitionInd].Add(key, value);
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
             int partitionInd = GetPartitionIndex(++numElements);
-            this.dictList[partitionInd].Add(item.Key, item.Value);
+            dictList[partitionInd].Add(item.Key, item.Value);
         }
 
         public void Clear()
         {
-            foreach (var item in this.dictList)
+            foreach (var item in dictList)
             {
                 item.Clear();
             }
@@ -187,11 +187,11 @@ namespace NeoCortexApi.Entities
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
+            for (int i = 0; i < dictList.Length; i++)
             {
-                if (this.dictList[i].ContainsKey(item.Key))
+                if (dictList[i].ContainsKey(item.Key))
                 {
-                    if (EqualityComparer<TValue>.Default.Equals(this.dictList[i][item.Key], item.Value))
+                    if (EqualityComparer<TValue>.Default.Equals(dictList[i][item.Key], item.Value))
                         return true;
                     else
                         return false;
@@ -203,9 +203,9 @@ namespace NeoCortexApi.Entities
 
         public bool ContainsKey(TKey key)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
+            for (int i = 0; i < dictList.Length; i++)
             {
-                if (this.dictList[i].ContainsKey(key))
+                if (dictList[i].ContainsKey(key))
                 {
                     return true;
                 }
@@ -221,11 +221,11 @@ namespace NeoCortexApi.Entities
 
         public bool Remove(TKey key)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
+            for (int i = 0; i < dictList.Length; i++)
             {
-                if (this.dictList[i].ContainsKey(key))
+                if (dictList[i].ContainsKey(key))
                 {
-                    return this.dictList[i].Remove(key);
+                    return dictList[i].Remove(key);
                 }
             }
 
@@ -234,11 +234,11 @@ namespace NeoCortexApi.Entities
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
+            for (int i = 0; i < dictList.Length; i++)
             {
-                if (this.dictList[i].ContainsKey(item.Key))
+                if (dictList[i].ContainsKey(item.Key))
                 {
-                    return this.dictList[i].Remove(item.Key);
+                    return dictList[i].Remove(item.Key);
                 }
             }
 
@@ -247,11 +247,11 @@ namespace NeoCortexApi.Entities
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            for (int i = 0; i < this.dictList.Length; i++)
+            for (int i = 0; i < dictList.Length; i++)
             {
-                if (this.dictList[i].ContainsKey(key))
+                if (dictList[i].ContainsKey(key))
                 {
-                    value = this.dictList[i][key];
+                    value = dictList[i][key];
                     return true;
                 }
             }
@@ -278,9 +278,9 @@ namespace NeoCortexApi.Entities
         /// </summary>
         private int currentIndex = -1;
 
-        public object Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
+        public object Current => dictList[currentDictIndex].ElementAt(currentIndex);
 
-        KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => this.dictList[this.currentDictIndex].ElementAt(currentIndex);
+        KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current => dictList[currentDictIndex].ElementAt(currentIndex);
 
         /// <summary>
         /// Not used.
@@ -295,28 +295,28 @@ namespace NeoCortexApi.Entities
 
         public bool MoveNext()
         {
-            if (this.dictList == null)
+            if (dictList == null)
                 return false;
 
-            if (this.currentIndex == -1)
-                this.currentIndex = 0;
+            if (currentIndex == -1)
+                currentIndex = 0;
 
-            if (this.currentDictIndex + 1 < this.dictList.Length)
+            if (currentDictIndex + 1 < dictList.Length)
             {
-                this.currentDictIndex++;
+                currentDictIndex++;
 
-                if (this.dictList[this.currentDictIndex].Count > 0 && this.dictList[this.currentDictIndex].Count > this.currentIndex)
+                if (dictList[currentDictIndex].Count > 0 && dictList[currentDictIndex].Count > currentIndex)
                     return true;
                 else
                     return false;
             }
             else
             {
-                this.currentDictIndex = 0;
+                currentDictIndex = 0;
 
-                if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
+                if (currentIndex + 1 < dictList[currentDictIndex].Count)
                 {
-                    this.currentIndex++;
+                    currentIndex++;
                     return true;
                 }
                 else
@@ -327,21 +327,21 @@ namespace NeoCortexApi.Entities
 
         public bool MoveNextOLD()
         {
-            if (this.currentDictIndex == -1)
-                this.currentDictIndex++;
+            if (currentDictIndex == -1)
+                currentDictIndex++;
 
-            if (this.currentIndex + 1 < this.dictList[this.currentDictIndex].Count)
+            if (currentIndex + 1 < dictList[currentDictIndex].Count)
             {
-                this.currentIndex++;
+                currentIndex++;
                 return true;
             }
             else
             {
-                if (this.currentDictIndex < this.dictList.Length)
+                if (currentDictIndex < dictList.Length)
                 {
-                    this.currentDictIndex++;
+                    currentDictIndex++;
 
-                    if (this.dictList[this.currentDictIndex].Count > 0)
+                    if (dictList[currentDictIndex].Count > 0)
                         return true;
                     else
                         return false;
@@ -353,13 +353,13 @@ namespace NeoCortexApi.Entities
 
         public void Reset()
         {
-            this.currentDictIndex = -1;
-            this.currentIndex = -1;
+            currentDictIndex = -1;
+            currentIndex = -1;
         }
 
         public void Dispose()
         {
-            this.dictList = null;
+            dictList = null;
         }
 
 
@@ -373,7 +373,7 @@ namespace NeoCortexApi.Entities
 
             return this.Equals(dict);
         }
-        public bool Equals (InMemoryDistributedDictionary<TKey, TValue> obj)
+        public bool Equals(InMemoryDistributedDictionary<TKey, TValue> obj)
         {
             if (this == obj)
                 return true;
@@ -425,7 +425,7 @@ namespace NeoCortexApi.Entities
 
         }
 
-        
+
 
         public void Serialize(StreamWriter writer)
         {
@@ -434,11 +434,11 @@ namespace NeoCortexApi.Entities
             ser.SerializeBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
 
             // index 0
-            ser.SerializeValue(this.numElements, writer);
+            ser.SerializeValue(numElements, writer);
             // index 1
-            ser.SerializeValue(this.currentDictIndex, writer);
+            ser.SerializeValue(currentDictIndex, writer);
             // index 2
-            ser.SerializeValue(this.currentIndex, writer);
+            ser.SerializeValue(currentIndex, writer);
             // index 3 
             //ser.SerializeValue(this.dictCount, writer);
 
@@ -467,8 +467,8 @@ namespace NeoCortexApi.Entities
                 }
                 dictCnt++;
             }
-            if (this.htmConfig != null)
-            { this.htmConfig.Serialize(writer); }
+            if (htmConfig != null)
+            { htmConfig.Serialize(writer); }
 
             ser.SerializeEnd(nameof(InMemoryDistributedDictionary<TKey, TValue>), writer);
         }
@@ -481,7 +481,7 @@ namespace NeoCortexApi.Entities
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
+                if (data == string.Empty || data == ser.ReadBegin(nameof(InMemoryDistributedDictionary<TKey, TValue>)))
                 {
                     continue;
                 }
@@ -568,12 +568,12 @@ namespace NeoCortexApi.Entities
         {
             HtmSerializer.SerializeObject(obj, name, sw, new List<string> { "Item" });
             return;
-            HtmSerializer.Serialize(this.numElements, "numElements", sw);
-            HtmSerializer.Serialize(this.currentDictIndex, "currentDictIndex", sw);
-            HtmSerializer.Serialize(this.currentIndex, "currentIndex", sw);
-            HtmSerializer.Serialize(this.htmConfig, "htmConfig", sw);
+            HtmSerializer.Serialize(numElements, "numElements", sw);
+            HtmSerializer.Serialize(currentDictIndex, "currentDictIndex", sw);
+            HtmSerializer.Serialize(currentIndex, "currentIndex", sw);
+            HtmSerializer.Serialize(htmConfig, "htmConfig", sw);
 
-            HtmSerializer.Serialize(this.dictList, "dictList", sw);
+            HtmSerializer.Serialize(dictList, "dictList", sw);
         }
 
         public static object Deserialize<T>(StreamReader sr, string propName)

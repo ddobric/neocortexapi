@@ -4,7 +4,7 @@ using NeoCortexApi.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NeoCortexEntities.NeuroVisualizer
+namespace NeoCortexApi.NeuroVisualizer
 {
     public interface INeuroVisualizer
     {

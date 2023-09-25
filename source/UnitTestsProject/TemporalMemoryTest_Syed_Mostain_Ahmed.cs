@@ -1,17 +1,30 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Microsoft.Azure.Amqp.Framing;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Spatial;
 using Microsoft.Azure.Documents.SystemFunctions;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Types;
+using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
+using System.Text.RegularExpressions;
+using static SkiaSharp.SKImageFilter;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace UnitTestsProject
 {
@@ -91,7 +104,25 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Test the growth of a new dendrite segment when no matching segments are found
+        /// This test method 
+        //// first initializes the TM object, connections, and
+        /// parameters with default values.It then creates a
+        ///distal dendrite segment and adds two synapses
+        ///to it.The TM is then fed with a single active
+        ///column and four active cells.Since there are no
+        ///existing segments that match the active cells' 
+        ///pattern, a new dendrite segment should grow.
+        ///The assertions made in the code check whether
+        ///the new segment has indeed been created and
+        ///has the expected number of synapses.The test
+        ///passes if all the assertions are true. This test case 
+        ///is crucial in verifying the HTM algorithm's 
+        ///ability to learn and recognize previously unseen
+        ///patterns by growing new dendrite segments
+        ///when no matching segments are found.It
+        ///ensures that the algorithm can continue learning
+        ///and adapting to new data inputs without being
+        ///limited by its existing knowledge.
         /// </summary>
         [TestMethod]
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
@@ -122,8 +153,34 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Verify that no active cell is present in more than one column in 
-        /// the output of Temporal Memory Algorithm.
+  
+        /// This unit test verifies that the output of the Temporal
+        /// Memory algorithm does not contain any active
+        /// cell that is present in more than one column.
+        /// The test initializes a Temporal Memory object,
+        /// sets up connections and parameters, and then
+        /// computes active cells for two columns. The test
+        /// then separates the active cells for each column
+        /// and checks that no cell is active in both
+        /// columns. The purpose of this test is to ensure
+        /// that the Temporal Memory algorithm is 
+        /// correctly processing the input and producing an
+        /// output that conforms to the constraints of the
+        /// algorithm. The constraint that no active cell
+        /// should be present in more than one column is a
+        /// key aspect of the algorithm and must be strictly
+        /// enforced for the algorithm to work correctly.
+        /// This test is useful for detecting errors in the
+        /// implementation of the Temporal Memory
+        /// algorithm that might cause cells to be active in
+        /// more than one column. If such errors are
+        /// present, they can lead to incorrect predictions
+        /// and reduce the accuracy of the algorithm.In
+        /// conclusion, the above code implements a unit
+        /// test that verifies the correct behavior of the
+        /// Temporal Memory algorithm with respect to the
+        /// constraint that no active cell should be present
+        /// in more than one column.
         /// </summary>
         [TestMethod]
         public void TestNoOverlapInActiveCells()
@@ -156,6 +213,27 @@ namespace UnitTestsProject
             }
         }
 
+        /// <summary>
+        /// This unit test method is 
+        //designed to verify that the Temporal Memory
+        //algorithm returns the correct winner cells.The
+        //Temporal Memory object is initialized and the
+        //connections and parameters are set.The method
+        //then creates an array of active columns and calls
+        //the Compute method of the Temporal Memory
+        //object with these columns as input.The
+        //Compute method returns a ComputeCycle
+        //object, which contains the winner cells for each
+        //column. The method verifies that the number of
+        //winner cells is correct and that their parent
+        //column indices are as expected.Specifically, the
+        //method tests that the first active column has the
+        //first winner cell, and the second active column
+        //has the second winner cell. If the test passes, it
+        //indicates that the Temporal Memory algorithm
+        //is functioning correctly in identifying the winner
+        //cells for the given input columns.
+        /// </summary>
         [TestMethod]
         public void TestTemporalMemoryComputeReturnsWinnerCells()
         {
@@ -176,6 +254,30 @@ namespace UnitTestsProject
             Assert.AreEqual(1, winnerCells[1].ParentColumnIndex);
         }
 
+        /// <summary>
+        /// This is an existing tests 
+        // which we modified to take multiple data in 
+        //order to re-enforce the test and verify how the
+        //algorithm was supposed to work.Each set of
+        //test data consists of an array of active column
+        //indices, the expected number of winner cells,
+        //and an array of expected winner cell indices. 
+        //The method initializes the Temporal Memory
+        //object, creates connections, applies parameters,
+        //and then computes the winner cells using the 
+        //input active column indices.The method then
+        //checks whether the number of winner cells and
+        //their parent column indices match the expected
+        //values for each set of test data.The test passes if 
+        //all checks are successful. This unit test method
+        //helps to ensure that the Temporal Memory
+        //algorithm's Compute method correctly identifies 
+        //the winner cells based on the input active
+        //column indices.
+        /// </summary>
+        /// <param name="activeColumns"></param>
+        /// <param name="expectedWinnerCount"></param>
+        /// <param name="expectedWinnerIndices"></param>
         [DataTestMethod]
         [DataRow(new int[] { 0, 1, 2, 3 }, 4, new int[] { 0, 1, 2, 3 })]
         [DataRow(new int[] { 4, 5, 6 }, 3, new int[] { 4, 5, 6 })]
@@ -281,7 +383,7 @@ namespace UnitTestsProject
             tm.Init(cn);
 
             int[] activeColumns = { 0, 1, 2 };
-            Cell[] activeCells = cn.GetCells(activeColumns);
+            NeoCortexApi.Entities.Cell[] activeCells = cn.GetCells(activeColumns);
 
             TestContext.WriteLine("activeCells ===>>>>> " + string.Join(",", activeCells[2]));
 

@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Encoders;
-using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeoCortexApi.DataMappers
+namespace NeoCortexApi.Network_Old
 {
     /// <summary>
     /// Class for asigning set of properties for each feature (data column)
@@ -38,14 +37,14 @@ namespace NeoCortexApi.DataMappers
         /// </summary>
         public DataMapper(DataDescriptor descriptor, CortexNetworkContext context)
         {
-            this.m_Context = context;
-            this.m_Descriptor = descriptor;
+            m_Context = context;
+            m_Descriptor = descriptor;
 
             foreach (var feature in descriptor.Features)
             {
                 if (feature.EncoderSettings != null)
                 {
-                    feature.Encoder = this.m_Context.CreateEncoder(feature.EncoderSettings);
+                    feature.Encoder = m_Context.CreateEncoder(feature.EncoderSettings);
                 }
                 else
                 {
@@ -64,7 +63,7 @@ namespace NeoCortexApi.DataMappers
         public int[] Run(object[] vector)
         {
             //sort features by id
-            Array.Sort(this.m_Descriptor.Features, (x, y) => x.Id.CompareTo(y.Id));
+            Array.Sort(m_Descriptor.Features, (x, y) => x.Id.CompareTo(y.Id));
 
             //enumerate all dataset data
             List<int> output = new List<int>();
@@ -73,9 +72,9 @@ namespace NeoCortexApi.DataMappers
             // Transform rawData in to raw of Features with proper type, normalization value, and corect binary and catogery type 
             // during enumeration Features are sorted by Id property
             //for (int featureIndx = 0; featureIndx < data[0].Length; featureIndx++)
-            foreach (var featureIndx in this.m_Descriptor.Features.OrderBy(x => x.Id).Select(x => x.Index))
+            foreach (var featureIndx in m_Descriptor.Features.OrderBy(x => x.Id).Select(x => x.Index))
             {
-                var col = this.m_Descriptor.Features[featureIndx];
+                var col = m_Descriptor.Features[featureIndx];
                 if (col.Encoder == null)
                     col.Encoder = m_Context.CreateEncoder(col.EncoderSettings);
 
@@ -116,7 +115,7 @@ namespace NeoCortexApi.DataMappers
         /// <summary>
         /// Assembly qualified name of the column encoder. If specified, encoder is used for encoding of the value.
         /// </summary>
-        public Dictionary<String, Object> EncoderSettings { get; set; }
+        public Dictionary<string, object> EncoderSettings { get; set; }
 
         /// <summary>
         /// Instance of encoder used for this column.

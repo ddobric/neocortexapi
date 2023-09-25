@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace NeoCortexApi.Experiments
+namespace NeoCortexApi.Experiments.CortexNetworkTests
 {
     /// <summary>
     /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.4_CellsPerColumnExperiment_Paper.pdf
@@ -122,7 +122,7 @@ namespace NeoCortexApi.Experiments
                         Debug.WriteLine($" ** {input} **");
                         for (int i = 0; i < 3; i++)
                         {
-                            var lyrOut = layer1.Compute((object)input, learn) as ComputeCycle;
+                            var lyrOut = layer1.Compute(input, learn) as ComputeCycle;
                         }
                     }
 
@@ -178,8 +178,8 @@ namespace NeoCortexApi.Experiments
 
                         //tm1.reset(mem);
 
-                        Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {(double)matches / (double)inputs.Length * 100.0}%");
-                        if ((double)matches / (double)inputs.Length == 1)
+                        Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {inputs.Length}\t {matches / (double)inputs.Length * 100.0}%");
+                        if (matches / (double)inputs.Length == 1)
                         {
                             writer.WriteLine($"{cycle}");
                             break;

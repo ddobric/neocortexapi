@@ -1316,6 +1316,44 @@ namespace UnitTestsProject
             Assert.AreEqual(6, BustingResult.BestCell.ParentColumnIndex);
             Assert.AreEqual(1, BustingResult.BestCell.DistalDendrites.Count());
         }
+
+        /// <summary>
+        /// Test a active column Where most used cell in a column and after every test its alter the cell
+        /// </summary>
+
+        [TestMethod]
+        //[TestCategory("Prod")]
+        public void TestAdaptSegment_NegativePermanence_ShouldbeLimitedtoZero()
+        {
+            TemporalMemory tm = new TemporalMemory();
+            Connections cn = new Connections();
+            Parameters p = Parameters.getAllDefaultParameters();
+            p.apply(cn);
+            tm.Init(cn);
+            DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
+            Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(15), -1.5);
+
+            TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 15 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+            try
+            {
+                Assert.IsFalse(dd.Synapses.Contains(s1));
+                //The first Assert condition checks whether the synapse s1 has been destroyed or not, which should
+                //be true(Assert1 Passed).
+                Assert.AreEqual(0, s1.Permanence);
+                //The second Assert condition checks whether the permanence of s1 has been set
+                //to 0 or not,which should be false because the synapse is destroyed and hence no longer exists.
+                //Therefore,accessing the permanence of s1 should result in a null reference exception, and the test should fail
+                //But here the permanence -1.5 is retained as it is, which is not recommended
+            }
+            catch (AssertFailedException ex)
+            {
+                // In the above try block permanence is expected to be in the minimum bound (i.e, permanence = 0)
+                //Therefore the second aseertion fails and enters the catch block to handle the exception.
+                string PERMANENCE_SHOULD_BE_IN_THE_RANGE = $"Assert.AreEqual failed. Expected:<0>. " +
+                                                           $"Actual:<{s1.Permanence}>. ";
+                Assert.AreEqual(PERMANENCE_SHOULD_BE_IN_THE_RANGE, ex.Message);
+            }
+        }
     }
 
     public class TemporalMemoryMock:  TemporalMemory

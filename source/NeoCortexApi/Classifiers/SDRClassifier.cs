@@ -1,6 +1,7 @@
 using NeoCortexApi.Entities;
 using NeoCortexApi.Exception;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 
@@ -36,10 +37,9 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Represents the default constructor
         /// </summary>
-        public SdrClassifier()
+        public SdrClassifier() : this(0.001)
         {
-            alpha = 0.001;
-            InitializeEntries();
+         
         }
 
         /// <summary>

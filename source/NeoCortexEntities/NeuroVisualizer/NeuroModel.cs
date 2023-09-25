@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeoCortexEntities.NeuroVisualizer
+namespace NeoCortexApi.NeuroVisualizer
 {
     public class GenerateNeuroModel
     {
@@ -27,8 +27,8 @@ namespace NeoCortexEntities.NeuroVisualizer
                     SynapseData synap = new SynapseData
                     {
                         Permanence = new Random().NextDouble(),//for now generatin random permanences ranging 0 to 1
-                        PreSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
-                        PostSynapticCellIndex = model.Cells[new Random().Next(0, (model.Cells.Count()))].Index,//selecting random cell from already generated cells 
+                        PreSynapticCellIndex = model.Cells[new Random().Next(0, model.Cells.Count())].Index,//selecting random cell from already generated cells 
+                        PostSynapticCellIndex = model.Cells[new Random().Next(0, model.Cells.Count())].Index,//selecting random cell from already generated cells 
                         // SourceCell = cell id
                         // destination Cell = cell id
                     };

@@ -1,15 +1,16 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
+using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
-namespace NeoCortexApi.Experiments
+namespace UnitTestsProject.Similarity
 {
     /// <summary>
     /// Test for similarity calculation.
@@ -30,7 +31,7 @@ namespace NeoCortexApi.Experiments
         [TestCategory("Prod")]
         public void ScalarSimilaritiesTest(int[] arr1, int[] arr2, double expectedSimilarity)
         {
-            var calculatedSimilarity = MathHelpers.CalcArraySimilarity(ArrayUtils.IndexesWithNonZeros(arr1), ArrayUtils.IndexesWithNonZeros(arr2));
+            var calculatedSimilarity = MathHelpers.CalcArraySimilarity(arr1.IndexesWithNonZeros(), arr2.IndexesWithNonZeros());
 
             Assert.IsTrue(calculatedSimilarity == expectedSimilarity);
 

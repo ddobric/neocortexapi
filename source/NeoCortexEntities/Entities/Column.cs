@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Utility;
-using NeoCortexEntities.NeuroVisualizer;
+using NeoCortexApi.NeuroVisualizer;
+using NeoCortexApi.Types;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.IO;

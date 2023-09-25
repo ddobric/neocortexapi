@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace NeoCortexApi.Entities
+namespace NeoCortexApi
 {
     public interface IDistributedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerator<KeyValuePair<TKey, TValue>>
     {
@@ -58,7 +59,7 @@ namespace NeoCortexApi.Entities
 
         void BumpUpWeakColumnsDist(int[] weakColumns);
 
-        
+
     }
-    
+
 }

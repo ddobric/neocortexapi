@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NeoCortexApi.Entities
+namespace NeoCortexApi
 {
     public static class IEnumerableExtension
     {
         public static bool ElementsEqual<T>(this IEnumerable<T> source, IEnumerable<T> dest)
         {
-            return DefaultCheck(source, dest, () =>
+            return source.DefaultCheck(dest, () =>
             {
                 var list = source.Except(dest);
                 return list.Any() == false;
@@ -18,7 +18,7 @@ namespace NeoCortexApi.Entities
 
         public static bool KeyValuesEqual<TKey, TValue>(this IDictionary<TKey, TValue> source, IDictionary<TKey, TValue> dest)
         {
-            return DefaultCheck(source, dest, () =>
+            return source.DefaultCheck(dest, () =>
             {
                 if (source.Count != dest.Count)
                     return false;
@@ -36,7 +36,7 @@ namespace NeoCortexApi.Entities
 
         public static bool TryIfSequenceEqual<T>(this IEnumerable<T> source, IEnumerable<T> dest)
         {
-            return DefaultCheck<T>(source, dest, () => source.SequenceEqual(dest));
+            return source.DefaultCheck(dest, () => source.SequenceEqual(dest));
         }
         private static bool DefaultCheck<T>(this IEnumerable<T> source, IEnumerable<T> dest, Func<bool> compareMethod)
         {

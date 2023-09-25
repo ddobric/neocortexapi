@@ -6,4 +6,3 @@ services:
     build:
       context: .
       dockerfile: MyCloudProject/Dockerfile
-    platform: linux/amd64

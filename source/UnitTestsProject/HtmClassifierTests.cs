@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using NeoCortexEntities.NeuroVisualizer;
+using NeoCortexApi.NeuroVisualizer;
 
-namespace HtmClassifierUnitTest
+namespace UnitTestsProject
 {
 
     /// <summary>
@@ -37,6 +37,47 @@ namespace HtmClassifierUnitTest
             sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
 
             LearnHtmClassifier();
+        }
+
+        /// <summary>
+        /// Trace SDR test of HtmClassifier
+        /// </summary>
+        [TestMethod]
+        public void TraceTest()
+        {
+            Setup();
+            List<string> input1 = new List<string> { "S1_4-2-5-0-1-2-3", "S1_2-3-4-2-5-0-1" };
+            List<string> input2 = new List<string> { "S1_0-1-2-3-4-2-5", "S1_1-2-3-4-2-5-0", "S1_2-5-0-1-2-3-4" };
+
+            // testing trace sdr 
+            htmClassifier.TraceSimilarities();
+            htmClassifier.TraceSimilarities(input2, input1);
+            htmClassifier.TraceSimilarities(input2);
+
+            // testing cross correlation
+            htmClassifier.TraceCrossSimilarity("S1_4-2-5-0-1-2-3", "S1_2-3-4-2-5-0-1", true);
+            Debug.WriteLine("\n");
+
+            // testing csv generator
+            var a = htmClassifier.RenderCorrelationMatrixToCSVFormat();
+            foreach (string input in a)
+            {
+                Debug.WriteLine(input);
+            }
+            Debug.WriteLine("\n");
+
+            var b = htmClassifier.RenderCorrelationMatrixToCSVFormat(input1);
+            foreach (string input in b)
+            {
+                Debug.WriteLine(input);
+            }
+            Debug.WriteLine("\n");
+
+            var c = htmClassifier.RenderCorrelationMatrixToCSVFormat(input2, input1);
+            foreach (string input in c)
+            {
+                Debug.WriteLine(input);
+            }
         }
 
         /// <summary>
@@ -154,7 +195,8 @@ namespace HtmClassifierUnitTest
             if (cellActivity == CellActivity.ActiveCell)
             {
                 lastActiveCells = cells;
-            } else if (cellActivity == CellActivity.PredictiveCell)
+            }
+            else if (cellActivity == CellActivity.PredictiveCell)
             {
                 // Append one of the cell from lastActiveCells to the randomly generated preditive cells to have some similarity
                 cells.AddRange(lastActiveCells.GetRange
@@ -163,7 +205,7 @@ namespace HtmClassifierUnitTest
                     )
                 );
             }
-            
+
             return cells;
         }
 

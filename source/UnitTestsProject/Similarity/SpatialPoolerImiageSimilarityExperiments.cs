@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +13,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 
-namespace UnitTestsProject
+namespace UnitTestsProject.Similarity
 {
     [TestClass]
     [TestCategory("Experiment")]
@@ -167,7 +167,7 @@ namespace UnitTestsProject
 
                             sp.compute(inputVector, activeArray, true);
 
-                            var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                            var activeCols = activeArray.IndexWhere((el) => el == 1);
 
                             Debug.WriteLine($"Cycle: {cycle++} - Input: {trainingImage}");
                             Debug.WriteLine($"{Helpers.StringifyVector(activeCols)}\n");
@@ -190,17 +190,17 @@ namespace UnitTestsProject
                                 oldArray = new int[numOfCols];
                                 activeArray.CopyTo(oldArray, 0);
 
-                                overlapArrays.Add(ArrayUtils.Make2DArray<double>(ArrayUtils.ToDoubleArray(mem.Overlaps), colDims[0], colDims[1]));
-                                bostArrays.Add(ArrayUtils.Make2DArray<double>(mem.BoostedOverlaps, colDims[0], colDims[1]));
+                                overlapArrays.Add(ArrayUtils.Make2DArray(ArrayUtils.ToDoubleArray(mem.Overlaps), colDims[0], colDims[1]));
+                                bostArrays.Add(ArrayUtils.Make2DArray(mem.BoostedOverlaps, colDims[0], colDims[1]));
 
                                 var activeStr = Helpers.StringifyVector(activeArray);
                                 swActCol.WriteLine("Active Array: " + activeStr);
 
-                                int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, colDims[0], colDims[1]);
+                                int[,] twoDimenArray = ArrayUtils.Make2DArray(activeArray, colDims[0], colDims[1]);
                                 twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
                                 List<int[,]> arrays = new List<int[,]>();
                                 arrays.Add(twoDimenArray);
-                                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
+                                arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray(inputVector, (int)Math.Sqrt(inputVector.Length), (int)Math.Sqrt(inputVector.Length))));
 
                                 NeoCortexUtils.DrawBitmaps(arrays, outputImage, Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
                                 NeoCortexUtils.DrawHeatmaps(overlapArrays, $"{outputImage}_overlap.png", 1024, 1024, 150, 50, 5);
@@ -359,7 +359,7 @@ namespace UnitTestsProject
                             if (cycle == 0 && File.Exists(actColFileName))
                                 File.Delete(actColFileName);
 
-                            var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                            var activeCols = activeArray.IndexWhere((el) => el == 1);
 
                             using (StreamWriter swCols = new StreamWriter(actColFileName, true))
                             {
@@ -451,16 +451,16 @@ namespace UnitTestsProject
                 for (int j = 0; j < keyArray.Length; j++)
                 {
                     var key2 = keyArray[j];
-                    int[] sdr1 = sdrs.GetValueOrDefault<string, int[]>(key1);
-                    int[] sdr2 = sdrs.GetValueOrDefault<string, int[]>(key2);
-                    
+                    int[] sdr1 = sdrs.GetValueOrDefault(key1);
+                    int[] sdr2 = sdrs.GetValueOrDefault(key2);
+
                     double outputSimilarity = MathHelpers.CalcArraySimilarity(sdr1, sdr2);
 
-                    int[] inp1 = inputVectors.GetValueOrDefault<string, int[]>(key1);
-                    int[] inp2 = inputVectors.GetValueOrDefault<string, int[]>(key2);
+                    int[] inp1 = inputVectors.GetValueOrDefault(key1);
+                    int[] inp2 = inputVectors.GetValueOrDefault(key2);
                     double inputSimilarity = MathHelpers.CalcArraySimilarity(inp1, inp2);
 
-                    streamWriter.Write($" | {inputSimilarity.ToString("0.0")} {outputSimilarity.ToString("0.0")} ");                    
+                    streamWriter.Write($" | {inputSimilarity.ToString("0.0")} {outputSimilarity.ToString("0.0")} ");
                 }
             }
 

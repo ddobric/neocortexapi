@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 
 
-namespace NeoCortexApi.Utility
+namespace NeoCortexArrayLib
 {
     /// <summary>
     /// Utilities to match some of the functionality found in Python's Numpy.
@@ -192,14 +192,14 @@ namespace NeoCortexApi.Utility
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static List<int> ReadCsvFileTest(String path)
+        public static List<int> ReadCsvFileTest(string path)
         {
             string fileContent = File.ReadAllText(path);
             string[] integerStrings = fileContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             List<int> intList = new List<int>();
             for (int n = 0; n < integerStrings.Length; n++)
             {
-                String s = integerStrings[n];
+                string s = integerStrings[n];
                 char[] sub = s.ToCharArray();
                 for (int j = 0; j < sub.Length; j++)
                 {
@@ -255,7 +255,7 @@ namespace NeoCortexApi.Utility
             double denom;
             for (int i = 0; i < dividend.Length; i++)
             {
-                quotient[i] = (dividend[i]) /
+                quotient[i] = dividend[i] /
                               (double)((denom = divisor[i]) == 0 ? 1 : denom); //Protect against division by 0
             }
             return quotient;
@@ -273,7 +273,7 @@ namespace NeoCortexApi.Utility
             double denom;
             for (int i = 0; i < dividend.Length; i++)
             {
-                quotient[i] = (dividend[i]) /
+                quotient[i] = dividend[i] /
                               (double)((denom = divisor) == 0 ? 1 : denom); //Protect against division by 0
             }
             return quotient;
@@ -338,7 +338,7 @@ namespace NeoCortexApi.Utility
         public static int[] IndexesWithNonZeros(this IEnumerable<int> source)
         {
             List<int> retVal = new List<int>();
-            
+
             int indx = 0;
             foreach (var item in source)
             {
@@ -451,7 +451,7 @@ namespace NeoCortexApi.Utility
             {
                 sum += arr[i];
             }
-            return sum / (double)arr.Length;
+            return sum / arr.Length;
         }
 
         /// <summary>
@@ -472,7 +472,7 @@ namespace NeoCortexApi.Utility
                 accum2 += dev;
             }
 
-            double var = (accum - (accum2 * accum2 / arr.Length)) / arr.Length;
+            double var = (accum - accum2 * accum2 / arr.Length) / arr.Length;
 
             return var;
         }
@@ -592,7 +592,7 @@ namespace NeoCortexApi.Utility
             }
             else
             {
-                double val = divisor + (n % divisor);
+                double val = divisor + n % divisor;
                 return val == divisor ? 0 : val;
             }
         }
@@ -1076,7 +1076,7 @@ namespace NeoCortexApi.Utility
         {
             for (int i = 0; i < array.Length; i++)
             {
-                if (array[i] <= comparingValue) 
+                if (array[i] <= comparingValue)
                     array[i] = valueToBeSet;
             }
         }
@@ -1453,7 +1453,7 @@ namespace NeoCortexApi.Utility
         /// </summary>
         /// <param name="array"></param>
         /// <param name="value"></param>
-        public static void FillArray(Object array, int value)
+        public static void FillArray(object array, int value)
         {
             if (array is int[] intArray)
             {
@@ -1956,7 +1956,7 @@ namespace NeoCortexApi.Utility
                 sum += Math.Abs(list[i] - list[i + 1]);
             }
 
-            avgDerivation = sum / (double)list.Length;
+            avgDerivation = sum / list.Length;
 
             return avgDerivation;
         }

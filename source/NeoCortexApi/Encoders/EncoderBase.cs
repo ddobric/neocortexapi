@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -214,6 +215,13 @@ namespace NeoCortexApi.Encoders
         /// Note: The output array is reused, so clear it before updating it.
         /// </remarks>
         public abstract int[] Encode(object inputData);
+
+        /// <summary>
+        /// The Encode
+        /// </summary>
+        /// <param name="inputData">The inputData<see cref="object"/></param>
+        /// <returns>The <see cref="int[]"/></returns>
+        //public abstract int[] Encode(object inputData);
 
         public IModuleData Compute(int[] input, bool learn)
         {

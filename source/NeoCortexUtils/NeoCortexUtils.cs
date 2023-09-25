@@ -9,7 +9,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
-namespace NeoCortex
+namespace NeoCortexUtils
 {
     /// <summary>
     /// Set of helper methods.
@@ -47,7 +47,7 @@ namespace NeoCortex
         /// <param name="height">Output height.</param>
         /// <param name="filePath">The bitmap PNG filename.</param>
         /// <param name="text">Text to be written.</param>
-        public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, string text = null)
+        public static void DrawBitmap(int[,] twoDimArray, int width, int height, string filePath, string text = null)
         {
             DrawBitmap(twoDimArray, width, height, filePath, Color.Black, Color.Green, text);
         }
@@ -62,7 +62,7 @@ namespace NeoCortex
         /// <param name="inactiveCellColor"></param>
         /// <param name="activeCellColor"></param>
         /// <param name="text">Text to be written.</param>
-        public static void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
+        public static void DrawBitmap(int[,] twoDimArray, int width, int height, string filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
         {
             int w = twoDimArray.GetLength(0);
             int h = twoDimArray.GetLength(1);
@@ -88,12 +88,12 @@ namespace NeoCortex
         /// <param name="activeCellColor"></param>
         /// <param name="inactiveCellColor"></param>
         /// <param name="text">Text to be written.</param>
-        public static void DrawBitmap(int[,] twoDimArray, int scale, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
+        public static void DrawBitmap(int[,] twoDimArray, int scale, string filePath, Color inactiveCellColor, Color activeCellColor, string text = null)
         {
             int w = twoDimArray.GetLength(0);
             int h = twoDimArray.GetLength(1);
 
-            System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(w * scale, h * scale);
+            Bitmap myBitmap = new Bitmap(w * scale, h * scale);
             int k = 0;
             for (int Xcount = 0; Xcount < w; Xcount++)
             {
@@ -134,7 +134,7 @@ namespace NeoCortex
         /// <param name="filePath"></param>
         /// <param name="bmpWidth"></param>
         /// <param name="bmpHeight"></param>
-        public static void DrawBitmaps(List<int[,]> twoDimArrays, String filePath, int bmpWidth = 1024, int bmpHeight = 1024)
+        public static void DrawBitmaps(List<int[,]> twoDimArrays, string filePath, int bmpWidth = 1024, int bmpHeight = 1024)
         {
             DrawBitmaps(twoDimArrays, filePath, Color.DarkGray, Color.Yellow, bmpWidth, bmpHeight);
         }
@@ -149,7 +149,7 @@ namespace NeoCortex
         /// <param name="activeCellColor">Color of active bit.</param>
         /// <param name="bmpWidth">The width of the bitmap.</param>
         /// <param name="bmpHeight">The height of the bitmap.</param>
-        public static void DrawBitmaps(List<int[,]> twoDimArrays, String filePath, Color inactiveCellColor, Color activeCellColor, int bmpWidth = 1024, int bmpHeight = 1024)
+        public static void DrawBitmaps(List<int[,]> twoDimArrays, string filePath, Color inactiveCellColor, Color activeCellColor, int bmpWidth = 1024, int bmpHeight = 1024)
         {
             int widthOfAll = 0, heightOfAll = 0;
 
@@ -162,7 +162,7 @@ namespace NeoCortex
             if (widthOfAll > bmpWidth || heightOfAll > bmpHeight)
                 throw new ArgumentException("Size of all included arrays must be less than specified 'bmpWidth' and 'bmpHeight'");
 
-            System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(bmpWidth, bmpHeight);
+            Bitmap myBitmap = new Bitmap(bmpWidth, bmpHeight);
             int k = 0;
 
             for (int n = 0; n < twoDimArrays.Count; n++)
@@ -172,7 +172,7 @@ namespace NeoCortex
                 int w = arr.GetLength(0);
                 int h = arr.GetLength(1);
 
-                var scale = ((bmpWidth) / twoDimArrays.Count) / (w + 1);// +1 is for offset between pictures in X dim.
+                var scale = bmpWidth / twoDimArrays.Count / (w + 1);// +1 is for offset between pictures in X dim.
 
                 //if (scale * (w + 1) < (bmpWidth))
                 //    scale++;
@@ -217,7 +217,7 @@ namespace NeoCortex
         /// <param name="yellowMiddle">The middle of the heat. Values lower than this value transforms to green.
         /// Values higher than this value transforms to red.</param>
         /// <param name="redStart">Values higher than this value are by default red. Values lower than this value transform to yellow.</param>
-        public static void DrawHeatmaps(List<double[,]> twoDimArrays, String filePath,
+        public static void DrawHeatmaps(List<double[,]> twoDimArrays, string filePath,
             int bmpWidth = 1024,
             int bmpHeight = 1024,
             decimal redStart = 200, decimal yellowMiddle = 127, decimal greenStart = 20)
@@ -233,7 +233,7 @@ namespace NeoCortex
             if (widthOfAll > bmpWidth || heightOfAll > bmpHeight)
                 throw new ArgumentException("Size of all included arrays must be less than specified 'bmpWidth' and 'bmpHeight'");
 
-            System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(bmpWidth, bmpHeight);
+            Bitmap myBitmap = new Bitmap(bmpWidth, bmpHeight);
             int k = 0;
 
             for (int n = 0; n < twoDimArrays.Count; n++)
@@ -243,7 +243,7 @@ namespace NeoCortex
                 int w = arr.GetLength(0);
                 int h = arr.GetLength(1);
 
-                var scale = ((bmpWidth) / twoDimArrays.Count) / (w + 1);// +1 is for offset between pictures in X dim.
+                var scale = bmpWidth / twoDimArrays.Count / (w + 1);// +1 is for offset between pictures in X dim.
 
                 for (int Xcount = 0; Xcount < w; Xcount++)
                 {
@@ -253,7 +253,7 @@ namespace NeoCortex
                         {
                             for (int padY = 0; padY < scale; padY++)
                             {
-                                myBitmap.SetPixel(n * (bmpWidth / twoDimArrays.Count) + Xcount * scale + padX, Ycount * scale + padY, GetColor(redStart, yellowMiddle, greenStart, (Decimal)arr[Xcount, Ycount]));
+                                myBitmap.SetPixel(n * (bmpWidth / twoDimArrays.Count) + Xcount * scale + padX, Ycount * scale + padY, GetColor(redStart, yellowMiddle, greenStart, (decimal)arr[Xcount, Ycount]));
                                 k++;
                             }
                         }
@@ -276,9 +276,9 @@ namespace NeoCortex
             int[] White = new int[] { 255, 255, 255 }; // #FFFFFF
 
             // value that corresponds to the color that represents the tier above the value - determined later
-            Decimal highValue = 0.0M;
+            decimal highValue = 0.0M;
             // value that corresponds to the color that represents the tier below the value
-            Decimal lowValue = 0.0M;
+            decimal lowValue = 0.0M;
             // next higher and lower color tiers (set to corresponding member variable values)
             int[] highColor = null;
             int[] lowColor = null;
@@ -341,8 +341,8 @@ namespace NeoCortex
             // between the high and low colors
             for (int i = 0; i < 3; i++)
             {
-                int hc = (int)highColor[i];
-                int lc = (int)lowColor[i];
+                int hc = highColor[i];
+                int lc = lowColor[i];
                 // high color is lower than low color - reverse the subtracted vals
                 bool reverse = hc < lc;
 
@@ -352,7 +352,7 @@ namespace NeoCortex
                 int diff = reverse ? lc - hc : hc - lc;
                 // lowest value of the two
                 int baseVal = reverse ? hc : lc;
-                rgb[i] = (int)Math.Round((decimal)diff * ratio) + baseVal;
+                rgb[i] = (int)Math.Round(diff * ratio) + baseVal;
             }
             return rgb;
         }
@@ -362,14 +362,14 @@ namespace NeoCortex
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static List<int> ReadCsvIntegers(String path)
+        public static List<int> ReadCsvIntegers(string path)
         {
             string fileContent = File.ReadAllText(path);
             string[] integerStrings = fileContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             List<int> intList = new List<int>();
             for (int n = 0; n < integerStrings.Length; n++)
             {
-                String s = integerStrings[n];
+                string s = integerStrings[n];
                 char[] sub = s.ToCharArray();
                 for (int j = 0; j < sub.Length; j++)
                 {
@@ -465,14 +465,14 @@ namespace NeoCortex
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static List<int> ReadCsvFileTest(String path)
+        public static List<int> ReadCsvFileTest(string path)
         {
             string fileContent = File.ReadAllText(path);
             string[] integerStrings = fileContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             List<int> intList = new List<int>();
             for (int n = 0; n < integerStrings.Length; n++)
             {
-                String s = integerStrings[n];
+                string s = integerStrings[n];
                 char[] sub = s.ToCharArray();
                 for (int j = 0; j < sub.Length; j++)
                 {

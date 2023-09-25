@@ -3,7 +3,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Utility;
+using NeoCortexArrayLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;

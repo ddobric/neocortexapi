@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using UnitTestsProject;
 
-namespace MyUnitTest
+namespace UnitTestsProject.NoiseExperiments
 {
     [TestClass]
     public class SinusoidalNoiseExperiment
@@ -237,7 +237,7 @@ namespace MyUnitTest
                         for (int i = 0; i < outArr.Length; i++)
                         {
                             sw.Write(outArr[i]);
-                            if (i < (outArr.Length - 1)) sw.Write(",");
+                            if (i < outArr.Length - 1) sw.Write(",");
                         }
                         sw.WriteLine();
                     }
@@ -252,23 +252,23 @@ namespace MyUnitTest
         /// <returns></returns>
         private static Dictionary<string, object> GetScalarEncoderDefaultSettings(int inputBits)
         {
-            Dictionary<String, Object> encoderSettings = new Dictionary<string, object>();
+            Dictionary<string, object> encoderSettings = new Dictionary<string, object>();
             //-----------------------SCALAR ENCODER PARAMETER---------------------------
             encoderSettings.Add("W", 45);                       //the number of bits that are set to encode a single value -the "width" of the output signal 
                                                                 //restriction: w must be odd to avoid centering problems.
             encoderSettings.Add("N", inputBits);                     //The number of bits in the output. Must be greater than or equal to w
-            encoderSettings.Add("MinVal", (double)-20.0);         //The minimum value of the input signal.
-            encoderSettings.Add("MaxVal", (double)20.0);       //The upper bound of the input signal
-                                                               //encoderSettings.Add("Radius", (double)0);         //Two inputs separated by more than the radius have non-overlapping representations.
-                                                               //Two inputs separated by less than the radius will in general overlap in at least some
-                                                               //of their bits. You can think of this as the radius of the input.
-                                                               //encoderSettings.Add("Resolution", (double)0.15);  // Two inputs separated by greater than, or equal to the resolution are guaranteed
-                                                               //to have different representations.
-            encoderSettings.Add("Periodic", (bool)false);        //If true, then the input value "wraps around" such that minval = maxval
-                                                                 //For a periodic value, the input must be strictly less than maxval,
-                                                                 //otherwise maxval is a true upper bound.
-            encoderSettings.Add("ClipInput", (bool)true);       //if true, non-periodic inputs smaller than minval or greater than maxval 
-                                                                //will be clipped to minval/maxval
+            encoderSettings.Add("MinVal", -20.0);         //The minimum value of the input signal.
+            encoderSettings.Add("MaxVal", 20.0);       //The upper bound of the input signal
+                                                       //encoderSettings.Add("Radius", (double)0);         //Two inputs separated by more than the radius have non-overlapping representations.
+                                                       //Two inputs separated by less than the radius will in general overlap in at least some
+                                                       //of their bits. You can think of this as the radius of the input.
+                                                       //encoderSettings.Add("Resolution", (double)0.15);  // Two inputs separated by greater than, or equal to the resolution are guaranteed
+                                                       //to have different representations.
+            encoderSettings.Add("Periodic", false);        //If true, then the input value "wraps around" such that minval = maxval
+                                                           //For a periodic value, the input must be strictly less than maxval,
+                                                           //otherwise maxval is a true upper bound.
+            encoderSettings.Add("ClipInput", true);       //if true, non-periodic inputs smaller than minval or greater than maxval 
+                                                          //will be clipped to minval/maxval
 
             encoderSettings.Add("Offset", 108);
 

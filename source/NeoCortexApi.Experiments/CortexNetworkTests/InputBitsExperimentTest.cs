@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace NeoCortexApi.Experiments
+namespace NeoCortexApi.Experiments.CortexNetworkTests
 {
     /// <summary>
     /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.4_ParameterChangeExperiment_Paper.pdf

@@ -6,7 +6,7 @@ using NeoCortexApi.Exception;
 using System;
 using System.Collections.Generic;
 
-namespace UnitTestsProject
+namespace UnitTestsProject.CortexNetworkTests
 {
 
     // Note since we have implemented the matrix as a array and array starts with zero. So what ever bucket is predicted 
@@ -91,7 +91,7 @@ namespace UnitTestsProject
         {
             double alpha = 1.0;
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>(alpha);
-            List<Object> classification = new List<Object>(); // contains bucket index and actual values
+            List<object> classification = new List<object>(); // contains bucket index and actual values
             classification.Add(0);
             classification.Add(10);
             for (int i = 0; i < 10; i++)
@@ -113,7 +113,7 @@ namespace UnitTestsProject
         {
             double alpha = 0.1;
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>(alpha);
-            List<Object> classification = new List<object>();
+            List<object> classification = new List<object>();
             classification.Add(4);
             classification.Add(34.7);
 
@@ -183,7 +183,7 @@ namespace UnitTestsProject
 
             double alpha = 0.1;
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>(alpha);
-            List<Object> classification = new List<object>();
+            List<object> classification = new List<object>();
             classification.Add(4);
             classification.Add(34.7);
 
@@ -206,7 +206,7 @@ namespace UnitTestsProject
         public void TestGrowingMatrixAccordingToInputs()
         {
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>();
-            List<Object> classification = new List<object>();
+            List<object> classification = new List<object>();
             classification.Add(4);
             classification.Add(34.7);
             int recordNumber = 0;
@@ -228,7 +228,7 @@ namespace UnitTestsProject
         public void TestGrowingMatrixAccordingToBuckets()
         {
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>();
-            List<Object> classification = new List<object>();
+            List<object> classification = new List<object>();
             classification.Add(0);
             classification.Add(34.7);
             int recordNumber = 0;
@@ -259,7 +259,7 @@ namespace UnitTestsProject
         public void TestBucketEntriesSingleInput()
         {
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>();
-            List<Object> classification = new List<object>();
+            List<object> classification = new List<object>();
             classification.Add(4);
             classification.Add(34.7);
             sdr.Compute(0, classification, new int[] { 0, 6, 9, 11 });
@@ -276,7 +276,7 @@ namespace UnitTestsProject
         public void TestBucketEntriesMultipleInputs()
         {
             SdrClassifier<int, int> sdr = new SdrClassifier<int, int>();
-            List<Object> classification = new List<object>();
+            List<object> classification = new List<object>();
             classification.Add(4);
             classification.Add(34.7);
             sdr.Compute(0, classification, new int[] { 0, 6, 9, 11 });

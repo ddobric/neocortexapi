@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeoCortexApi.Network
+namespace NeoCortexApi.Network_Old
 {
     /// <summary>
     /// Holds general context information.
@@ -34,7 +34,7 @@ namespace NeoCortexApi.Network
                 foreach (var tp in asm.GetTypes())
                 {
                     if (typeof(EncoderBase).IsAssignableFrom(tp))
-                        this.m_AllEncoders.Add(tp);
+                        m_AllEncoders.Add(tp);
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace NeoCortexApi.Network
         /// <returns></returns>
         public EncoderBase CreateEncoder(string encoderType, Dictionary<string, object> encoderSettings)
         {
-            var encoderTp = this.m_AllEncoders.FirstOrDefault(t => t.FullName == encoderType);
+            var encoderTp = m_AllEncoders.FirstOrDefault(t => t.FullName == encoderType);
             if (encoderTp != null)
             {
                 if (encoderTp.IsGenericType)

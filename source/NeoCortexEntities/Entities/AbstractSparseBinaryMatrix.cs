@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using NeoCortexApi.Utility;
+using NeoCortexApi.Types;
+using NeoCortexArrayLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -322,7 +323,7 @@ namespace NeoCortexApi.Entities
         public AbstractSparseBinaryMatrix Or(List<int> onBitIndexes)
         {
             int[] ones = new int[onBitIndexes.Count];
-            Utility.ArrayUtils.Fill(ones, 1);
+            ArrayUtils.Fill(ones, 1);
             return set(onBitIndexes.ToArray(), ones);
         }
 
@@ -334,7 +335,7 @@ namespace NeoCortexApi.Entities
         public AbstractSparseBinaryMatrix Or(int[] onBitIndexes)
         {
             int[] ones = new int[onBitIndexes.Length];
-            Utility.ArrayUtils.Fill(ones, 1);
+            ArrayUtils.Fill(ones, 1);
             return set(onBitIndexes, ones);
         }
 
