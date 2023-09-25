@@ -18,10 +18,45 @@ If you need to obtain a copy of our project on your own system, use these links 
 | Resource Group | ```CCProjectR``` | --- |
 | Container Registry | ```variablei``` | --- |
 | Container Registry server | ```variablei.azurecr.io``` | --- |
-| Container Instance | ```adecloudprojectcontainer``` | --- |
+| Container Instance | ```variable-i-project-container``` | --- |
 | Storage account | ```ccprojectsd``` | --- |
 | Queue storage | ```variableiqueue``` | Queue which containes trigger message |
 | Blob container | ```variablei-result-files``` | Container used to store results|
 | Table storage | ```variableitable``` | Container used to store learning accuracy logs |
 
+The experiment Docker image can be pulled from the Azure Container Registry using the instructions below.
+~~~
+docker login variablei.azurecr.io -u variablei -p ALNnME150vKMZcGdmRnMlvVQaWwssz1YUHognRLKFT+ACRCNaFL/
+~~~
+~~~
+docker pull variablei.azurecr.io/variablei-cc-project:latest
+~~~
+
 ## How to run the experiment
+## Step1 : Message input from azure portal
+at a message to queues inside Azure storage account.
+p.s Encode the message body in Base64
+
+**How to add message :** 
+Azure portal > Home > ccprojectsd | Queues > variableiqueue> Add message
+![Screenshot (108)](https://github.com/Mostainahmed/variable-i/assets/74201172/aa4f44c5-7e9f-4214-8d38-13cf168d5fe0)
+
+**Messages added to queue :**
+![Screenshot (104)](https://github.com/Mostainahmed/variable-i/assets/74201172/4a13b7c4-1415-4a10-a7fc-782f8cbef151)
+
+### Queue Message that will trigger the experiment:
+~~~json
+{
+  "ExperimentId": "1",
+  "InputFile": "runccproject",
+  "Description": "Cloud Computing Implementation",
+  "ProjectName": "ML22/23-11. Implement UnitTests on Temporal Memory Algorithm",
+  "GroupName": "variabl-i",
+  "Students": [ "Syed Mostain Ahmed", "Farjana Akter", "Shamsir Doha" ]
+}
+~~~
+Go to "variable-i-container," "Containers," and "logs" to make sure the experiment is being run from a container instance.
+![Screenshot (105)](https://github.com/Mostainahmed/variable-i/assets/74201172/e81b0eca-b1a6-45cc-83e7-acb5d1bb19a3)
+
+when the experiment  is successful bellow message(Experiment complete successfully) will be shown. Experiment successfully
+![Screenshot (109)](https://github.com/Mostainahmed/variable-i/assets/74201172/65bd578b-0c17-4946-b83d-8bb194a0f81d)
