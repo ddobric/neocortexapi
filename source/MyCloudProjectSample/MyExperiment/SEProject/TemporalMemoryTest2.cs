@@ -219,12 +219,6 @@ namespace MyExperiment.SEProject
             } catch (Exception ex) { 
                 result.IsPassing = false;
             }
-            catch (Exception ex)
-            {
-                // Handle any exceptions
-                // You can log the exception details if needed
-                Console.WriteLine($"Test failed: {ex.Message}");
-            }
 
             return result;
         }
