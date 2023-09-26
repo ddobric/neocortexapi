@@ -50,7 +50,7 @@ namespace MyExperiment
         /// </summary>
         /// <param name="inputFile">The input file.</param>
         /// <returns>experiment result object</returns>
-        public Task<ExperimentResult> Run(string inputFile)
+        public Task<IExperimentResult> Run(string inputFile)
         {
             Random rnd = new Random();
             int rowKeyNumber = rnd.Next(0, 1000);
@@ -82,7 +82,7 @@ namespace MyExperiment
             res.EndTimeUtc = DateTime.UtcNow;
 
             this.logger?.LogInformation("The process successfully completed");
-            return Task.FromResult<ExperimentResult>(res);
+            return Task.FromResult<IExperimentResult>(res);
         }
 
 
@@ -125,7 +125,7 @@ namespace MyExperiment
                         var inputFile = request.InputFile;
 
                         // Here is your SE Project code started.(Between steps 4 and 5).
-                        ExperimentResult result = await this.Run(inputFile);
+                        IExperimentResult result = await this.Run(inputFile);
 
                         // Step 4 (oposite direction)
                         //TODO. do serialization of the result.

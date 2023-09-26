@@ -17,7 +17,7 @@ namespace MyCloudProject.Common
         /// <returns>The fullpath name of the file as downloaded locally.</returns>
         Task<string> DownloadInputFile(string fileName);
 
-        Task<byte[]> UploadResultFile(string fileName, byte[] data);
+        Task UploadResultFile(string fileName, byte[] data);
 
         /// <summary>
         /// Uploads results of the experiment as the entoty of the table storage.

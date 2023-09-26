@@ -37,7 +37,7 @@ namespace MyExperiment
             throw new NotImplementedException();
         }
 
-        public async Task UploadExperimentResult(ExperimentResult result)
+        public async Task UploadExperimentResult(IExperimentResult result)
         {
             Random rnd = new Random();
             int rowKeyNumber = rnd.Next(0, 1000);
@@ -53,7 +53,6 @@ namespace MyExperiment
                 StartTimeUtc = result.StartTimeUtc,
                 EndTimeUtc = result.EndTimeUtc,
                 TestData = result.TestData,
-                TestName = result.TestName
             };
             Console.WriteLine($"Upload ExperimentResult to table: {this.config.ResultTable}");
             var client = new TableClient(this.config.StorageConnectionString, this.config.ResultTable);
@@ -72,7 +71,7 @@ namespace MyExperiment
 
         }
 
-        public async Task<byte[]> UploadResultFile(string fileName, byte[] data)
+        public async Task UploadResultFile(string fileName, byte[] data)
         {
             var experimentLabel = fileName;
 
@@ -82,7 +81,6 @@ namespace MyExperiment
             // Write encoded data to text file
             byte[] testData = data;
 
-            // Generate a unique blob name (you can customize this logic)
             string blobName = experimentLabel;
 
             // Upload the text data to the blob container
