@@ -36,7 +36,7 @@ docker pull variablei.azurecr.io/variablei-cc-project:latest
 
 ## Step1: Message input from Azure portal
 Add a message to queues inside the Azure storage account.
-p.s Encode the message body in Base64
+p.s Put off the tik from "Encode the message body in Base64"
 
 **How to add a message:** 
 
