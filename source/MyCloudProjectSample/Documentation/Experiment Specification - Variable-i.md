@@ -35,7 +35,7 @@ docker pull variablei.azurecr.io/variablei-cc-project:latest
 ## How to run the experiment
 
 ## Step1: Message input from Azure portal
-At a message to queues inside Azure storage account.
+Add a message to queues inside the Azure storage account.
 p.s Encode the message body in Base64
 
 **How to add a message:** 
