@@ -6,11 +6,13 @@ using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace UnitTestsProject.NoiseExperiments
 {
@@ -132,25 +134,39 @@ namespace UnitTestsProject.NoiseExperiments
         [TestCategory("Experiment")]
         public void NoiseExperimentTest()
         {
+            if (!Directory.Exists(nameof(NoiseExperimentTest)))
+            {
+                Directory.CreateDirectory(nameof(NoiseExperimentTest));
+            }
+
             const int colDimSize = 64;
 
             const int noiseStepPercent = 5;
 
             var parameters = GetDefaultParams();
-            // Must be set to the input width if using Gloabal Inhibition
-            parameters.Set(KEY.POTENTIAL_RADIUS, 32*32);
-            parameters.Set(KEY.POTENTIAL_PCT, 1.0);
+
             parameters.Set(KEY.GLOBAL_INHIBITION, true);
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 50);
-            //parameters.Set(KEY.INHIBITION_RADIUS, (int)0.01 * colDimSize * colDimSize);
+
+            int potRad = 10 * 10;
+
+            // Set the RF to the entire input space.
+            parameters.Set(KEY.POTENTIAL_RADIUS, potRad);
+
+            // If this value is increased, the memorizing of the seen pattern increases.
+            // Higher PotentionPct means that more synapses are connected to the input and the pattern keeps
+            // recognized for larger portion of the noise. 
+            double potRadPtc = 0.8;
+
+            parameters.Set(KEY.POTENTIAL_PCT, potRadPtc);
+           
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 5);
+            // parameters.Set(KEY.INHIBITION_RADIUS, (int)0.01 * colDimSize * colDimSize);
             parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
             parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * colDimSize * colDimSize);
-            // This is where boosting happen.
-            // The eperiment operates under 1000 cycles and with this the instability is not observed.
             parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
             parameters.Set(KEY.MAX_BOOST, 0.0);
-            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.008);
-            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.01);
+            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.005);
+            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.005);
             parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
 
             parameters.Set(KEY.SEED, 42);
@@ -158,16 +174,17 @@ namespace UnitTestsProject.NoiseExperiments
             parameters.setInputDimensions(new int[] { 32, 32 });
             parameters.setColumnDimensions(new int[] { colDimSize, colDimSize });
 
-            var sp = new SpatialPoolerMT();
+            var sp = new SpatialPooler();
             var mem = new Connections();
 
             parameters.apply(mem);
             sp.Init(mem);
 
             List<int[]> inputVectors = new List<int[]>();
-           
-            inputVectors.Add(getInputVector1());
+
+            //inputVectors.Add(getInputVector1());
             inputVectors.Add(getInputVector2());
+            //inputVectors.Add(getInputVector3());
             //inputVectors.Add(Helpers.GetRandomVector(1024, 5));
             //inputVectors.Add(Helpers.GetRandomVector(1024, 10));
             //inputVectors.Add(Helpers.GetRandomVector(1024, 15));
@@ -177,7 +194,7 @@ namespace UnitTestsProject.NoiseExperiments
 
             int[][] activeColumnsWithZeroNoise = new int[inputVectors.Count][];
 
-            using (StreamWriter sw = new StreamWriter("noise_experiment_result.csv"))
+            using (StreamWriter sw = new StreamWriter($"Noise_experiment_result_PotRad{potRad}_potRadPtc{potRadPtc}.txt"))
             {
                 foreach (var inputVector in inputVectors)
                 {
@@ -185,53 +202,48 @@ namespace UnitTestsProject.NoiseExperiments
 
                     Debug.WriteLine("");
                     Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
-                    sw.WriteLine($"----- VECTOR {vectorIndex} ----------");
 
                     // Array of active columns with zero noise. The reference (ideal) output.
                     activeColumnsWithZeroNoise[vectorIndex] = new int[colDimSize * colDimSize];
 
                     int[] activeArray = null;
 
-                    for (int j = 0; j < 100; j += noiseStepPercent)
+                    for (int noiseLevel = 0; noiseLevel < 100; noiseLevel += noiseStepPercent)
                     {
-                        Debug.WriteLine($"--- Vector {0} - Noise Iteration {j} ----------");
+                        Debug.WriteLine($"--- Vector {0} - Noise Iteration {noiseLevel} ----------");
 
                         int[] noisedInput;
 
-                        if (j > 0)
+                        if (noiseLevel > 0)
                         {
-                            noisedInput = ArrayUtils.FlipBit(inputVector, (double)((double)j / 100.00));
+                            noisedInput = ArrayUtils.FlipBit(inputVector, (double)((double)noiseLevel / 100.00));
                         }
                         else
                             noisedInput = inputVector;
 
-                        // Similarity between input and reference (ideal) input without noise.
-                        var inputSimilarity = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
-                        Debug.WriteLine($"Input with noise {j} - HamDist: {inputSimilarity}");
+                        // TODO: Try CalcArraySimilarity
+                        var inpDist = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
+                        Debug.WriteLine($"Input with noise {noiseLevel} - HamDist: {inpDist}");
                         Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
                         Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
 
-                        // We train just few steps to avoid boosting. This issue was solved with homeostatic plascticity controller,
-                        // which is not used in this experiment.
                         for (int i = 0; i < 10; i++)
                         {
                             activeArray = sp.Compute(noisedInput, true, returnActiveColIndiciesOnly: false) as int[];
 
-                            if (j > 0)
+                            if (noiseLevel > 0)
                                 Debug.WriteLine($"{MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
                         }
 
-                        if (j == 0)
+                        if (noiseLevel == 0)
                         {
                             Array.Copy(activeArray, activeColumnsWithZeroNoise[vectorIndex], activeColumnsWithZeroNoise[vectorIndex].Length);
                         }
 
                         var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                        // Similarity between output and reference (ideal) output without noise.
-                        var outputSimilarity = MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true);
-
-                        Debug.WriteLine($"Output with noise {j} - Ham Dist: {outputSimilarity}");
+                        var outputDistance = MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true);
+                        Debug.WriteLine($"Output with noise {noiseLevel} - Ham Dist: {outputDistance}");
                         Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeColumnsWithZeroNoise[vectorIndex], (el) => el == 1))}");
                         Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
 
@@ -243,25 +255,109 @@ namespace UnitTestsProject.NoiseExperiments
                         arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(noisedInput, 32, 32)));
                         arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(activeArray, 64, 64)));
 
-                        //   NeoCortexUtils.DrawHeatmaps(bostArrays, $"{outputImage}_boost.png", 1024, 1024, 150, 50, 5);
-                        NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j * 10}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+                        var overlap = sp.CalculateOverlap(mem, noisedInput);
 
-                        sw.WriteLine($"{j};{inputSimilarity};{outputSimilarity}");
+                        sp.TraceColumnPermenances("perms.txt");
+
+                        sw.WriteLine($"{noiseLevel};{inpDist};{outputDistance}");
+
+                        CreateOutput(colDimSize, parameters, vectorIndex, noiseLevel, arrays, overlap, activeCols, sp);
                     }
 
                     vectorIndex++;
                 }
             }
-            
-            vectorIndex = OutputPredictionResult(sp, inputVectors, activeColumnsWithZeroNoise);
+
+
+            //vectorIndex = OutputPredictionResult(sp, inputVectors, activeColumnsWithZeroNoise);
         }
 
+        private void CreateOutput(int colDimSize, Parameters parameters, int vectorIndex, int j, List<int[,]> arrays, int[] overlaps, int[] activeCols, SpatialPooler sp)
+        {
+            List<int> actOverlaps = new List<int>();
+
+            for (int i = 0; i < activeCols.Length; i++)
+            {
+                actOverlaps.Add(overlaps[i]);
+            }
+
+            int actColThreshold = actOverlaps.Min();
+
+            var twodOverlapArray = PrepareOverlapArray(overlaps, new int[] { colDimSize, colDimSize });
+
+            SdrRepresentation.TraceInGraphFormat(new List<int[,]>() { twodOverlapArray },
+                new int[] { 1, colDimSize * colDimSize },
+                actColThreshold/* parameters.Get<int>(KEY.STIMULUS_THRESHOLD)*/, Color.Red, Color.Green,
+                pngFileName: Path.Combine(nameof(NoiseExperimentTest), $"Overlap_{vectorIndex}_Noise_{j}.png"));
+
+            NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+
+
+            //var allColsPerm = sp.GetColumnPermenances();
+
+            //NeoCortexUtils.DrawHeatmaps(new List<double[,]>() { PrepareHeatmapArray(allColsPerm) },
+            //    $"Heat_Vector_{vectorIndex}_Noise_{noiseLevel}.png", 1024, 4096, 100, 200, 300);
+
+
+            //var arr = PreperePermArray(allColsPerm, colDimSize * colDimSize, 1024);
+            //SdrRepresentation.TraceInGraphFormat(new List<int[,]>() { arr },
+            //  new int[] { colDimSize * colDimSize, 1024 },
+            //  -1, Color.Green, Color.Green, width: 4096, height:1300,
+            //  pngFileName: Path.Combine(nameof(NoiseExperimentTest), $"Permanences_{vectorIndex}_Noise_{inpIndex}.png"));
+        }
+
+        private double[,] PrepareHeatmapArray (List<List<double>> permanences)
+        {
+            double[,] arr = new double[permanences[0].Count, permanences.Count];
+
+            for (int colIndex = 0; colIndex < permanences.Count; colIndex++)
+            {
+                for (int inpIndex = 0; inpIndex < permanences[colIndex].Count; inpIndex++)
+                {
+                    arr[ inpIndex, colIndex] = 100 * permanences[colIndex][inpIndex];
+                }             
+            }
+
+            return arr;
+        }
+
+        private T[,] PrepareOverlapArray<T>(T[] overlaps, int[] colDims)
+        {
+            T[,] arr = new T[1, colDims[1] * colDims[0]];
+
+            for (int colIndex = 0; colIndex < colDims[0] * colDims[1]; colIndex++)
+            {
+                arr[0, colIndex] = overlaps[colIndex];
+            }
+
+            return arr;
+        }
+
+        private int[,] PreperePermArray(List<List<double>> allColPerms, int cols, int inputs)
+        {
+            int offs = 3;
+            int singlePermRange = 10;
+
+            int[,] arr = new int[cols, inputs];
+
+            for (int colIndex = 0; colIndex < 200 /*allColPerms.Count*/; colIndex++)
+            {
+                for (int inpIndex = 0; inpIndex < 1000; inpIndex++)
+                {
+                    //int scaledPermVal = (offs + inpIndex * singlePermRange) + (int)(100.00 * allColPerms[colIndex][inpIndex]);
+                    int scaledPermVal = (offs + inpIndex * singlePermRange)+0;
+                    arr[inpIndex, colIndex] = 512;
+                }
+            }
+
+            return arr;
+        }
 
         /// <summary>
         ///  Prediction code.
         ///  This method takes a single sample of every input vector and adds
         ///  some noise to it. Then it predicts it.<param name="sp"></param>
-        ///  Calculated hamming distance (percent overlap) between predicted output and output <param name="inputVectors"></param>
+        ///  Calculated hamming distance (percent permanences) between predicted output and output <param name="inputVectors"></param>
         ///  trained without noise is final result, which should be higher than 95% (realistic guess).
         /// </summary>
         /// <param name="activeColumnsWithZeroNoise"></param>
@@ -328,6 +424,24 @@ namespace UnitTestsProject.NoiseExperiments
                 for (int j = 0; j < 32; j++)
                 {
                     if (i > 12 && i < 24 && j > 19 && j < 30)
+                        inputVector[i * 32 + j] = 1;
+                    else
+                        inputVector[i * 32 + j] = 0;
+                }
+            }
+
+            return inputVector;
+        }
+
+        private static int[] getInputVector3()
+        {
+            int[] inputVector = new int[1024];
+
+            for (int i = 0; i < 31; i++)
+            {
+                for (int j = 0; j < 32; j++)
+                {
+                    if (i > 14 && i < 18 && j > 20 && j < 24)
                         inputVector[i * 32 + j] = 1;
                     else
                         inputVector[i * 32 + j] = 0;

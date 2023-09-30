@@ -111,7 +111,7 @@ namespace NeoCortex
         /// </summary>
         /// <param overlapArrays="Contains the overlaps of the columns during SDR learning of Spatial Pooler"></param>
         /// <param swActCol1="to write in Excel file"></param>
-        /// <returns></returns>
+        /// <returns>Max overlap.</returns>
 
         public static int TraceColumnsOverlap(List<double[,]> overlapArrays, StreamWriter swActCol1, string testName)
         {
@@ -155,7 +155,7 @@ namespace NeoCortex
                 }
             }
 
-            // Set header row and formatting.
+            // Set header colIdx and formatting.
             worksheet.Rows[0].Style.Font.Weight = ExcelFont.BoldWeight;
             worksheet.Columns[0].Width = (int)LengthUnitConverter.Convert(3, LengthUnit.Centimeter, LengthUnit.ZeroCharacterWidth256thPart);
 
@@ -293,7 +293,7 @@ namespace NeoCortex
         /// <param name="threshold"></param>
         /// <param name="aboveThreshold"></param>
         /// <param name="belowThreshold"></param>
-        public static void TraceColumnsOverlap(List<double[,]> overlapArrays, int[] colDims, TraceFormat formatTypes, double threshold, Color aboveThreshold, Color belowThreshold)  //To Trace out the Columns /Overlap count
+        public static void TraceColumnsOverlap(List<int[,]> overlapArrays, int[] colDims, TraceFormat formatTypes, int threshold, Color aboveThreshold, Color belowThreshold)  //To Trace out the Columns /Overlap count
         {
             switch (formatTypes)
             {
@@ -323,7 +323,7 @@ namespace NeoCortex
         /// </summary>
         /// <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
         /// <param name="colDims">dimension in [width, length] array</param>        
-        public static void TraceInLineFormat(List<double[,]> overlapArrays, int[] colDims)
+        public static void TraceInLineFormat(List<int[,]> overlapArrays, int[] colDims)
         {
             List<string> vs = new List<string>();
             int column = 0;
@@ -351,46 +351,46 @@ namespace NeoCortex
         /// <br>Needs to Include link md to description</br>
         /// </summary>
         /// <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
-        /// <param name="colDims">dimension in [width, length] array</param>
+        /// <param name="dims">dimension in [width, length] array</param>
         /// <param name="threshold"></param>
         /// <param name="aboveThreshold"></param>
         /// <param name="belowThreshold"></param>
-        public static void TraceInGraphFormat(List<double[,]> overlapArrays, int[] colDims, double threshold, Color aboveThreshold, Color belowThreshold, int width = 500, int height = 524)
+        public static void TraceInGraphFormat(List<int[,]> overlapArrays, int[] dims, int threshold, Color aboveThreshold, Color belowThreshold, int width = 500, int height = 524, string pngFileName = "overlap.png")
         {
-            int row = 0;
+            int colIdx = 0;
 
             Image image = new Bitmap(width, height);
 
             Graphics graph = Graphics.FromImage(image);
 
             graph.Clear(Color.Azure);
-            Pen pen = new Pen(belowThreshold);
+            Pen pen;
 
             foreach (var entry in overlapArrays)
             {
-                for (int i = 0; i < colDims[0]; ++i)
+                for (int i = 0; i < dims[0]; ++i)
                 {
-                    for (int j = 0; j < colDims[1]; ++j)
+                    for (int j = 0; j < dims[1]; ++j)
                     {
-                        var overlapValue = (entry[i, j]);
-                        if (overlapValue > threshold)
+                        if (entry[i, j] > threshold)
                         {
-                            Pen penthreshold = new Pen(aboveThreshold);
-                            graph.DrawLines(penthreshold, new Point[] { new Point(row, (int)entry[i, j]), new Point(row, 0) });
+                            pen = new Pen(aboveThreshold);
                         }
                         else
                         {
-                            graph.DrawLines(pen, new Point[] { new Point(row, (int)entry[i, j]), new Point(row, 0) });
+                            pen = new Pen(belowThreshold);
                         }
-                        row++;
+
+                        graph.DrawLines(pen, new Point[] { new Point(colIdx, height - (int)entry[i, j]), new Point(colIdx, height) });
+
+                        colIdx++;
                     }
                 }
             }
-            if (!Directory.Exists("SdrRepresentation_Output"))
-            {
-                Directory.CreateDirectory("SdrRepresentation_Output");
-            }
-            image.Save("SdrRepresentation_Output/trace_col_overlap_graph.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            graph.DrawLines(new Pen(Color.Blue), new Point[] { new Point(0, height - threshold), new Point(dims[1], height - threshold) });
+
+            image.Save(pngFileName, System.Drawing.Imaging.ImageFormat.Png);
         }
 
         /// <summary>
@@ -399,7 +399,7 @@ namespace NeoCortex
         /// </summary>
         /// <param name="overlapArrays">overlap result from calling an object of type Connection.OverLaps</param>
         /// <param name="colDims">dimension in [width, length] array</param>       
-        public static void TraceInExcelFormat(List<double[,]> overlapArrays, int[] colDims)
+        public static void TraceInExcelFormat(List<int[,]> overlapArrays, int[] colDims)
         {
             SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
             SpreadsheetInfo.FreeLimitReached += (sender, e) => e.FreeLimitReachedAction = FreeLimitReachedAction.ContinueAsTrial;
