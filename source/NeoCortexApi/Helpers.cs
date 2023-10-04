@@ -6,13 +6,31 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace NeoCortexApi
 {
     public class Helpers
     {
+        /// <summary>
+        /// Create szthe test folder.
+        /// </summary>
+        /// <param name="folderName"></param>
+        public static void CreateTestFolder(string folderName)
+        {
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+                while (!Directory.Exists(folderName))
+                {
+                    Thread.Sleep(500);
+                }
+            }
+        }
+
         /// <summary>
         /// Creates random vector of specified dimension.
         /// </summary>

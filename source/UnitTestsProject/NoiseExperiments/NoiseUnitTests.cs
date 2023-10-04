@@ -134,45 +134,17 @@ namespace UnitTestsProject.NoiseExperiments
         [TestCategory("Experiment")]
         public void NoiseExperimentTest()
         {
-            if (!Directory.Exists(nameof(NoiseExperimentTest)))
-            {
-                Directory.CreateDirectory(nameof(NoiseExperimentTest));
-            }
+            Helpers.CreateTestFolder(nameof(NoiseExperimentTest));
 
-            const int colDimSize = 64;
-
-            const int noiseStepPercent = 5;
-
-            var parameters = GetDefaultParams();
-
-            parameters.Set(KEY.GLOBAL_INHIBITION, true);
-
-            int potRad = 10 * 10;
-
-            // Set the RF to the entire input space.
-            parameters.Set(KEY.POTENTIAL_RADIUS, potRad);
+            int colDimSize = 64 * 64, noiseStepPercent;
+            int potRad = -1;
 
             // If this value is increased, the memorizing of the seen pattern increases.
             // Higher PotentionPct means that more synapses are connected to the input and the pattern keeps
             // recognized for larger portion of the noise. 
-            double potRadPtc = 0.8;
+            double potRadPtc = 0.5;
 
-            parameters.Set(KEY.POTENTIAL_PCT, potRadPtc);
-           
-            parameters.Set(KEY.STIMULUS_THRESHOLD, 5);
-            // parameters.Set(KEY.INHIBITION_RADIUS, (int)0.01 * colDimSize * colDimSize);
-            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
-            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * colDimSize * colDimSize);
-            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
-            parameters.Set(KEY.MAX_BOOST, 0.0);
-            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.005);
-            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.005);
-            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
-
-            parameters.Set(KEY.SEED, 42);
-
-            parameters.setInputDimensions(new int[] { 32, 32 });
-            parameters.setColumnDimensions(new int[] { colDimSize, colDimSize });
+            Parameters parameters = InitConfigParams(new int[] { 64, 64 }, new int[] { 32, 32 }, potRad, potRadPtc);
 
             var sp = new SpatialPooler();
             var mem = new Connections();
@@ -180,23 +152,15 @@ namespace UnitTestsProject.NoiseExperiments
             parameters.apply(mem);
             sp.Init(mem);
 
-            List<int[]> inputVectors = new List<int[]>();
-
-            //inputVectors.Add(getInputVector1());
-            inputVectors.Add(getInputVector2());
-            //inputVectors.Add(getInputVector3());
-            //inputVectors.Add(Helpers.GetRandomVector(1024, 5));
-            //inputVectors.Add(Helpers.GetRandomVector(1024, 10));
-            //inputVectors.Add(Helpers.GetRandomVector(1024, 15));
-            //inputVectors.Add(Helpers.GetRandomVector(1024, 20));
+            List<int[]> inputVectors = GetBoxVectors();
 
             int vectorIndex = 0;
 
             int[][] activeColumnsWithZeroNoise = new int[inputVectors.Count][];
 
-            using (StreamWriter sw = new StreamWriter($"Noise_experiment_result_PotRad{potRad}_potRadPtc{potRadPtc}.txt"))
+            foreach (var inputVector in inputVectors)
             {
-                foreach (var inputVector in inputVectors)
+                using (StreamWriter sw = new StreamWriter($"Noise_experiment_result_vector{vectorIndex}_PotRad{potRad}_potRadPtc{potRadPtc}.txt"))
                 {
                     var x = getNumBits(inputVector);
 
@@ -208,7 +172,7 @@ namespace UnitTestsProject.NoiseExperiments
 
                     int[] activeArray = null;
 
-                    for (int noiseLevel = 0; noiseLevel < 100; noiseLevel += noiseStepPercent)
+                    for (int noiseLevel = 0; noiseLevel < 100; noiseLevel += 5)
                     {
                         Debug.WriteLine($"--- Vector {0} - Noise Iteration {noiseLevel} ----------");
 
@@ -272,6 +236,67 @@ namespace UnitTestsProject.NoiseExperiments
             //vectorIndex = OutputPredictionResult(sp, inputVectors, activeColumnsWithZeroNoise);
         }
 
+        private static List<int[]> GetBoxVectors()
+        {
+            List<int[]> inputVectors = new List<int[]>();
+
+            inputVectors.Add(getInputVector1());
+            inputVectors.Add(getInputVector2());
+            //inputVectors.Add(getInputVector3());
+            //inputVectors.Add(Helpers.GetRandomVector(1024, 5));
+            //inputVectors.Add(Helpers.GetRandomVector(1024, 10));
+            //inputVectors.Add(Helpers.GetRandomVector(1024, 15));
+            //inputVectors.Add(Helpers.GetRandomVector(1024, 20));
+
+            return inputVectors;
+        }
+
+        private static List<int[]> GetRandomVectors()
+        {
+            List<int[]> inputVectors = new List<int[]>();
+
+            inputVectors.Add(getInputVector3());
+            inputVectors.Add(Helpers.GetRandomVector(1024, 5));
+            inputVectors.Add(Helpers.GetRandomVector(1024, 10));
+            inputVectors.Add(Helpers.GetRandomVector(1024, 15));
+            inputVectors.Add(Helpers.GetRandomVector(1024, 20));
+
+            return inputVectors;
+        }
+
+
+        private static Parameters InitConfigParams(int[] colDims, int[] inpDims, int potRad, double potRadPtc)
+        {
+            Parameters parameters = GetDefaultParams();
+            parameters.Set(KEY.GLOBAL_INHIBITION, true);
+
+            // Set the RF to the entire input space.
+            parameters.Set(KEY.POTENTIAL_RADIUS, potRad);
+
+            // If this value is increased, the memorizing of the seen pattern increases.
+            // Higher PotentionPct means that more synapses are connected to the input and the pattern keeps
+            // recognized for larger portion of the noise. 
+            parameters.Set(KEY.POTENTIAL_PCT, potRadPtc);
+
+            parameters.Set(KEY.STIMULUS_THRESHOLD, 5);
+            // parameters.Set(KEY.INHIBITION_RADIUS, (int)0.01 * colDimSize * colDimSize);
+            parameters.Set(KEY.LOCAL_AREA_DENSITY, -1);
+            parameters.Set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02 * colDims[0] * colDims[1]);
+            parameters.Set(KEY.DUTY_CYCLE_PERIOD, 1000);
+            parameters.Set(KEY.MAX_BOOST, 0.0);
+            parameters.Set(KEY.SYN_PERM_INACTIVE_DEC, 0.005);
+            parameters.Set(KEY.SYN_PERM_ACTIVE_INC, 0.005);
+            parameters.Set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.0);
+
+            parameters.Set(KEY.SEED, 42);
+
+            parameters.setInputDimensions(new int[] { 32, 32 });
+            parameters.setColumnDimensions(colDims);
+
+            return parameters;
+        }
+
+
         private void CreateOutput(int colDimSize, Parameters parameters, int vectorIndex, int j, List<int[,]> arrays, int[] overlaps, int[] activeCols, SpatialPooler sp)
         {
             List<int> actOverlaps = new List<int>();
@@ -281,7 +306,7 @@ namespace UnitTestsProject.NoiseExperiments
                 actOverlaps.Add(overlaps[i]);
             }
 
-            int actColThreshold = actOverlaps.Min();
+            int actColThreshold = actOverlaps.Count > 0 ? actOverlaps.Min() : 0;
 
             var twodOverlapArray = PrepareOverlapArray(overlaps, new int[] { colDimSize, colDimSize });
 
@@ -306,7 +331,7 @@ namespace UnitTestsProject.NoiseExperiments
             //  pngFileName: Path.Combine(nameof(NoiseExperimentTest), $"Permanences_{vectorIndex}_Noise_{inpIndex}.png"));
         }
 
-        private double[,] PrepareHeatmapArray (List<List<double>> permanences)
+        private double[,] PrepareHeatmapArray(List<List<double>> permanences)
         {
             double[,] arr = new double[permanences[0].Count, permanences.Count];
 
@@ -314,8 +339,8 @@ namespace UnitTestsProject.NoiseExperiments
             {
                 for (int inpIndex = 0; inpIndex < permanences[colIndex].Count; inpIndex++)
                 {
-                    arr[ inpIndex, colIndex] = 100 * permanences[colIndex][inpIndex];
-                }             
+                    arr[inpIndex, colIndex] = 100 * permanences[colIndex][inpIndex];
+                }
             }
 
             return arr;
@@ -345,7 +370,7 @@ namespace UnitTestsProject.NoiseExperiments
                 for (int inpIndex = 0; inpIndex < 1000; inpIndex++)
                 {
                     //int scaledPermVal = (offs + inpIndex * singlePermRange) + (int)(100.00 * allColPerms[colIndex][inpIndex]);
-                    int scaledPermVal = (offs + inpIndex * singlePermRange)+0;
+                    int scaledPermVal = (offs + inpIndex * singlePermRange) + 0;
                     arr[inpIndex, colIndex] = 512;
                 }
             }
