@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using Microsoft.Azure.Documents.Spatial;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortex;
 using NeoCortexApi;
@@ -13,6 +14,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace UnitTestsProject.NoiseExperiments
 {
@@ -127,7 +129,7 @@ namespace UnitTestsProject.NoiseExperiments
         }
 
 
-        #region Noise Experiment Paper
+        #region Noise Experiments Paper and PhD
 
         [TestMethod]
         [TestCategory("LongRunning")]
@@ -136,15 +138,16 @@ namespace UnitTestsProject.NoiseExperiments
         {
             Helpers.CreateTestFolder(nameof(NoiseExperimentTest));
 
-            int colDimSize = 64 * 64, noiseStepPercent;
+            int inpDimSize = 32;
+            int colDimSize = 64;
             int potRad = -1;
 
             // If this value is increased, the memorizing of the seen pattern increases.
             // Higher PotentionPct means that more synapses are connected to the input and the pattern keeps
-            // recognized for larger portion of the noise. 
+            // recognized for larger portion of the noiseLevel. 
             double potRadPtc = 0.5;
 
-            Parameters parameters = InitConfigParams(new int[] { 64, 64 }, new int[] { 32, 32 }, potRad, potRadPtc);
+            Parameters parameters = InitConfigParams(new int[] { colDimSize, colDimSize }, new int[] { inpDimSize, inpDimSize }, potRad, potRadPtc);
 
             var sp = new SpatialPooler();
             var mem = new Connections();
@@ -167,7 +170,7 @@ namespace UnitTestsProject.NoiseExperiments
                     Debug.WriteLine("");
                     Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
 
-                    // Array of active columns with zero noise. The reference (ideal) output.
+                    // Array of active columns with zero noiseLevel. The reference (ideal) output.
                     activeColumnsWithZeroNoise[vectorIndex] = new int[colDimSize * colDimSize];
 
                     int[] activeArray = null;
@@ -187,7 +190,7 @@ namespace UnitTestsProject.NoiseExperiments
 
                         // TODO: Try CalcArraySimilarity
                         var inpDist = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
-                        Debug.WriteLine($"Input with noise {noiseLevel} - HamDist: {inpDist}");
+                        Debug.WriteLine($"Input with noiseLevel {noiseLevel} - HamDist: {inpDist}");
                         Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
                         Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
 
@@ -207,7 +210,7 @@ namespace UnitTestsProject.NoiseExperiments
                         var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
                         var outputDistance = MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true);
-                        Debug.WriteLine($"Output with noise {noiseLevel} - Ham Dist: {outputDistance}");
+                        Debug.WriteLine($"Output with noiseLevel {noiseLevel} - Ham Dist: {outputDistance}");
                         Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeColumnsWithZeroNoise[vectorIndex], (el) => el == 1))}");
                         Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
 
@@ -225,7 +228,7 @@ namespace UnitTestsProject.NoiseExperiments
 
                         sw.WriteLine($"{noiseLevel};{inpDist};{outputDistance}");
 
-                        CreateOutput(colDimSize, parameters, vectorIndex, noiseLevel, arrays, overlap, activeCols, sp);
+                        CreateOutput(nameof(NoiseExperimentTest), colDimSize, parameters, vectorIndex, noiseLevel, arrays, overlap, activeCols, sp);
                     }
 
                     vectorIndex++;
@@ -235,6 +238,192 @@ namespace UnitTestsProject.NoiseExperiments
 
             //vectorIndex = OutputPredictionResult(sp, inputVectors, activeColumnsWithZeroNoise);
         }
+
+        
+
+
+        [TestMethod]
+        [TestCategory("LongRunning")]
+        [TestCategory("Experiment")]
+        public void NoiseExperimentPhdTest()
+        {
+            Helpers.CreateTestFolder(nameof(NoiseExperimentPhdTest));
+
+            int colDimSize = 64;
+            
+            int numVects = 30;
+
+            int potRad = -1;
+           
+
+            // If this value is increased, the memorizing of the seen pattern increases.
+            // Higher PotentionPct means that more synapses are connected to the input and the pattern keeps
+            // recognized for larger portion of the noiseLevel. 
+            double potRadPtc = 1.0;
+
+            int noiseLevelPct = 20;
+
+            List<int[]> inputVectors = GetRandomVectors(numVects, noiseLevelPct);
+           
+            Parameters parameters = InitConfigParams(new int[] { 64, 64 }, new int[] { 32, 32 }, potRad, potRadPtc);
+
+            var mem = new Connections();
+
+            SpatialPooler sp = RunNewBornStage(mem, inputVectors, parameters);
+
+            int vectorIndex = 0;
+
+            int[][] activeColumnsWithZeroNoise = new int[inputVectors.Count][];
+
+            string fileName = $"Noise_experiment_result_for_level_{noiseLevelPct}_vector{vectorIndex}_PotRad{potRad}_potRadPtc{potRadPtc}.txt";
+
+            using (StreamWriter sw = new StreamWriter($"{Path.Combine(nameof(NoiseExperimentPhdTest), fileName)}"))
+            {
+                foreach (var inputVector in inputVectors)
+                {
+                    Debug.WriteLine("");
+                    Debug.WriteLine($"----- VECTOR {vectorIndex} ----------");
+
+                    // Array of active columns with zero noiseLevel. The reference (ideal) output.
+                    activeColumnsWithZeroNoise[vectorIndex] = new int[colDimSize * colDimSize];
+
+                    int[] activeArray = null;
+
+                    int noiseRepeats = 0;
+
+                    int noiseLevel = 0;
+
+                    // 
+                    // Looping through 
+                    while (noiseRepeats <= 10)
+                    {
+                        //for (int noiseLevel = 0; noiseLevel <= noiseLevelPct; noiseLevel += noiseLevelPct)
+                        //{
+                        if (noiseRepeats == 0)
+                            noiseLevel = 0;
+                        else
+                            noiseLevel = noiseLevelPct;
+
+                        noiseRepeats++;
+
+                        Debug.WriteLine($"--- Vector {0} - Noise Level = {noiseLevel} ----------");
+
+                        int[] noisedInput;
+
+                        if (noiseLevel > 0)
+                        {
+                            noisedInput = ArrayUtils.FlipBit(inputVector, (double)((double)noiseLevel / 100.00));
+                        }
+                        else
+                            noisedInput = inputVector;
+
+                        // TODO: Try CalcArraySimilarity
+                        var inpDist = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
+                        Debug.WriteLine($"Input with noiseLevel {noiseLevel} - HamDist: {inpDist}");
+                        Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
+                        Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
+
+                        for (int i = 0; i < 10; i++)
+                        {
+                            activeArray = sp.Compute(noisedInput, true, returnActiveColIndiciesOnly: false) as int[];
+
+                            if (noiseLevel > 0)
+                                Debug.WriteLine($"{MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true)} -> {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+                        }
+
+                        if (noiseLevel == 0)
+                        {
+                            Array.Copy(activeArray, activeColumnsWithZeroNoise[vectorIndex], activeColumnsWithZeroNoise[vectorIndex].Length);
+                        }
+
+                        var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+
+                        var outputDistance = MathHelpers.GetHammingDistance(activeColumnsWithZeroNoise[vectorIndex], activeArray, true);
+                        Debug.WriteLine($"Output with noiseLevel {noiseLevel} - Ham Dist: {outputDistance}");
+                        Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeColumnsWithZeroNoise[vectorIndex], (el) => el == 1))}");
+                        Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1))}");
+
+                        List<int[,]> arrays = new List<int[,]>();
+
+                        int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, 64, 64);
+                        twoDimenArray = ArrayUtils.Transpose(twoDimenArray);
+
+                        arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(noisedInput, 32, 32)));
+                        arrays.Add(ArrayUtils.Transpose(ArrayUtils.Make2DArray<int>(activeArray, 64, 64)));
+
+                        var overlap = sp.CalculateOverlap(mem, noisedInput);
+
+                        sp.TraceColumnPermenances("perms.txt");
+
+                        if (noiseLevel != 0)
+                            sw.WriteLine($"{noiseLevel};{inpDist};{outputDistance}");
+
+                        CreateOutput(nameof(NoiseExperimentPhdTest), colDimSize, parameters, vectorIndex, noiseLevel, arrays, overlap, activeCols, sp, noiseRepeats);
+                    }
+
+                    vectorIndex++;
+                }
+            }
+        }
+
+        private static SpatialPooler RunNewBornStage(Connections mem, List<int[]> inpVectors, Parameters parameters)
+        {
+            bool isInStableState = false;
+
+            HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(mem, inpVectors.Count * 55,
+             (isStable, numPatterns, actColAvg, seenInputs) =>
+             {
+                 if (isStable)
+                 {
+                     isInStableState = true;
+
+                     // Event should be fired when entering the stable state.
+                     Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                 }
+                 else
+                     // Ideal SP should never enter unstable state after stable state.
+                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+
+                // Assert.IsTrue(numPatterns == inpVectors.Count);
+
+             }, numOfCyclesToWaitOnChange: 25);
+
+            SpatialPooler sp = new SpatialPooler(hpc);
+
+            parameters.apply(mem);
+            
+            sp.Init(mem);
+
+            for (int cycle = 0; cycle < 100000 && isInStableState == false; cycle++)
+            {
+                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+
+                int indx = 0;
+
+                foreach (var input in inpVectors)
+                {
+                    Debug.WriteLine($" -- {indx++} --");
+
+                    var actColsNotUsed = sp.Compute(input, true);
+
+                    if (isInStableState)
+                        break;
+                }
+
+                if (isInStableState)
+                    break;
+
+            }
+
+            return sp;
+        }
+
+
+        // Reads the text file with the prediction results and outputs the prediction accuracy.
+
+
+
+
 
         private static List<int[]> GetBoxVectors()
         {
@@ -251,19 +440,23 @@ namespace UnitTestsProject.NoiseExperiments
             return inputVectors;
         }
 
-        private static List<int[]> GetRandomVectors()
+        // This method calculates the sum of elements in the array.
+
+
+
+        private static List<int[]> GetRandomVectors(int numVects, int noiseLevel)
         {
+            int vectorSize = 1024;
+
             List<int[]> inputVectors = new List<int[]>();
 
-            inputVectors.Add(getInputVector3());
-            inputVectors.Add(Helpers.GetRandomVector(1024, 5));
-            inputVectors.Add(Helpers.GetRandomVector(1024, 10));
-            inputVectors.Add(Helpers.GetRandomVector(1024, 15));
-            inputVectors.Add(Helpers.GetRandomVector(1024, 20));
+            for (int i = 0; i < numVects; i++)
+            {
+                inputVectors.Add(Helpers.GetRandomVector(vectorSize, (int)((double)noiseLevel / (double)100 * (double)vectorSize)));
+            }
 
             return inputVectors;
         }
-
 
         private static Parameters InitConfigParams(int[] colDims, int[] inpDims, int potRad, double potRadPtc)
         {
@@ -275,7 +468,7 @@ namespace UnitTestsProject.NoiseExperiments
 
             // If this value is increased, the memorizing of the seen pattern increases.
             // Higher PotentionPct means that more synapses are connected to the input and the pattern keeps
-            // recognized for larger portion of the noise. 
+            // recognized for larger portion of the noiseLevel. 
             parameters.Set(KEY.POTENTIAL_PCT, potRadPtc);
 
             parameters.Set(KEY.STIMULUS_THRESHOLD, 5);
@@ -297,7 +490,7 @@ namespace UnitTestsProject.NoiseExperiments
         }
 
 
-        private void CreateOutput(int colDimSize, Parameters parameters, int vectorIndex, int j, List<int[,]> arrays, int[] overlaps, int[] activeCols, SpatialPooler sp)
+        private void CreateOutput(string outFolfer, int colDimSize, Parameters parameters, int vectorIndex, int j, List<int[,]> arrays, int[] overlaps, int[] activeCols, SpatialPooler sp, int repeat = 0)
         {
             List<int> actOverlaps = new List<int>();
 
@@ -313,9 +506,9 @@ namespace UnitTestsProject.NoiseExperiments
             SdrRepresentation.TraceInGraphFormat(new List<int[,]>() { twodOverlapArray },
                 new int[] { 1, colDimSize * colDimSize },
                 actColThreshold/* parameters.Get<int>(KEY.STIMULUS_THRESHOLD)*/, Color.Red, Color.Green,
-                pngFileName: Path.Combine(nameof(NoiseExperimentTest), $"Overlap_{vectorIndex}_Noise_{j}.png"));
+                pngFileName: Path.Combine(outFolfer, $"Overlap_{vectorIndex}_Noise_{j}.png"));
 
-            NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j}.png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
+            NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j}_Repeat({repeat}).png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
 
 
             //var allColsPerm = sp.GetColumnPermenances();
@@ -381,9 +574,9 @@ namespace UnitTestsProject.NoiseExperiments
         /// <summary>
         ///  Prediction code.
         ///  This method takes a single sample of every input vector and adds
-        ///  some noise to it. Then it predicts it.<param name="sp"></param>
+        ///  some noiseLevel to it. Then it predicts it.<param name="sp"></param>
         ///  Calculated hamming distance (percent permanences) between predicted output and output <param name="inputVectors"></param>
-        ///  trained without noise is final result, which should be higher than 95% (realistic guess).
+        ///  trained without noiseLevel is final result, which should be higher than 95% (realistic guess).
         /// </summary>
         /// <param name="activeColumnsWithZeroNoise"></param>
         /// <returns></returns>
@@ -409,7 +602,7 @@ namespace UnitTestsProject.NoiseExperiments
                     Helpers.StringifyVector(ArrayUtils.IndexWhere(activeArray, (el) => el == 1));
                     Helpers.StringifyVector(ArrayUtils.IndexWhere(activeColumnsWithZeroNoise[vectorIndex], (el) => el == 1));
 
-                    Debug.WriteLine($"Result for vector {vectorIndex} with noise {noise} - DistIn: {distIn} - DistOut: {distOut}");
+                    Debug.WriteLine($"Result for vector {vectorIndex} with noiseLevel {noise} - DistIn: {distIn} - DistOut: {distOut}");
 
                     Debug.WriteLine("------------");
 
