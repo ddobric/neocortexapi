@@ -74,7 +74,7 @@ namespace NeoCortexApi
         /// <see cref=""/>
         /// <param name="sdrs">the SDR sets</param>
         /// <returns>string of traced output SDRs</returns>
-        public static string StringifySdr(List<int[]> sdrs)
+        public static string StringifySdr(List<int[]> sdrs, string separator = null)
         {
             //List of string of arrays for SDR set
             var heads = new List<int>(new int[sdrs.Count]);
@@ -101,7 +101,7 @@ namespace NeoCortexApi
                     return result.ToString();
                 }
 
-                Append_ActiveColumn(sdrs, heads, outputs, minActiveColumn);
+                AppendActiveColumn(sdrs, heads, outputs, minActiveColumn, separator);
             }
         }
 
@@ -114,7 +114,7 @@ namespace NeoCortexApi
         /// <param name="outputs">Represents every index bit of representations.</param>
         /// <param name="minActiveColumn">Stores the similar semantic active and inactive bits for comparison.</param>
         /// <summary>
-        public static void Append_ActiveColumn(List<int[]> sdrs, List<int> heads, StringBuilder[] outputs, int minActiveColumn)
+        public static void AppendActiveColumn(List<int[]> sdrs, List<int> heads, StringBuilder[] outputs, int minActiveColumn, string separator = " | ")
         {
             for (int i = 0; i < sdrs.Count; i++)
             {
@@ -128,7 +128,7 @@ namespace NeoCortexApi
                 if (head < sdr.Length && sdr[head] == minActiveColumn)
                 {
                     outputs[i].Append(minActiveColumn);
-                    outputs[i].Append(", ");
+                    outputs[i].Append(separator);
                     heads[i] = head + 1;
                 }
                 else
@@ -139,7 +139,8 @@ namespace NeoCortexApi
                     {
                         outputs[i].Append(" ");
                     }
-                    outputs[i].Append(", ");
+
+                    outputs[i].Append(separator);
                 }
             }
         }

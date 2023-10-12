@@ -261,10 +261,11 @@ namespace UnitTestsProject.NoiseExperiments
             // recognized for larger portion of the noiseLevel. 
             double potRadPtc = 1.0;
 
-            int noiseLevelPct = 20;
+            int noiseLevelPct = 5;
 
-            List<int[]> inputVectors = GetRandomVectors(numVects, noiseLevelPct);
-           
+            List<int[]> inputVectors = GetRandomVectors(5, noiseLevelPct);
+            //List<int[]> inputVectors = GetBoxVectors();
+
             Parameters parameters = InitConfigParams(new int[] { 64, 64 }, new int[] { 32, 32 }, potRad, potRadPtc);
 
             var mem = new Connections();
@@ -275,10 +276,14 @@ namespace UnitTestsProject.NoiseExperiments
 
             int[][] activeColumnsWithZeroNoise = new int[inputVectors.Count][];
 
-            string fileName = $"Noise_experiment_result_for_level_{noiseLevelPct}_vector{vectorIndex}_PotRad{potRad}_potRadPtc{potRadPtc}.txt";
+            string fileName = $"Boxed_Noise_experiment_result_for_level_{noiseLevelPct}_vector{vectorIndex}_PotRad{potRad}_potRadPtc{potRadPtc}.txt";
 
+            //
+            // Opens the file for writing the results. It writes to CSV file "{noiseLevel};{inpDist};{outputDistance}".
             using (StreamWriter sw = new StreamWriter($"{Path.Combine(nameof(NoiseExperimentPhdTest), fileName)}"))
             {
+                //
+                // Looping through all input vectors
                 foreach (var inputVector in inputVectors)
                 {
                     Debug.WriteLine("");
@@ -294,8 +299,9 @@ namespace UnitTestsProject.NoiseExperiments
                     int noiseLevel = 0;
 
                     // 
-                    // Looping through 
-                    while (noiseRepeats <= 10)
+                    // It makes sure that only two noie levels are used in the training.
+                    // The first one is with zero noiseLevel and the second one is with the noiseLevel defined in the noiseLevelPct variable.
+                    while (noiseRepeats <= 100)
                     {
                         //for (int noiseLevel = 0; noiseLevel <= noiseLevelPct; noiseLevel += noiseLevelPct)
                         //{
@@ -320,8 +326,8 @@ namespace UnitTestsProject.NoiseExperiments
                         // TODO: Try CalcArraySimilarity
                         var inpDist = MathHelpers.GetHammingDistance(inputVector, noisedInput, true);
                         Debug.WriteLine($"Input with noiseLevel {noiseLevel} - HamDist: {inpDist}");
-                        Debug.WriteLine($"Original: {Helpers.StringifyVector(inputVector)}");
-                        Debug.WriteLine($"Noised:   {Helpers.StringifyVector(noisedInput)}");
+                        Debug.WriteLine($"Original: {Helpers.StringifyVector(ArrayUtils.IndexWhere(inputVector, (el) => el == 1))}");
+                        Debug.WriteLine($"Noised:   {Helpers.StringifyVector(ArrayUtils.IndexWhere(noisedInput, (el) => el == 1))}");
 
                         for (int i = 0; i < 10; i++)
                         {
@@ -365,6 +371,7 @@ namespace UnitTestsProject.NoiseExperiments
                 }
             }
         }
+
 
         private static SpatialPooler RunNewBornStage(Connections mem, List<int[]> inpVectors, Parameters parameters)
         {
@@ -420,9 +427,6 @@ namespace UnitTestsProject.NoiseExperiments
 
 
         // Reads the text file with the prediction results and outputs the prediction accuracy.
-
-
-
 
 
         private static List<int[]> GetBoxVectors()
