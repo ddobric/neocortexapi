@@ -67,6 +67,8 @@ namespace NeoCortexApi
             if (obj is Predictor predictor)
             {
                 HtmSerializer ser = new HtmSerializer();
+                ser.SerializeBegin(predictor.GetType().Name, sw);
+
                 // Serialize the Connections in Predictor instance
                 var connections = predictor.connections;
                 ser.SerializeBegin(connections.GetType().Name, sw);
@@ -80,6 +82,8 @@ namespace NeoCortexApi
                 // Serialize the HtmClassifier object in Predictor instance             
                 var classifier = predictor.classifier;
                 classifier.Serialize(classifier, null, sw);
+
+                ser.SerializeEnd(predictor.GetType().Name, sw);
             }
         }
 
