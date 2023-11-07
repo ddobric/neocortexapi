@@ -64,9 +64,27 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-           this.connections.Serialize(obj, name, sw);
-            //this.layer.Serialize(??);
-            //this.classifier.Ser
+            if (obj is Predictor predictor)
+            {
+                HtmSerializer ser = new HtmSerializer();
+                ser.SerializeBegin(predictor.GetType().Name, sw);
+
+                // Serialize the Connections in Predictor instance
+                var connections = predictor.connections;
+                ser.SerializeBegin(connections.GetType().Name, sw);
+                connections.Serialize(connections, null, sw);
+                ser.SerializeEnd(connections.GetType().Name, sw);
+
+                // Serialize the CortexLayer in Predictor instance               
+                var layer = predictor.layer;
+                layer.Serialize(layer, null, sw);
+
+                // Serialize the HtmClassifier object in Predictor instance             
+                var classifier = predictor.classifier;
+                classifier.Serialize(classifier, null, sw);
+
+                ser.SerializeEnd(predictor.GetType().Name, sw);
+            }
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)

@@ -1986,6 +1986,31 @@ namespace NeoCortexApi.Entities
         }
 
         /// <summary>
+        /// serialize the HtmClassifer class parameter --> private Dictionary<TIN, List<int[]>> m_AllInputs 
+        /// </summary>
+        /// <typeparam name="TIN"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="sw"></param>
+        public void SerializeDictionaryValue<TIN>(Dictionary<TIN, List<int[]>> value, StreamWriter sw)
+        {
+            sw.WriteLine();
+            sw.Write(ValueDelimiter);
+            if (value != null)
+            {
+                foreach (var val in value)
+                {
+                    sw.Write(val.Key.ToString() + KeyValueDelimiter);
+                    for (int i = 0; i < val.Value.Count; i++)
+                    {
+                        SerializeValue(val.Value[i], sw);
+
+                    }
+                    sw.WriteLine();
+                }
+            }
+        }
+
+        /// <summary>
         /// Serialize the Concurrentdictionary with key:int and value:DistalDendrite.
         /// </summary>
         /// <param name="keyValues"></param>
