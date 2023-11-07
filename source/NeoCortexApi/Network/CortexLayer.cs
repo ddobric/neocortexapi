@@ -158,18 +158,32 @@ namespace NeoCortexApi.Network
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            //foreach (var modulePair in this.HtmModules)
-            //{
-            //    ISerializable serializableModule = modulePair.Value as ISerializable;
-            //    if (serializableModule != null)
-            //    { 
-                
-            //    }
-            //       // serializableModule.Serialize(todo);
-            //       //else
-            //            // throw new Exception()
-            //}
-            throw new NotImplementedException();
+            // Serialize all the HtmModules in the CortexLayer
+            if (obj is CortexLayer<object, object> layer)
+            {
+
+                HtmSerializer ser = new HtmSerializer();
+
+                foreach (var modulePair in layer.HtmModules)
+                {
+                    ISerializable serializableModule = modulePair.Value as ISerializable;
+                    string ObjType = serializableModule.GetType().Name;
+                    if (serializableModule != null)
+                    {
+
+                        ser.SerializeBegin(ObjType, sw);
+
+                        serializableModule.Serialize(serializableModule, null, sw);
+
+                        ser.SerializeEnd(ObjType, sw);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+
+                }
+            }
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)

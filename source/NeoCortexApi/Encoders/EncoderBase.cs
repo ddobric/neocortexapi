@@ -4,6 +4,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Text;
 
@@ -331,9 +332,13 @@ namespace NeoCortexApi.Encoders
                 nameof(EncoderBase.topDownValues),
                 nameof(EncoderBase.bucketValues),
                 nameof(EncoderBase.topDownMapping),
-
+                nameof(EncoderBase.IsForced),
+                nameof(EncoderBase.Offset),
             };
+            //HtmSerializer ser = new HtmSerializer();
+            //ser.SerializeBegin(obj.GetType().Name, sw);
             HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers: excludeMembers);
+            //ser.SerializeEnd(obj.GetType().Name, sw);
         }
 
         public static object Deserialize<T>(StreamReader sr, string name)

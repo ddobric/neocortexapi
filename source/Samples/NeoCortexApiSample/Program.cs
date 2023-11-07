@@ -1,8 +1,10 @@
 ﻿using NeoCortexApi;
 using NeoCortexApi.Encoders;
+using NeoCortexApi.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using static NeoCortexApiSample.MultiSequenceLearning;
 
@@ -34,7 +36,7 @@ namespace NeoCortexApiSample
             // RunMultiSimpleSequenceLearningExperiment();
 
 
-            RunMultiSequenceLearningExperiment();
+            RunMultiSimpleSequenceLearningExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
@@ -47,7 +49,9 @@ namespace NeoCortexApiSample
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);         
+            var predictor = experiment.Run(sequences);
+            StreamWriter sw = new StreamWriter("predictor.txt");
+            predictor.Serialize(predictor, null, sw);
         }
 
 
@@ -74,7 +78,7 @@ namespace NeoCortexApiSample
 
             //
             // These list are used to see how the prediction works.
-            // Predictor is traversing the list element by element. 
+            // Predictor is traversing the list element by element
             // By providing more elements to the prediction, the predictor delivers more precise result.
             var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
             var list2 = new double[] { 2.0, 3.0, 4.0 };
@@ -82,7 +86,7 @@ namespace NeoCortexApiSample
 
             predictor.Reset();
             PredictNextElement(predictor, list1);
-
+            
             predictor.Reset();
             PredictNextElement(predictor, list2);
 

@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 
 namespace NeoCortexApi.Entities
@@ -1621,6 +1622,7 @@ namespace NeoCortexApi.Entities
         {
             if (obj is Connections connections)
             {
+                //HtmSerializer ser = new HtmSerializer();
 
                 var ignoreMembers = new List<string>
                 {
@@ -1642,6 +1644,8 @@ namespace NeoCortexApi.Entities
 
                     //nameof(Connections.Cells)
                 };
+                //ser.SerializeBegin(nameof(Connections), sw);
+
                 HtmSerializer.SerializeObject(connections, name, sw, ignoreMembers);
                 var cells = connections.GetColumns().SelectMany(c => c.Cells).ToList();
                 HtmSerializer.Serialize(cells, "cellsList", sw);
@@ -1660,6 +1664,8 @@ namespace NeoCortexApi.Entities
 
                 var predictiveCellIds = connections.m_PredictiveCells.Select(c => c.Index).ToList();
                 HtmSerializer.Serialize(predictiveCellIds, "predictiveCellIds", sw);
+
+                //ser.SerializeEnd(nameof(Connections), sw);
             }
         }
 

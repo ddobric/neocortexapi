@@ -17,15 +17,16 @@ namespace NeoCortexApi.Encoders
     /// </summary>
     public class ScalarEncoder : EncoderBase
     {
+
         /// <summary>
         /// Gets a value indicating whether IsDelta
         /// </summary>
-        public override bool IsDelta => throw new NotImplementedException();
+        public override bool IsDelta { get;  }
 
         /// <summary>
         /// Gets the Width
         /// </summary>
-        public override int Width => throw new NotImplementedException();
+        public override int Width { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScalarEncoderExperimental"/> class.

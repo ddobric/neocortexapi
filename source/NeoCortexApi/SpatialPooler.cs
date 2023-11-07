@@ -32,7 +32,7 @@ namespace NeoCortexApi
     /// Spatial Pooler algorithm. Single-threaded version.
     /// Original version by David Ray, migrated from HTM JAVA. Over time, more and more code has been changed.
     /// </summary>
-    public class SpatialPooler : IHtmAlgorithm<int[], int[]>/*, ISerializable*/
+    public class SpatialPooler : IHtmAlgorithm<int[], int[]>, ISerializable
     {
         /// <summary>
         /// The instance of the <see cref="HomeostaticPlasticityController"/>.
@@ -1442,7 +1442,10 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
+            //HtmSerializer ser = new HtmSerializer();
+            //ser.SerializeBegin(obj.GetType().Name, sw);
             HtmSerializer.SerializeObject(obj, name, sw);
+            //ser.SerializeEnd(obj.GetType().Name, sw);
         }
 
         public static object Deserialize<T>(StreamReader sr, string propName)
