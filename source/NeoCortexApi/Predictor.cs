@@ -77,9 +77,9 @@ namespace NeoCortexApi
                 var layer = predictor.layer;
                 layer.Serialize(layer, null, sw);
 
-                // Serialize the HtmClassifier object in Predictor instance
+                // Serialize the HtmClassifier object in Predictor instance             
                 var classifier = predictor.classifier;
-                //classifier.Serialize(classifier, null, sw);
+                classifier.Serialize(classifier, null, sw);
             }
         }
 
