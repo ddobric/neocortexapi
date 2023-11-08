@@ -1,4 +1,5 @@
 ﻿using NeoCortexApi.Classifiers;
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using System;
@@ -32,7 +33,7 @@ namespace NeoCortexApi
         /// <param name="classifier">The classifier that contains the state of learned sequences.</param>
 
         public Predictor(CortexLayer<object, object> layer, Connections connections, HtmClassifier<string, ComputeCycle> classifier)
-        { 
+        {
             this.connections = connections;
             this.layer = layer;
             this.classifier = classifier;
@@ -86,10 +87,104 @@ namespace NeoCortexApi
                 ser.SerializeEnd(predictor.GetType().Name, sw);
             }
         }
+        /// <summary>
+        /// Method used to de-serialize the Predictor
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sr"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
 
         public static object Deserialize<T>(StreamReader sr, string name)
         {
-            throw new NotImplementedException();
+            HtmSerializer ser = new HtmSerializer();
+            // Initialize the Predictor
+            Predictor predictor = new Predictor(null, null, null);
+            // Initialize the CortexLayer
+            CortexLayer<object, object> layer = new CortexLayer<object, object>("L1");
+
+            // Add SP and TM objects to CortexLayer, initialize the values (null) 
+            layer.HtmModules.Add("encoder", (ScalarEncoder)null);
+            layer.HtmModules.Add("sp", (SpatialPoolerMT)null);
+            layer.HtmModules.Add("tm", (TemporalMemory)null);
+
+            while (sr.Peek() >= 0)
+            {
+
+                var data = sr.ReadLine();
+
+                // Deserialize Connections object 
+                if (data == ser.ReadBegin(nameof(Connections)) && (predictor.connections == null))
+                {
+                    var con = Connections.Deserialize<Connections>(sr, null);
+                    if (con is Connections connections)
+                    {
+                        predictor.connections = connections;
+                    }
+
+                    sr.DiscardBufferedData();
+                    sr.BaseStream.Seek(0, SeekOrigin.Begin);
+
+                }
+
+                // Deserialize the ScalarEncoder             
+                if (data == ser.ReadBegin(nameof(ScalarEncoder)) && (layer.HtmModules["encoder"] == null))
+                {
+                    var en = EncoderBase.Deserialize<ScalarEncoder>(sr, null);
+                    if (en is ScalarEncoder encoder)
+                    {
+                        layer.HtmModules["encoder"] = encoder;
+                    }
+
+                    sr.DiscardBufferedData();
+                    sr.BaseStream.Seek(0, SeekOrigin.Begin);
+                }
+
+                // Deserialize Spatial Pooler object
+                if (data == ser.ReadBegin(nameof(SpatialPoolerMT)) && (layer.HtmModules["sp"] == null))
+                {
+                    var sp = SpatialPooler.Deserialize<SpatialPoolerMT>(sr, null);
+                    layer.HtmModules["sp"] = (SpatialPoolerMT)sp;
+
+                    sr.DiscardBufferedData();
+                    sr.BaseStream.Seek(0, SeekOrigin.Begin);
+                }
+
+                // Deserialize Temporal Memory object
+                if (data == ser.ReadBegin(nameof(TemporalMemory)) && (layer.HtmModules["tm"] == null))
+                {
+                    var tm = TemporalMemory.Deserialize<TemporalMemory>(sr, null);
+                    layer.HtmModules["tm"] = (TemporalMemory)tm;
+
+                    sr.DiscardBufferedData();
+                    sr.BaseStream.Seek(0, SeekOrigin.Begin);
+                }
+
+                // Deserialize the HtmClassifier object
+                if (data == ser.ReadBegin(nameof(HtmClassifier<string, ComputeCycle>)) && (predictor.classifier == null))
+                {
+                    var cls = HtmClassifier<string, ComputeCycle>.Deserialize<HtmClassifier<string, ComputeCycle>>(sr, null);
+                    predictor.classifier = (HtmClassifier<string, ComputeCycle>)cls;
+
+                    sr.DiscardBufferedData();
+                    sr.BaseStream.Seek(0, SeekOrigin.Begin);
+                }
+            }
+
+            predictor.layer = layer;
+            return predictor;
+
+        }
+
+        /// <summary>
+        /// Load Predictor model from fileName
+        /// </summary>
+        /// <param name="sr"></param>
+        public static T Load<T>(string fileName)
+        {
+            HtmSerializer.Reset();
+            using StreamReader sr = new StreamReader(fileName);
+            return (T)Deserialize<T>(sr, null);
         }
     }
 }
