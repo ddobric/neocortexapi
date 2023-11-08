@@ -48,10 +48,14 @@ namespace NeoCortexApiSample
 
             //
             // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
-            StreamWriter sw = new StreamWriter("predictor.txt");
-            predictor.Serialize(predictor, null, sw);
+            //MultiSequenceLearning experiment = new MultiSequenceLearning();
+            //var predictor = experiment.Run(sequences);
+            //StreamWriter sw = new StreamWriter("predictor.txt");
+            //predictor.Serialize(predictor, null, sw);
+            //sw.Close();
+
+            StreamReader sr = new StreamReader("predictor.txt");
+            var deser_predictor = Predictor.Load<Predictor>("predictor.txt");
         }
 
 
