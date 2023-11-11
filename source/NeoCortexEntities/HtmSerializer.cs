@@ -1029,7 +1029,7 @@ namespace NeoCortexApi.Entities
         /// <returns></returns>
         public static T DeserializeObject<T>(StreamReader sr, string propertyName, List<string> excludeEntries = null, Action<T, string> action = null)
         {
-            //HtmSerializer ser = new HtmSerializer();
+            HtmSerializer ser = new HtmSerializer();
 
             var type = typeof(T);
             T obj = default;
@@ -1047,7 +1047,6 @@ namespace NeoCortexApi.Entities
             {
 
                 var content = sr.ReadLine().Trim();
-                //Debug.WriteLine(content);
                 if (content == ReadGenericBegin(propertyName))
                 {
 
@@ -1058,10 +1057,12 @@ namespace NeoCortexApi.Entities
                     break;
                 }
 
-                //var debug = ser.ReadEnd(type.Name);
+                string endLine = $@"END '{type.Name}'";
 
-                //if (sr.ReadLine() == debug) {
-                //    break; }
+                if (content == endLine)
+                {
+                    break;
+                }
 
                 var components = content.Split(' ');
 
