@@ -67,14 +67,13 @@ namespace NeoCortexApi
 
         #region TraceSDR
 
-
         /// <summary>
         /// Creates string representation from one dimensional value. 
         /// </summary>
         /// <see cref=""/>
         /// <param name="sdrs">the SDR sets</param>
         /// <returns>string of traced output SDRs</returns>
-        public static string StringifySdr(List<int[]> sdrs, string separator = null)
+        public static string StringifySdr(List<int[]> sdrs, string separator = " | " )
         {
             //List of string of arrays for SDR set
             var heads = new List<int>(new int[sdrs.Count]);
@@ -114,7 +113,7 @@ namespace NeoCortexApi
         /// <param name="outputs">Represents every index bit of representations.</param>
         /// <param name="minActiveColumn">Stores the similar semantic active and inactive bits for comparison.</param>
         /// <summary>
-        public static void AppendActiveColumn(List<int[]> sdrs, List<int> heads, StringBuilder[] outputs, int minActiveColumn, string separator = " | ")
+        private static void AppendActiveColumn(List<int[]> sdrs, List<int> heads, StringBuilder[] outputs, int minActiveColumn, string separator = " | ")
         {
             for (int i = 0; i < sdrs.Count; i++)
             {

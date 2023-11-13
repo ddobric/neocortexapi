@@ -12,11 +12,11 @@ namespace NeoCortexApi
     /// <summary>
     /// Implements the class that helps inferring (prediction). It is typically used by the Sequence Learning algorithm.
     /// After the learning process, the algorithm returns the instance of this class. This class provides a method <see cref="nameof(Predictor.Predict)"/> with a list of input elements.
-    /// For every presented input element the predictor tries to predict the next element. The more element provided in a sequence the predictor returns with the higher score.
+    /// For every presented input element the predictor tries to predict the next element. The more element provided in a sequence the predictor returns wit the higher score.
     /// For example, assume there ar two sequences: ABCD and ABGHI. By presenting the element B, the predictor is not sure if the next element is C or D. 
     /// When presenting after B the element C, the predictor knows that the next element must be C.
     /// </summary>
-    public class Predictor : ISerializable
+    public class Predictor
     {
         private Connections connections { get; set; }
 
@@ -32,7 +32,7 @@ namespace NeoCortexApi
         /// <param name="classifier">The classifier that contains the state of learned sequences.</param>
 
         public Predictor(CortexLayer<object, object> layer, Connections connections, HtmClassifier<string, ComputeCycle> classifier)
-        { 
+        {
             this.connections = connections;
             this.layer = layer;
             this.classifier = classifier;
@@ -64,14 +64,7 @@ namespace NeoCortexApi
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-           this.connections.Serialize(obj, name, sw);
-            //this.layer.Serialize(??);
-            //this.classifier.Ser
-        }
-
-        public static object Deserialize<T>(StreamReader sr, string name)
-        {
-            throw new NotImplementedException();
+            this.connections.Serialize(obj, name, sw);
         }
     }
 }
