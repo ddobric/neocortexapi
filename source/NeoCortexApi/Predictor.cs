@@ -63,18 +63,19 @@ namespace NeoCortexApi
             return predictedInputValues;
         }
 
+        /// <summary>
+        /// Serialize the Predictor instance
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name"></param>
+        /// <param name="sw"></param>
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             if (obj is Predictor predictor)
             {
-                HtmSerializer ser = new HtmSerializer();
-                ser.SerializeBegin(predictor.GetType().Name, sw);
-
                 // Serialize the Connections in Predictor instance
                 var connections = predictor.connections;
-                ser.SerializeBegin(connections.GetType().Name, sw);
                 connections.Serialize(connections, null, sw);
-                ser.SerializeEnd(connections.GetType().Name, sw);
 
                 // Serialize the CortexLayer in Predictor instance               
                 var layer = predictor.layer;
@@ -83,10 +84,10 @@ namespace NeoCortexApi
                 // Serialize the HtmClassifier object in Predictor instance             
                 var classifier = predictor.classifier;
                 classifier.Serialize(classifier, null, sw);
-
-                ser.SerializeEnd(predictor.GetType().Name, sw);
             }
         }
+
+
         /// <summary>
         /// Method used to de-serialize the Predictor
         /// </summary>
@@ -94,7 +95,6 @@ namespace NeoCortexApi
         /// <param name="sr"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-
         public static object Deserialize<T>(StreamReader sr, string name)
         {
             HtmSerializer ser = new HtmSerializer();
@@ -174,6 +174,24 @@ namespace NeoCortexApi
             predictor.layer = layer;
             return predictor;
 
+        }
+
+        /// <summary>
+        /// Save Predictor (obj) model to fileName
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="sw"></param>
+        public static void Save(object obj, string fileName)
+        {
+            if (obj is Predictor predictor)
+            {
+                HtmSerializer.Reset();
+                using (StreamWriter sw = new StreamWriter(fileName))
+                {
+                    predictor.Serialize(obj, null, sw);
+                    //predictor.Serialize(sw);
+                }
+            }
         }
 
         /// <summary>

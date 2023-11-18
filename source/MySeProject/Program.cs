@@ -12,52 +12,10 @@ namespace NeoCortexApiSample
 {
     class Program
     {
-        /// <summary>
-        /// This sample shows a typical experiment code for SP and TM.
-        /// You must start this code in debugger to follow the trace.
-        /// and TM.
-        /// </summary>
-        /// <param name="args"></param>
         static void Main(string[] args)
         {
-            //
-            // Starts experiment that demonstrates how to learn spatial patterns.
-            //SpatialPatternLearning experiment = new SpatialPatternLearning();
-            //experiment.Run();
-
-            //
-            // Starts experiment that demonstrates how to learn spatial patterns.
-            //SequenceLearning experiment = new SequenceLearning();
-            //experiment.Run();
-
-            //GridCellSamples gridCells = new GridCellSamples();
-            //gridCells.Run();
-
-            // RunMultiSimpleSequenceLearningExperiment();
-
-
-            RunMultiSimpleSequenceLearningExperiment();
+            RunMultiSequenceSerializationExperiment();
         }
-
-        private static void RunMultiSimpleSequenceLearningExperiment()
-        {
-            Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-
-            sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
-            sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
-
-
-            //Prototype for building the prediction engine.
-
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
-            StreamWriter sw = new StreamWriter("predictor.txt");
-            predictor.Serialize(predictor, null, sw);
-            sw.Close();
-
-            var deser_predictor = Predictor.Load<Predictor>("predictor.txt");
-        }
-
 
         /// <summary>
         /// This example demonstrates how to learn two sequences and how to use the prediction mechanism.
@@ -65,7 +23,7 @@ namespace NeoCortexApiSample
         /// Second, three short sequences with three elements each are created und used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
         /// The predictor tries to predict the next element.
         /// </summary>
-        private static void RunMultiSequenceLearningExperiment()
+        private static void RunMultiSequenceSerializationExperiment()
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
@@ -78,7 +36,8 @@ namespace NeoCortexApiSample
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
+            Predictor serializedPredictor;
+            var predictor = experiment.Run(sequences, out serializedPredictor, "predictor");
 
             //
             // These list are used to see how the prediction works.
@@ -89,13 +48,18 @@ namespace NeoCortexApiSample
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
             predictor.Reset();
-            PredictNextElement(predictor, list1);
-            
-            predictor.Reset();
+            Console.WriteLine("Prediction next elements with normal predictor \n");
             PredictNextElement(predictor, list2);
 
-            predictor.Reset();
-            PredictNextElement(predictor, list3);
+            serializedPredictor.Reset();
+            Console.WriteLine("Prediction next elements with serialized predictor \n");
+            PredictNextElement(serializedPredictor, list2);
+
+            //predictor.Reset();
+            //PredictNextElement(predictor, list2);
+
+            //predictor.Reset();
+            //PredictNextElement(predictor, list3);
         }
 
         private static void PredictNextElement(Predictor predictor, double[] list)
@@ -111,11 +75,13 @@ namespace NeoCortexApiSample
                     foreach (var pred in res)
                     {
                         Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                        Console.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
                     }
 
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
                     Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                    Console.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}\n");
                 }
                 else
                     Debug.WriteLine("Nothing predicted :(");
@@ -124,4 +90,5 @@ namespace NeoCortexApiSample
             Debug.WriteLine("------------------------------");
         }
     }
+
 }

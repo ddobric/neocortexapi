@@ -1622,7 +1622,7 @@ namespace NeoCortexApi.Entities
         {
             if (obj is Connections connections)
             {
-                //HtmSerializer ser = new HtmSerializer();
+                HtmSerializer ser = new HtmSerializer();
 
                 var ignoreMembers = new List<string>
                 {
@@ -1644,7 +1644,7 @@ namespace NeoCortexApi.Entities
 
                     //nameof(Connections.Cells)
                 };
-                //ser.SerializeBegin(nameof(Connections), sw);
+                ser.SerializeBegin(nameof(Connections), sw);
 
                 HtmSerializer.SerializeObject(connections, name, sw, ignoreMembers);
                 var cells = connections.GetColumns().SelectMany(c => c.Cells).ToList();
@@ -1665,7 +1665,7 @@ namespace NeoCortexApi.Entities
                 var predictiveCellIds = connections.m_PredictiveCells.Select(c => c.Index).ToList();
                 HtmSerializer.Serialize(predictiveCellIds, "predictiveCellIds", sw);
 
-                //ser.SerializeEnd(nameof(Connections), sw);
+                ser.SerializeEnd(nameof(Connections), sw);
             }
         }
 
