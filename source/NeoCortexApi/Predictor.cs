@@ -66,5 +66,10 @@ namespace NeoCortexApi
         {
             this.connections.Serialize(obj, name, sw);
         }
+
+        public static object Deserialize<T>(StreamReader sr, string name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
