@@ -18,7 +18,7 @@ namespace NeoCortexApiSample
     public class MultiSequenceLearning
     {
         /// <summary>
-        /// Runs the learning of sequences.
+        /// Runs the learning of sequences. Here, Run() method returns the object of predictor.
         /// </summary>
         /// <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
         public Predictor Run(Dictionary<string, List<double>> sequences, out Predictor serializedPredictor, string fileName)
@@ -209,7 +209,9 @@ namespace NeoCortexApiSample
 
                         previousInputs.Add(input.ToString());
                         if (previousInputs.Count > (maxPrevInputs + 1))
+                        {
                             previousInputs.RemoveAt(0);
+                        }
 
                         // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
                         // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
@@ -217,7 +219,9 @@ namespace NeoCortexApiSample
                         // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
                         // memorized, it will match as the first one.
                         if (previousInputs.Count < maxPrevInputs)
+                        {
                             continue;
+                        }
 
                         string key = GetKey(previousInputs, input, sequenceKeyPair.Key);
 
@@ -305,12 +309,15 @@ namespace NeoCortexApiSample
 
             Debug.WriteLine("------------ END ------------");
 
+            // The "predictor" is the instance of class Predictor which is result after learning. This "predictor" object later on put in the argument of Save() method for serialization.
+            // The "serializedPredictor" is the instance of Predictor class which is the result after serialization and deserialization of Predictor. 
             var predictor = new Predictor(layer1, mem, cls);
-
+            
+            //Save() method is callled from Predictor Class, which serialize the instance of Predictor Class.
             Predictor.Save(predictor, fileName);
 
+            //Load() method is callled from Predictor Class, which deserialize the instance of Predictor Class.
             serializedPredictor = Predictor.Load<Predictor>(fileName);
-            
             return predictor;
         }
 
