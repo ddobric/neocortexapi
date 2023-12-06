@@ -164,21 +164,21 @@
 ```
 - To serialize the Spatial Pooler instance in the CortexLayer, we used the Serialize method, which is implemented within the class Spatial Pooler:
 ```
-	public void Serialize(object obj, string name, StreamWriter sw)
-    {
+public void Serialize(object obj, string name, StreamWriter sw)
+{
         HtmSerializer.SerializeObject(obj, name, sw);
-    }
+}
 ```
 - To serialize the Temporal Memory instance in the CortexLayer, we used the Serialize method, which is implemented within the class Temporal Memory:
 ```
-	public void Serialize(object obj, string name, StreamWriter sw)
-    {
-        var ignoreMembers = new List<string>
-        {
-            //nameof(TemporalMemory.connections)
-        };
-        HtmSerializer.SerializeObject(obj, null, sw, ignoreMembers);  
-    }
+public void Serialize(object obj, string name, StreamWriter sw)
+{
+	var ignoreMembers = new List<string>
+	{
+	    //nameof(TemporalMemory.connections)
+	};
+	HtmSerializer.SerializeObject(obj, null, sw, ignoreMembers);  
+}
 ```
 
 - After all the layers of the CortexLayer are serialized, we then have to serialize the HtmClassifier.
@@ -596,7 +596,7 @@ Console.WriteLine("Prediction next elements with serialized predictor \n");
 // The "serializedPredictor" instance is used as an arugment in the PredictNextElement() method, then it predict the next element after the predictor instance is being serialized and deserialized.
 PredictNextElement(serializedPredictor, list2);
 ```
-- The below shows the predicted output which we got from the normal predictor and the serialized Predictor respectively. As shown below, the predicted output for next elements are 5, 4 and 2 which is same for both the normal predictor and the serialized Predictor.
+- Below shows the predicted output which we got from the normal predictor and the serialized Predictor respectively. As shown below, the predicted outputs for next elements are 5, 4 and 2 which is same for both the normal predictor and the serialized Predictor.
 ```
 Hello NeocortexApi! Experiment MultiSequenceLearning
 Prediction next elements with normal predictor
