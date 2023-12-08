@@ -6,29 +6,60 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace NeoCortexApi
 {
     public class Helpers
     {
         /// <summary>
+        /// Create szthe test folder.
+        /// </summary>
+        /// <param name="folderName"></param>
+        public static void CreateTestFolder(string folderName)
+        {
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+                while (!Directory.Exists(folderName))
+                {
+                    Thread.Sleep(500);
+                }
+            }
+        }
+
+        /// <summary>
         /// Creates random vector of specified dimension.
         /// </summary>
         /// <param name="numOfBits"></param>
+        /// <param name="activeBits">How many bits should be active. <=0 means 50% of 'numOfBits' will be active.</param>
         /// <param name="rnd"></param>
         /// <returns></returns>
-        public static int[] GetRandomVector(int numOfBits, Random rnd = null)
+        public static int[] GetRandomVector(int numOfBits, int activeBits = -1, Random rnd = null)
         {
             if (rnd == null)
                 rnd = new Random();
 
+            if (activeBits <= 0)
+                activeBits = numOfBits/2;
+
+
             int[] vector = new int[numOfBits];
 
-            for (int i = 0; i < numOfBits; i++)
+            for (int i = 0; i < activeBits; i++)
             {
-                vector[i] = rnd.Next(0, 2);
+                while (true)
+                {
+                    int index = rnd.Next(0, numOfBits);
+                    if (vector[index] == 0)
+                    {
+                        vector[index] = 1;
+                        break;
+                    }
+                }                
             }
 
             return vector;
@@ -36,14 +67,13 @@ namespace NeoCortexApi
 
         #region TraceSDR
 
-
         /// <summary>
         /// Creates string representation from one dimensional value. 
         /// </summary>
         /// <see cref=""/>
         /// <param name="sdrs">the SDR sets</param>
         /// <returns>string of traced output SDRs</returns>
-        public static string StringifySdr(List<int[]> sdrs)
+        public static string StringifySdr(List<int[]> sdrs, string separator = " | " )
         {
             //List of string of arrays for SDR set
             var heads = new List<int>(new int[sdrs.Count]);
@@ -70,7 +100,7 @@ namespace NeoCortexApi
                     return result.ToString();
                 }
 
-                Append_ActiveColumn(sdrs, heads, outputs, minActiveColumn);
+                AppendActiveColumn(sdrs, heads, outputs, minActiveColumn, separator);
             }
         }
 
@@ -83,7 +113,7 @@ namespace NeoCortexApi
         /// <param name="outputs">Represents every index bit of representations.</param>
         /// <param name="minActiveColumn">Stores the similar semantic active and inactive bits for comparison.</param>
         /// <summary>
-        public static void Append_ActiveColumn(List<int[]> sdrs, List<int> heads, StringBuilder[] outputs, int minActiveColumn)
+        private static void AppendActiveColumn(List<int[]> sdrs, List<int> heads, StringBuilder[] outputs, int minActiveColumn, string separator = " | ")
         {
             for (int i = 0; i < sdrs.Count; i++)
             {
@@ -97,7 +127,7 @@ namespace NeoCortexApi
                 if (head < sdr.Length && sdr[head] == minActiveColumn)
                 {
                     outputs[i].Append(minActiveColumn);
-                    outputs[i].Append(", ");
+                    outputs[i].Append(separator);
                     heads[i] = head + 1;
                 }
                 else
@@ -108,7 +138,8 @@ namespace NeoCortexApi
                     {
                         outputs[i].Append(" ");
                     }
-                    outputs[i].Append(", ");
+
+                    outputs[i].Append(separator);
                 }
             }
         }
@@ -453,27 +484,6 @@ namespace NeoCortexApi
         }
 
 
-
-        /// <summary>
-        /// Gets the cells from Distal Segment inside the population that are synaptically connected from the population defined by sourceCells.
-        /// </summary>
-        /// <param name="sourceCells"></param>
-        /// <param name="destinationCells"></param>
-        /// <returns></returns>
-        public static List<Cell> GetDistalConnectedCells(IList<Cell> sourceCells, IList<Cell> destinationCells)
-        {
-            List<Cell> cennectedCells = new List<Cell>();
-
-            foreach (var cell in sourceCells)
-            {
-                cennectedCells.AddRange(GetDistalConnectedCells(cell, destinationCells));
-            }
-
-            return cennectedCells;
-        }
-
-
-
         /// <summary>
         /// Gets the cells from Apical Segment inside the population that are synaptically connected from the cell.
         /// </summary>
@@ -484,11 +494,13 @@ namespace NeoCortexApi
         {
             List<Cell> connectedCells = new List<Cell>();
 
-            var populationSynapses = population.SelectMany(c=>c.ApicalDendrites.SelectMany(s=>s.Synapses)).ToList();
+            // Get all synapses in the population.
+            var populationSynapses = population.SelectMany(c => c.ApicalDendrites.SelectMany(s => s.Synapses)).ToList();
 
+            // Gets intersecting synapses.
             var intersected = cell.ReceptorSynapses.Intersect(populationSynapses).ToList();
 
-            intersected.ForEach((s) => connectedCells.Add(population.FirstOrDefault(c => c.ApicalDendrites.Count(d => d.SegmentIndex == s.SegmentIndex && c.Index == s.SegmentParentCellIndex)>0)));
+            intersected.ForEach((syn) => connectedCells.Add(population.FirstOrDefault(cell => cell.ApicalDendrites.Count(seg => seg.SegmentIndex == syn.SegmentIndex && cell.Index == syn.SegmentParentCellIndex) > 0)));
 
 
             //foreach (var syn in cell.ReceptorSynapses)
@@ -510,6 +522,27 @@ namespace NeoCortexApi
 
             return connectedCells;
         }
+
+        /// <summary>
+        /// Gets the cells from Distal Segment inside the population that are synaptically connected from the population defined by sourceCells.
+        /// </summary>
+        /// <param name="sourceCells"></param>
+        /// <param name="destinationCells"></param>
+        /// <returns></returns>
+        public static List<Cell> GetDistalConnectedCells(IList<Cell> sourceCells, IList<Cell> destinationCells)
+        {
+            List<Cell> cennectedCells = new List<Cell>();
+
+            foreach (var cell in sourceCells)
+            {
+                cennectedCells.AddRange(GetDistalConnectedCells(cell, destinationCells));
+            }
+
+            return cennectedCells;
+        }
+
+
+
 
 
         /// <summary>

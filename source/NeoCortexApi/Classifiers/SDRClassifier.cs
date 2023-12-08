@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace NeoCortexApi.Classifiers
 {
-    public class SdrClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
+    public class SdrClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>, IClassifierKnn<TIN, TOUT>
     {
         private double alpha = 0.001;
         private int learnIteration;
@@ -356,6 +356,11 @@ namespace NeoCortexApi.Classifiers
         }
 
         public List<ClassifierResult<TIN>> GetPredictedInputValues(int[] cellIndicies, short howMany = 1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1)
         {
             throw new NotImplementedException();
         }

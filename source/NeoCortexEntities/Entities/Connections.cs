@@ -869,12 +869,36 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public void TraceColumnPermanences(string fileName)
         {
-            using var sw = new StreamWriter(fileName);
+            using var sw = new StreamWriter(fileName, false);
             foreach (var col in GetColumns())
             {
                 sw.WriteLine(col.Trace());
             }
         }
+
+
+        /// <summary>
+        /// Get permanences of all columns.
+        /// </summary>
+        public List<List<double>> GetColumnPermanences()
+        {
+            List<List<double>> allColPerms = new List<List<double>>();
+
+            foreach (var col in GetColumns())
+            {
+                List<double> perms = new List<double>();
+
+                foreach (var syn in col.ProximalDendrite.Synapses)
+                {                    
+                   perms.Add(syn.Permanence);
+                }
+
+                allColPerms.Add(perms);
+            }
+
+            return allColPerms;
+        }
+
 
         /// <summary>
         /// Converts a <see cref="Collection{T}"/> of <see cref="Cell"/>s to a list of cell indexes.

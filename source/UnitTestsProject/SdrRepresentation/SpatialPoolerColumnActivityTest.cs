@@ -37,10 +37,9 @@ namespace UnitTestsProject.Sdr
             int counter = 0;
 
             bool isInStableState = false;
-
-
+                    
             // HTM parameters
-            HtmConfig htmConfig = new HtmConfig(new int[] { imgSize, imgSize }, new int[] { 64, 64 })
+            HtmConfig htmConfig = new HtmConfig(new int[] { imgSize, imgSize }, colDims)
             {
                 PotentialRadius = 10,
                 PotentialPct = 1,
@@ -138,7 +137,7 @@ namespace UnitTestsProject.Sdr
 
                                 NeoCortexUtils.DrawBitmaps(arrays, outputImage, Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
                                 NeoCortexUtils.DrawHeatmaps(overlapArrays, $"{outputImage}_overlap.png", 1024, 1024, red, red, green);
-
+                                
                                 if (sdrs.Count == trainingImages.Length)
                                 {
                                     return;

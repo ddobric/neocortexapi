@@ -25,11 +25,13 @@ namespace UnitTestsProject
         {
 
             //First SDR vector
-            var list = new int[] { 51, 76, 87 };
+            var list = new int[] { 51, 76, 87, 115, 120 };
             //Second SDR vector
-            var list1 = new int[] { 51, 76, 113 };
+            var list1 = new int[] { 51, 76, 113, 120 };
             //Stores the two SDRs
-            var output = Helpers.StringifySdr(new List<int[]> { list, list1 });
+            var output = Helpers.StringifySdr(new List<int[]> { list, list1 }, " | ");
+
+            Debug.WriteLine(output);
 
             /// <summary>
             /// This result stores the SDR vectors same as output for the comparison. 

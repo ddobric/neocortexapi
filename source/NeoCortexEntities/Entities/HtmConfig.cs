@@ -99,7 +99,7 @@ namespace NeoCortexApi.Entities
         public double PotentialPct { get; set; }
 
         /// <summary>
-        /// Minimum number of connected synapses (mini-columns with active synapses) to the input to declare the mini-column active. 
+        /// Minimum number of connected synapses (mini-columns with connected synapses) to the input to declare the mini-column active. 
         /// </summary>
         public double StimulusThreshold { get; set; }
 

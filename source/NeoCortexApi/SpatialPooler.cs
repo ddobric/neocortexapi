@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace NeoCortexApi
@@ -152,6 +153,10 @@ namespace NeoCortexApi
             this.connections.TraceColumnPermanences(fileName);
         }
 
+        public List<List<double>> GetColumnPermenances()
+        {
+            return this.connections.GetColumnPermanences();
+        }
 
         /// <summary>
         /// Implements single threaded initialization of SP.
@@ -380,7 +385,7 @@ namespace NeoCortexApi
         /// This value is automatically calculated when the RF is created on init of the SP and in every learning cycle.
         /// It helps to calculate the inhibition density.
         /// The inhibition radius determines the size of a column's local neighborhood. 
-        /// A mini-column's overlap mist be highest in its neighborhood in order to become active.
+        /// A mini-column's overlap must be highest in its neighborhood in order to become active.
         /// </summary>
         internal int InhibitionRadius { get; set; } = 0;
 
@@ -595,7 +600,7 @@ namespace NeoCortexApi
             return HtmCompute.CalcAvgSpanOfConnectedSynapses(c.GetColumn(columnIndex), c.HtmConfig);
         }
 
-
+        
         /// <summary>
         /// The primary method in charge of learning. Adapts the permanence values of the synapses based on the input vector, 
         /// and the chosen columns after inhibition round. Permanence values are increased for synapses connected to input bits

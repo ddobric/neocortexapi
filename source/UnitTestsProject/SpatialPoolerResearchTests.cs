@@ -102,7 +102,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[128];
 
-            int[] inputVector = Helpers.GetRandomVector(32, parameters.Get<Random>(KEY.RANDOM));
+            int[] inputVector = Helpers.GetRandomVector(32, rnd: parameters.Get<Random>(KEY.RANDOM));
 
             for (int i = 0; i < 100; i++)
             {
@@ -137,7 +137,7 @@ namespace UnitTestsProject
 
             int[] activeArray = new int[2048];
 
-            int[] inputVector = Helpers.GetRandomVector(1000, parameters.Get<Random>(KEY.RANDOM));
+            int[] inputVector = Helpers.GetRandomVector(1000, rnd: parameters.Get<Random>(KEY.RANDOM));
 
             sp.compute(inputVector, activeArray, true);
 
