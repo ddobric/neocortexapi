@@ -31,7 +31,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationCellArrayTest()
         {
             HtmSerializer serializer = new HtmSerializer();
@@ -68,7 +68,7 @@ namespace UnitTestsProject
 
         }
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationDictionaryStringCellTest()
         {
             var dict = new Dictionary<string, Cell>();
@@ -104,7 +104,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationDistalDendriteArrayTest()
         {
             var cell1 = new Cell(12, 14, 16, new CellActivity());
@@ -174,7 +174,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        //[TestCategory("prod")]
+        //[TestCategory("Prod")]
         public void SerializationAbitraryTypeTest()
         {
             HtmSerializer serializer = new HtmSerializer();
@@ -219,7 +219,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationIntegerArrayTest()
         {
             var array = new int[] { 45, 35 };
@@ -240,7 +240,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationIntegerListTest()
         {
             var array = new List<int> { 45, 34 };
@@ -257,7 +257,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationIntegerListToIntegerArrayTest()
         {
             var array = new List<int> { 45, 34 };
@@ -274,7 +274,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationHtmConfigTest()
         {
             int cellsPerColumnL4 = 20;
@@ -320,7 +320,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationConnectionsTest()
         {
             int cellsPerColumnL4 = 20;
@@ -367,7 +367,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationHomeostaticPlasticityControllerTest()
         {
             int cellsPerColumnL4 = 20;
@@ -426,7 +426,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationSparseObjectMatrixInSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -447,7 +447,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        //[TestCategory("prod")]
+        //[TestCategory("Prod")]
         public void SerializationHtmConfigSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -468,7 +468,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationConnectionsSpatialPoolerMTInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -489,7 +489,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationSpatialPoolerInitialzedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -514,7 +514,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationSpatialPoolerMTInitialzedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -539,7 +539,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationConnectionTemporalMemoryInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -560,7 +560,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationTemporalMemoryInitializedByConnectionsTest()
         {
             HtmConfig htmConfig = SetupHtmConfigParameters();
@@ -581,7 +581,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
         public void SerializationScalarEncoderTest()
         {
             int inputBits = 100;
@@ -993,7 +993,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("prod")]
+        [TestCategory("Prod")]
 
         public void SerializeConnectionsWithActiveSegmentTest()
         {
