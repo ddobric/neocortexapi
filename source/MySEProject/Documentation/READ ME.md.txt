@@ -1,0 +1,16 @@
+# **Project Title: ML22/23-1 Scalar Encoder with Buckets**
+
+#### Group Name: Team_Scalar_Encoder
+
+**Group Members**
+1. Aqib Javed
+
+
+
+
+
+
+ 
+Sr.no	Project Task	                                               Start Date	 End Date
+Task-1	Analyase the functioning of scalar encoder with buckets 	20/12/2023	25/12/2023
+ 
