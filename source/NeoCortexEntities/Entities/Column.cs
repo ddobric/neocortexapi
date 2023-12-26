@@ -234,7 +234,7 @@ namespace NeoCortexApi.Entities
         /// Trace synapse permanences.
         /// </summary>
         /// <returns></returns>
-        public string Trace()
+        public string TraceProximalSegment()
         {
             double permSum = 0.0;
 

@@ -120,7 +120,7 @@ namespace NeoCortexApi.Classifiers
     public class KNeighborsClassifier<TIN, TOUT> : IClassifierKnn<TIN, TOUT>
     {
         private int _nNeighbors = 1; // From Numenta's example 1 is default
-        private DefaultDictionary<string, List<int[]>> _models = new DefaultDictionary<string, List<int[]>>();
+        private DefaultDictionary<string, List<int[]>> _sdrMap = new DefaultDictionary<string, List<int[]>>();
         private int _sdrs = 10;
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace NeoCortexApi.Classifiers
             var similarity = new Dictionary<string, double>();
 
             // Initializing the overlaps with 0
-            foreach (var key in _models.Keys)
+            foreach (var key in _sdrMap.Keys)
                 overLaps[key] = 0;
 
             foreach (var coordinates in mapping)
@@ -248,14 +248,14 @@ namespace NeoCortexApi.Classifiers
 
             var unclassifiedSequence = unclassifiedCells.Select(idx => idx.Index).ToArray();
             var mappedElements = new DefaultDictionary<int, List<ClassificationAndDistance>>();
-            _nNeighbors = _models.Values.Count;
+            _nNeighbors = _sdrMap.Values.Count;
 
-            foreach (var model in _models)
+            foreach (var sdrList in _sdrMap)
             {
-                foreach (var (sequence, idx) in model.Value.WithIndex())
+                foreach (var (sequence, idx) in sdrList.Value.WithIndex())
                 {
                     foreach (var dict in GetDistanceTable(sequence, ref unclassifiedSequence))
-                        mappedElements[dict.Key].Add(new ClassificationAndDistance(model.Key, dict.Value, idx));
+                        mappedElements[dict.Key].Add(new ClassificationAndDistance(sdrList.Key, dict.Value, idx));
                 }
             }
 
@@ -272,20 +272,20 @@ namespace NeoCortexApi.Classifiers
         /// <param name="cells">object of type Cell.</param>
         public void Learn(TIN input, Cell[] cells)
         {
-            var classification = input as string;
+            var label = input as string;
             int[] cellIndicies = cells.Select(idx => idx.Index).ToArray();
 
-            if (!_models[classification].Exists(seq => cellIndicies.SequenceEqual(seq)))
+            if (!_sdrMap[label].Exists(seq => cellIndicies.SequenceEqual(seq)))
             {
-                if (_models[classification].Count > _sdrs)
-                    _models[classification].RemoveAt(0);
-                _models[classification].Add(cellIndicies);
+                if (_sdrMap[label].Count > _sdrs)
+                    _sdrMap[label].RemoveAt(0);
+                _sdrMap[label].Add(cellIndicies);
             }
         }
 
         /// <summary>
         /// Clears the model from all the stored sequences.
         /// </summary>
-        public void ClearState() => _models.Clear();
+        public void ClearState() => _sdrMap.Clear();
     }
 }
