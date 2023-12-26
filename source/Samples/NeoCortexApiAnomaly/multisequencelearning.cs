@@ -104,7 +104,7 @@ namespace AnomalyDetectionSample
                 isInStableState = isStable;
 
                 // Clear active and predictive cells.
-                //tm.Reset(mem);
+                // tm.Reset(mem);
             }, numOfCyclesToWaitOnChange: 50);
 
 
