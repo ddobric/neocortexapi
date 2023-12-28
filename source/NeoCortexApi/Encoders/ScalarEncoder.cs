@@ -161,6 +161,92 @@ namespace NeoCortexApi.Encoders
         }
 
 
+        /// <summary>   
+        /// Decoding an array of outputs based on specified parameters.          
+        /// Decodes an array of outputs based on the provided parameters and returns an array of decoded inputs.
+        /// </summary>
+        /// <param name="encodedOutput">The array of encoded outputs to be decoded.</param>
+        /// <param name="minValue">The minimum value for the decoded inputs.</param>
+        /// <param name="maxValue">The maximum value for the decoded inputs.</param>
+        /// <param name="arrayLength">The length of the input array.</param>
+        /// <param name="width">A parameter affecting the decoding process.</param>
+        /// <param name="isPeriodic">Indicates whether the decoded input array should be checked for periodicity.</param>
+        /// <returns>An array of decoded inputs.</returns>
+
+        public static int[] Decode(int[] encodedOutput, int minValue, int maxValue, int arrayLength, double width, bool isPeriodic)
+        {
+            // Extract runs of 1s from the encoded output
+            List<int[]> runsList = ExtractRuns(encodedOutput);
+
+            // Adjust periodic space if necessary
+            AdjustPeriodicSpace(isPeriodic, runsList, encodedOutput.Length);
+
+            // Map runs to input values
+            List<int> decodedInput = MapRunsToInput(runsList, arrayLength, minValue, maxValue, width, isPeriodic);
+
+            // Sort and adjust periodicity of the decoded input
+            SortAndAdjustPeriodic(decodedInput, minValue, maxValue, isPeriodic);
+
+            return decodedInput.ToArray();
+        }
+
+        /// <summary>
+        /// Extracts runs of 1s from the output array and returns a list of run information.
+        /// </summary>
+        private static List<int[]> ExtractRuns(int[] output)
+        {
+            List<int[]> runs = new List<int[]>();
+            int start = -1, prev = 0, count = 0;
+
+            for (int i = 0; i < output.Length; i++)
+            {
+                if (output[i] == 0)
+                {
+                    if (start != -1)
+                    {
+                        runs.Add(new int[] { start, prev, count });
+                        start = -1;
+                        count = 0;
+                    }
+                }
+                else
+                {
+                    if (start == -1)
+                        start = i;
+
+                    prev = i;
+                    count++;
+                }
+            }
+
+            if (start != -1)
+                runs.Add(new int[] { start, prev, count });
+
+            return runs;
+        }
+
+        /// <summary>
+        /// Adjusts the periodic space by merging the first and last runs if they cover the entire array.
+        /// </summary>
+        private static void AdjustPeriodicSpace(bool isPeriodic, List<int[]> runsList, int outputLength)
+        {
+            if (!isPeriodic || runsList.Count <= 1) return;
+
+            int[] firstRun = runsList[0];
+            int[] lastRun = runsList[runsList.Count - 1];
+
+            if (firstRun[0] == 0 && lastRun[1] == outputLength - 1)
+            {
+                firstRun[1] = lastRun[1];
+                firstRun[2] += lastRun[2];
+                runsList.RemoveAt(runsList.Count - 1);
+            }
+        }
+
+
+
+
+
         /// <summary>
         /// Gets the index of the first non-zero bit.
         /// </summary>
