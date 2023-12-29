@@ -243,6 +243,61 @@ namespace NeoCortexApi.Encoders
             }
         }
 
+        /// <summary>
+        /// Wraps the value within the specified range.
+        /// </summary>
+        private static int Wrap(int value, int minValue, int maxValue)
+        {
+            int range = maxValue - minValue + 1;
+
+            if (value < minValue)
+            {
+                value += range * ((minValue - value) / range + 1);
+            }
+
+            return minValue + (value - minValue) % range;
+        }
+
+        /// <summary>
+        /// Maps a value from one range to another.
+        /// </summary>
+        private static double Map(double value, double fromSource, double toSource, double fromTarget, double toTarget)
+        {
+            return (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
+        }
+
+        /// <summary>
+        /// Maps the runs of 1s to input values and returns a list of decoded input values.
+        /// </summary>
+        private static List<int> MapRunsToInput(List<int[]> runsList, int arrayLength, int minValue, int maxValue, double width, bool isPeriodic)
+        {
+            List<int> decodedInput = new List<int>();
+
+            foreach (int[] run in runsList)
+            {
+                int left = (int)Math.Floor(run[0] + 0.5 * (run[2] - width));
+                int right = (int)Math.Floor(run[1] - 0.5 * (run[2] - width));
+
+                if (left < 0 && isPeriodic)
+                {
+                    left += arrayLength;
+                    right += arrayLength;
+                }
+
+                for (int i = left; i <= right; i++)
+                {
+                    int value = (int)Math.Round(Map(i, 0, arrayLength - 1, minValue, maxValue));
+
+                    if (isPeriodic)
+                        value = Wrap(value, minValue, maxValue);
+
+                    if (value >= minValue && value <= maxValue)
+                        decodedInput.Add(value);
+                }
+            }
+
+            return decodedInput;
+        }
 
 
 
