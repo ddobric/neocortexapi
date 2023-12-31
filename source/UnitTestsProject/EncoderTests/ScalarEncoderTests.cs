@@ -217,12 +217,44 @@ namespace UnitTestsProject.EncoderTests
         }
 
         /// <summary>
-        /// The DecodeTest
+        /// This is a test case for decoding the output of ScalarEncoder into input values.
+        ///Eight test cases are executed using different output values and the expected input values are computed using the decode function.
+        ///The actual input values and the expected input values are printed for each test case to verify the correctness of the decoding algorithm.
         /// </summary>
-        /// <param name="input">The input<see cref="int"/></param>
-        public void DecodeTest(int input)
+
+
+        [TestMethod]
+        [TestCategory("Decoding")]
+        public void ScalarEncodingDecode_CustomTest()
         {
+            int[] customOutput1 = { 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1 };
+            int[] customOutput2 = { 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0 };
+            int[] customOutput3 = { 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0 };
+            int[] customOutput4 = { 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1 };
+            int[] customOutput5 = { 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1 };
+            int[] customOutput6 = { 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0 };
+            int[] customOutput7 = { 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0 };
+            int[] customOutput8 = { 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1 };
+            int customMinVal = 0;
+            int customMaxVal = 200;
+            int customN = 14;
+            double customW = 2.5;
+            bool customPeriodic = false;
+
+            int[][] customTestCases = new int[][] { customOutput1, customOutput2, customOutput3, customOutput4, customOutput5, customOutput6, customOutput7, customOutput8 };
+
+            foreach (int[] customOutput in customTestCases)
+            {
+                int[] customInput = ScalarEncoder.Decode(customOutput, customMinVal, customMaxVal, customN, customW, customPeriodic);
+
+                Console.WriteLine("Custom Output: " + string.Join(",", customOutput));
+                Console.WriteLine("Custom Input: " + string.Join(",", customInput));
+                Console.WriteLine("----------------------------------------");
+
+
+            }
         }
+
 
         /// <summary>
         /// Demonstrates how to create an encoder by explicit invoke of initialization.
