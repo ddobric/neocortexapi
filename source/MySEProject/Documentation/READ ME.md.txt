@@ -6,12 +6,9 @@
 1. Aqib Javed
 
 
-
-
-
-
  
 Sr.no	Project Task	                                               Start Date	 End Date
 Task-1	Analyase the functioning of scalar encoder with buckets 	20/12/2023	25/12/2023
 Task-2  Implement the Scalar Encoder Decode Method                      26/12/2023      29/12/2023
 Task-3  Design Unit Test for Decode Method and Test it                  30/12/2023      31/12/2023
+Task-4  Add a LITERATURE SURVEY (HTM) roject report                       31/01/2023      01/01/2024
