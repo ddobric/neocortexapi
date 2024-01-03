@@ -301,71 +301,87 @@ namespace NeoCortexApi.Encoders
 
 
 
-
-        /// <summary>
-        /// Gets the index of the first non-zero bit.
+/// <summary>
+        /// This method encodes the input into an array of active bits using a scalar encoder.
+        /// It takes into account both periodic and non-periodic encoders.
+        /// The active bits are set based on the bucket index calculated for the input value.
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns>Null in a case of an error.</returns>
-        /// <exception cref="ArgumentException"></exception>
-        protected int? GetFirstOnBit(double input)
+        /// <param name="inputData">The input value to be encoded.</param>
+        /// <param name="output">The array of active bits to be modified and returned.</param>
+        /// <returns>The array of active bits.</returns>
+        public bool[] EncodedArray(double inputData, bool[] output)
         {
-            if (input == double.NaN)
+            // Ensure the input is a valid double value
+            double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
+
+            // Handle case when the input is NaN (Not a Number)
+            switch (input)
             {
-                return null;
+                case double.NaN:
+                    return output;
             }
-            else
+
+            // Get the bucket value for the input
+            int? bucketVal = GetFirstOnBit(input);
+
+            switch (bucketVal)
             {
-                if (input < MinVal)
-                {
-                    if (ClipInput && !Periodic)
+                case null:
+                    // No bucket value found, return the original output array
+                    break;
+
+                default:
+                    // Bucket index for the input value
+                    int bucketIdx = bucketVal.Value;
+
+                    // Define the bin range based on the bucket index
+                    int minbin = bucketIdx;
+                    int maxbin = minbin + 2 * HalfWidth;
+
+                    // Adjust bins for periodic encoders
+                    switch (Periodic)
                     {
-                        Debug.WriteLine("Clipped input " + Name + "=" + input + " to minval " + MinVal);
+                        case true:
+                            // Adjust for periodic encoders when maxbin exceeds the array length
+                            switch (maxbin >= N)
+                            {
+                                case true:
+                                    int bottombins = maxbin - N + 1;
+                                    for (int i = 0; i < bottombins; i++)
+                                    {
+                                        // Set active bits for bottom bins
+                                        output[i] = true;
+                                    }
+                                    maxbin = N - 1;
+                                    break;
+                            }
 
-                        input = MinVal;
+                            // Adjust for periodic encoders when minbin is less than 0
+                            switch (minbin < 0)
+                            {
+                                case true:
+                                    int topbins = -minbin;
+                                    for (int i = 0; i < topbins; i++)
+                                    {
+                                        // Set active bits for top bins
+                                        output[N - i - 1] = true;
+                                    }
+                                    minbin = 0;
+                                    break;
+                            }
+                            break;
                     }
-                    else
+
+                    // Set active bits for the calculated bin range
+                    for (int i = minbin; i <= maxbin; i++)
                     {
-                        throw new ArgumentException($"Input ({input}) less than range ({MinVal} - {MaxVal}");
+                        output[i] = true;
                     }
-                }
+                    break;
             }
 
-            if (Periodic)
-            {
-                if (input >= MaxVal)
-                {
-                    throw new ArgumentException($"Input ({input}) greater than periodic range ({MinVal} - {MaxVal}");
-                }
-            }
-            else
-            {
-                if (input > MaxVal)
-                {
-                    if (ClipInput)
-                    {
-
-                        Debug.WriteLine($"Clipped input {Name} = {input} to maxval MaxVal");
-                        input = MaxVal;
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Input ({input}) greater than periodic range ({MinVal} - {MaxVal}");
-                    }
-                }
-            }
-
-            int centerbin;
-            if (Periodic)
-            {
-                centerbin = (int)((input - MinVal) * NInternal / Range + Padding);
-            }
-            else
-            {
-                centerbin = ((int)(((input - MinVal) + Resolution / 2) / Resolution)) + Padding;
-            }
-
-            return centerbin - HalfWidth;
+            // Output 1-D array of the same length as the parameter N    
+            return output;
         }
 
 
