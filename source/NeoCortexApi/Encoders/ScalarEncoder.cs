@@ -386,25 +386,47 @@ namespace NeoCortexApi.Encoders
 
 
         /// <summary>
-        /// Gets the bucket index of the given value.
+        /// Gets the bucket index of the given value using a scalar encoder.
         /// </summary>
-        /// <param name="inputData">The data to be encoded. Must be of type double.</param>
-        /// <param name="bucketIndex">The bucket index.</param>
-        /// <returns></returns>
-        /// Understanding the new method to get the bucket index.
-        /// Now Try to Implement Buckets Code While usinf Professor Hint
-        public int? GetBucketIndex(object inputData)
+        /// <param name="inputValue">The data to be encoded. Must be of type decimal.</param>
+        /// <returns>The bucket index or null if the input value is outside the valid range.</returns>
+        public int? ScalarEncoderDetermineBucketIndex(decimal inputValue)
         {
-            double input = Convert.ToDouble(inputData, CultureInfo.InvariantCulture);
-            if (input == double.NaN)
+            // Check if the input value is outside the valid range
+            if ((double)inputValue < MinVal || (double)inputValue > MaxVal)
             {
                 return null;
             }
 
-            int? bucketVal = GetFirstOnBit(input);
+            // Calculate the normalized fraction based on the input value
+            decimal normalizedFraction = CalculateNormalizedFraction(inputValue);
 
-            return bucketVal; 
+            // Determine the bucket index using the normalized fraction
+            int index = CalculateBucketIndex(normalizedFraction);
+
+            // Handle periodic conditions for the bucket index
+            if (index == BucketCount)
+            {
+                // Wrap around to the first bucket if the index equals the total number of buckets
+                index = 0;
+            }
+
+            // Adjust the index for periodic conditions and a specific epsilon threshold
+            if (Periodic && index == 0 && Math.Abs(inputValue - (decimal)MaxVal) <= (decimal)Epsilon)
+            {
+                // Set the index to the last bucket if it's the first bucket and meets the epsilon condition
+                index = (int)(BucketCount - 1);
+            }
+
+            // Check if the input value is within the specified bucket radius
+            if (BucketRadius >= 0 && !IsWithinBucketRadius(inputValue, index))
+            {
+                return null;
+            }
+
+            return index;
         }
+
 
 
         /// <summary>
