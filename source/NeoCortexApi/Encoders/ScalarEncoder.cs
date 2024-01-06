@@ -427,6 +427,36 @@ namespace NeoCortexApi.Encoders
             return index;
         }
 
+        // Calculate the normalized fraction based on the input value
+        private decimal CalculateNormalizedFraction(decimal inputValue)
+        {
+            decimal fraction = (decimal)(((double)inputValue - MinVal) / (MaxVal - MinVal));
+
+            // Adjust the fraction for periodic conditions
+            if (Periodic)
+            {
+                fraction = fraction - Math.Floor(fraction);
+            }
+
+            return fraction;
+        }
+
+        // Calculate the bucket index based on the normalized fraction
+        private new int CalculateBucketIndex(decimal normalizedFraction)
+        {
+            return (int)Math.Floor(normalizedFraction * (decimal)BucketCount);
+        }
+
+        // Check if the input value is within the specified bucket radius of the given bucket index
+        private bool IsWithinBucketRadius(decimal inputValue, int index)
+        {
+            decimal bucketWidth = ((decimal)MaxVal - (decimal)MinVal) / (decimal)BucketCount;
+            decimal bucketCenter = (bucketWidth * index) + (bucketWidth / 2) + (decimal)MinVal;
+
+            // Check if the absolute difference between the input value and the bucket center is within the bucket radius
+            return Math.Abs((decimal)inputValue - bucketCenter) <= (decimal)BucketRadius * bucketWidth;
+        }
+
 
 
         /// <summary>
