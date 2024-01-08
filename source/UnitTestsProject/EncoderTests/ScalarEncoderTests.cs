@@ -337,6 +337,83 @@ namespace UnitTestsProject.EncoderTests
         }
 
 
+        /// <summary>
+        /// This test method is part of the "Experiment" category and tests the behavior of the DetermineBucketIndex
+        /// method in the ScalarEncoder class for periodic encoding. It iterates over a range of decimal values,
+        /// encodes each value to a bitmap, and adds the corresponding bucket index as text to the bitmap.
+        /// The generated bitmaps are saved to an output folder named after the test method.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Experiment")]
+        public void DetermineBucketIndex_Periodic()
+        {
+            // Set up
+            // Create an output folder based on the test method name.
+            string outputFolder = nameof(DetermineBucketIndex_Periodic);
+            Directory.CreateDirectory(outputFolder);
+
+            // Get the current date and time.
+            DateTime now = DateTime.Now;
+
+            // Create a ScalarEncoder with periodic configuration.
+            ScalarEncoder encoder = new ScalarEncoder(CreateEncoderConfiguration_Periodic());
+
+            // Execute and Verify
+            for (decimal value = 0.0M; value < (long)encoder.MaxVal; value += 0.1M)
+            {
+                // Encode the number and obtain the corresponding bucket index.
+                var encodedResult = encoder.Encode(value);
+                int? bucketIndex = encoder.ScalarEncoderDetermineBucketIndex(value);
+
+                // Convert the encoded result into a transposed 2D array.
+                int[,] twoDimensionalArray = ArrayUtils.Make2DArray<int>(encodedResult, (int)Math.Sqrt(encodedResult.Length), (int)Math.Sqrt(encodedResult.Length));
+                var transposedArray = ArrayUtils.Transpose(twoDimensionalArray);
+
+                // Generate a bitmap of the encoded result with the corresponding bucket index and save it to the output folder.
+                string imagePath = $"{outputFolder}\\{value}.png";
+                Console.WriteLine($"Image Path: {imagePath}");
+
+                try
+                {
+                    // Draw a bitmap with the encoded result and save it.
+                    NeoCortexUtils.DrawBitmap(transposedArray, 1024, 1024, imagePath, Color.Gray, Color.Red, text: $"v:{value} /b:{bucketIndex}");
+                    Console.WriteLine($"Bitmap created for {value}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error creating bitmap for {value}: {ex.Message}");
+                    throw;
+                }
+
+                // Verify
+                // Ensure that the bucket index is not null for the current value.
+                Assert.IsNotNull(bucketIndex, $"Bucket index for value {value} should not be null");
+
+                // Ensure that a bitmap image is created for the current value.
+                Assert.IsTrue(File.Exists(imagePath), $"Bitmap image for {value} should be created");
+            }
+        }
+
+        /// <summary>
+        /// Creates a dictionary containing configuration settings for a periodic ScalarEncoder.
+        /// </summary>
+        /// <returns>The configuration settings as a dictionary.</returns>
+        private Dictionary<string, object> CreateEncoderConfiguration_Periodic()
+        {
+            return new Dictionary<string, object>()
+    {
+        { "W", 21 },
+        { "N", 1024 },
+        { "BucketRadius", -1.0 },
+        { "MinVal", 0.0 },
+        { "MaxVal", 100.0 },
+        { "Periodic", true },
+        { "Name", "scalar" },
+        { "ClipInput", false },
+        { "BucketCount", 1024 },
+        { "Epsilon", 0.001 } // Adjust the value based on your requirements
+    };
+        }
 
         /// <summary>
         /// Demonstrates how to create an encoder by explicit invoke of initialization.
