@@ -458,6 +458,102 @@ namespace NeoCortexApi.Encoders
         }
 
 
+        /// <summary>
+        /// This code calculates bucket information for a scalar value based on the provided encoder parameters. 
+        /// It first clips the input value to the specified range, calculates the bucket index and center, and then 
+        /// calculates the bucket bounds. It also handles periodic encoding by wrapping the bucket index and choosing 
+        /// the closest edge as the bucket center. The function returns an integer array containing the bucket index, 
+        /// the rounded bucket center, and the rounded bucket start and end points.
+        /// </summary>
+        /// <param name="input">The scalar value to be encoded.</param>
+        /// <returns>An integer array containing bucket information.</returns>
+        public int[] ScalarEncoderAnalyzeinfo(double input)
+        {
+            // Clip input to the specified range
+            input = ClipToRange(input, MinVal, MaxVal);
+
+            // Calculate bucket information
+            double bucketWidth = CalculateBucketWidth();
+            int bucketIndex = CalculateBucketIndex(input, bucketWidth);
+            double bucketCenter = CalculateBucketCenter(bucketIndex, bucketWidth);
+            double bucketStart = CalculateBucketStart(bucketIndex, bucketWidth);
+            double bucketEnd = CalculateBucketEnd(bucketIndex, bucketWidth);
+
+            // Handle periodic encoding
+            if (Periodic)
+            {
+                AdjustForPeriodicEncoding(ref bucketIndex, ref bucketCenter, ref bucketStart, ref bucketEnd, input);
+            }
+
+            // Return the bucket information
+            return new int[] { bucketIndex, (int)Math.Round(bucketCenter), (int)Math.Round(bucketStart), (int)Math.Round(bucketEnd) };
+        }
+
+        // Clip the input value to the specified range
+        private double ClipToRange(double value, double minValue, double maxValue)
+        {
+            return Math.Max(minValue, Math.Min(value, maxValue));
+        }
+
+        // Calculate the width of each bucket
+        private double CalculateBucketWidth()
+        {
+            return (MaxVal - MinVal) / N;
+        }
+
+        // Calculate the bucket index based on the input value and bucket width
+        private int CalculateBucketIndex(double input, double bucketWidth)
+        {
+            return (int)((input - MinVal) / bucketWidth);
+        }
+
+        // Calculate the center of the specified bucket
+        private double CalculateBucketCenter(int bucketIndex, double bucketWidth)
+        {
+            return MinVal + (bucketIndex + 0.5) * bucketWidth;
+        }
+
+        // Calculate the start point of the specified bucket
+        private double CalculateBucketStart(int bucketIndex, double bucketWidth)
+        {
+            return MinVal + bucketIndex * bucketWidth;
+        }
+
+        // Calculate the end point of the specified bucket
+        private double CalculateBucketEnd(int bucketIndex, double bucketWidth)
+        {
+            return MinVal + (bucketIndex + 1) * bucketWidth;
+        }
+
+        // Adjust bucket information for periodic encoding
+        private void AdjustForPeriodicEncoding(ref int bucketIndex, ref double bucketCenter, ref double bucketStart, ref double bucketEnd, double input)
+        {
+            // Wrap bucket index to handle periodic conditions
+            bucketIndex = (bucketIndex % N + N) % N;
+
+            // Calculate distance to the start and end edges
+            double distToStart = input - bucketStart;
+            double distToEnd = bucketEnd - input;
+
+            // Wrap distances for periodicity
+            distToStart = WrapDistanceForPeriodicEncoding(distToStart);
+            distToEnd = WrapDistanceForPeriodicEncoding(distToEnd);
+
+            // Choose the closest edge as the bucket center
+            bucketCenter = (distToStart < distToEnd) ? bucketStart : bucketEnd;
+        }
+
+        // Wrap distance for periodic encoding
+        private double WrapDistanceForPeriodicEncoding(double distance)
+        {
+            if (distance < 0)
+            {
+                // Adjust distance to handle periodic conditions
+                distance += MaxVal - MinVal;
+            }
+            return distance;
+        }
+
 
         /// <summary>
         /// Encodes the given scalar value as SDR as defined by HTM.
