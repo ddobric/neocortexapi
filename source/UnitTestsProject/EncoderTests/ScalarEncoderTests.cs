@@ -445,6 +445,55 @@ namespace UnitTestsProject.EncoderTests
         }
 
         /// <summary>
+        /// The test checks the bucket information of the encoder with different input values. 
+        /// The encoder parameters include the minimum and maximum values, the number of buckets, 
+        /// the radius, and periodicity. The test asserts the expected bucket information for input 
+        /// values close to the bucket boundaries, inside and outside the range, and at the middle of 
+        /// the range.
+        /// </summary>
+        /// 
+        [TestMethod]
+        public void TestGetBucketInfoNonPeriodic()
+        {
+            ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
+    {
+        { "W", 21},
+        { "N", 100},
+        { "Radius", -1.0},
+        { "MinVal", 0.0},
+        { "MaxVal", 100.0 },
+        { "Periodic", false},
+        { "Name", "scalar_nonperiodic"},
+        { "ClipInput", false},
+        { "NumberOfBuckets", 100 },
+    });
+
+            // Test values near bucket boundaries
+            VerifyBucketInfoNonPeriodic(encoder, 24.7, new int[] { 24, 25, 24, 25 });
+            VerifyBucketInfoNonPeriodic(encoder, 74.2, new int[] { 74, 75, 74, 75 });
+            VerifyBucketInfoNonPeriodic(encoder, 99.9, new int[] { 99, 100, 99, 100 });
+
+            // Test values outside of range
+            VerifyBucketInfoNonPeriodic(encoder, -5.0, new int[] { 0, 0, 0, 1 });
+            VerifyBucketInfoNonPeriodic(encoder, 105.0, new int[] { 100, 100, 100, 101 });
+
+            // Test value in the middle of the range
+            VerifyBucketInfoNonPeriodic(encoder, 50.5, new int[] { 50, 51, 50, 51 });
+        }
+
+        private void VerifyBucketInfoNonPeriodic(ScalarEncoder encoder, double inputValue, int[] expected)
+        {
+            int[] bucketInfo = encoder.ScalarEncoderAnalyzeinfo(inputValue);
+            Console.WriteLine($"Expected Bucket info for {inputValue} (bucketIndex, bucketCenter, bucketStart, bucketEnd): {string.Join(",", expected)}");
+            Console.WriteLine($"Actual Bucket info for {inputValue} (bucketIndex, bucketCenter, bucketStart, bucketEnd): {string.Join(",", bucketInfo)}");
+
+            // Adjust expected bucket center value for rounding
+            expected[1] = (int)Math.Round((expected[2] + expected[3]) / 2.0);
+
+            CollectionAssert.AreEqual(expected, bucketInfo);
+        }
+
+        /// <summary>
         /// Initializes encoder and sets mandatory properties.
         /// </summary>
         [TestMethod]
