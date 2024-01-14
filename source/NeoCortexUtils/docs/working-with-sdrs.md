@@ -1,4 +1,4 @@
-#  Implement SDR representation samples
+#  working-with-sdrs
 
 ## Introduction:
 Neural network is a focal element in the area of machine learning. Inspired by the biological neurons that are present in the human brain, an artificial neural network is designed that mimics the human brain’s behavior, helping computer programs to identify patterns and answers to these related issues. It would be able to perform actions like the human brain and have the capability of learning things. These neural networks work on the principle of learning input/output operations. In our project, SDR representation has been implemented in a variety of ways, including SDR as indices and bitmaps. Furthermore, we developed methods for comparing two SDRs by using intersection, union, and overlap. In addition, we have added a new representation of Spatial pooler learning as a "Column/Overlap" ratio, which is another representation of a heatmap.
