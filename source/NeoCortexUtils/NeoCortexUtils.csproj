@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\dev\NeoCortexAPI\neocortexapi\source\NeoCortexUtils\NeoCortexUtils.xml</DocumentationFile>
@@ -14,6 +14,6 @@
   <ItemGroup>
     <PackageReference Include="GemBox.Spreadsheet" Version="47.0.1268" />
     <PackageReference Include="ImageBinarizer" Version="1.5.6" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
   </ItemGroup>
 </Project>
