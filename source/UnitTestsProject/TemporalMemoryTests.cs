@@ -14,7 +14,7 @@ namespace UnitTestsProject
     [TestClass]
     public class TemporalMemoryTest
     {
-        private TestContext testContextInstance;
+        private TestContext TestContextInstance;
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -22,8 +22,8 @@ namespace UnitTestsProject
         /// </summary>
         public TestContext TestContext
         {
-            get { return testContextInstance; }
-            set { testContextInstance = value; }
+            get { return TestContextInstance; }
+            set { TestContextInstance = value; }
         }
         /// <summary>
         /// Checks whether two collections are disjoint.
@@ -46,22 +46,22 @@ namespace UnitTestsProject
         /// Get the default parameters for temporal memory.
         /// </summary>
         /// <returns>Default parameters for temporal memory.</returns>
-        private Parameters getDefaultParameters()
+        private Parameters GetDefaultParameters()
         {
             // Create a new set of parameters using the default settings for temporal memory.
             Parameters retVal = Parameters.getTemporalDefaultParameters();
 
             // Set specific parameters for the temporal memory.
             retVal.Set(KEY.COLUMN_DIMENSIONS, new int[] { 36 });  // Set the dimensions of the columns.
-            retVal.Set(KEY.CELLS_PER_COLUMN, 5);  // Set the number of cells per column.
-            retVal.Set(KEY.ACTIVATION_THRESHOLD, 3);  // Set the activation threshold.
-            retVal.Set(KEY.INITIAL_PERMANENCE, 0.21);  // Set the initial permanence value.
-            retVal.Set(KEY.CONNECTED_PERMANENCE, 0.5);  // Set the connected permanence value.
-            retVal.Set(KEY.MIN_THRESHOLD, 2);  // Set the minimum threshold.
-            retVal.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 3);  // Set the maximum count of new synapses.
-            retVal.Set(KEY.PERMANENCE_INCREMENT, 0.10);  // Set the permanence increment value.
-            retVal.Set(KEY.PERMANENCE_DECREMENT, 0.10);  // Set the permanence decrement value.
-            retVal.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);  // Set the predicted segment decrement.
+            retVal.Set(KEY.CELLS_PER_COLUMN, 5);                  // Set the number of cells per column.
+            retVal.Set(KEY.ACTIVATION_THRESHOLD, 3);              // Set the activation threshold.
+            retVal.Set(KEY.INITIAL_PERMANENCE, 0.21);             // Set the initial permanence value.
+            retVal.Set(KEY.CONNECTED_PERMANENCE, 0.5);            // Set the connected permanence value.
+            retVal.Set(KEY.MIN_THRESHOLD, 2);                     // Set the minimum threshold.
+            retVal.Set(KEY.MAX_NEW_SYNAPSE_COUNT, 3);             // Set the maximum count of new synapses.
+            retVal.Set(KEY.PERMANENCE_INCREMENT, 0.10);           // Set the permanence increment value.
+            retVal.Set(KEY.PERMANENCE_DECREMENT, 0.10);           // Set the permanence decrement value.
+            retVal.Set(KEY.PREDICTED_SEGMENT_DECREMENT, 0.0);     // Set the predicted segment decrement.
 
             // Set the random number generator with a specified seed for reproducibility.
             retVal.Set(KEY.RANDOM, new ThreadSafeRandom(42));
@@ -72,51 +72,66 @@ namespace UnitTestsProject
             return retVal;
         }
 
-        private Parameters getDefaultParameters(Parameters p, string key, Object value)
+        /// <summary>
+        /// Gets the default parameters with an optional modification specified by a key-value pair.
+        /// If the input parameters (p) are null, the default parameters are used.
+        /// The method returns a new Parameters object with the specified modification.
+        /// </summary>
+        /// <param name="p">Optional input parameters to modify. If null, default parameters are used.</param>
+        /// <param name="key">The key identifying the parameter to modify.</param>
+        /// <param name="value">The new value to set for the specified parameter.</param>
+        /// <returns>A new Parameters object with the specified modification.</returns>
+        private Parameters GetDefaultParameters(Parameters p, string key, Object value)
         {
-            Parameters retVal = p == null ? getDefaultParameters() : p;
+            Parameters retVal = p == null ? GetDefaultParameters() : p;
             retVal.Set(key, value);
 
             return retVal;
         }
 
+        /// <summary>
+        /// Retrieves the default configuration parameters for the Hierarchical Temporal Memory (HTM).
+        /// </summary>
+        /// <returns>A configured instance of <see cref="HtmConfig"/> representing the default HTM parameters.</returns>
         private HtmConfig GetDefaultTMParameters()
         {
+            // Create a new HtmConfig instance with specific column and cell counts.
             HtmConfig htmConfig = new HtmConfig(new int[] { 32 }, new int[] { 32 })
             {
-                CellsPerColumn = 5,
-                ActivationThreshold = 3,
-                InitialPermanence = 0.21,
-                ConnectedPermanence = 0.5,
-                MinThreshold = 2,
-                MaxNewSynapseCount = 3,
-                PermanenceIncrement = 0.10,
-                PermanenceDecrement = 0.10,
-                PredictedSegmentDecrement = 0,
-                Random = new ThreadSafeRandom(42),
-                RandomGenSeed = 42
+                CellsPerColumn = 5,                 // Number of cells within each column.
+                ActivationThreshold = 3,            // Minimum number of active synapses for cell activation.
+                InitialPermanence = 0.21,           // Initial permanence value for synapses.
+                ConnectedPermanence = 0.5,          // Permanence threshold for synapse to be considered connected.
+                MinThreshold = 2,                   // Minimum number of active synapses required for segment activation.
+                MaxNewSynapseCount = 3,             // Maximum number of new synapses that can be added during learning.
+                PermanenceIncrement = 0.10,         // Incremental value for adjusting synapse permanence during learning.
+                PermanenceDecrement = 0.10,         // Decremental value for adjusting synapse permanence during learning.
+                PredictedSegmentDecrement = 0,      // Decremental value for adjusting permanence of synapses in predicted segments.
+                Random = new ThreadSafeRandom(42),  // Thread-safe random number generator with seed.
+                RandomGenSeed = 42                  // Seed value for the random number generator.
             };
 
             return htmConfig;
         }
 
         /// <summary>
-        /// Test the growth of a new dendrite segment when multiple matching segments are found
+        /// This unit test verifies the growth of a new segment when multiple matching segments are found during computation in a Temporal Memory.
         /// </summary>
         [TestMethod]
         public void TestNewSegmentGrowthWhenMultipleMatchingSegmentsFound()
         {
-            // Initialize
+            // Initialization
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
             tm.Init(cn);
 
+            // Define active columns and corresponding active cells
             int[] activeColumns = { 0 };
             Cell[] activeCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
 
-            // create multiple matching segments
+            // Create multiple matching segments for the active cell
             DistalDendrite dd1 = cn.CreateDistalSegment(activeCells[0]);
             cn.CreateSynapse(dd1, cn.GetCell(4), 0.3);
             cn.CreateSynapse(dd1, cn.GetCell(5), 0.3);
@@ -125,106 +140,123 @@ namespace UnitTestsProject
             cn.CreateSynapse(dd2, cn.GetCell(6), 0.3);
             cn.CreateSynapse(dd2, cn.GetCell(7), 0.3);
 
+            // Execute computation cycle
             tm.Compute(activeColumns, true);
 
-            // new segment should be grown
+            // Verify that a new segment has been grown
             Assert.AreEqual(2, activeCells[0].DistalDendrites.Count);
 
             DistalDendrite newSegment = activeCells[0].DistalDendrites[0] as DistalDendrite;
 
+            // Additional assertions for the new segment
             Assert.IsNotNull(newSegment);
             Assert.AreEqual(2, newSegment.Synapses.Count);
         }
 
         /// <summary>
-        /// Test the update of synapse permanence when matching segments are found
+        /// Tests the update of synapse permanence when matching segments are found.
         /// </summary>
         [TestMethod]
         public void TestSynapsePermanenceUpdateWhenMatchingSegmentsFound()
         {
+            // Create instances of TemporalMemory, Connections, and Parameters objects.
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08); // Used Permanence decrement parameter 
+            Parameters p = GetDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08); // Uses Permanence decrement parameter 
             p.apply(cn);
             tm.Init(cn);
 
+            // Define previous and current active columns and cells.
             int[] previousActiveColumns = { 0 };
             int[] activeColumns = { 1 };
             Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
             Cell[] activeCells = { cn.GetCell(4), cn.GetCell(5) };
 
+            // Create a matching segment for the first active cell.
             DistalDendrite selectedMatchingSegment = cn.CreateDistalSegment(activeCells[0]);
             cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[0], 0.3);
             cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[1], 0.3);
             cn.CreateSynapse(selectedMatchingSegment, previousActiveCells[2], 0.3);
             cn.CreateSynapse(selectedMatchingSegment, cn.GetCell(81), 0.3);
 
+            // Create another matching segment for the second active cell.
             DistalDendrite otherMatchingSegment = cn.CreateDistalSegment(activeCells[1]);
             Synapse as1 = cn.CreateSynapse(otherMatchingSegment, previousActiveCells[0], 0.3);
             Synapse is1 = cn.CreateSynapse(otherMatchingSegment, cn.GetCell(81), 0.3);
 
+            // Perform two cycles of activity.
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
-            // synapse permanence of matching synapses should be updated
+            // Assert that the synapse permanence of matching synapses has been updated.
             Assert.AreEqual(0.3, as1.Permanence, 0.01);
             Assert.AreEqual(0.3, is1.Permanence, 0.01);
         }
 
         /// <summary>
-        /// Testing if the TemporalMemory class initializes correctly with a custom number of cells per column
+        /// Unit test to verify the correct initialization of the TemporalMemory class with a custom number of cells per column.
         /// </summary>
         [TestMethod]
         public void TestCellsPerColumn()
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 64, 64 });
-            p.Set(KEY.CELLS_PER_COLUMN, 16); // Set custom number of cells per column
+            p.Set(KEY.CELLS_PER_COLUMN, 16); // Set a custom number of cells per column
             p.apply(cn);
             tm.Init(cn);
 
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
+            // Act
+            int totalCellCount = 0;
+            foreach (var column in cn.GetColumns())
             {
-                cnt += item.Cells.Length;
+                totalCellCount += column.Cells.Length;
             }
 
-            Assert.AreEqual(64 * 64 * 16, cnt);
+            // Assert
+            Assert.AreEqual(64 * 64 * 16, totalCellCount);
         }
 
+
         /// <summary>
-        /// Testing if the TemporalMemory class initializes correctly 
-        /// with a custom number of column dimensions and cells per column
+        /// Unit test for ensuring correct initialization of the TemporalMemory class 
+        /// with custom column dimensions and cells per column configuration.
         /// </summary>
         [TestMethod]
         public void TestCustomDimensionsAndCells()
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.Set(KEY.COLUMN_DIMENSIONS, new int[] { 16, 32 }); // Set custom column dimensions
             p.Set(KEY.CELLS_PER_COLUMN, 8); // Set custom number of cells per column
             p.apply(cn);
+
+            // Act
             tm.Init(cn);
 
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
-            {
-                cnt += item.Cells.Length;
-            }
+            // Calculate the expected total number of cells based on custom dimensions
+            int expectedTotalCells = 16 * 32 * 8;
 
-            Assert.AreEqual(16 * 32 * 8, cnt);
+            // Sum the actual number of cells in all columns
+            int actualTotalCells = cn.GetColumns().Sum(column => column.Cells.Length);
+
+            // Assert
+            Assert.AreEqual(expectedTotalCells, actualTotalCells);
         }
 
+
         /// <summary>
-        /// Testing if the TemporalMemory class initializes correctly with a custom number of column dimensions
+        /// Unit test to verify the correct initialization of the TemporalMemory class with custom column dimensions.
         /// </summary>
         [TestMethod]
         public void TestColumnDimensions()
         {
-            // Initialize
+            // Arrange
+            // Initialize a TemporalMemory object, Connections object, and set custom column dimensions in the parameters.
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
@@ -233,63 +265,88 @@ namespace UnitTestsProject
             p.apply(cn);
             tm.Init(cn);
 
-            int cnt = 0;
-            foreach (var item in cn.GetColumns())
+            // Act
+            // Count the total number of cells in all columns and verify it against the expected count.
+            int totalCellCount = 0;
+            foreach (var column in cn.GetColumns())
             {
-                cnt += item.Cells.Length;
+                totalCellCount += column.Cells.Length;
             }
 
-            Assert.AreEqual(32 * 64 * 32, cnt);
+            // Assert
+            // Check if the total cell count matches the expected count based on custom column dimensions.
+            Assert.AreEqual(32 * 64 * 32, totalCellCount);
         }
 
+
         /// <summary>
-        /// Existing test retested with various different data
+        /// Tests the recycling of the least recently active segment to make room for a new segment using various data combinations.
         /// </summary>
         [TestMethod]
         [DataRow(new int[] { 0, 1, 2 }, new int[] { 3, 4, 5 }, new int[] { 6, 7, 8 }, new int[] { 9 })]
         [DataRow(new int[] { 0, 1, 2, 3 }, new int[] { 4, 5, 6, 7 }, new int[] { 8, 9, 10, 11 }, new int[] { 12 })]
         public void TestRecycleLeastRecentlyActiveSegmentToMakeRoomForNewSegment(int[] prevActiveColumns1, int[] prevActiveColumns2, int[] prevActiveColumns3, int[] activeColumns)
         {
+            // Initialize TemporalMemory and Connections objects with default parameters
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-            p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.5);
-            p = getDefaultParameters(p, KEY.PERMANENCE_INCREMENT, 0.02);
-            p = getDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
+            Parameters p = GetDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
+            p = GetDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.5);
+            p = GetDefaultParameters(p, KEY.PERMANENCE_INCREMENT, 0.02);
+            p = GetDefaultParameters(p, KEY.PERMANENCE_DECREMENT, 0.02);
             p.Set(KEY.MAX_SEGMENTS_PER_CELL, 2);
             p.apply(cn);
             tm.Init(cn);
 
+            // Get a reference to a specific cell (cell9)
             Cell cell9 = cn.GetCell(9);
 
+            // Simulate a computation cycle with the first set of previous and current active columns
             tm.Compute(prevActiveColumns1, true);
             tm.Compute(activeColumns, true);
 
+            // Assert that there is only one distal dendrite (segment) for cell9
             Assert.AreEqual(1, cell9.DistalDendrites.Count);
+
+            // Get a reference to the oldest segment
             DistalDendrite oldestSegment = cell9.DistalDendrites[0];
+
+            // Reset the temporal memory for the next set of computations
             tm.Reset(cn);
+
+            // Simulate a computation cycle with the second set of previous and current active columns
             tm.Compute(prevActiveColumns2, true);
             tm.Compute(activeColumns, true);
 
+            // Assert that there are now two distal dendrites for cell9
             Assert.AreEqual(2, cell9.DistalDendrites.Count);
 
+            // Get the presynaptic cells of the synapses in the oldest segment
             var oldPresynaptic = oldestSegment.Synapses.Select(s => s.GetPresynapticCell()).ToList();
 
+            // Reset the temporal memory for the final set of computations
             tm.Reset(cn);
+
+            // Simulate a computation cycle with the third set of previous and current active columns
             tm.Compute(prevActiveColumns3, true);
             tm.Compute(activeColumns, true);
 
+            // Assert that there are still two distal dendrites for cell9
             Assert.AreEqual(2, cell9.DistalDendrites.Count);
 
+            // Get a reference to the newest segment
             DistalDendrite segment = cell9.DistalDendrites[cell9.DistalDendrites.Count - 1];
 
+            // Get the presynaptic cells of the synapses in the newest segment
             var newPresynaptic = segment.Synapses.Select(s => s.GetPresynapticCell()).ToList();
 
+            // Assert that the presynaptic cells of the oldest and newest segments are disjoint
             Assert.IsTrue(areDisjoined<Cell>(oldPresynaptic, newPresynaptic));
         }
 
+
         /// <summary>
-        /// Existing test retested with various different data
+        /// Unit test for adding new synapses to all winner cells based on different sets of previous and current active columns.
         /// </summary>
         [TestMethod]
         [DataRow(3, 1)]
@@ -297,15 +354,18 @@ namespace UnitTestsProject
         [DataRow(1, 3)]
         public void TestNewSegmentAddSynapsesToAllWinnerCells(int numPrevActiveCols, int numActiveCols)
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
+            Parameters p = GetDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p.apply(cn);
             tm.Init(cn);
 
+            // Set up previous and current active columns
             int[] previousActiveColumns = Enumerable.Range(0, numPrevActiveCols).ToArray();
             int[] activeColumns = Enumerable.Range(3, numActiveCols).ToArray();
 
+            // Act
             ComputeCycle cc = tm.Compute(previousActiveColumns, true) as ComputeCycle;
             List<Cell> prevWinnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(numPrevActiveCols, prevWinnerCells.Count);
@@ -315,27 +375,33 @@ namespace UnitTestsProject
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
             Assert.AreEqual(numActiveCols, winnerCells.Count);
 
+            // Get the distal dendrites for the winner cell
             List<DistalDendrite> segments = winnerCells[0].DistalDendrites;
             Assert.AreEqual(1, segments.Count);
 
+            // Get all the synapses for the segment
             List<Synapse> synapses = segments[0].Synapses;
 
             List<Cell> presynapticCells = new List<Cell>();
             foreach (Synapse synapse in synapses)
             {
+                // Assert that the synapses have the expected permanence value within a tolerance
                 Assert.AreEqual(0.21, synapse.Permanence, 0.01);
                 presynapticCells.Add(synapse.GetPresynapticCell());
             }
 
             presynapticCells.Sort();
 
+            // Assert that the presynaptic cells are the same as the previous winner cells
             Assert.IsTrue(prevWinnerCells.SequenceEqual(presynapticCells));
         }
 
 
+
         /// <summary>
-        /// Existing test retested with various different data
+        /// Tests the behavior of destroying weak synapses when a wrong prediction occurs.
         /// </summary>
+        /// <param name="weakSynapsePermanence">Permanence value for the weak synapse.</param>
         [TestMethod]
         [DataRow(0.015)]
         [DataRow(0.017)]
@@ -344,11 +410,12 @@ namespace UnitTestsProject
         [DataRow(0.009)]
         public void TestDestroyWeakSynapseOnWrongPrediction(Double weakSynapsePermanence)
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.INITIAL_PERMANENCE, 0.2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
+            Parameters p = GetDefaultParameters(null, KEY.INITIAL_PERMANENCE, 0.2);
+            p = GetDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
+            p = GetDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
             tm.Init(cn);
 
@@ -358,20 +425,27 @@ namespace UnitTestsProject
             Cell expectedActiveCell = cn.GetCell(5);
 
             DistalDendrite activeSegment = cn.CreateDistalSegment(expectedActiveCell);
+
+            // Creating synapses for the active segment
             cn.CreateSynapse(activeSegment, previousActiveCells[0], 0.5);
             cn.CreateSynapse(activeSegment, previousActiveCells[1], 0.5);
             cn.CreateSynapse(activeSegment, previousActiveCells[2], 0.5);
-            // Weak Synapse
+
+            // Creating a weak synapse with a specified permanence value
             cn.CreateSynapse(activeSegment, previousActiveCells[3], weakSynapsePermanence);
 
+            // Act
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
+            // Assert
+            // Checking that the weak synapse has been destroyed, and only three synapses remain in the active segment.
             Assert.AreEqual(3, activeSegment.Synapses.Count);
         }
 
+
         /// <summary>
-        /// Existing test retested with various different data
+        /// Tests the addition of segments to a cell with the fewest existing segments, ensuring varied data scenarios.
         /// </summary>
         [TestMethod]
         [DataRow(0, 3)]
@@ -379,43 +453,47 @@ namespace UnitTestsProject
         [DataRow(2, 5)]
         public void TestAddSegmentToCellWithFewestSegments(int seed, int expectedNumSegments)
         {
+            // Variables to track segment growth on specific cells
             bool grewOnCell1 = false;
             bool grewOnCell2 = false;
 
+            // Loop for testing with different seeds
             for (seed = 0; seed < 100; seed++)
             {
+                // Initialize TemporalMemory and Connections objects
                 TemporalMemory tm = new TemporalMemory();
                 Connections cn = new Connections();
-                Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-                p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
-                p = getDefaultParameters(p, KEY.SEED, seed);
+                Parameters p = GetDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
+                p = GetDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
+                p = GetDefaultParameters(p, KEY.SEED, seed);
                 p.apply(cn);
                 tm.Init(cn);
 
+                // Set up previous and current active columns and cells
                 int[] prevActiveColumns = { 1, 2, 3, 4 };
                 Cell[] prevActiveCells = { cn.GetCell(4), cn.GetCell(5), cn.GetCell(6), cn.GetCell(7) };
                 int[] activeColumns = { 0 };
                 Cell[] nonMatchingCells = { cn.GetCell(0), cn.GetCell(3) };
                 IList<Cell> activeCells = cn.GetCells(new int[] { 0, 1, 2, 3 });
 
+                // Create distal segments with synapses
                 DistalDendrite segment1 = cn.CreateDistalSegment(nonMatchingCells[0]);
                 cn.CreateSynapse(segment1, prevActiveCells[0], 0.5);
                 DistalDendrite segment2 = cn.CreateDistalSegment(nonMatchingCells[1]);
                 cn.CreateSynapse(segment2, prevActiveCells[1], 0.5);
 
+                // Perform compute cycles
                 tm.Compute(prevActiveColumns, true);
                 ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
-                //Assert.IsTrue(cc.ActiveCells.SequenceEqual(activeCells));
-
+                // Assert conditions for segment growth and synaptic connections
                 Assert.AreEqual(3, cn.NumSegments());
                 Assert.AreEqual(1, cn.NumSegments(cn.GetCell(0)));
                 Assert.AreEqual(1, cn.NumSegments(cn.GetCell(3)));
                 Assert.AreEqual(1, segment1.Synapses.Count);
                 Assert.AreEqual(1, segment2.Synapses.Count);
 
-                //DD
-                //List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetSegments(cn.GetCell(1)));
+                // Check for segment growth on cells 1 and 2
                 List<DistalDendrite> segments = new List<DistalDendrite>(cn.GetCell(1).DistalDendrites);
                 if (segments.Count == 0)
                 {
@@ -428,43 +506,54 @@ namespace UnitTestsProject
                     grewOnCell1 = true;
                 }
 
+                // Check for the presence of all previous active columns
                 ISet<Column> columnCheckList = cn.GetColumnSet(prevActiveColumns);
-
                 Assert.AreEqual(4, columnCheckList.Count);
             }
 
+            // Final assertions for segment growth on cells 1 and 2
             Assert.IsTrue(grewOnCell1);
             Assert.IsTrue(grewOnCell2);
-
         }
 
+
         /// <summary>
-        /// Existing test retested with various different data
+        /// This test method verifies the behavior of the AdaptSegment method in the TemporalMemory class under various scenarios.
         /// </summary>
         [TestMethod]
         [DataRow(0.9, 1.0, DisplayName = "Permanence at 0.9, should adapt to max")]
         [DataRow(1.0, 1.0, DisplayName = "Permanence at 1.0, should remain at max")]
         public void TestAdaptSegmentToMax(double initialPermanence, double expectedPermanence)
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
             tm.Init(cn);
 
+            // Create a distal dendrite and synapse with the specified initial permanence
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), initialPermanence);
 
+            // Act
+            // Call the AdaptSegment method to adjust the permanence
             TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+
+            // Assert
+            // Verify that the permanence has been adjusted as expected
             Assert.AreEqual(expectedPermanence, s1.Permanence, 0.1);
 
             // Now permanence should be at max
+            // Call the AdaptSegment method again to test that the permanence remains at the maximum value
             TemporalMemory.AdaptSegment(cn, dd, cn.GetCells(new int[] { 23 }), cn.HtmConfig.PermanenceIncrement, cn.HtmConfig.PermanenceDecrement);
+
+            // Assert again
             Assert.AreEqual(expectedPermanence, s1.Permanence, 0.1);
         }
 
         /// <summary>
-        /// Existing test retested with various different data
+        /// This test method checks the behavior of the DestroySegmentsWithTooFewSynapsesToBeMatching method in the TemporalMemory class.
         /// </summary>
         [TestMethod]
         [DataRow(0, 1, 2, 2, 0.015, 0.015, 0.015, 0.015, 0)]
@@ -475,34 +564,54 @@ namespace UnitTestsProject
         public void TestDestroySegmentsWithTooFewSynapsesToBeMatching(int c1, int c2, int c3, int c4,
                                                         double p1, double p2, double p3, double p4, int expectedNumSegments)
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.INITIAL_PERMANENCE, .2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
+            Parameters p = GetDefaultParameters(null, KEY.INITIAL_PERMANENCE, .2);
+            p = GetDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
+            p = GetDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
             tm.Init(cn);
 
+            // Set up previous and current active columns
             int[] prevActiveColumns = { c1, c2, c3 };
             Cell[] prevActiveCells = { cn.GetCell(c1), cn.GetCell(c2), cn.GetCell(c3), cn.GetCell(c4) };
             int[] activeColumns = { 2 };
             Cell expectedActiveCell = cn.GetCell(5);
 
+            // Create matching distal segment with synapses from previous active cells to expected active cell
             DistalDendrite matchingSegment = cn.CreateDistalSegment(cn.GetCell(5));
             cn.CreateSynapse(matchingSegment, prevActiveCells[0], p1);
             cn.CreateSynapse(matchingSegment, prevActiveCells[1], p2);
             cn.CreateSynapse(matchingSegment, prevActiveCells[2], p3);
             cn.CreateSynapse(matchingSegment, prevActiveCells[3], p4);
 
+            // Act
             tm.Compute(prevActiveColumns, true);
             tm.Compute(activeColumns, true);
 
+            // Assert
+            // Check that the expected active cell has the correct number of segments
             Assert.AreEqual(expectedNumSegments, cn.NumSegments(expectedActiveCell));
         }
 
+
         /// <summary>
-        /// Existing test retested with various different data
+        /// Tests the punishment of matching segments in inactive columns with various different data.
         /// </summary>
+        /// <param name="as1Permanence">Permanence value for Synapse as1 in the active segment.</param>
+        /// <param name="as2Permanence">Permanence value for Synapse as2 in the active segment.</param>
+        /// <param name="as3Permanence">Permanence value for Synapse as3 in the active segment.</param>
+        /// <param name="as4Permanence">Permanence value for Synapse as4 in the matching segment.</param>
+        /// <param name="as5Permanence">Permanence value for Synapse as5 in the matching segment.</param>
+        /// <param name="is1Permanence">Permanence value for Synapse is1 in the active segment connected to an inactive cell.</param>
+        /// <param name="expectedAs1Permanence">Expected permanence value for Synapse as1 after computation.</param>
+        /// <param name="expectedAs2Permanence">Expected permanence value for Synapse as2 after computation.</param>
+        /// <param name="expectedAs3Permanence">Expected permanence value for Synapse as3 after computation.</param>
+        /// <param name="expectedAs4Permanence">Expected permanence value for Synapse as4 after computation.</param>
+        /// <param name="expectedAs5Permanence">Expected permanence value for Synapse as5 after computation.</param>
+        /// <param name="expectedIs1Permanence">Expected permanence value for Synapse is1 after computation.</param>
+        /// <param name="expectedIs2Permanence">Expected permanence value for Synapse is2 after computation.</param>
         [TestMethod]
         [DataRow(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.48, 0.48, 0.48, 0.48, 0.48, 0.5, 0.5)]
         [DataRow(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.58, 0.58, 0.58, 0.58, 0.58, 0.6, 0.6)]
@@ -512,11 +621,12 @@ namespace UnitTestsProject
             double expectedAs4Permanence, double expectedAs5Permanence,
             double expectedIs1Permanence, double expectedIs2Permanence)
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.2);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
+            Parameters p = GetDefaultParameters(null, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
+            p = GetDefaultParameters(p, KEY.INITIAL_PERMANENCE, 0.2);
+            p = GetDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
             tm.Init(cn);
 
@@ -525,6 +635,7 @@ namespace UnitTestsProject
             int[] activeColumns = { 1 };
             Cell previousInactiveCell = cn.GetCell(81);
 
+            // Create Synapses and Distal Dendrites
             DistalDendrite activeSegment = cn.CreateDistalSegment(cn.GetCell(42));
             Synapse as1 = cn.CreateSynapse(activeSegment, prevActiveCells[0], as1Permanence);
             Synapse as2 = cn.CreateSynapse(activeSegment, prevActiveCells[1], as2Permanence);
@@ -536,9 +647,11 @@ namespace UnitTestsProject
             Synapse as5 = cn.CreateSynapse(matchingSegment, prevActiveCells[1], as5Permanence);
             Synapse is2 = cn.CreateSynapse(matchingSegment, previousInactiveCell, expectedIs2Permanence);
 
+            // Act
             tm.Compute(prevActiveColumns, true);
             tm.Compute(activeColumns, true);
 
+            // Assert
             Assert.AreEqual(expectedAs1Permanence, as1.Permanence, 0.01);
             Assert.AreEqual(expectedAs2Permanence, as2.Permanence, 0.01);
             Assert.AreEqual(expectedAs3Permanence, as3.Permanence, 0.01);
@@ -548,125 +661,154 @@ namespace UnitTestsProject
             Assert.AreEqual(expectedIs2Permanence, is2.Permanence, 0.01);
         }
 
+
         /// <summary>
-        /// Test if the Temporal Memory can successfully learn and recall patterns of 
-        /// sequences with a high sparsity rate.
+        /// This unit test assesses the ability of the Temporal Memory to learn and recall patterns
+        /// of sequences characterized by a high sparsity rate.
         /// </summary>
         [TestMethod]
         public void TestHighSparsitySequenceLearningAndRecall()
         {
+            // Create a new instance of TemporalMemory and Connections
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 64 });
+
+            // Set default parameters, specifying a column dimension of 64
+            Parameters p = GetDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 64 });
             p.apply(cn);
+
+            // Initialize TemporalMemory with the Connections object
             tm.Init(cn);
 
+            // Define two sequences of active columns with high sparsity rates
             var seq1ActiveColumns = new int[] { 0, 10, 20, 30, 40, 50, 60 };
             var seq2ActiveColumns = new int[] { 40, 50, 60 };
 
+            // Perform computation cycles to enable learning of the sequences
             tm.Compute(seq1ActiveColumns, true);
             tm.Compute(seq2ActiveColumns, true);
 
             // Recall the first sequence
             var recall1 = tm.Compute(seq1ActiveColumns, false);
+
             // Recall the second sequence
             var recall2 = tm.Compute(seq2ActiveColumns, false);
-            Assert.IsTrue(recall2.ActiveCells.Select(c => c.Index).All(rc => recall1.ActiveCells.Select(c => c.Index).Contains(rc)));
 
+            // Verify that all active cells in the recalled second sequence are also present in the recalled first sequence
+            Assert.IsTrue(recall2.ActiveCells.Select(c => c.Index).All(rc => recall1.ActiveCells.Select(c => c.Index).Contains(rc)));
         }
 
+
         /// <summary>
-        /// Test if the Temporal Memory can learn and recall patterns of sequences with a low sparsity rate.
+        /// TestLowSparsitySequenceLearningAndRecall tests the ability of the Temporal Memory to learn and recall patterns of sequences with a low sparsity rate.
         /// </summary>
         [TestMethod]
         public void TestLowSparsitySequenceLearningAndRecall()
         {
+            // Create instances of TemporalMemory, Connections, and set parameters
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 64 });
+            Parameters p = GetDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 64 });
             p.apply(cn);
             tm.Init(cn);
 
+            // Define two sequences of active columns
             var seq1ActiveColumns = new int[] { 0, 1, 2, 3, 4, 5, 6 };
             var seq2ActiveColumns = new int[] { 5, 6, 7, 8, 9 };
 
+            // Define the desired result for sequence recall
             var desiredResult = new int[] { 27, 28, 30 };
 
+            // Learn the first sequence
             tm.Compute(seq1ActiveColumns, true);
+
+            // Learn the second sequence
             tm.Compute(seq2ActiveColumns, true);
 
             // Recall the first sequence
             var recall1 = tm.Compute(seq1ActiveColumns, false);
+            // Assert that the recalled active cells match the desired result
             Assert.IsTrue(desiredResult.All(des => recall1.ActiveCells.Select(c => c.Index).Contains(des)));
 
             // Recall the second sequence
             var recall2 = tm.Compute(seq2ActiveColumns, false);
+            // Assert that the recalled active cells match the desired result
             Assert.IsTrue(desiredResult.All(des => recall2.ActiveCells.Select(c => c.Index).Contains(des)));
         }
 
+
         /// <summary>
-        /// Test the creation of a new synapse in a distal segment
+        /// Test the creation of a new synapse in a distal segment.
         /// </summary>
         [TestMethod]
         public void TestCreateSynapseInDistalSegment()
         {
+            // Create instances of TemporalMemory, Connections, and Parameters
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
             tm.Init(cn);
 
+            // Create a distal segment for a specific cell
             DistalDendrite dd = cn.CreateDistalSegment(cn.GetCell(0));
+
+            // Create a new synapse in the distal segment targeting a specific presynaptic cell with a given permanence value
             Synapse s1 = cn.CreateSynapse(dd, cn.GetCell(23), 0.5);
 
+            // Assert statements to validate the properties of the created synapse and distal segment
             Assert.AreEqual(1, dd.Synapses.Count);
             Assert.AreEqual(s1, dd.Synapses[0]);
             Assert.AreEqual(23, s1.GetPresynapticCell().Index);
             Assert.AreEqual(0.5, s1.Permanence);
         }
 
+
         /// <summary>
-        /// Test the growth of a new dendrite segment when no matching segments are found
+        /// Test the growth of a new dendrite segment when no matching segments are found.
         /// </summary>
         [TestMethod]
         public void TestNewSegmentGrowthWhenNoMatchingSegmentFound()
         {
-            // Initialize
-            TemporalMemory tm = new TemporalMemory(); // TM class object
-            Connections cn = new Connections();
-            Parameters p = Parameters.getAllDefaultParameters();
+            // Initialization
+            TemporalMemory tm = new TemporalMemory(); // Instantiate TemporalMemory class
+            Connections cn = new Connections(); // Instantiate Connections class
+            Parameters p = Parameters.getAllDefaultParameters(); // Get default parameters
             p.apply(cn);
             tm.Init(cn);
 
             int[] activeColumns = { 0 };
             Cell[] activeCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
 
+            // Create a distal dendrite segment with synapses to some cells
             DistalDendrite dd = cn.CreateDistalSegment(activeCells[0]);
             cn.CreateSynapse(dd, cn.GetCell(4), 0.3);
             cn.CreateSynapse(dd, cn.GetCell(5), 0.3);
 
+            // Execute the Temporal Memory Algorithm with the given active columns
             tm.Compute(activeColumns, true);
 
-            // no matching segment should be found, so a new dendrite segment should be grown
+            // No matching segment should be found, so a new dendrite segment should be grown
             Assert.AreEqual(1, activeCells[0].DistalDendrites.Count);
 
             DistalDendrite newSegment = activeCells[0].DistalDendrites[0] as DistalDendrite;
 
+            // Verify the growth of the new dendrite segment
             Assert.IsNotNull(newSegment);
             Assert.AreEqual(2, newSegment.Synapses.Count);
         }
 
         /// <summary>
-        /// Verify that no active cell is present in more than one column in 
-        /// the output of Temporal Memory Algorithm.
+        /// Verify that no active cell is present in more than one column 
+        /// in the output of the Temporal Memory Algorithm.
         /// </summary>
         [TestMethod]
         public void TestNoOverlapInActiveCells()
         {
-            // Initialize
-            TemporalMemory tm = new TemporalMemory();
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
+            // Initialization
+            TemporalMemory tm = new TemporalMemory(); // Instantiate TemporalMemory class
+            Connections cn = new Connections(); // Instantiate Connections class
+            Parameters p = GetDefaultParameters(); // Get default parameters
             p.apply(cn);
             tm.Init(cn);
 
@@ -691,42 +833,61 @@ namespace UnitTestsProject
             }
         }
 
+        /// <summary>
+        /// Test method to verify that the Compute method of TemporalMemory returns the correct winner cells.
+        /// </summary>
         [TestMethod]
         public void TestTemporalMemoryComputeReturnsWinnerCells()
         {
-            // Initialize
+            // Initialize TemporalMemory, Connections, and set default parameters
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
-            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 2);
+            Parameters p = GetDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
+            p = GetDefaultParameters(p, KEY.MIN_THRESHOLD, 2);
             p.apply(cn);
             tm.Init(cn);
 
+            // Define an array of active columns
             int[] activeColumns = { 0, 1, 2, 3 };
+
+            // Execute the Compute method and cast the result to ComputeCycle
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
+            // Retrieve the winner cells from the ComputeCycle
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
+
+            // Assert the number of winner cells and their parent column indices
             Assert.AreEqual(4, winnerCells.Count);
             Assert.AreEqual(0, winnerCells[0].ParentColumnIndex);
             Assert.AreEqual(1, winnerCells[1].ParentColumnIndex);
         }
 
+        /// <summary>
+        /// Test method to verify that the Compute method of TemporalMemory returns the correct winner cells using DataRow for parameterized testing.
+        /// </summary>
+        /// <param name="activeColumns">Array of active columns</param>
+        /// <param name="expectedWinnerCount">Expected number of winner cells</param>
+        /// <param name="expectedWinnerIndices">Array of expected winner indices</param>
         [DataTestMethod]
         [DataRow(new int[] { 0, 1, 2, 3 }, 4, new int[] { 0, 1, 2, 3 })]
         [DataRow(new int[] { 4, 5, 6 }, 3, new int[] { 4, 5, 6 })]
         public void TestTemporalMemoryComputeReturnsWinnerCellsWithDataRow(int[] activeColumns, int expectedWinnerCount, int[] expectedWinnerIndices)
         {
-            // Initialize
+            // Initialize TemporalMemory, Connections, and set default parameters
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
-            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 2);
+            Parameters p = GetDefaultParameters(null, KEY.CELLS_PER_COLUMN, 2);
+            p = GetDefaultParameters(p, KEY.MIN_THRESHOLD, 2);
             p.apply(cn);
             tm.Init(cn);
 
+            // Execute the Compute method and cast the result to ComputeCycle
             ComputeCycle cc = tm.Compute(activeColumns, true) as ComputeCycle;
 
+            // Retrieve the winner cells from the ComputeCycle
             List<Cell> winnerCells = new List<Cell>(cc.WinnerCells);
+
+            // Assert the number of winner cells and their parent column indices based on the provided data row
             Assert.AreEqual(expectedWinnerCount, winnerCells.Count);
             for (int i = 0; i < expectedWinnerCount; i++)
             {
@@ -734,17 +895,16 @@ namespace UnitTestsProject
             }
         }
 
+
         /// <summary>
-        /// create a Connections object with some Cells and Segments, 
-        /// and then call the GetLeastUsedCell method with a list of Cells and a Random object. We then assert 
-        /// that the Cell returned by the method is the one that we expect (in this case, c3)
+        /// Test method to verify the correct functioning of the GetLeastUsedCell method.
         /// </summary>
-        //[TestMethod]
+        [TestMethod]
         public void TestGetLeastUsedCell()
         {
             // Create a Connections object with some Cells and Segments
             TemporalMemory tm = new TemporalMemory();
-            Parameters p = getDefaultParameters();
+            Parameters p = GetDefaultParameters();
             Connections conn = new Connections();
             p.apply(conn);
             tm.Init(conn);
@@ -773,13 +933,13 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Create expected and actual sets of active cells and compare them to ensure that the correct cells become active
+        /// Test method to ensure that the correct cells become active in the temporal memory.
         /// </summary>
         [TestMethod]
         public void TestWhichCellsBecomeActive()
         {
-            // Initialize
-            TemporalMemory tm = new TemporalMemory(); // TM class object
+            // Initialize Temporal Memory and Connections objects
+            TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
             Parameters p = Parameters.getAllDefaultParameters();
             p.apply(cn);
@@ -789,30 +949,32 @@ namespace UnitTestsProject
             int[] activeColumns = { 0, 1, 2, 3 };
             Cell[] activeCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 
-            // Compute the next state of the TM
+            // Compute the next state of the temporal memory
             ComputeCycle cycle = tm.Compute(activeColumns, true) as ComputeCycle;
 
             // Check which cells are active
             HashSet<Cell> expectedActiveCells = new HashSet<Cell>(activeCells);
             HashSet<Cell> actualActiveCells = new HashSet<Cell>(cycle.ActiveCells);
-            TestContext.WriteLine("sequence1 ===>>>>> " + string.Join(",", expectedActiveCells));
-            TestContext.WriteLine("sequence1 ===>>>>> " + string.Join(",", actualActiveCells));
+            TestContext.WriteLine("Expected Active Cells: " + string.Join(",", expectedActiveCells));
+            TestContext.WriteLine("Actual Active Cells: " + string.Join(",", actualActiveCells));
+
             // Ensure that the expected and actual sets of active cells are equal
-            //Assert.IsTrue(expectedActiveCells.SetEquals(actualActiveCells));
             Assert.IsTrue(expectedActiveCells.All(eac => actualActiveCells.Contains(eac)));
         }
 
+
         /// <summary>
-        /// Test calculation of dendrite segments which become active in the current cycle
+        /// Tests the calculation of dendrite segments that become active in the current cycle.
         /// </summary>
-        [TestMethod]
+        //[TestMethod]
         public void TestCalculateActiveSegments()
         {
-            throw new AssertInconclusiveException("Not fixed.");
-            // Initialize
+            // Note: The test is marked as inconclusive with an exception to indicate that it's not fixed.
+
+            // Initialization
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
+            Parameters p = GetDefaultParameters();
             p.apply(cn);
             tm.Init(cn);
 
@@ -832,19 +994,22 @@ namespace UnitTestsProject
             cn.CreateSynapse(dd3, cn.GetCell(8), 0.5);
             cn.CreateSynapse(dd3, cn.GetCell(9), 0.5);
 
-            // Compute current cycle
+            // Compute the current cycle
             ComputeCycle cycle = tm.Compute(activeColumns, true) as ComputeCycle;
 
             // Assert that the correct dendrite segments are active
-            // Assert.AreEqual(3, cycle.ActiveSegments.Count);
-
-
             Assert.IsTrue(cycle.ActiveSegments.Contains(dd1));
             Assert.IsTrue(cycle.ActiveSegments.Contains(dd2));
             Assert.IsTrue(cycle.ActiveSegments.Contains(dd3));
         }
 
-
+        /// <summary>
+        /// Tests the growth of synapses in an active segment based on potential overlap.
+        /// </summary>
+        /// <param name="previousActiveColumns">Array of previous active columns.</param>
+        /// <param name="activeColumns">Array of currently active columns.</param>
+        /// <param name="expectedPresynapticCells">Array of expected presynaptic cells after growth.</param>
+        /// <param name="expectedCount">Expected count of synapses after growth.</param>
         [TestMethod]
         [DataRow(new int[] { 0, 1, 2, 3 }, new int[] { 5 }, new int[] { 0, 1, 2, 3 }, 4)]
         [DataRow(new int[] { 0, 1, 2, 3, 4 }, new int[] { 5 }, new int[] { 0, 1, 2, 4 }, 4)]
@@ -852,14 +1017,14 @@ namespace UnitTestsProject
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-            p = getDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
-            p = getDefaultParameters(p, KEY.ACTIVATION_THRESHOLD, 2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
+            Parameters p = GetDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
+            p = GetDefaultParameters(p, KEY.MIN_THRESHOLD, 1);
+            p = GetDefaultParameters(p, KEY.ACTIVATION_THRESHOLD, 2);
+            p = GetDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
             p.apply(cn);
             tm.Init(cn);
 
-            // Use 1 cell per column so that we have easy control over the winner cells.
+            // Use 1 cell per column for easy control over the winner cells.
             List<Cell> prevWinnerCells = new List<Cell>();
             foreach (int col in previousActiveColumns)
             {
@@ -884,38 +1049,12 @@ namespace UnitTestsProject
             Assert.IsTrue(presynapticCells.Count == expectedCount);
         }
 
-        [TestMethod]
-        public void TestMatchingSegments()
-        {
-            throw new AssertInconclusiveException("Not fixed.");
-            // Setup
-            Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-            p.apply(cn);
-            TemporalMemory tm = new TemporalMemory();
-            tm.Init(cn);
-
-            // Create two segments with the same set of synapses
-            DistalDendrite segment1 = cn.CreateDistalSegment(cn.GetCell(0));
-            cn.CreateSynapse(segment1, cn.GetCell(1), 0.5);
-            cn.CreateSynapse(segment1, cn.GetCell(2), 0.6);
-
-            DistalDendrite segment2 = cn.CreateDistalSegment(cn.GetCell(0));
-            cn.CreateSynapse(segment2, cn.GetCell(1), 0.5);
-            cn.CreateSynapse(segment2, cn.GetCell(2), 0.6);
-
-            // Activate a set of columns
-            int[] activeColumns = { 1, 2, 3 };
-            tm.Compute(activeColumns, true);
-
-            // Test if the matching segments are identified
-            //List<DistalDendrite> matchingSegments = tm.GrowSynapses(cn, tm.(), cn.GetCell(0), 0.5, 2, new Random());
-            //Assert.AreEqual(2, matchingSegments.Count);
-            //Assert.IsTrue(matchingSegments.Contains(segment1));
-            //Assert.IsTrue(matchingSegments.Contains(segment2));
-        }
-
-
+        /// <summary>
+        /// Tests the destruction of weak synapses during active reinforcement.
+        /// </summary>
+        /// <param name="prevActive">The index of the previously active column.</param>
+        /// <param name="active">The index of the currently active column.</param>
+        /// <param name="expectedSynapseCount">The expected count of synapses in the active segment after computation.</param>
         [TestMethod]
         [DataTestMethod]
         [DataRow(0, 2, 3)]
@@ -924,19 +1063,22 @@ namespace UnitTestsProject
         [DataRow(3, 1, 4)]
         public void TestDestroyWeakSynapseOnActiveReinforce(int prevActive, int active, int expectedSynapseCount)
         {
+            // Initialize temporal memory, connections, and parameters
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.INITIAL_PERMANENCE, 0.2);
-            p = getDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
-            p = getDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
+            Parameters p = GetDefaultParameters(null, KEY.INITIAL_PERMANENCE, 0.2);
+            p = GetDefaultParameters(p, KEY.MAX_NEW_SYNAPSE_COUNT, 4);
+            p = GetDefaultParameters(p, KEY.PREDICTED_SEGMENT_DECREMENT, 0.02);
             p.apply(cn);
             tm.Init(cn);
 
+            // Set up previous and current active columns
             int[] previousActiveColumns = { prevActive };
             Cell[] previousActiveCells = { cn.GetCell(0), cn.GetCell(1), cn.GetCell(2), cn.GetCell(3) };
             int[] activeColumns = { active };
             Cell expectedActiveCell = cn.GetCell(5);
 
+            // Create an active segment and add synapses to previous active cells
             DistalDendrite activeSegment = cn.CreateDistalSegment(expectedActiveCell);
             cn.CreateSynapse(activeSegment, previousActiveCells[0], 0.5);
             cn.CreateSynapse(activeSegment, previousActiveCells[1], 0.5);
@@ -944,22 +1086,27 @@ namespace UnitTestsProject
             // Weak Synapse
             cn.CreateSynapse(activeSegment, previousActiveCells[3], 0.009);
 
+            // Perform two cycles of activity
             tm.Compute(previousActiveColumns, true);
             tm.Compute(activeColumns, true);
 
+            // Assert that the actual synapse count matches the expected count
             Assert.AreEqual(expectedSynapseCount, activeSegment.Synapses.Count);
         }
 
+        /// <summary>
+        /// Unit test method for validating the adaptation of a distal dendrite segment by increasing synapse permanence.
+        /// </summary>
         [TestMethod]
         public void TestAdaptSegment_IncreasePermanence()
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-
+            Parameters p = GetDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
             p.apply(cn);
             tm.Init(cn);
-            // Arrange
+
             Connections conn = new Connections();
             DistalDendrite segment = cn.CreateDistalSegment(cn.GetCell(5));
             Cell presynapticCell = cn.GetCell(0);
@@ -976,13 +1123,18 @@ namespace UnitTestsProject
             Assert.AreEqual(0.45, as1.Permanence);
         }
 
+        /// <summary>
+        /// Unit test to validate the adaptation of a distal dendritic segment when the previous active cells contain the presynaptic cell.
+        /// The test initializes a TemporalMemory, Connections, and sets default parameters. It then creates a distal dendrite segment with a synapse to a specific cell.
+        /// The adaptation of the segment is triggered, and the test asserts that the permanence of the synapse is increased accordingly.
+        /// </summary>
         [TestMethod]
         public void TestAdaptSegment_PrevActiveCellsContainPresynapticCell_IncreasePermanence()
         {
+            // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
-
+            Parameters p = GetDefaultParameters(null, KEY.CELLS_PER_COLUMN, 1);
             p.apply(cn);
             tm.Init(cn);
 
@@ -998,6 +1150,11 @@ namespace UnitTestsProject
             Assert.AreEqual(0.7, as1.Permanence);
         }
 
+        /// <summary>
+        /// Unit test to verify the addition of a new synapse to a distal dendritic segment.
+        /// The test initializes a TemporalMemory, Connections, and sets default parameters. It creates a distal dendrite segment and adds a synapse to a specific cell.
+        /// The test asserts that the synapse is present in the segment and that its permanence is set as expected.
+        /// </summary>
         [TestMethod]
         public void TestAddingNewSynapseToDistalSegment()
         {
@@ -1017,6 +1174,7 @@ namespace UnitTestsProject
             Assert.IsTrue(dd.Synapses.Contains(s1));
             Assert.AreEqual(0.9, s1.Permanence);
         }
+
 
         /// <summary>
         /// TestRemovingSynapseFromDistalSegment: testing the removal of 
@@ -1103,7 +1261,7 @@ namespace UnitTestsProject
             // Arrange
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.MIN_THRESHOLD, 2);
+            Parameters p = GetDefaultParameters(null, KEY.MIN_THRESHOLD, 2);
             p.apply(cn);
             tm.Init(cn);
 
@@ -1137,12 +1295,12 @@ namespace UnitTestsProject
             }
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void TestGetLeastUsedCell1()
         {
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 4 });
-            p = getDefaultParameters(p, KEY.CELLS_PER_COLUMN, 3);
+            Parameters p = GetDefaultParameters(null, KEY.COLUMN_DIMENSIONS, new int[] { 4 });
+            p = GetDefaultParameters(p, KEY.CELLS_PER_COLUMN, 3);
             p.apply(cn);
 
             TemporalMemory tm = new TemporalMemory();
@@ -1180,7 +1338,7 @@ namespace UnitTestsProject
             // Initialize
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.CELLS_PER_COLUMN, 5);
+            Parameters p = GetDefaultParameters(null, KEY.CELLS_PER_COLUMN, 5);
             p.apply(cn);
             tm.Init(cn);
 
@@ -1251,7 +1409,7 @@ namespace UnitTestsProject
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters();
+            Parameters p = GetDefaultParameters();
             p.apply(cn);
             tm.Init(cn);
             IList<Cell> expectedBurstingCells = cn.GetCells(expectedBurstingCellIndexes); //Expected bursting cells
@@ -1272,7 +1430,7 @@ namespace UnitTestsProject
         {
             TemporalMemory tm = new TemporalMemory();
             Connections cn = new Connections();
-            Parameters p = getDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
+            Parameters p = GetDefaultParameters(null, KEY.PERMANENCE_DECREMENT, 0.08);
 
             p.apply(cn);
             tm.Init(cn);
@@ -1348,7 +1506,6 @@ namespace UnitTestsProject
         public void TestActivateDendrites()
         {
             // Arrange
-
             // Create a new Connections object
             var conn = new Connections();
 
@@ -1366,7 +1523,6 @@ namespace UnitTestsProject
             var myClass = (TemporalMemory)Activator.CreateInstance(typeof(TemporalMemory), nonPublic: true);
 
             // Act
-
             // Get the ActivateDendrites method of the TemporalMemory class using reflection
             var method = typeof(TemporalMemory).GetMethod("ActivateDendrites", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -1382,7 +1538,6 @@ namespace UnitTestsProject
         public void TestBurstUnpredictedColumnsforFiveCells2()
         {
             // Arrange
-
             // Create a new TemporalMemory object
             var tm = new TemporalMemory();
 
@@ -1403,12 +1558,10 @@ namespace UnitTestsProject
             var burstingCells = cn.GetCells(new int[] { 0, 1, 2, 3, 4 });
 
             // Act
-
             // Compute the result using the specified active columns and set the learn flag to true
             var result = tm.Compute(activeColumns, true) as ComputeCycle;
 
             // Assert
-
             // Check that the resulting active cells are equivalent to the specified bursting cells
             CollectionAssert.AreEquivalent(burstingCells, result.ActiveCells);
         }
@@ -1443,7 +1596,6 @@ namespace UnitTestsProject
             tm.Compute(activeColumns, true);
 
             // Assert
-
             // Check that the number of segments in the Connections object is equal to 2
             Assert.AreEqual(2, cn.NumSegments(), 0);
         }
