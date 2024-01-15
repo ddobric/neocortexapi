@@ -129,8 +129,6 @@ namespace HtmClassifierUnitTest
         [TestMethod]
         public void CheckHowManyOfGetPredictedInputValues(int howMany)
         {
-            throw new NotImplementedException();
-
             var predictiveCells = getMockCells(CellActivity.PredictiveCell);
 
             var res = htmClassifier.GetPredictedInputValues(predictiveCells.ToArray(), Convert.ToInt16(howMany));
