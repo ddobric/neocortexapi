@@ -556,6 +556,68 @@ namespace NeoCortexApi.Encoders
 
 
         /// <summary>
+        /// Generates a string description of a list of ranges.
+        /// </summary>
+        /// <param name="ranges">A list of Tuple values representing the start and end values of each range.</param>
+        /// <returns>A string representation of the ranges, where each range is separated by a comma and space.</returns>
+
+
+        public string GenerateNumericRangeDescription(List<Tuple<double, double>> numericRanges)
+        {
+            // Validate input
+            if (numericRanges == null || numericRanges.Count == 0)
+            {
+                throw new ArgumentException("Numeric ranges cannot be null or empty.");
+            }
+
+            // Initialize the description
+            StringBuilder descriptionBuilder = new StringBuilder();
+
+            // Iterate through each range
+            foreach (var range in numericRanges)
+            {
+                double start = range.Item1;
+                double end = range.Item2;
+
+                // Append the range to the description
+                if (start == end)
+                {
+                    descriptionBuilder.Append($"{start:F2}");
+                }
+                else
+                {
+                    descriptionBuilder.Append($"{start:F2}-{end:F2}");
+                }
+
+                // Add a comma for multiple ranges
+                descriptionBuilder.Append(", ");
+            }
+
+            // Remove the trailing comma and space
+            descriptionBuilder.Length -= 2;
+
+            // Return the generated description
+            return descriptionBuilder.ToString();
+        }
+
+
+        private string DecodedToStr(Tuple<Dictionary<string, Tuple<List<int>, string>>, List<string>> tuple)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void PPrint(double[] output)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Tuple<Dictionary<string, Tuple<List<int>, string>>, List<string>> Decode(double[] output)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
         /// Encodes the given scalar value as SDR as defined by HTM.
         /// </summary>
         /// <param name="inputData">The inputData<see cref="object"/></param>
