@@ -1,9 +1,0 @@
-https://shoppingguide-euregio.de/shoppingguide/artikel/100197.newsletter-und-liveblog-des-medienhaus-aachen-zum-coronavirus
-
-python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SbStability Experiment 2 Boost 01 500 cycles - digits 0 1 2 stable\ActiveColumns_Boost_0.1_0_plotly-input.csv" -gn "Digit 0 - boot 0.1 first 300 cycles" -mt 200 -ht 2 -yt "Column Index" -xt Cycle -st singlecolumn -fign CortialColumn
-
-python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SbStability Experiment 2 Boost 01 300 cycles - digits 0 1 2 stable\ActiveColumns_Boost_0.1_0_plotly-input.csv" -gn "Digit 0" -mt 700 -ht 320 -yt "Column Index" -xt Cycle -st "MinvOverlapCycles=0.1, first 300 cycles" -fign CortialColumn
-
-python draw_figure.py -fn "C:\dev\git\NeoCortex\Results\Spatial Pooler Stability\SpStability Experiment 2 Boost 00 - digits 0 1 2 stable\ActiveColumns_Boost_0_0_plotly-input.csv" -gn "Digit 0" -mt 700 -ht 320 -yt "Column Index" -xt Cycle -st "MinvOverlapCycles=0.1, first 300 cycles" -fign CortialColumn
-
-
