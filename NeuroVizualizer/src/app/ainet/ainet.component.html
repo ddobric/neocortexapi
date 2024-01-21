@@ -1,0 +1,105 @@
+<notifier-container></notifier-container>
+<h2>
+  Connectionist System
+</h2>
+
+<div class="form-inline">
+  <!-- ngModel pattern="/^[0][.,][0-9]{0,4}/$"  -->
+  <form #overlapFilterForm="ngForm">
+    <input [(ngModel)]="overlapInterval" class="form-control input-sm" id="overlapInterval" name="overlapInterval"
+      placeholder="[a... b]" required>
+    <button [disabled]="!overlapInterval" type="submit" id="overlapIntervalButton" (click)='filterOverlap();'
+      class="btn btn-success  mr-4 ">Filter
+      overlap</button>
+  </form>
+
+  <form #permanenceFilterForm="ngForm">
+    <input [(ngModel)]="permanenceInterval" class="form-control input-sm" id="filterPermanence" name="filterPermanence"
+      placeholder="[a... b]" required>
+    <button [disabled]="!permanenceInterval" type="submit" (click)="filterPermanence();" id="filterPermanence"
+      class="btn btn-warning mr-4  ">Filter
+      Permanence</button>
+  </form>
+
+  <form #showSynapsesForm="ngForm">
+    <input maxlength="2" [(ngModel)]="cellAreaId" class="form-control input-sm" placeholder="Area ID"
+      name="showOutInSynaps" required>
+    <input maxlength="5" [(ngModel)]="showSynapses" class="form-control" id="cell" name="cell"
+      placeholder="Cell=> X,Y,Z" required>
+    <button [disabled]="!cellAreaId && !showSynapses" type="submit" (click)="showOutgoingIncomingSynapses();"
+      id="showOutInSynaps" name="showOutInSynaps" class="btn btn-info mr-4  ">
+      Out/in Synapses</button>
+  </form>
+
+  <button (click)="showEntireModel()" class="btn btn-primary">Entire Model</button>
+</div>
+
+<!-- 
+<form #formCtrl="ngForm">
+
+  <div class="container">
+
+    <div class="form-row ">
+      <div class="form-group col-md-2">
+        <div data-toggle="tooltip" data-placement="top" title="Overlap values inbetween 0 and 1">
+          <input class="form-control input-sm" type="text" placeholder="[a... b]" #overlapInterval>
+
+        </div>
+      </div>
+      <div class="form-group col-md-2">
+
+        <button id="overlapIntervalButton" class="btn btn-success " (click)='filterOverlap(overlapInterval.value)'>
+          filter Overlap
+        </button>
+      </div>
+      <div class="form-group col-md-2">
+        <div data-toggle="tooltip" data-placement="top" title="Permanence values inbetween 0 and 1">
+          <input class="form-control input-sm" type="text" placeholder="[a... b]" #permanenceInterval>
+        </div>
+      </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-success" (click)='filterPermanence(permanenceInterval.value)'>
+          filter Permanence
+        </button>
+
+      </div>
+    </div>
+
+    <div class="form-row ">
+      <div class="form-group col-md-2">
+        <div data-toggle="tooltip" data-placement="top" title="AreaId of the three dimensional cell">
+          <input class="form-control input-sm" type="number" placeholder="Area ID" #cellAreaID>
+        </div>
+      </div>
+      <div class="form-group col-md-2">
+        <div data-toggle="tooltip" data-placement="top" title="Enter the three dimensional cell">
+          <input class="form-control input-sm" type="text" placeholder="X,Y,Z" #cell>
+        </div>
+      </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-info" (click)='showOutgoingIncomingSynapses(cellAreaID.value, cell.value)'>
+          Out/in Synapses
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</form> -->
+
+
+<!-- Plotly chart will be drawn inside this div -->
+<div class="chart" id="graph"></div>
+<simple-notifications [options]="options"></simple-notifications>
+
+
+<!--  <button  class="btn btn-warning"  (click)='updateOverlapV()'>Update OverlapV</button>
+        <input id="areaIndex" [value] = "getViewModelValue('areaIndex')" (blur)="setViewModelValue($event, 'areaIndex')"/>
+        <input id="miniColumnXDimension" [value] = "getViewModelValue('miniColumnXDimension')" (blur)="setViewModelValue($event, 'miniColumnXDimension')"/>
+        <input id="miniColumnZDimension" [value] = "getViewModelValue('miniColumnZDimension')" (blur)="setViewModelValue($event, 'miniColumnZDimension')"/>
+        <input id="newOverlapValue" [value] = "getViewModelValue('newOverlapValue')" (blur)="setViewModelValue($event, 'newOverlapValue')"/> -->
+
+<!--
+    <button class="btn btn-danger" (click)='clickFunc()'>UpdateOverlap</button>
+    <button class="btn btn-danger" (click)='clickFunc2()'>UpdateSynapse </button>
+  -->

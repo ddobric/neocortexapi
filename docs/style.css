@@ -1,0 +1,240 @@
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    font-family: sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+}
+
+h1 {
+    padding: 0;
+    margin: 0;
+}
+
+h2 {
+    font-family: sans-serif;
+    font-weight: 700;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+button {
+    border: transparent;
+    padding: 8px 16px;
+    background-color: #7014e8;
+    color: white;
+    font-size: large;
+    font-family: "Segoe UI Semibold", "Segoe UI", Helvetica, Arial, sans-serif;
+    margin: 20px 30px;
+    text-transform: capitalize;
+    transition: all 2s;
+}
+
+.banner {
+    background-color: white;
+    background-image: linear-gradient(180deg, #7014e8 30.12%, #0e5ecf 120.47%);
+    margin: 0;
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding-top: 4rem;
+    padding-bottom: 5rem;
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    color: white;
+}
+
+#para {
+    color: gray;
+}
+
+@media (hover: hover) {
+    button:hover {
+        transform: scale(1.2);
+    }
+}
+
+button:active {
+    background-color: #5714af;
+}
+
+#title {
+    font-size: 4rem;
+    font-weight: 500;
+}
+
+#subtext {
+    color: white;
+    font-size: 1.75rem;
+    font-weight: 500;
+    margin: 0px 1.5rem;
+}
+
+p {
+    display: block;
+}
+
+.fontHeader {
+    font-family: "Segoe UI", SegoeUI, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+}
+
+.btnBanner {
+    background-color: transparent;
+    border: thin solid white;
+    color: white;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    transition: 0.15s;
+    display: inline;
+}
+
+@media (hover: hover) {
+    .btnBanner:hover {
+        font-size: 110%;
+    }
+}
+
+.btnBanner:active {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.2);
+}
+
+.info {
+    padding: 60px 0px;
+    min-height: 331px;
+}
+
+#btoTop {
+    background-color: #7014e8;
+    color: white;
+    font-weight: 500;
+}
+
+a {
+    text-decoration: underline;
+    color: #0e5ecf;
+}
+
+.content {
+    width: 90%;
+}
+
+@media (min-width: 1000px) {
+    .content {
+        width: 80%;
+    }
+}
+
+.navigation {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+    
+    align-items: center;
+    margin: 1rem;
+}
+.navigation > * {
+    width: 100%;
+}
+
+.tile {
+    border: solid 0.08rem #d3d3d3;
+    padding: 1rem;
+    color: #7014e8;
+    min-width: 25%;
+    text-decoration: none;
+    margin: 0.5rem;
+}
+
+    .tile > h3 {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+@media (hover: hover) {
+    .tile:hover {
+        border-color: #7014e8;
+    }
+}
+
+.tile:active {
+    border-color: #7014e8;
+}
+
+.furtherinfo {
+    display: flex;
+    flex-direction: column;
+    
+    margin-bottom: 2rem;
+    width: 90%;
+}
+
+.gifexample {
+    width: 60%;
+}
+
+#gif {
+    height: 10rem;
+    background-color: yellow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+}
+
+@media screen and (min-width: 750px) {
+    .navigation {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .tile {
+        width: 50%;
+    }
+
+    .furtherinfo {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .gifexample {
+        width: 80%;
+    }
+}
+
+.content.secOdd {
+    width: 100%;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+}
+
+/*@media screen and (max-width: 900px) {
+    .navigation {
+        flex-direction: column;
+    }
+
+    .tile {
+        width: 50%;
+    }
+
+    .furtherinfo {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .gifexample {
+        width: 80%;
+    }
+}*/
