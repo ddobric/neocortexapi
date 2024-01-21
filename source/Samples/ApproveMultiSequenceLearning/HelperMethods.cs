@@ -15,266 +15,128 @@ namespace MultiSequenceLearning
 {
     public class HelperMethods
     {
-        public HelperMethods()
-        {
-            //needs no implementation
-        }
+        // Constants for default settings
+        private const int DefaultRandomSeed = 42;
+        private const double MaxScalarValue = 20.0;
+
+        // Avoid magic numbers in your code
+        private const int DefaultCellsPerColumn = 25;
+        private const double DefaultGlobalInhibitionDensity = 0.02;
+        private const double DefaultPotentialRadiusFactor = 0.15;
+        private const double DefaultMaxSynapsesPerSegmentFactor = 0.02;
+        private const double DefaultMaxBoost = 10.0;
+        private const int DefaultDutyCyclePeriod = 25;
+        private const double DefaultMinPctOverlapDutyCycles = 0.75;
+        private const int DefaultActivationThreshold = 15;
+        private const double DefaultConnectedPermanence = 0.5;
+        private const double DefaultPermanenceDecrement = 0.25;
+        private const double DefaultPermanenceIncrement = 0.15;
+        private const double DefaultPredictedSegmentDecrement = 0.1;
 
         /// <summary>
         /// HTM Config for creating Connections
         /// </summary>
-        /// <param name="inputBits">input bits</param>
-        /// <param name="numColumns">number of columns</param>
-        /// <returns>Object of HTMConfig</returns>
         public static HtmConfig FetchHTMConfig(int inputBits, int numColumns)
         {
-            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
+            return new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
-                Random = new ThreadSafeRandom(42),
-
-                CellsPerColumn = 25,
+                Random = new ThreadSafeRandom(DefaultRandomSeed),
+                CellsPerColumn = DefaultCellsPerColumn,
                 GlobalInhibition = true,
                 LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 0.02 * numColumns,
-                PotentialRadius = (int)(0.15 * inputBits),
-                //InhibitionRadius = 15,
-
-                MaxBoost = 10.0,
-                DutyCyclePeriod = 25,
-                MinPctOverlapDutyCycles = 0.75,
-                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
-
-                ActivationThreshold = 15,
-                ConnectedPermanence = 0.5,
-
-                // Learning is slower than forgetting in this case.
-                PermanenceDecrement = 0.25,
-                PermanenceIncrement = 0.15,
-
-                // Used by punishing of segments.
-                PredictedSegmentDecrement = 0.1,
-
-                //NumInputs = 88
+                NumActiveColumnsPerInhArea = DefaultGlobalInhibitionDensity * numColumns,
+                PotentialRadius = (int)(DefaultPotentialRadiusFactor * inputBits),
+                MaxBoost = DefaultMaxBoost,
+                DutyCyclePeriod = DefaultDutyCyclePeriod,
+                MinPctOverlapDutyCycles = DefaultMinPctOverlapDutyCycles,
+                MaxSynapsesPerSegment = (int)(DefaultMaxSynapsesPerSegmentFactor * numColumns),
+                ActivationThreshold = DefaultActivationThreshold,
+                ConnectedPermanence = DefaultConnectedPermanence,
+                PermanenceDecrement = DefaultPermanenceDecrement,
+                PermanenceIncrement = DefaultPermanenceIncrement,
+                PredictedSegmentDecrement = DefaultPredictedSegmentDecrement
             };
-
-            return cfg;
-        }
-
-        /// <summary>
-        /// Takes in user input and return encoded SDR for prediction
-        /// </summary>
-        /// <param name="userInput"></param>
-        /// <returns></returns>
-        public static int[] EncodeSingleInput(string userInput)
-        {
-            int[] sdr = new int[0];
-
-            //needs no implementation
-
-            return sdr;
         }
 
         /// <summary>
         /// Get the encoder with settings
         /// </summary>
-        /// <param name="inputBits">input bits</param>
-        /// <returns>Object of EncoderBase</returns>
         public static EncoderBase GetEncoder(int inputBits)
         {
-            double max = 20;
-
-            Dictionary<string, object> settings = new Dictionary<string, object>()
+            var settings = new Dictionary<string, object>
             {
-                { "W", 15},
-                { "N", inputBits},
-                { "Radius", -1.0},
-                { "MinVal", 0.0},
-                { "Periodic", false},
-                { "Name", "scalar"},
-                { "ClipInput", false},
-                { "MaxVal", max}
+                { "W", 15 },
+                { "N", inputBits },
+                { "Radius", -1.0 },
+                { "MinVal", 0.0 },
+                { "Periodic", false },
+                { "Name", "scalar" },
+                { "ClipInput", false },
+                { "MaxVal", MaxScalarValue }
             };
 
-            EncoderBase encoder = new ScalarEncoder(settings);
-
-            return encoder;
+            return new ScalarEncoder(settings);
         }
 
         /// <summary>
         /// Reads dataset from the file
         /// </summary>
-        /// <param name="path">full path of the file</param>
-        /// <returns>Object of list of Sequence</returns>
         public static List<Sequence> ReadDataset(string path)
         {
             Console.WriteLine("Reading Sequence...");
-            String lines = File.ReadAllText(path);
-            //var sequence = JsonConvert.DeserializeObject(lines);
-            List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
-
-            return sequence;
-        }
-
-        /// <summary>
-        /// Creates list of Sequence as per configuration
-        /// </summary>
-        /// <returns>Object of list of Sequence</returns>
-        public static List<Sequence> CreateDataset()
-        {
-            int numberOfSequence = 30;
-            int size = 12;
-            int startVal = 0;
-            int endVal = 15;
-            Console.WriteLine("Creating Sequence...");
-            List<Sequence> sequence = HelperMethods.CreateSequences(numberOfSequence, size, startVal, endVal);
-
-            return sequence;
+            try
+            {
+                string fileContent = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<List<Sequence>>(fileContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to read the dataset: {ex.Message}");
+                return new List<Sequence>(); // Return an empty list in case of failure
+            }
         }
 
         /// <summary>
         /// Saves the dataset in 'dataset' folder in BasePath of application
         /// </summary>
-        /// <param name="sequences">Object of list of Sequence</param>
-        /// <returns>Full path of the dataset</returns>
         public static string SaveDataset(List<Sequence> sequences)
         {
-            string BasePath = AppDomain.CurrentDomain.BaseDirectory;
-            string reportFolder = Path.Combine(BasePath, "dataset");
-            if (!Directory.Exists(reportFolder))
-                Directory.CreateDirectory(reportFolder);
-            string reportPath = Path.Combine(reportFolder, $"dataset_{DateTime.Now.Ticks}.json");
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string datasetFolder = Path.Combine(basePath, "dataset");
+            Directory.CreateDirectory(datasetFolder); // CreateDirectory is safe to call if directory exists
+            string datasetPath = Path.Combine(datasetFolder, $"dataset_{DateTime.Now.Ticks}.json");
 
             Console.WriteLine("Saving dataset...");
-
-            if (!File.Exists(reportPath))
-            {
-                using (StreamWriter sw = File.CreateText(reportPath))
-                {
-                    /*sw.WriteLine("name, data");
-                    foreach (Sequence sequence in sequences)
-                    {
-                        sw.WriteLine($"{sequence.name}, {string.Join(",", sequence.data)}");
-                    }*/
-                    //sw.WriteLine(System.Text.Json.JsonSerializer.Serialize<List<Sequence>>(sequences));
-                    sw.WriteLine(JsonConvert.SerializeObject(sequences));
-                }
-            }
-
-            return reportPath;
+            File.WriteAllText(datasetPath, JsonConvert.SerializeObject(sequences));
+            return datasetPath;
         }
 
         /// <summary>
-        /// Creats multiple sequences as per parameters
+        /// Creates multiple sequences as per parameters
         /// </summary>
-        /// <param name="count">Number of sequences to be created</param>
-        /// <param name="size">Size of each sequence</param>
-        /// <param name="startVal">Minimum value of item in a sequence</param>
-        /// <param name="stopVal">Maximum value of item in a sequence</param>
-        /// <returns>Object of list of Sequence</returns>
         public static List<Sequence> CreateSequences(int count, int size, int startVal, int stopVal)
         {
-            List<Sequence> dataset = new List<Sequence>();
-
-            for (int i = 0; i < count; i++)
-            {
-                Sequence sequence = new Sequence();
-                sequence.name = $"S{i+1}";
-                sequence.data = getSyntheticData(size, startVal, stopVal);
-                dataset.Add(sequence);
-            }
-
-            return dataset;
-        }
-
-        /// <summary>
-        /// Creates a sequence of given size-3 and range
-        /// </summary>
-        /// <param name="size">Size of list</param>
-        /// <param name="startVal">Min range of the list</param>
-        /// <param name="stopVal">Max range of the list</param>
-        /// <returns></returns>
-        private static int[] getSyntheticData(int size, int startVal, int stopVal)
-        {
-            int[] data = new int[size];
-
-            data = randomRemoveDouble(randomDouble(size, startVal, stopVal), 3);
-
-            return data;
-        }
-
-        /// <summary>
-        /// Creates a sorted list of array with given paramerters
-        /// </summary>
-        /// <param name="size">Size of array</param>
-        /// <param name="startVal">Min range of the list</param>
-        /// <param name="stopVal">Max range of the list</param>
-        /// <returns></returns>
-        private static int[] randomDouble(int size, int startVal, int stopVal)
-        {
-            int[] array = new int[size];
-            List<int> list = new List<int>();
-            int number = 0;
-            Random r = new Random(Guid.NewGuid().GetHashCode());
-            while(list.Count < size)
-            {
-                number = r.Next(startVal,stopVal);
-                if (!list.Contains(number))
+            return Enumerable.Range(1, count).Select(i =>
+                new Sequence
                 {
-                    if(number >= startVal && number <= stopVal)
-                        list.Add(number);
-                }
-            }
-
-            array = list.ToArray();
-            Array.Sort(array);
-
-            return array;            
+                    name = $"S{i}",
+                    data = GenerateRandomSequence(size, startVal, stopVal)
+                })
+                .ToList();
         }
 
-        /// <summary>
-        /// Randomly remove less number of items from array
-        /// </summary>
-        /// <param name="array">array to processed</param>
-        /// <param name="less">number of removals to be done</param>
-        /// <returns>array with less numbers</returns>
-        private static int[] randomRemoveDouble(int[] array, int less)
+        private static int[] GenerateRandomSequence(int size, int startVal, int stopVal)
         {
-            int[] temp = new int[array.Length - less];
-            Random random = new Random(Guid.NewGuid().GetHashCode());
-            int number = 0;
-            List<int> list = new List<int>();
+            var rnd = new Random();
+            var sequence = new HashSet<int>();
 
-            while (list.Count < (array.Length - less))
+            while (sequence.Count < size)
             {
-                number = array[random.Next(0, (array.Length))];
-                if (!list.Contains(number))
-                    list.Add(number);
+                int number = rnd.Next(startVal, stopVal + 1);
+                sequence.Add(number);
             }
 
-            temp = list.ToArray();
-            Array.Sort(temp);
-
-            return temp;
-        }
-
-        private static int getDigits(int n)
-        {
-            if (n >= 0)
-            {
-                if (n < 100) return 2;
-                if (n < 1000) return 3;
-                if (n < 10000) return 4;
-                if (n < 100000) return 5;
-                if (n < 1000000) return 6;
-                if (n < 10000000) return 7;
-                if (n < 100000000) return 8;
-                if (n < 1000000000) return 9;
-                return 10;
-            }
-            else
-            {
-                return 2;
-            }
+            return sequence.OrderBy(n => n).ToArray();
         }
     }
 }
