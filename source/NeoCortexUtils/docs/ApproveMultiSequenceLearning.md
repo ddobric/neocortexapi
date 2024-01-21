@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this project, we have tried to implement new methods along `MultisequenceLearning` alogrithm. The new methods are automatically reading the dataset from the given path in `HelperMethods.ReadDataset(datasetPath)`, we also have test data in other file which needs to be read for later testing the subsequences in similar form as `HelperMethods.ReadDataset(testsetPath)`. `RunMultiSequenceLearningExperiment(sequences, sequencesTest)` takes the multiple sequences in `sequences` and test subsequences in `sequencesTest` and is passed to `RunMultiSequenceLearningExperiment(sequences, sequencesTest)`. After learning is completed, calculation of accuracy of predicted element.
+In this project, we have tried to implement new methods along the `MultisequenceLearning` algorithm. The new methods automatically read the dataset from the given path in `HelperMethods.ReadDataset(datasetPath)`, we also have test data in another file which needs to be read for later testing the subsequences in a similar form as `HelperMethods.ReadDataset(testsetPath)`. `RunMultiSequenceLearningExperiment(sequences, sequencesTest)` takes the multiple sequences in `sequences` and test subsequences in `sequencesTest` and is passed to `RunMultiSequenceLearningExperiment(sequences, sequencesTest)`. After learning is completed, calculation of the accuracy of the predicted element.
 
 ## Implementation
 
@@ -105,11 +105,11 @@ public static HtmConfig FetchHTMConfig(int inputBits, int numColumns)
 }
 ```
 
-All the fields are self explanotary as per HTM theory.
+All the fields are self-explanatory as per HTM theory.
 
 2. getEncoder()
 
-We have used `ScalarEncoder` since we are encoding all numeric value only.
+We have used `ScalarEncoder` since we are encoding all numeric values only.
 
 Remeber that `inputBits` is same as `HTMConfig`.
 
@@ -141,11 +141,11 @@ public static EncoderBase GetEncoder(int inputBits)
 }
 ```
 
-Note that `MaxValue` for encoder is set to `20` which can be change but then this value should be matched while creating synthetic dataset.
+Note that `MaxValue` for the encoder is set to `20` which can be changed but then this value should be matched while creating the synthetic dataset.
 
 3. ReadDataset()
 
-Reads the JSON file wehen passed as full path and retuns the object of list of `Sequence`
+Reads the JSON file when passed as a full path and returns the object of the list of `Sequence`
 
 ```csharp
 /// <summary>
@@ -166,11 +166,11 @@ public static List<Sequence> ReadDataset(string path)
 
 4. CreateDataset()
 
-We made an enhancement to create dataset automatically so we do not have to manually spend time. Here we create dataset with paremeters such as `numberOfSequence` to be created, `size` of a sequence, `startVal` possibly start range, and `endVal` possibly start range of sequence.
+We enhanced to create datasets automatically so we do not have to manually spend time. Here we create a dataset with parameters such as `numberOfSequence` to be created, `size` of a sequence, `startVal` possibly start range, and `endVal` the start range of the sequence.
 
 ```csharp
 /// <summary>
-/// Creates list of Sequence as per configuration
+/// Creates a list of Sequence as per configuration
 /// </summary>
 /// <returns>Object of list of Sequence</returns>
 public static List<Sequence> CreateDataset()
@@ -190,11 +190,11 @@ Note that `endVal` should be less than equal to `MaxVal` of `ScalarEncoder` used
 
 5. SaveDataset()
 
-Saves the dataset in `dataset` director of the `BasePath` of the application where it is running.
+Saves the dataset in the `dataset` director of the `BasePath` of the application where it is running.
 
 ```csharp
 /// <summary>
-/// Saves the dataset in 'dataset' folder in BasePath of application
+/// Saves the dataset in the 'dataset' folder in BasePath of the application
 /// </summary>
 /// <param name="sequences">Object of list of Sequence</param>
 /// <returns>Full path of the dataset</returns>
@@ -224,7 +224,7 @@ public static string SaveDataset(List<Sequence> sequences)
 
 ![image](./images/approve_prediction.png)
 
-Fig: Predictiona and calculating accuracy
+Fig: Predictions and calculating accuracy
 
 ```csharp
 int matchCount = 0;
@@ -244,25 +244,25 @@ foreach (var item in list)
 }
 ```
 
-Note that prediction code is omitted.
+Note that the prediction code is omitted.
 
 ## How to run the project
 
-### To create synthetic dataset
+### To create a synthetic dataset
 
 1. Open the [sln](../../../NeoCortexApi.sln) and select `MultiSequenceLearning` as startup project.
 
-2. In `Program.cs` we have the `Main()`. Uncomment below code to create a synthetic dataset.
+2. In `Program.cs` we have the `Main()`. Uncomment the below code to create a synthetic dataset.
 
 ```csharp
-//to create synthetic dataset
+//to create a synthetic dataset
 string path = HelperMethods.SaveDataset(HelperMethods.CreateDataset());
 Console.WriteLine($"Dataset saved: {path}");
 ```
 
 *and comment rest of the lines*.
 
-3. Run to create dataset and save the path of dataset folder and name.
+3. Run to create the dataset and save the path of the dataset folder and name.
 
 ![dataset](./images/dataset.jpg)
 
@@ -284,14 +284,6 @@ and also *copy the [test data](../dataset/test_01.json) to the folder* (`{BASEPA
 
 ## Results
 
-We have run the experiment max possible number of times with different dataset. We have tried to keep the size of dataset small and number of sequences also small due to large time in execution.
+We have run the experiment max possible number of times with different datasets. We have tried to keep the size of the dataset small and several sequences are also small due to the large time in execution.
 
 ![results](./images/result.png)
-
-## Reference
-
-- Forked from [ddobric/neocortexapi](https://github.com/ddobric/neocortexapi)
-
-- [Numenta Research Publication](https://www.numenta.com/resources/research-publications/) 
-
-- [Machine Learning Guide to HTM](https://www.numenta.com/blog/2019/10/24/machine-learning-guide-to-htm/)
