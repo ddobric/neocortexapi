@@ -1,14 +1,13 @@
-# ML22/23-15   Approve Prediction of Multisequence Learning 
+Approve Prediction of Multisequence Learning 
 
 ## Introduction
-
-In this project, we have tried to implement new methods along the `MultisequenceLearning` algorithm. The new methods automatically read the dataset from the given path in `HelperMethods.ReadDataset(datasetPath)`, we also have test data in another file which needs to be read for later testing the subsequences in a similar form as `HelperMethods.ReadDataset(testsetPath)`. `RunMultiSequenceLearningExperiment(sequences, sequencesTest)` takes the multiple sequences in `sequences` and test subsequences in `sequencesTest` and is passed to `RunMultiSequenceLearningExperiment(sequences, sequencesTest)`. After learning is completed, calculation of the accuracy of the predicted element.
+In this project, we have tried to implement new methodologies within the MultisequenceLearning algorithm framework. These methods are designed to autonomously load datasets from a specified path using HelperMethods.ReadDataset(datasetPath). Additionally, we have stored test data in a separate file, which is similarly accessed through HelperMethods.ReadDataset(testsetPath) for subsequent testing of subsequences. The function RunMultiSequenceLearningExperiment(sequences, sequencesTest) is employed to process multiple sequences and test subsequences, received respectively as sequences and sequencesTest. Upon completion of the learning phase, the system calculates the accuracy of the predictions made by the algorithm.
 
 ## Implementation
 
 ![image](./images/overview.png)
 
-Fig: Architecture of Approve Prediction of Multisequence Learning
+Fig: Schematic Diagram of Approval Prediction in Multisequence Learning Architecture
 
 Above the flow of implementation of our project.
 
@@ -166,7 +165,7 @@ public static List<Sequence> ReadDataset(string path)
 
 4. CreateDataset()
 
-We enhanced to create datasets automatically so we do not have to manually spend time. Here we create a dataset with parameters such as `numberOfSequence` to be created, `size` of a sequence, `startVal` possibly start range, and `endVal` the start range of the sequence.
+We have advanced our approach to dataset creation by automating the process, eliminating the need for time-consuming manual intervention. In this improved system, datasets are generated based on specified parameters. These include numberOfSequence, which determines the number of sequences to be created; size, which defines the length of each sequence; and startVal and endVal, which set the starting and ending range values for the sequences, respectively. This streamlined method enhances efficiency and accuracy in dataset generation.
 
 ```csharp
 /// <summary>
@@ -284,6 +283,6 @@ and also *copy the [test data](../dataset/test_01.json) to the folder* (`{BASEPA
 
 ## Results
 
-We have run the experiment max possible number of times with different datasets. We have tried to keep the size of the dataset small and several sequences are also small due to the large time in execution.
+We have experimented to the maximum feasible extent, utilizing a variety of datasets. To accommodate the considerable execution time, we deliberately limited the size of the datasets and maintained the sequences at a minimal length.
 
 ![results](./images/result.png)
