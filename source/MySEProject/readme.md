@@ -1,1 +1,1 @@
-Studying about Learning Sequence and prediction method.
+Trying to implement Learning Sequence and prediction method.
