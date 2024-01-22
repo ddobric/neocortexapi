@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MyProjectSample", "MyProjectSample", "{342EE53E-05FE-4861-AA0D-912FA5AD91BC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiApp1", "MauiApp1\MauiApp1.csproj", "{0948A8BB-58C8-4087-8470-112A9A54A236}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTestProject", "UnitTestProject", "{4FCE7362-5961-4FF6-8E92-C59CCC2BBF1D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestProject", "UnitTestProject\UnitTestProject.csproj", "{9BB69289-1EF4-4F89-A7AF-46A03A4E0171}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{7619211E-C0C7-46A9-93CF-B5D00B3556E8}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\ACER\Desktop\Documentaion\ML22-23-8 Implement the SDR representation in the MAUI application.accdb = C:\Users\ACER\Desktop\Documentaion\ML22-23-8 Implement the SDR representation in the MAUI application.accdb
+		C:\Users\ACER\Desktop\Documentaion\ML22-23-8 Implement the SDR representation in the MAUI application.docx = C:\Users\ACER\Desktop\Documentaion\ML22-23-8 Implement the SDR representation in the MAUI application.docx
+		C:\Users\ACER\Desktop\Documentaion\README.md = C:\Users\ACER\Desktop\Documentaion\README.md
+		C:\Users\ACER\Desktop\Documentaion\README.md.txt = C:\Users\ACER\Desktop\Documentaion\README.md.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0948A8BB-58C8-4087-8470-112A9A54A236}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0948A8BB-58C8-4087-8470-112A9A54A236}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0948A8BB-58C8-4087-8470-112A9A54A236}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{0948A8BB-58C8-4087-8470-112A9A54A236}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0948A8BB-58C8-4087-8470-112A9A54A236}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0948A8BB-58C8-4087-8470-112A9A54A236}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9BB69289-1EF4-4F89-A7AF-46A03A4E0171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BB69289-1EF4-4F89-A7AF-46A03A4E0171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BB69289-1EF4-4F89-A7AF-46A03A4E0171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BB69289-1EF4-4F89-A7AF-46A03A4E0171}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0948A8BB-58C8-4087-8470-112A9A54A236} = {342EE53E-05FE-4861-AA0D-912FA5AD91BC}
+		{9BB69289-1EF4-4F89-A7AF-46A03A4E0171} = {4FCE7362-5961-4FF6-8E92-C59CCC2BBF1D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5EFB541E-4EA6-47D3-B177-7F507A1D7754}
+	EndGlobalSection
+EndGlobal
