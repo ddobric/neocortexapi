@@ -55,8 +55,8 @@ namespace NeoCortexApiSample
                 PredictedSegmentDecrement = 0.1
             };
 
-            double max = 20;
-
+            //double max = 20;
+            double max = 255;
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 15},
@@ -133,6 +133,7 @@ namespace NeoCortexApiSample
             int matches = 0;
 
             var lastPredictedValues = new List<string>(new string[] { "0"});
+
             
             int maxCycles = 3500;
 
@@ -323,7 +324,7 @@ namespace NeoCortexApiSample
                 //num += inputs.Value.Distinct().Count();
                 num += inputs.Value.Count;
             }
-
+            Console.WriteLine(num);
             return num;
         }
 
