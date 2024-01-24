@@ -543,6 +543,55 @@ namespace UnitTestsProject.EncoderTests
             CollectionAssert.AreEqual(expected, bucketInfo);
         }
 
+        /// <summary>
+        /// This unit test method is designed to test the behavior of the GenerateNumericRangeDescription method
+        /// within the ScalarEncoder class. It covers various scenarios with different input ranges.
+        /// The test aims to ensure that the method produces the correct string representation of numeric ranges
+        /// and compares the output with the expected results using Assert.AreEqual.
+        /// </summary>
+        [TestMethod]
+        public void TestDescriptionGenerator()
+        {
+            // Arrange
+            // Create an instance of ScalarEncoder with specified parameters.
+            var numericEncoder = new ScalarEncoder(10, 0, 100, true);
+
+            // Define test cases, each consisting of input ranges and their expected string representations.
+            var testCases = new List<Tuple<List<Tuple<double, double>>, string>>
+    {
+        // Test case 1: Ranges with non-equal start and end values.
+        new Tuple<List<Tuple<double, double>>, string>(
+            new List<Tuple<double, double>> { Tuple.Create(1.5, 4.5), Tuple.Create(8.0, 11.0) },
+            "1.50-4.50, 8.00-11.00"),
+
+        // Test case 2: Single-range with equal start and end values.
+        new Tuple<List<Tuple<double, double>>, string>(
+            new List<Tuple<double, double>> { Tuple.Create(3.0, 3.0) },
+            "3.00"),
+
+        // Test case 3: Multiple ranges with a combination of equal and non-equal start and end values.
+        new Tuple<List<Tuple<double, double>>, string>(
+            new List<Tuple<double, double>> { Tuple.Create(1.5, 1.5), Tuple.Create(6.0, 7.5) },
+            "1.50, 6.00-7.50")
+    };
+
+            // Act and Assert
+            foreach (var testCase in testCases)
+            {
+                // Extract input ranges and expected result from the test case.
+                var (ranges, expected) = testCase;
+
+                // Call the method under test to get the actual result.
+                string actual = numericEncoder.GenerateNumericRangeDescription(ranges);
+
+                // Output the results for review.
+                Console.WriteLine($"Actual description: {actual}");
+                Console.WriteLine($"Expected description: {expected}");
+
+                // Assert that the actual result matches the expected result.
+                Assert.AreEqual(expected, actual);
+            }
+        }
 
         /// <summary>
         /// Initializes encoder and sets mandatory properties.
