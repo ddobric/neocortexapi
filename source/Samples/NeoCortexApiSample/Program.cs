@@ -40,25 +40,41 @@ namespace NeoCortexApiSample
             // Starts experiment that demonstrates how to learn spatial patterns.
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
-            RunPredictionMultiSequenceExperiment(); /* This method is developed by Team_MSL to read arbitrary data from single txt file and improve CPU utilization*/
+
+            // This method is developed by Team_MSL to read arbitrary data from single txt file and improve CPU utilization*/
+            RunPredictionMultiSequenceExperiment();
         }
 
 
-
+        /// <summary>
+        /// Runs a multi-sequence prediction experiment using a prototype for building the prediction engine.
+        /// </summary>
         private static void RunPredictionMultiSequenceExperiment()
         {
             Dictionary<string, List<double>> sequences = new();
 
+            // Step 1: Retrieve sequences from an Excel file.
             sequences = GetInputFromExcelFile();
+
+            // Step 2: Create an instance of the MultisequenceLearningTeamMSL class for the experiment.
             // Prototype for building the prediction engine.
             MultisequenceLearningTeamMSL experiment = new();
 
+            // Step 3: Train the prediction engine using the provided sequences.
             var predictor = experiment.Run(sequences);
+
             List<List<double>> testSequences = new();
+
+            // Step 4: Retrieve test sequences from another Excel file.
             testSequences = GetSubSequencesInputFromExcelFile();
+
+            // Step 5: Iterate through each test sequence and make predictions.
             foreach (var numberList in testSequences)
             {
+                // Reset the predictor for each new test sequence.
                 predictor.Reset();
+
+                // Step 6: Make predictions for the next elements in the test sequence.
                 PredictNextElement(predictor, numberList);
             }
 
@@ -203,7 +219,7 @@ namespace NeoCortexApiSample
                     predictedNextElement = tokens2.Last();
                     predictedNextElementsList = string.Join("-", tokens3.Skip(1));
                     Debug.WriteLine($"Predicted Sequence: {predictedSequence}, predicted next element {predictedNextElement}");
-                   
+
                     if (nextItem == double.Parse(predictedNextElement))
                     {
                         countOfMatches++;
@@ -219,7 +235,7 @@ namespace NeoCortexApiSample
                 double accuracy = (double)countOfMatches / totalPredictions * 100;
                 Debug.WriteLine($"Final Accuracy: {accuracy}%");
                 Debug.WriteLine(string.Format("The test data list: ({0}).", string.Join(", ", list)));
-                
+
                 // Append to file in each iteration
                 if (predictedNextElementsList != "")
                 {
