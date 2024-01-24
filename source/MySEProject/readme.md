@@ -1,0 +1,1 @@
+Trying to implement Learning Sequence and prediction method.
