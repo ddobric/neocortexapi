@@ -665,6 +665,107 @@ namespace NeoCortexApi.Encoders
             return output;
         }
 
+        /// <summary>
+        /// Calculates BucketMatch scores between expected and actual values using the ScalarEncoder's parameters.
+        /// </summary>
+        public static class BucketMatchScore
+        {
+            // Parameters for configuration
+            private static double MaximumValue;
+            private static double MinimumValue;
+            private static bool IsPeriodic;
+            private static bool ClipInputs;
+            private static int ElementCount;
+
+            /// <summary>
+            /// Configure parameters for the BucketMatch class.
+            /// </summary>
+            /// <param name="max">The maximum value for the range.</param>
+            /// <param name="min">The minimum value for the range.</param>
+            /// <param name="isPeriodic">Flag indicating whether the range is periodic.</param>
+            /// <param name="clipInputs">Flag indicating whether to clip inputs to the specified range.</param>
+            /// <param name="elementCount">The number of elements in the range.</param>
+            public static void ConfigureParameters(double max, double min, bool isPeriodic, bool clipInputs, int elementCount)
+            {
+                MaximumValue = max;
+                MinimumValue = min;
+                IsPeriodic = isPeriodic;
+                ClipInputs = clipInputs;
+                ElementCount = elementCount;
+            }
+
+            /// <summary>
+            /// Get the bucket match scores between expected and actual values.
+            /// </summary>
+            /// <param name="expectedValues">Array of expected values.</param>
+            /// <param name="actualValues">Array of actual values.</param>
+            /// <param name="useFractionalDifference">Flag to determine whether fractional or absolute closeness score should be returned.</param>
+            /// <returns>An array of bucket match scores.</returns>
+            public static double[] GetBucketMatchScore(double[] expectedValues, double[] actualValues, bool useFractionalDifference = true)
+            {
+                double expectedValue = expectedValues[0];
+                double actualValue = actualValues[0];
+
+                // Calculate the difference between expected and actual values
+                double difference = CalculateDifference(expectedValue, actualValue);
+
+                // Calculate the match score based on the difference
+                double matchScore = useFractionalDifference
+                    ? CalculateFractionalMatchScore(difference)
+                    : CalculateAbsoluteMatchScore(difference);
+
+                // Return the match score in an array
+                return new double[] { matchScore };
+            }
+
+            // Calculate the difference between expected and actual values
+            private static double CalculateDifference(double expected, double actual)
+            {
+                if (IsPeriodic)
+                {
+                    // Adjust values for periodic conditions
+                    expected = expected % MaximumValue;
+                    actual = actual % MaximumValue;
+
+                    // Calculate the minimum distance considering periodicity
+                    return Math.Min(Math.Abs(expected - actual), MaximumValue - Math.Abs(expected - actual));
+                }
+                else
+                {
+                    // Calculate the absolute difference
+                    return Math.Abs(expected - actual);
+                }
+            }
+
+            // Calculate the fractional match score based on the difference
+            private static double CalculateFractionalMatchScore(double difference)
+            {
+                // Calculate the value range
+                double valueRange = CalculateValueRange();
+
+                // Calculate the error percentage and limit it to 1.0
+                double errorPercentage = difference / valueRange;
+                errorPercentage = Math.Min(1.0, errorPercentage);
+
+                // Calculate and return the fractional match score
+                return 1.0 - errorPercentage;
+            }
+
+            // Calculate the absolute match score based on the difference
+            private static double CalculateAbsoluteMatchScore(double difference)
+            {
+                // Return the absolute difference as the absolute match score
+                return difference;
+            }
+
+            // Calculate the value range considering clipping inputs
+            private static double CalculateValueRange()
+            {
+                double range = (MaximumValue - MinimumValue) + (ClipInputs ? 0 : (2 * (MaximumValue - MinimumValue) / (ElementCount - 1)));
+                return range;
+            }
+        }
+
 
         /// <summary>
         /// This method enables running in the network.
