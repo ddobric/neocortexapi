@@ -34,7 +34,7 @@ namespace NeoCortexApiSample
             // RunMultiSimpleSequenceLearningExperiment();
 
 
-            //RunMultiSequenceLearningExperiment();
+            RunMultiSequenceLearningExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
