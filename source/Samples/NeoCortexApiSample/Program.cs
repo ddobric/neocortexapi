@@ -29,6 +29,7 @@ namespace NeoCortexApiSample
         /// and TM.
         /// </summary>
         /// <param name="args"></param>
+		
         static void Main(string[] args)
         {
             //
@@ -40,10 +41,9 @@ namespace NeoCortexApiSample
             // Starts experiment that demonstrates how to learn spatial patterns.
             //SequenceLearning experiment = new SequenceLearning();
             //experiment.Run();
-            RunPredictionMultiSequenceExperiment(); /* This method is developed by Team_MSL to read arbitrary data from single txt file and improve CPU utilization*/
+			//This method is developed by Team_MSL to read arbitrary data from single txt file and improve CPU utilization
+            RunPredictionMultiSequenceExperiment(); 
         }
-
-
 
         private static void RunPredictionMultiSequenceExperiment()
         {
@@ -64,9 +64,7 @@ namespace NeoCortexApiSample
 
         }
 
-
-
-        /* This code detects empty cell at the end of the row and it takes input from excel*/
+        // This code detects empty cell at the end of the row and it takes input from excel
 
         private static Dictionary<string, List<double>> GetInputFromExcelFile()
         {
@@ -130,7 +128,7 @@ namespace NeoCortexApiSample
             sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }));
             sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
-            //
+            
             // Prototype for building the prediction engine.
             MultisequenceLearningTeamMSL experiment = new MultisequenceLearningTeamMSL();
             var predictor = experiment.Run(sequences);
@@ -138,7 +136,7 @@ namespace NeoCortexApiSample
 
 
 
-        /* This method takes the input from Excel file */
+        // This method takes the input from Excel file 
 
         public static List<List<double>> GetSubSequencesInputFromExcelFile()
         {
@@ -167,7 +165,6 @@ namespace NeoCortexApiSample
 
             return SubSequences;
         }
-
 
 
         private static void PredictNextElement(Predictor predictor, List<double> list)

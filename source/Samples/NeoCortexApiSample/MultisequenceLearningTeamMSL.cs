@@ -13,15 +13,15 @@ using System.Linq;
 
 namespace NeoCortexApiSample
 {
-    /// <summary>
-    /// Implements an experiment that demonstrates how to learn sequences.
-    /// </summary>
+    // <summary>
+    // Implements an experiment that demonstrates how to learn sequences.
+    // </summary>
     public class MultisequenceLearningTeamMSL
     {
-        /// <summary>
-        /// Runs the learning of sequences.
-        /// </summary>
-        /// <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
+        // <summary>
+        // Runs the learning of sequences.
+        // </summary>
+        // <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
         public Predictor Run(Dictionary<string, List<double>> sequences)
         {
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
@@ -75,9 +75,8 @@ namespace NeoCortexApiSample
             return RunExperiment(inputBits, cfg, encoder, sequences);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        // <summary>
+       // </summary>
         private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences)
         {
             Stopwatch sw = new Stopwatch();
@@ -137,11 +136,8 @@ namespace NeoCortexApiSample
 
             int maxCycles = 3550;
 
-            //
             // Training SP to get stable. New-born stage.
-            //
-
-
+            
             for (int i = 0; i < maxCycles && isInStableState == false; i++)
             {
                 matches = 0;
@@ -185,7 +181,7 @@ namespace NeoCortexApiSample
 
                 previousInputs.Add("-1.0");
 
-                //
+                
                 // Now training with SP+TM. SP is pretrained on the given input pattern set.
                 for (int i = 0; i < maxCycles; i++)
                 {
@@ -236,7 +232,7 @@ namespace NeoCortexApiSample
                         Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
                         Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
-                        //
+                        
                         // If the list of predicted values from the previous step contains the currently presenting value,
                         // we have a match.
                         if (lastPredictedValues.Contains(key))
@@ -304,8 +300,6 @@ namespace NeoCortexApiSample
                     */
 
 
-
-
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
 
                     if (accuracy >= maxPossibleAccuraccy)
@@ -313,7 +307,7 @@ namespace NeoCortexApiSample
                         maxMatchCnt++;
                         Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
 
-                        //
+                
                         // Experiment is completed if we are 30 cycles long at the 100% accuracy.
                         if (maxMatchCnt >= 30)
                         {
@@ -339,11 +333,11 @@ namespace NeoCortexApiSample
         }
 
 
-        /// <summary>
-        /// Gets the number of all unique inputs.
-        /// </summary>
-        /// <param name="sequences">Alle sequences.</param>
-        /// <returns></returns>
+        // <summary>
+        // Gets the number of all unique inputs.
+        // </summary>
+        // <param name="sequences">Alle sequences.</param>
+        // <returns></returns>
         private int GetNumberOfInputs(Dictionary<string, List<double>> sequences)
         {
             int num = 0;
@@ -358,15 +352,15 @@ namespace NeoCortexApiSample
         }
 
 
-        /// <summary>
-        /// Constracts the unique key of the element of an sequece. This key is used as input for HtmClassifier.
-        /// It makes sure that alle elements that belong to the same sequence are prefixed with the sequence.
-        /// The prediction code can then extract the sequence prefix to the predicted element.
-        /// </summary>
-        /// <param name="prevInputs"></param>
-        /// <param name="input"></param>
-        /// <param name="sequence"></param>
-        /// <returns></returns>
+        // <summary>
+        // Constracts the unique key of the element of an sequece. This key is used as input for HtmClassifier.
+        // It makes sure that alle elements that belong to the same sequence are prefixed with the sequence.
+        // The prediction code can then extract the sequence prefix to the predicted element.
+        // </summary>
+        // <param name="prevInputs"></param>
+        // <param name="input"></param>
+        // <param name="sequence"></param>
+        // <returns></returns>
         private static string GetKey(List<string> prevInputs, double input, string sequence)
         {
             string key = String.Empty;
