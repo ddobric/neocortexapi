@@ -1,3 +1,3 @@
 ﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("started coding");
+Console.WriteLine("coding on multisequence learning");
 Console.ReadLine();
