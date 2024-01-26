@@ -11,9 +11,9 @@ using System.Linq;
 
 namespace NeoCortexApiSample
 {
-    /// <summary>
-    /// Implements an experiment that demonstrates how to learn sequences.
-    /// </summary>
+    // <summary>
+    // Implements an experiment that demonstrates how to learn sequences.
+    // </summary>
     [Obsolete("Please use multisequence learning.")]
     public class SequenceLearning
     {
@@ -76,9 +76,9 @@ namespace NeoCortexApiSample
             RunExperiment(inputBits, cfg, encoder, inputValues);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        // <summary>
+        //
+        // </summary>
         private void RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, List<double> inputValues)
         {
             Stopwatch sw = new Stopwatch();
@@ -102,22 +102,22 @@ namespace NeoCortexApiSample
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, numInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
                 if (isStable)
-                    // Event should be fired when entering the stable state.
+                    //Event should be fired when entering the stable state.
                     Debug.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
                 else
-                    // Ideal SP should never enter unstable state after stable state.
+                    //Ideal SP should never enter unstable state after stable state.
                     Debug.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
                 // We are not learning in instable state.
                 learn = isInStableState = isStable;
 
                 //if (isStable && layer1.HtmModules.ContainsKey("tm") == false)
-                //    layer1.HtmModules.Add("tm", tm);
+                //layer1.HtmModules.Add("tm", tm);
 
-                // Clear all learned patterns in the classifier.
+                //Clear all learned patterns in the classifier.
                 cls.ClearState();
 
-                // Clear active and predictive cells.
+                //Clear active and predictive cells.
                 //tm.Reset(mem);
             }, numOfCyclesToWaitOnChange: 50);
 
@@ -138,7 +138,6 @@ namespace NeoCortexApiSample
             string lastPredictedValue = "0";
 
             //Dictionary<double, List<List<int>>> activeColumnsLst = new Dictionary<double, List<List<int>>>();
-
             //foreach (var input in inputs)
             //{
             //    if (activeColumnsLst.ContainsKey(input) == false)
@@ -150,10 +149,8 @@ namespace NeoCortexApiSample
             List<string> previousInputs = new List<string>();
             previousInputs.Add("-1.0");
 
-            //
             // Training SP to get stable. New-born stage.
-            //
-
+  
             for (int i = 0; i < maxCycles; i++)
             {
                 matches = 0;
@@ -178,7 +175,6 @@ namespace NeoCortexApiSample
 
             layer1.HtmModules.Add("tm", tm);
 
-            //
             // Now training with SP+TM. SP is pretrained on the given input pattern set.
             for (int i = 0; i < maxCycles; i++)
             {

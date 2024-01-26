@@ -10,10 +10,10 @@ using System.Linq;
 
 namespace NeoCortexApiSample
 {
-    /// <summary>
-    /// Implements an experiment that demonstrates how to learn spatial patterns.
-    /// SP will learn every presented input in multiple iterations.
-    /// </summary>
+    // <summary>
+    // Implements an experiment that demonstrates how to learn spatial patterns.
+    // SP will learn every presented input in multiple iterations.
+    // </summary>
     public class SpatialPatternLearning
     {
         public void Run()
@@ -31,7 +31,6 @@ namespace NeoCortexApiSample
             // We will build a slice of the cortex with the given number of mini-columns
             int numColumns = 2048;
 
-            //
             // This is a set of configuration parameters used in the experiment.
             HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
@@ -53,7 +52,6 @@ namespace NeoCortexApiSample
 
             double max = 100;
 
-            //
             // This dictionary defines a set of typical encoder parameters.
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -70,7 +68,6 @@ namespace NeoCortexApiSample
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            //
             // We create here 100 random input values.
             List<double> inputValues = new List<double>();
 
@@ -82,12 +79,12 @@ namespace NeoCortexApiSample
             RunExperiment(cfg, encoder, inputValues);
         }
 
-        /// <summary>
-        /// Implements the experiment.
-        /// </summary>
-        /// <param name="cfg"></param>
-        /// <param name="encoder"></param>
-        /// <param name="inputValues"></param>
+        // <summary>
+        // Implements the experiment.
+        // </summary>
+        // <param name="cfg"></param>
+        // <param name="encoder"></param>
+        // <param name="inputValues"></param>
         private static void RunExperiment(HtmConfig cfg, EncoderBase encoder, List<double> inputValues)
         {
             // Creates the htm memory.
@@ -95,7 +92,6 @@ namespace NeoCortexApiSample
 
             bool isInStableState = false;
 
-            //
             // HPC extends the default Spatial Pooler algorithm.
             // The purpose of HPC is to set the SP in the new-born stage at the begining of the learning process.
             // In this stage the boosting is very active, but the SP behaves instable. After this stage is over
