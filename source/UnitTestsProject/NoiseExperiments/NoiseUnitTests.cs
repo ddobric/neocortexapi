@@ -228,7 +228,7 @@ namespace UnitTestsProject.NoiseExperiments
 
                         sw.WriteLine($"{noiseLevel};{inpDist};{outputDistance}");
 
-                        CreateOutput(nameof(NoiseExperimentTest), colDimSize, parameters, vectorIndex, noiseLevel, arrays, overlap, activeCols, sp);
+                        CreateOutput(noiseLevel, nameof(NoiseExperimentTest), colDimSize, parameters, vectorIndex, noiseLevel, arrays, overlap, activeCols, sp);
                     }
 
                     vectorIndex++;
@@ -259,12 +259,12 @@ namespace UnitTestsProject.NoiseExperiments
             // If this value is increased, the memorizing of the seen pattern increases.
             // Higher PotentionPct means that more synapses are connected to the input and the pattern keeps
             // recognized for larger portion of the noiseLevel. 
-            double potRadPtc = 1.0;
+            double potRadPtc = 0.8;
 
             int noiseLevelPct = 5;
 
-            List<int[]> inputVectors = GetRandomVectors(5, noiseLevelPct);
-            //List<int[]> inputVectors = GetBoxVectors();
+            //List<int[]> inputVectors = GetRandomVectors(5, noiseLevelPct);
+            List<int[]> inputVectors = GetBoxVectors();
 
             Parameters parameters = InitConfigParams(new int[] { 64, 64 }, new int[] { 32, 32 }, potRad, potRadPtc);
 
@@ -294,6 +294,8 @@ namespace UnitTestsProject.NoiseExperiments
 
                     int[] activeArray = null;
 
+                    // With this value we repeat the creating of sdr 100 times for every noised vector (noiseLevel>0)
+                    // The idea is to observe the change of the SDR of noised vectors f the same level.
                     int noiseRepeats = 0;
 
                     int noiseLevel = 0;
@@ -364,7 +366,7 @@ namespace UnitTestsProject.NoiseExperiments
                         if (noiseLevel != 0)
                             sw.WriteLine($"{noiseLevel};{inpDist};{outputDistance}");
 
-                        CreateOutput(nameof(NoiseExperimentPhdTest), colDimSize, parameters, vectorIndex, noiseLevel, arrays, overlap, activeCols, sp, noiseRepeats);
+                        CreateOutput(noiseLevel, nameof(NoiseExperimentPhdTest), colDimSize, parameters, vectorIndex, noiseLevel, arrays, overlap, activeCols, sp, noiseRepeats);
                     }
 
                     vectorIndex++;
@@ -494,7 +496,7 @@ namespace UnitTestsProject.NoiseExperiments
         }
 
 
-        private void CreateOutput(string outFolfer, int colDimSize, Parameters parameters, int vectorIndex, int j, List<int[,]> arrays, int[] overlaps, int[] activeCols, SpatialPooler sp, int repeat = 0)
+        private void CreateOutput(int noiseLevel, string outFolfer, int colDimSize, Parameters parameters, int vectorIndex, int j, List<int[,]> arrays, int[] overlaps, int[] activeCols, SpatialPooler sp, int repeat = 0)
         {
             List<int> actOverlaps = new List<int>();
 
@@ -514,18 +516,33 @@ namespace UnitTestsProject.NoiseExperiments
 
             NeoCortexUtils.DrawBitmaps(arrays, $"Vector_{vectorIndex}_Noise_{j}_Repeat({repeat}).png", Color.Yellow, Color.Gray, OutImgSize, OutImgSize);
 
+            #region Draw Heatmap
 
-            //var allColsPerm = sp.GetColumnPermenances();
+            var allColsPerm = sp.GetColumnPermenances();
 
-            //NeoCortexUtils.DrawHeatmaps(new List<double[,]>() { PrepareHeatmapArray(allColsPerm) },
-            //    $"Heat_Vector_{vectorIndex}_Noise_{noiseLevel}.png", 1024, 4096, 100, 200, 300);
+            DrawPermanencesHeatmap(noiseLevel, vectorIndex, allColsPerm);
 
+            //DrawPermanencesGraph(noiseLevel, colDimSize, vectorIndex, allColsPerm);
 
-            //var arr = PreperePermArray(allColsPerm, colDimSize * colDimSize, 1024);
-            //SdrRepresentation.TraceInGraphFormat(new List<int[,]>() { arr },
-            //  new int[] { colDimSize * colDimSize, 1024 },
-            //  -1, Color.Green, Color.Green, width: 4096, height:1300,
-            //  pngFileName: Path.Combine(nameof(NoiseExperimentTest), $"Permanences_{vectorIndex}_Noise_{inpIndex}.png"));
+            #endregion
+        }
+
+        //private void DrawPermanencesGraph(int noiseLevel, int colDimSize, int vectorIndex, List<List<double>> allColsPerm)
+        //{
+        //    NOT IMPLEMENTED!!
+        //    var arr = PreperePermArray(allColsPerm, colDimSize * colDimSize, 1024);
+        //    SdrRepresentation.TraceInGraphFormat(new List<int[,]>() { arr },
+        //      new int[] { colDimSize * colDimSize, 1024 },
+        //      -1, Color.Green, Color.Green, width: 4096, height: 1300,
+        //      pngFileName: Path.Combine(nameof(NoiseExperimentTest), $"Permanences_Inp_{vectorIndex}_Noise_{noiseLevel}.png"));
+        //}
+
+        private List<List<double>> DrawPermanencesHeatmap(int noiseLevel, int vectorIndex, List<List<double>> allColsPerm)
+        {
+            NeoCortexUtils.DrawHeatmaps(new List<double[,]>() { PrepareHeatmapArray(allColsPerm) },
+                $"Heat_Vector_{vectorIndex}_Noise_{noiseLevel}.png", 1024, 4096, 100, 200, 300);
+
+            return allColsPerm;
         }
 
         private double[,] PrepareHeatmapArray(List<List<double>> permanences)

@@ -170,6 +170,8 @@ namespace NeoCortexApi.Entities
 
         #region General Methods
 
+
+
         /// <summary>
         /// Returns the <see cref="Cell"/> specified by the index passed in.
         /// </summary>
@@ -861,14 +863,16 @@ namespace NeoCortexApi.Entities
 
 
         /// <summary>
-        /// Traces permanences of all columns.
+        /// Traces permanences of all mini-columns.
         /// </summary>
         public void TraceColumnPermanences(string fileName)
         {
-            using var sw = new StreamWriter(fileName, false);
-            foreach (var col in GetColumns())
+            using (var sw = new StreamWriter(fileName, false))
             {
-                sw.WriteLine(col.Trace());
+                foreach (var col in GetColumns())
+                {
+                    sw.WriteLine(col.TraceProximalSegment());
+                }
             }
         }
 
@@ -885,8 +889,8 @@ namespace NeoCortexApi.Entities
                 List<double> perms = new List<double>();
 
                 foreach (var syn in col.ProximalDendrite.Synapses)
-                {                    
-                   perms.Add(syn.Permanence);
+                {
+                    perms.Add(syn.Permanence);
                 }
 
                 allColPerms.Add(perms);

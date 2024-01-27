@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
@@ -52,6 +51,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{9475B9AE
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridCell", "GridCell\GridCell.csproj", "{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApiAnomaly", "Samples\NeoCortexApiAnomaly\NeoCortexApiAnomaly.csproj", "{7F272910-3A59-4BBB-8888-9A7F695CA754}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeocortexApiLLMSample", "NeocortexApiLLMSample\NeocortexApiLLMSample.csproj", "{8D1F778F-AF73-44CF-965E-C061C07B99A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApproveMultiSequenceLearning", "Samples\ApproveMultiSequenceLearning\ApproveMultiSequenceLearning.csproj", "{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +116,18 @@ Global
 		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E102D57D-BA8F-4E21-8365-8ABAFB5D2C94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F272910-3A59-4BBB-8888-9A7F695CA754}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F272910-3A59-4BBB-8888-9A7F695CA754}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F272910-3A59-4BBB-8888-9A7F695CA754}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F272910-3A59-4BBB-8888-9A7F695CA754}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D1F778F-AF73-44CF-965E-C061C07B99A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D1F778F-AF73-44CF-965E-C061C07B99A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D1F778F-AF73-44CF-965E-C061C07B99A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D1F778F-AF73-44CF-965E-C061C07B99A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +136,9 @@ Global
 		{4D9AD5E0-8F00-494E-8BEF-8041C003F4E6} = {D9879A38-CCF8-4440-B939-D066196AC775}
 		{15375C28-1424-4A29-B2AF-11ED92F6134C} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 		{AE2CF42C-DC7D-4F0A-8B43-84A5D81E1D72} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
+		{7F272910-3A59-4BBB-8888-9A7F695CA754} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
+		{8D1F778F-AF73-44CF-965E-C061C07B99A7} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
+		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71185BAD-1342-4836-BCDA-6EC97118F92D}

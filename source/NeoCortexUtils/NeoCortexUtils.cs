@@ -243,7 +243,7 @@ namespace NeoCortex
                 int w = arr.GetLength(0);
                 int h = arr.GetLength(1);
 
-                var scale = Math.Max(1,((bmpWidth) / twoDimArrays.Count) / (w + 1));// +1 is for offset between pictures in X dim.
+                var scale = Math.Max(1, ((bmpWidth) / twoDimArrays.Count) / (w + 1));// +1 is for offset between pictures in X dim.
 
                 for (int Xcount = 0; Xcount < w; Xcount++)
                 {
@@ -529,6 +529,62 @@ namespace NeoCortex
             }
 
             return inputVector;
+        }
+
+
+        /// <summary>
+        /// Creates the dence array of permancences from sparse array.
+        /// </summary>
+        /// <param name="array">A dense array of permancences. Ever permanence value is a sum of permanence valus of
+        /// active mini-columns to the input neuron with the given index.</param>
+        /// <param name="numInputNeurons">Number of input neurons connected from mini-columns at the proximal segment.</param>
+        private static double[] CreateDenseArray(Dictionary<int, double> array, int numInputNeurons)
+        {
+            // Creates the dense array of permanences.
+            // Every permanence value for a single input neuron.
+            double[] res = new double[numInputNeurons];
+
+            for (int i = 0; i < numInputNeurons; i++)
+            {
+                if (array.ContainsKey(i))
+                    res[i] = array[i];
+                else
+                    res[i] = 0.0;
+            }
+
+            return res;
+        }
+
+
+        /// <summary>
+        /// Calculates the softmax function.
+        /// </summary>
+        /// <param name="sparseArray">The array if indicies of active mini-columns or cells.</param>
+        /// <param name="numInputNeurons">The number of existing input neurons.</param>
+        /// <returns></returns>
+        public static double[] Softmax(Dictionary<int, double> sparseArray, int numInputNeurons)
+        {
+            var denseArr = CreateDenseArray(sparseArray, numInputNeurons);
+
+            var res = Softmax(denseArr);
+
+            return res;
+        }
+
+
+        /// <summary>
+        /// Calculates the softmax of the input array.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>The softmax array.</returns>
+
+        public static double[] Softmax(double[] input)
+        {
+            double[] exponentials = input.Select(x => Math.Exp(x)).ToArray();
+
+            double sum = exponentials.Sum();
+
+            return exponentials.Select(x => x / sum).ToArray();
         }
     }
 }
