@@ -594,6 +594,42 @@ namespace UnitTestsProject.EncoderTests
         }
 
         /// <summary>
+        /// This test method verifies the behavior of the BucketMatchScore method in the BucketMatch class
+        /// when dealing with periodic input and a fractional difference. It sets up parameters,
+        /// provides expected and actual values, calculates the match score, and asserts that the score
+        /// falls within an acceptable range.
+        /// </summary>
+        [TestMethod]
+        public void BucketMatchScore_PeriodicWithFractionalDifference_ReturnsExpectedScore()
+        {
+            // Arrange
+            // Configure parameters for the BucketMatch class.
+            BucketMatchScore.ConfigureParameters(100, 0, true, false, 101);
+
+            // Define expected and actual values for the test case.
+            double[] expectedValues = new double[] { 50 };
+            double[] actualValues = new double[] { 51 };
+
+            // Specify whether to use fractional difference in the score calculation.
+            bool useFractionalDifference = true;
+
+            // Define the expected match score for assertion.
+            double expectedScore = 0.99;
+
+            // Act
+            // Calculate the match score using the BucketMatch class.
+            double[] actualScores = BucketMatchScore.GetBucketMatchScore(expectedValues, actualValues, useFractionalDifference);
+
+            // Assert
+            // Ensure that the calculated score matches the expected score within an acceptable range.
+            Assert.AreEqual(expectedScore, actualScores[0], 0.01);
+
+            // Output the result for review.
+            Console.WriteLine($"Expected closeness: {expectedScore:F2}");
+            Console.WriteLine($"Actual closeness: {actualScores[0]:F12}");
+        }
+
+        /// <summary>
         /// Initializes encoder and sets mandatory properties.
         /// </summary>
         [TestMethod]
