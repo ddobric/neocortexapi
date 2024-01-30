@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using static NeoCortexApiSample.MultiSequenceLearning;
+using Newtonsoft.Json;
 
-namespace NeoCortexApiSample
+
+using static MultiSequenceLearning.MultiSequenceLearning;
+
+namespace MultiSequenceLearning
 {
     class Program
     {
@@ -18,7 +21,8 @@ namespace NeoCortexApiSample
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            //
+            // SE Project: Approve Prediction of Multisequence Learning 
+
             // Starts experiment that demonstrates how to learn spatial patterns.
             SpatialPatternLearning experiment = new SpatialPatternLearning();
             experiment.Run();
