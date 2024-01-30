@@ -1,16 +1,18 @@
-﻿using NeoCortexApi;
+﻿using System;
+using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using Org.BouncyCastle.Asn1.Tsp;
-using System;
+using System.Globalization;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using NeoCortexApi.Classifiers;
 
-
-namespace NeoCortexApiSample
+namespace MultiSequenceLearning
 {
     /// <summary>
     /// Implements an experiment that demonstrates how to learn sequences.
