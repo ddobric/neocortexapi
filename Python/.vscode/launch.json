@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: draw_figure.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/ColumnActivityDiagram/draw_figure.py",
+            "args": [
+                "--graphename",
+                "digit_Two_",
+                "--maxtouches",
+                "19",
+                "--highlighttouch",
+                "8",
+                "--yaxistitle",
+                "yaxis",
+                "--xaxistitle",
+                "xaxis",
+                "--subplottitle",
+                "Digit_Two",
+                "--figurename",
+                "CortialColumn",
+                "--axis",
+                "x"
+            ]
+        }
+    ],
+}

@@ -1,0 +1,367 @@
+------------------------------
+
+Anomaly detection results:
+False Negative rate
+FNR = FN / (FN + TP)
+
+where FN is the number of false negatives (i.e., the number of true anomalies incorrectly identified as normal), and TP is the number of true positives (i.e., the number of true anomalies correctly identified as anomalies).
+
+False Positive rate
+FPR = FP / (FP + TN)
+
+where FP is the number of false positives (i.e., the number of normal observations incorrectly identified as anomalies) and TN is the number of true negatives (i.e., the number of normal observations correctly identified as normal).
+
+Please note that anything outside (45,55) range is to be considered anomaly.
+
+------------------------------
+
+Starting our anomaly detection experiment!!
+
+------------------------------
+
+HTM Model training initiated...................
+
+------------------------------
+
+HTM Model trained!! Training time is: 1152.8049016 seconds.
+
+------------------------------
+------------------------------
+
+Started testing our trained HTM Engine...................
+
+------------------------------
+
+Testing the sequence for anomaly detection: 48, 92, 45, 46, 50, 49, 45.
+First element in the testing sequence from input list: 48
+No anomaly detected in the first element. HTM Engine found similarity to be:63.16%. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 48
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 92
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 63.16%.
+Current element in the testing sequence from input list: 45
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 46
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 50
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 49
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 75 with similarity: 100%, but the actual value is 45.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 1
+FP: 1
+TN: 5 
+TP: 0
+False Negative rate(FNR) = FN / (FN + TP) = 1/(1+0) = 1
+False Positive rate(FPR) = FP / (FP + TN) = 4/(1+5) = 0.67
+
+------------------------------
+
+Testing the sequence for anomaly detection: 54, 55, 48, 52, 45, 46, 30, 49, 35.
+First element in the testing sequence from input list: 54
+No anomaly detected in the first element. HTM Engine found similarity to be:92.31%. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 54
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 55
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 48
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 70.83%.
+Current element in the testing sequence from input list: 52
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 97 with similarity: 100%, but the actual value is 45.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 46
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 50 with similarity: 100%, but the actual value is 30.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 49
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 35
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 1
+FP: 1
+TN: 6
+TP: 1
+False Negative rate(FNR) = FN / (FN + TP) = 1/(1+1) = 0.5
+False Positive rate(FPR) = FP / (FP + TN) = 1/(1+6) = 0.14
+
+------------------------------
+
+Testing the sequence for anomaly detection: 52, 45, 36, 50, 49, 45.
+First element in the testing sequence from input list: 52
+Anomaly detection cannot be performed for the first element. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 52
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 97 with similarity: 57.14%, but the actual value is 45.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 36
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 50
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 49
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 75 with similarity: 46.15%, but the actual value is 45.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 1
+FP: 2
+TN: 3 
+TP: 0
+False Negative rate(FNR) = FN / (FN + TP) = 1/(1+0) = 1
+False Positive rate(FPR) = FP / (FP + TN) = 2/(2+3) = 0.4
+
+------------------------------
+
+Testing the sequence for anomaly detection: 55, 51, 52, 45, 46, 50, 78, 95.
+First element in the testing sequence from input list: 55
+Anomaly detection cannot be performed for the first element. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 55
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 92.31%.
+Current element in the testing sequence from input list: 51
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 52
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 97 with similarity: 57.14%, but the actual value is 45.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 46
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 50
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 49 with similarity: 100%, but the actual value is 78.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 95
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 1
+FP: 1
+TN: 5 
+TP: 1
+False Negative rate(FNR) = FN / (FN + TP) = 1/(1+1) = 0.5
+False Positive rate(FPR) = FP / (FP + TN) = 1/(1+5) = 0.167
+
+------------------------------
+
+Testing the sequence for anomaly detection: 52, 55, 48, 52, 47, 46, 99, 52, 47.
+First element in the testing sequence from input list: 52
+No anomaly detected in the first element. HTM Engine found similarity to be:92.31%. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 52
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 97 with similarity: 16.67%, but the actual value is 55.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 48
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 75 with similarity: 51.06%, but the actual value is 52.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 47
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 46
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 50 with similarity: 100%, but the actual value is 99.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 52
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 16.67%.
+Current element in the testing sequence from input list: 47
+End of input list. Further anomaly testing cannot be continued.
+
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 0
+FP: 2 
+TN: 6 
+TP: 1 
+False Negative rate(FNR) = FN / (FN + TP) = 0
+False Positive rate(FPR) = FP / (FP + TN) = 2/(2+6) = 0.25
+
+------------------------------
+
+Testing the sequence for anomaly detection: 48, 52, 47, 46, 90, 49, 97.
+First element in the testing sequence from input list: 48
+No anomaly detected in the first element. HTM Engine found similarity to be:57.14%. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 48
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 75 with similarity: 58.54%, but the actual value is 52.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 47
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 46
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 50 with similarity: 100%, but the actual value is 90.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 49
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 97
+End of input list. Further anomaly testing cannot be continued.
+
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 1
+FP: 1
+TN: 4 
+TP: 1 
+False Negative rate(FNR) = FN / (FN + TP) = 1/(1+1) = 0.5
+False Positive rate(FPR) = FP / (FP + TN) = 1/(1+4) = 0.2
+
+------------------------------
+
+Testing the sequence for anomaly detection: 55, 48, 52, 47, 46, 92, 49, 100.
+First element in the testing sequence from input list: 55
+Anomaly detection cannot be performed for the first element. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 55
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 92.31%.
+Current element in the testing sequence from input list: 48
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 70.83%.
+Current element in the testing sequence from input list: 52
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 97 with similarity: 100%, but the actual value is 47.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 46
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 50 with similarity: 100%, but the actual value is 92.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 49
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 100
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 1
+FP: 1
+TN: 5 
+TP: 1
+False Negative rate(FNR) = FN / (FN + TP) = 1/(1+1) = 0.5
+False Positive rate(FPR) = FP / (FP + TN) = 1/(1+5) = 0.167
+
+------------------------------
+
+Testing the sequence for anomaly detection: 54, 55, 48, 52, 47, 46, 10, 49, 75.
+First element in the testing sequence from input list: 54
+No anomaly detected in the first element. HTM Engine found similarity to be:92.31%. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 54
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 55
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 48
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 70.83%.
+Current element in the testing sequence from input list: 52
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 97 with similarity: 100%, but the actual value is 47.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 46
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 50 with similarity: 100%, but the actual value is 10.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 49
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+Current element in the testing sequence from input list: 75
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 1
+FP: 1
+TN: 6 
+TP: 1
+False Negative rate(FNR) = FN / (FN + TP) = 1/(1+1) = 0.5
+False Positive rate(FPR) = FP / (FP + TN) = 1/(1+6) = 0.14
+
+------------------------------
+
+Testing the sequence for anomaly detection: 55, 48, 52, 47, 16, 50, 49, 45.
+First element in the testing sequence from input list: 55
+No anomaly detected in the first element. HTM Engine found similarity to be:51.06%. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 55
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 92.31%.
+Current element in the testing sequence from input list: 48
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 70.83%.
+Current element in the testing sequence from input list: 52
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 97 with similarity: 100%, but the actual value is 47.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+Current element in the testing sequence from input list: 16
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 50
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 16%.
+Current element in the testing sequence from input list: 49
+****Anomaly detected**** in the next element. HTM Engine predicted it to be 75 with similarity: 80%, but the actual value is 45.
+As anomaly was detected, so we are skipping to the next element in our testing sequence.
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 1
+FP: 2
+TN: 5 
+TP: 0
+False Negative rate(FNR) = FN / (FN + TP) = 1/(1+0) = 1
+False Positive rate(FPR) = FP / (FP + TN) = 2/(2+5) = 0.28
+
+------------------------------
+
+Testing the sequence for anomaly detection: 54, 55, 48, 52, 97, 46, 50, 49, 75.
+First element in the testing sequence from input list: 54
+No anomaly detected in the first element. HTM Engine found similarity to be:92.31%. Starting check from beginning of the list.
+Current element in the testing sequence from input list: 54
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 55
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 48
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 70.83%.
+Current element in the testing sequence from input list: 52
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 97
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 46
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 50
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 49
+Anomaly not detected in the next element!! HTM Engine found similarity to be: 100%.
+Current element in the testing sequence from input list: 75
+Nothing predicted from HTM Engine. Anomaly cannot be detected.
+
+------------------------------
+
+Remarks:
+
+Anomaly detection results:
+
+FN: 2
+FP: 0 
+TN: 7 
+TP: 0
+False Negative rate(FNR) = FN / (FN + TP) = 2/(2+0) = 1
+False Positive rate(FPR) = FP / (FP + TN) = 0
+
+------------------------------
+
+Average FNR of this experiment: 0.65
+Average FPR of this experiment: 0.24
+
+------------------------------
+
+Anomaly detection experiment complete!!.
+
+------------------------------

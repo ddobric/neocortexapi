@@ -1,0 +1,11 @@
+# Results/* linguist-documentation
+# NeuroVizualizer/* linguist-documentation
+# Transmitter/* linguist-documentation
+# Python/* linguist-documentation
+
+*.py linguist-vendored
+*.html linguist-vendored
+*.csv linguist-vendored
+*.js linguist-vendored
+*.css linguist-documentation
+*.json linguist-documentation

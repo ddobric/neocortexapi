@@ -1,0 +1,33 @@
+------------------------------
+Sequence: S1 -> 0-2-5-6-7-8-10-11-13
+Sequence: S2 -> 1-2-3-4-6-11-12-13-14
+Sequence: S3 -> 1-2-3-4-7-8-10-12-14
+------------------------------
+Using test sequence: T4 -> 3-4-7-8-10
+	Input: 3, Predicted Sequence: S2, Predicted next element: 4
+	Input: 4, Predicted Sequence: S3, Predicted next element: 7
+	Input: 7, Predicted Sequence: S3, Predicted next element: 8
+	Input: 8, Predicted Sequence: S3, Predicted next element: 10
+	Accuracy: 100%
+------------------------------
+Using test sequence: T4 -> 3-4-7-8-10
+	Input: 3, Predicted Sequence: S2, Predicted next element: 4
+	Input: 4, Predicted Sequence: S3, Predicted next element: 7
+	Input: 7, Predicted Sequence: S3, Predicted next element: 8
+	Input: 8, Predicted Sequence: S3, Predicted next element: 10
+	Accuracy: 100%
+------------------------------
+Using test sequence: T4 -> 3-4-7-8-10
+	Input: 3, Predicted Sequence: S2, Predicted next element: 4
+	Input: 4, Predicted Sequence: S3, Predicted next element: 7
+	Input: 7, Predicted Sequence: S3, Predicted next element: 8
+	Input: 8, Predicted Sequence: S3, Predicted next element: 10
+	Accuracy: 100%
+------------------------------
+Using test sequence: T4 -> 3-4-7-8-10
+	Input: 3, Predicted Sequence: S2, Predicted next element: 4
+	Input: 4, Predicted Sequence: S3, Predicted next element: 7
+	Input: 7, Predicted Sequence: S3, Predicted next element: 8
+	Input: 8, Predicted Sequence: S3, Predicted next element: 10
+	Accuracy: 100%
+------------------------------
