@@ -64,3 +64,5 @@ public class MultiSequenceLearning
         EncoderBase encoder = new ScalarEncoder(settings);
 
         return RunExperiment(inputBits, cfg, encoder, sequences);
+
+        Continue reading and understanding above code
