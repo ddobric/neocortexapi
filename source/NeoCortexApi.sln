@@ -10,7 +10,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexUtils", "NeoCortex
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{23838D99-F23D-47B6-BC70-92FA0A34FF1C}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
+		Dockerfile = Dockerfile
 		nuget-vsonline.config = nuget-vsonline.config
 		nuget.config = nuget.config
 	EndProjectSection
@@ -56,7 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoCortexApiAnomaly", "Samp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeocortexApiLLMSample", "NeocortexApiLLMSample\NeocortexApiLLMSample.csproj", "{8D1F778F-AF73-44CF-965E-C061C07B99A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApproveMultiSequenceLearning", "Samples\ApproveMultiSequenceLearning\ApproveMultiSequenceLearning.csproj", "{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApproveMultiSequenceLearning", "Samples\ApproveMultiSequenceLearning\ApproveMultiSequenceLearning.csproj", "{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

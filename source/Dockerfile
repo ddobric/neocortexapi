@@ -12,3 +12,17 @@ RUN dotnet restore NeoCortexUtils/NeoCortexUtils.csproj
 RUN dotnet restore GridCell/GridCell.csproj
 RUN dotnet restore Samples/NeoCortexApiSample/NeoCortexApiSample.csproj
 
+# Restore solution
+RUN dotnet restore NeoCortexApi.sln
+
+
+RUN dotnet build Samples/NeoCortexApiSample/NeoCortexApiSample.csproj
+
+RUN dotnet publish Samples/NeoCortexApiSample/NeoCortexApiSample.csproj -c Release -o output
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
+
+COPY --from=build-env /output .
+
+ENTRYPOINT ["dotnet", "NeoCortexApiSample.dll"]

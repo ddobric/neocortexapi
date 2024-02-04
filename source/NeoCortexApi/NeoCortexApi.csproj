@@ -16,7 +16,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>htm, temporal memory, spatial pooler, neocortex</PackageTags>
     <PackageLicenseExpression></PackageLicenseExpression>
-    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <!--<PackageLicenseFile>license.txt</PackageLicenseFile>-->
 	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 	<PackageIcon>NeoCortexAPI.png</PackageIcon>
 	  <IncludeSymbols>true</IncludeSymbols>
@@ -57,12 +57,11 @@
     <Compile Remove="Network\NearestClassifier.cs" />
     <Compile Remove="SPSdrReconstructor.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="license.txt" />
+  </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\license.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />
