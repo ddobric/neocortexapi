@@ -18,10 +18,16 @@ namespace NeoCortexApiSample
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            // Inject MyTraceListener to write in user defined destination instead of Debug.WriteLine
+            var myListener = new MyTraceListener();
+            Trace.Listeners.Add(myListener);
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
-            SpatialPatternLearning experiment = new SpatialPatternLearning();
-            experiment.Run();
+            //SpatialPatternLearning experiment = new SpatialPatternLearning();
+            //experiment.Run();
+
+            // Added below line for testing purpose only
+            Debug.WriteLine("Welcome ON =={0}== AT =={1}== ", DateTime.Now.ToLongDateString(), DateTime.Now.ToLongTimeString());
 
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
