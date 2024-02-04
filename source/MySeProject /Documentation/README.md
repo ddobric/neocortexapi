@@ -8,6 +8,6 @@ This project aims to implement the application of multi-sequence learning techni
 This project implements a new method __RunLanguageSemanticExperiment()__ for learning data from the text file (long text). The data will be divided into two parts. 90% of the data will be used for training and 10% for testing. The model will be trained with the training data first. After learning is completed, the model is tested by testing data from another file to evaluate its prediction accuracy.
 
 
-
+# Getting Started
 
 
