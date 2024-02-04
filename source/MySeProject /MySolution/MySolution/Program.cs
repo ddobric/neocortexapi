@@ -140,7 +140,7 @@ namespace NeoCortexApiSample
             }
             catch (Exception ex)
             {
-                //Handle exceptions (e.g., file not found, access denied, etc.)
+                //if not file found- Handle exceptions (e.g., file not found, access denied, etc.)
                 Console.WriteLine("Error reading the file: " + ex.Message);
             }
 
