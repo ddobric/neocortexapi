@@ -22,7 +22,7 @@ namespace NeoCortexApiSample
         /// This example demonstrates how to learn sequences and how to use the prediction mechanism.
         /// First,string is converted into an array of characters, and asciii value of each character is stored in a list.
         /// Second,sequences are learned from the text file.
-        /// Third,three short sequences with three elements each are created und used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
+        /// Third,testing data is used used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
         /// The predictor tries to predict the next element.
         /// </summary>
         private static void RunMultiSequenceLearningExperiment()
