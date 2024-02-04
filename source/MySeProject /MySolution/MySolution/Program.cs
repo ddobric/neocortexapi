@@ -126,8 +126,8 @@ namespace NeoCortexApiSample
 
                 //Write the joined string to the output file
                 File.WriteAllText(@"outputFilePath", joinedString, Encoding.UTF8);
-                                               
-                Console.WriteLine("Characters modified and joined successfully.");
+
+                Console.WriteLine("The spaces is removed successfully.");
 
                 //Read the modified file
                 string fileContent1 = File.ReadAllText(@"outputFilePath");
