@@ -1,4 +1,4 @@
-﻿Team Gaurav
+Team Gaurav
 
 Topic : Prediction of multisequence learning
 
@@ -25,3 +25,6 @@ Analyze existing code in MultisequenceLearning.cs & the method
 Date: 29/01/2023
 RunMultiSequenceLearningExperiment.
 To learn how sequence learning and prediction works.
+
+Date: 05/02/2023
+Analysed the RunExperiment() method in MultisequenceLearning.cs file
