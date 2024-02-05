@@ -47,6 +47,8 @@ public class MultiSequenceLearning
             PredictedSegmentDecrement = 0.1
         };
 
+        Encoding
+
         double max = 40;
 
         Dictionary<string, object> settings = new Dictionary<string, object>()
