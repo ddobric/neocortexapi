@@ -68,3 +68,18 @@ public class MultiSequenceLearning
         return RunExperiment(inputBits, cfg, encoder, sequences);
 
         Continue reading and understanding above code
+
+        Sequence
+        Sequence class is used to manage database fields of type sequence.
+        
+        public class Sequence
+{
+    public string Name { get; set; }
+    public int[] Data { get; set; }
+
+    public Sequence(string name, int[] data)
+    {
+        Name = name;
+        Data = data;
+    }
+}
