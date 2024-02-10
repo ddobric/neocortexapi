@@ -27,6 +27,8 @@ namespace MultiSequenceLearning
             SpatialPatternLearning experiment = new SpatialPatternLearning();
             experiment.Run();
 
+
+
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
             //SequenceLearning experiment = new SequenceLearning();
