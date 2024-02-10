@@ -13,4 +13,10 @@
     <PackageReference Include="NeoCortexApi" Version="1.1.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\NeoCortexApi\NeoCortexApi.csproj" />
+	<ProjectReference Include="..\..\..\NeoCortexEntities\NeoCortexEntities.csproj" />
+	<ProjectReference Include="..\..\..\NeoCortexUtils\NeoCortexUtils.csproj" />
+  </ItemGroup>
+
 </Project>
