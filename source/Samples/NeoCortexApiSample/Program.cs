@@ -24,8 +24,7 @@ namespace MultiSequenceLearning
             // SE Project: Approve Prediction of Multisequence Learning 
 
             // Starts experiment that demonstrates how to learn spatial patterns.
-            SpatialPatternLearning experiment = new SpatialPatternLearning();
-            experiment.Run();
+
             //to creating synthetic dataset
             string path = HelperMethods.SaveDataset(HelperMethods.CreateDataset());
             Console.WriteLine($"Dataset saved: {path}");
