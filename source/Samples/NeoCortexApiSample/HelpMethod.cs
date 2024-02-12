@@ -14,12 +14,11 @@ using MultiSequenceLearning;
 using Newtonsoft.Json;
 namespace NeoCortexApiSample
 {
+
 	public class HelpMethod
 	{
 		public HelpMethod()
-        {
-            //needs no implementation
-        }
+       
        
       
 

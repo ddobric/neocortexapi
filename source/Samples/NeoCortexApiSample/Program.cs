@@ -26,8 +26,14 @@ namespace MultiSequenceLearning
             // Starts experiment that demonstrates how to learn spatial patterns.
             SpatialPatternLearning experiment = new SpatialPatternLearning();
             experiment.Run();
-
-
+            //to creating synthetic dataset
+            string path = HelperMethods.SaveDataset(HelperMethods.CreateDataset());
+            Console.WriteLine($"Dataset saved: {path}");
+            //to read dataset
+            string BasePath = AppDomain.CurrentDomain.BaseDirectory;
+            string datasetPath = Path.Combine(BasePath, "dataset", "dataset_03.json");
+            Console.WriteLine($"Reading Dataset: {datasetPath}");
+            List<Sequence> sequences = HelperMethods.ReadDataset(datasetPath);
 
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
