@@ -30,8 +30,8 @@ namespace MultiSequenceLearning
             int inputBits = 100;
             int numColumns = 1024;
 
-
-
+            HtmConfig cfg = HelperMethods.FetchHTMConfig(inputBits, numColumns);
+            EncoderBase encoder = HelperMethods.GetEncoder(inputBits);
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 15},
