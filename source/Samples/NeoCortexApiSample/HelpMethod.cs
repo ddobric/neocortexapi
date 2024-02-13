@@ -17,7 +17,7 @@ namespace NeoCortexApiSample
 
 	public class HelpMethod
 	{
-		public HelpMethod()
+        public HelpMethod();
        
        
       

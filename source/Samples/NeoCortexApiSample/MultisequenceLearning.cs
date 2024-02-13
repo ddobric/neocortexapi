@@ -30,34 +30,7 @@ namespace MultiSequenceLearning
             int inputBits = 100;
             int numColumns = 1024;
 
-            HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
-            {
-                Random = new ThreadSafeRandom(42),
 
-                CellsPerColumn = 25,
-                GlobalInhibition = true,
-                LocalAreaDensity = -1,
-                NumActiveColumnsPerInhArea = 0.02 * numColumns,
-                PotentialRadius = (int)(0.15 * inputBits),
-                //InhibitionRadius = 15,
-
-                MaxBoost = 10.0,
-                DutyCyclePeriod = 25,
-                MinPctOverlapDutyCycles = 0.75,
-                MaxSynapsesPerSegment = (int)(0.02 * numColumns),
-
-                ActivationThreshold = 15,
-                ConnectedPermanence = 0.5,
-
-                // Learning is slower than forgetting in this case.
-                PermanenceDecrement = 0.25,
-                PermanenceIncrement = 0.15,
-
-                // Used by punishing of segments.
-                PredictedSegmentDecrement = 0.1
-            };
-
-            double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
@@ -130,12 +103,12 @@ namespace MultiSequenceLearning
 
             //double[] inputs = inputValues.ToArray();
             int[] prevActiveCols = new int[0];
-            
+
             int cycle = 0;
             int matches = 0;
 
-            var lastPredictedValues = new List<string>(new string[] { "0"});
-            
+            var lastPredictedValues = new List<string>(new string[] { "0" });
+
             int maxCycles = 3500;
 
             //
@@ -155,7 +128,7 @@ namespace MultiSequenceLearning
                     foreach (var input in inputs.Value)
                     {
                         Debug.WriteLine($" -- {inputs.Key} - {input} --");
-                    
+
                         var lyrOut = layer1.Compute(input, true);
 
                         if (isInStableState)
@@ -260,12 +233,12 @@ namespace MultiSequenceLearning
                                 Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
                             }
 
-                            lastPredictedValues = predictedInputValues.Select(v=>v.PredictedInput).ToList();
+                            lastPredictedValues = predictedInputValues.Select(v => v.PredictedInput).ToList();
                         }
                         else
                         {
                             Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
-                            lastPredictedValues = new List<string> ();
+                            lastPredictedValues = new List<string>();
                         }
                     }
 
@@ -306,11 +279,11 @@ namespace MultiSequenceLearning
             }
 
             Debug.WriteLine("------------ END ------------");
-           
+
             return new Predictor(layer1, mem, cls);
         }
 
-      
+
         /// <summary>
         /// Gets the number of all unique inputs.
         /// </summary>
