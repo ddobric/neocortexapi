@@ -28,3 +28,7 @@ To learn how sequence learning and prediction works.
 
 Date: 05/02/2023
 Analysed the RunExperiment() method in MultisequenceLearning.cs file
+
+Date: 13/02/2023
+Get more deep dive of HTM config and core
+Source: https://3rdman.de/2020/06/htm-core-and-csharp/
