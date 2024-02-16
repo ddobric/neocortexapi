@@ -40,3 +40,4 @@ https://www.frontiersin.org/articles/10.3389/fncir.2017.00081/full
 Date 16/02/2024
 
 https://medium.com/hierarchical-learning/hierarchical-temporal-memory-overview-d411c9e4f90e
+https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011801
