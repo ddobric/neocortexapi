@@ -36,3 +36,7 @@ Source: https://3rdman.de/2020/06/htm-core-and-csharp/
 
 Date 15/02/2024
 https://www.frontiersin.org/articles/10.3389/fncir.2017.00081/full
+
+Date 16/02/2024
+
+https://medium.com/hierarchical-learning/hierarchical-temporal-memory-overview-d411c9e4f90e
