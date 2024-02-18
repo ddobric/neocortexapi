@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortexEntities;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Utility;
@@ -104,6 +105,7 @@ namespace WorkingWithSDR
 
 
             }
+
 
             // <summary>
             /// Calculate all required results.
