@@ -105,8 +105,21 @@ namespace WorkingWithSDR
 
             }
 
+            // <summary>
+            /// Calculate all required results.
+            /// 1. Overlap and Union of the Binary arrays of two scalar values.
+            ///    It cross compares the binary arrays  of any of the two scalar values User enters.
+            /// 2. Creates bitmaps of the overlaping and non-overlaping regions of the two binary arrays entered by the User.
+            /// 3. Creates bitmaps of interestion of Overlap and Union of two values.
+            /// </summary>
 
-            
+            //Console.WriteLine("Encoder Binary array Created");
+            // Console.WriteLine("Enter the two elements you want to Compare");
+            // String a = Console.ReadLine();
+            //String b = Console.ReadLine();
+
+
+            // SimilarityResult(Convert.ToInt32(a), Convert.ToInt32(b), sdrs, outFolder1);
             SimilarityResult(a, b, sdrs, outFolder1);
         }
 
@@ -136,9 +149,38 @@ namespace WorkingWithSDR
             int[,] twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_{h}_{w}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
-            
+            //var unionArr = sdrs[h].Union(sdrs[w]).ToArray();                              //This function was not working. so, new Union function is created.
+            var unionArr = Union(sdrs[h], sdrs[w]).ToArray();
+            Console.WriteLine("SDR of Union = ");
+            Console.WriteLine(Helpers.StringifyVector(unionArr));
+            int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, (int)Math.Sqrt(unionArr.Length), (int)Math.Sqrt(unionArr.Length));
+            int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
+
+            NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Union_{h}_{w}.png");
+            SdrRepresentation.DrawIntersections(twoDimArray3, twoDimArray1, 100, $"{folder}\\Intersection of Union and Overlap of {h}_{w}.png", Color.Black, Color.Gray, text: $"Intersection.png");
+
+        }
+
+        public static int[] Union(int[] arr1, int[] arr2)                        // To find union of of the Binary arrays of two scalar values.
+        {
+
+
+            int[] union = new int[arr1.Length];
+
+            for (int i = 0; i < arr1.Length; i++)
+            {
+
+                if (arr1[i] == 0 && arr2[i] == 0)
+                {
+                    union[i] = 0;
+                }
+                else
+                {
+                    union[i] = 1;
+                }
+            }
+            return union;
         }
 
     }
-
 }
