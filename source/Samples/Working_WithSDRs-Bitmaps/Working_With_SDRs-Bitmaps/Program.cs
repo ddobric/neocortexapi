@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using NeoCortex;
 
 namespace WorkingWithSDR
 {
