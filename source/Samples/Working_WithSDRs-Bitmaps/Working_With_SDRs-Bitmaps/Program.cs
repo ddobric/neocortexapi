@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortexEntities;
+using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Utility;
@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using NeoCortex;
 
 namespace WorkingWithSDR
 {
