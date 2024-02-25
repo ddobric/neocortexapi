@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "DkHHfNR/f7955gtLWOz7qrrf8P3KVn5PiTAiUcG/wINDIDf+R8I8torSjYmXfAvlPLeUubq7UVT3jExf9bq0bg==",
+  "success": true,
+  "projectFilePath": "E:\\Fra-UAS\\Winter 23-24\\Software Engineering\\se-cloud-2023-2024\\MyWork\\Ex13\\MultiSequence\\MultiSequence\\MultiSequence.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\H Zaman Niloy\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\H Zaman Niloy\\.nuget\\packages\\neocortexapi\\1.1.4\\neocortexapi.1.1.4.nupkg.sha512"
+  ],
+  "logs": []
+}
