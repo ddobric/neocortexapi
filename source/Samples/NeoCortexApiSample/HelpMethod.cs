@@ -15,8 +15,8 @@ using Newtonsoft.Json;
 namespace NeoCortexApiSample
 {
 
-	public class HelpMethod
-	{
+    public class HelpMethod
+    {
         public HelpMethod();
 
 
@@ -52,12 +52,25 @@ namespace NeoCortexApiSample
                 ActivationThreshold = 15,
                 ConnectedPermanence = 0.5,
 
-              
+
             };
 
             return cfg;
         }
     }
 
-}
+    /// <summary>
+    /// Takes in user input and return encoded SDR for prediction
 
+    /// <param name="userInput"></param>
+    /// <returns></returns>
+    public static int[] EncodeSingleInput(string userInput)
+    {
+        int[] sdr = new int[0];
+
+
+
+        return sdr;
+    }
+
+}
