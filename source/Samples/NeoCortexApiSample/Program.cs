@@ -34,10 +34,11 @@ namespace MultiSequenceLearning
             Console.WriteLine($"Reading Dataset: {datasetPath}");
             List<Sequence> sequences = HelperMethods.ReadDataset(datasetPath);
 
-            //
-            // Starts experiment that demonstrates how to learn spatial patterns.
-            //SequenceLearning experiment = new SequenceLearning();
-            //experiment.Run();
+
+            string testsetPath = Path.Combine(BasePath, "dataset", "test_01.json");
+            Console.WriteLine($"Reading Testset: {testsetPath}");
+            List<Sequence> sequencesTest = HelperMethods.ReadDataset(testsetPath);
+
 
             //GridCellSamples gridCells = new GridCellSamples();
             //gridCells.Run();
