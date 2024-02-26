@@ -34,7 +34,7 @@ namespace MultiSequenceLearning
             Console.WriteLine($"Reading Dataset: {datasetPath}");
             List<Sequence> sequences = HelperMethods.ReadDataset(datasetPath);
 
-
+            //to read test dataset
             string testsetPath = Path.Combine(BasePath, "dataset", "test_01.json");
             Console.WriteLine($"Reading Testset: {testsetPath}");
             List<Sequence> sequencesTest = HelperMethods.ReadDataset(testsetPath);
