@@ -36,19 +36,6 @@ namespace MultiSequenceLearning
 
             HtmConfig cfg = HelperMethods.FetchHTMConfig(inputBits, numColumns);
             EncoderBase encoder = HelperMethods.GetEncoder(inputBits);
-            Dictionary<string, object> settings = new Dictionary<string, object>()
-            {
-                { "W", 15},
-                { "N", inputBits},
-                { "Radius", -1.0},
-                { "MinVal", 0.0},
-                { "Periodic", false},
-                { "Name", "scalar"},
-                { "ClipInput", false},
-                { "MaxVal", max}
-            };
-
-            EncoderBase encoder = new ScalarEncoder(settings);
 
             return RunExperiment(inputBits, cfg, encoder, sequences);
         }
