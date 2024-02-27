@@ -40,8 +40,6 @@ namespace MultiSequenceLearning
             List<Sequence> sequencesTest = HelperMethods.ReadDataset(testsetPath);
 
 
-            //GridCellSamples gridCells = new GridCellSamples();
-            //gridCells.Run();
 
             // RunMultiSimpleSequenceLearningExperiment();
 
