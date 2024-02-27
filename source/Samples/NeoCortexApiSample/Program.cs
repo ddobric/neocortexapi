@@ -56,9 +56,22 @@ namespace MultiSequenceLearning
             sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
             sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
-            //
-            // Prototype for building the prediction engine.
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
+
+
+            //run learing  part only
+            //RunSimpleMultiSequenceLearningExperiment(sequences);
+
+            //run learning + prediction and generates report for results
+            List<Report> reports = RunMultiSequenceLearningExperiment(sequences, sequencesTest);
+
+            WriteReport(sequences, reports);
+
+            Console.WriteLine("Done...");
+
+        }
+        //
+        // Prototype for building the prediction engine.
+        MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
         }
 
