@@ -12,6 +12,8 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using MultiSequenceLearning;
 using Newtonsoft.Json;
+using System.Xml;
+
 namespace NeoCortexApiSample
 {
 
@@ -52,6 +54,14 @@ namespace NeoCortexApiSample
                 ActivationThreshold = 15,
                 ConnectedPermanence = 0.5,
 
+                // Learning is slower than forgetting in this case.
+                PermanenceDecrement = 0.25,
+                PermanenceIncrement = 0.15,
+
+                // Used by punishing of segments.
+                PredictedSegmentDecrement = 0.1,
+
+                //NumInputs = 88 
 
             };
 
