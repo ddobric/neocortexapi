@@ -67,6 +67,22 @@ namespace MultiSequenceLearning
             Console.WriteLine("Done...");
 
         }
+        // <summary>
+        /// write and formats data in report object to a file
+        /// </summary>
+        /// <param name="sequences">input sequence</param>
+        /// <param name="reports">object of report</param>
+        private static void WriteReport(List<Sequence> sequences, List<Report> reports)
+        {
+            string BasePath = AppDomain.CurrentDomain.BaseDirectory;
+            string reportFolder = Path.Combine(BasePath, "report");
+            if (!Directory.Exists(reportFolder))
+                Directory.CreateDirectory(reportFolder);
+            string reportPath = Path.Combine(reportFolder, $"report_{DateTime.Now.Ticks}.txt");
+
+
+
+        }
         //
         // Prototype for building the prediction engine.
         MultiSequenceLearning experiment = new MultiSequenceLearning();
