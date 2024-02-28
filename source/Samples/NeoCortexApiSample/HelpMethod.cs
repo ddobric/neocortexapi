@@ -89,10 +89,18 @@ public static EncoderBase GetEncoder(int inputBits)
     double max = 20;
 
     Dictionary<string, object> settings = new Dictionary<string, object>()
+            {
+                { "W", 15},
+                { "N", inputBits},
+                { "Radius", -1.0},
+                { "MinVal", 0.0},
+                { "Periodic", false},
+                { "Name", "scalar"},
+                { "ClipInput", false},
+                { "MaxVal", max}
+            };
 
-
-
-            EncoderBase encoder = new ScalarEncoder(settings);
+    EncoderBase encoder = new ScalarEncoder(settings);
 
     return encoder;
 }
