@@ -14,7 +14,7 @@ using MultiSequenceLearning;
 using Newtonsoft.Json;
 using System.Xml;
 
-namespace NeoCortexApiSample
+namespace MultiSequenceLearning
 {
 
     public class HelpMethod
@@ -83,4 +83,16 @@ namespace NeoCortexApiSample
         return sdr;
     }
 
+}
+public static EncoderBase GetEncoder(int inputBits)
+{
+    double max = 20;
+
+    Dictionary<string, object> settings = new Dictionary<string, object>()
+
+
+
+            EncoderBase encoder = new ScalarEncoder(settings);
+
+    return encoder;
 }
