@@ -21,10 +21,10 @@
 
   <ItemGroup>
     <Reference Include="NeoCortexApi">
-      <HintPath>..\..\..\..\..\neocortexapi_new\source\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexApi.dll</HintPath>
+      <HintPath>..\..\..\..\..\neocortexapi_Team_PY\source\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexApi.dll</HintPath>
     </Reference>
     <Reference Include="NeoCortexUtils">
-      <HintPath>..\..\..\..\..\neocortexapi_Team_Bug\source\NeoCortexUtils\bin\Debug\net5.0\NeoCortexUtils.dll</HintPath>
+      <HintPath>..\..\..\..\..\neocortexapi_Team_PY\source\NeoCortexUtils\bin\Debug\net5.0\NeoCortexUtils.dll</HintPath>
     </Reference>
   </ItemGroup>
 
