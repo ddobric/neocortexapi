@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\MultiSequence\\MultiSequence.csproj": {}
+    "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\Anomaly Detection.csproj": {}
   },
   "projects": {
-    "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\MultiSequence\\MultiSequence.csproj": {
+    "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\Anomaly Detection.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\MultiSequence\\MultiSequence.csproj",
-        "projectName": "MultiSequence",
-        "projectPath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\MultiSequence\\MultiSequence.csproj",
+        "projectUniqueName": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\Anomaly Detection.csproj",
+        "projectName": "Anomaly Detection",
+        "projectPath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\Anomaly Detection.csproj",
         "packagesPath": "C:\\Users\\H Zaman Niloy\\.nuget\\packages\\",
-        "outputPath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\MultiSequence\\obj\\",
+        "outputPath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\H Zaman Niloy\\AppData\\Roaming\\NuGet\\NuGet.Config",

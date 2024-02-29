@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "WmjAx3eKHANS7i1DBmJxQ835hNsrqnvhVTkHoVT3EdMLsfMZpirdtY9fxF+B0FtLEG2v656WAMQpcfHmTN7N5w==",
+  "dgSpecHash": "MZSxHBmj3Q7y6usdQR58AOWmo4Np3ybhlMmX3QsnfqgaTn50jFY69fS6ZmEuhdxgIogmKfrH4kyWghm/OcV6EA==",
   "success": true,
-  "projectFilePath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\MultiSequence\\MultiSequence.csproj",
+  "projectFilePath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\Anomaly Detection.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\H Zaman Niloy\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\H Zaman Niloy\\.nuget\\packages\\neocortexapi\\1.1.4\\neocortexapi.1.1.4.nupkg.sha512"
