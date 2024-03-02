@@ -185,7 +185,7 @@ namespace MultiSequenceLearning
                         if (previousInputs.Count < maxPrevInputs)
                             continue;
 
-                        string key = GetKey(previousInputs, input, sequenceKeyPair.Key);
+                        string key = GetKey(previousInputs, input, sequenceKeyPair.name);
 
                         List<Cell> actCells;
 
