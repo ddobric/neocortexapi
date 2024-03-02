@@ -110,3 +110,12 @@ namespace MultiSequenceLearning
 
     return encoder;
 }
+
+public static List<Sequence> ReadDataset(string path)
+{
+    Console.WriteLine("Reading Sequence...");
+    String lines = File.ReadAllText(path);
+    List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
+
+    return sequence;
+}
