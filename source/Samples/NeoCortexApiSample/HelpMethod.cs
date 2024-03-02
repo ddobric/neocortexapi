@@ -21,7 +21,9 @@ namespace MultiSequenceLearning
     {
         public HelpMethod();
 
+        {
 
+        }
 
 
         /// <summary>
@@ -84,12 +86,11 @@ namespace MultiSequenceLearning
     }
 
 }
-/// <summary>
-/// Get the encoder with settings
-/// </summary>
-/// <param name="inputBits">input bits</param>
-/// <returns>Object of EncoderBase</returns>
-public static EncoderBase GetEncoder(int inputBits)
+//// Get the encoder with settings
+ 
+        /// <param name="inputBits">input bits</param>
+        /// <returns>Object of EncoderBase</returns>
+        public static EncoderBase GetEncoder(int inputBits)
 {
     double max = 20;
 
