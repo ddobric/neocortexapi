@@ -1,5 +1,4 @@
 ﻿using System;
-
 using System;
 using System.Globalization;
 using System.IO;
@@ -12,7 +11,7 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using MultiSequenceLearning;
 using Newtonsoft.Json;
-using System.Xml;
+
 
 namespace MultiSequenceLearning
 {
@@ -69,7 +68,7 @@ namespace MultiSequenceLearning
 
             return cfg;
         }
-    }
+    
 
     /// <summary>
     /// Takes in user input and return encoded SDR for prediction
@@ -85,7 +84,7 @@ namespace MultiSequenceLearning
         return sdr;
     }
 
-}
+
 //// Get the encoder with settings
  
         /// <param name="inputBits">input bits</param>
@@ -116,6 +115,7 @@ namespace MultiSequenceLearning
 /// </summary>
 /// <param name="path">full path of the file</param>
 /// <returns>Object of list of Sequence</returns>
+/// 
 public static List<Sequence> ReadDataset(string path)
 {
     Console.WriteLine("Reading Sequence...");
