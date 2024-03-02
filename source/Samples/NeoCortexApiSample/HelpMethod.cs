@@ -111,6 +111,11 @@ namespace MultiSequenceLearning
     return encoder;
 }
 
+
+
+/// </summary>
+/// <param name="path">full path of the file</param>
+/// <returns>Object of list of Sequence</returns>
 public static List<Sequence> ReadDataset(string path)
 {
     Console.WriteLine("Reading Sequence...");
