@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
@@ -23,3 +24,30 @@ Global
 		SolutionGuid = {FAEA5EFC-AD67-45EC-A222-8342FE8D6016}
 	EndGlobalSection
 EndGlobal
+=======
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnomalyDetection", "AnomalyDetection\AnomalyDetection.csproj", "{299AD931-C80E-444F-A205-A77FA9B3D2FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{299AD931-C80E-444F-A205-A77FA9B3D2FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299AD931-C80E-444F-A205-A77FA9B3D2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299AD931-C80E-444F-A205-A77FA9B3D2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299AD931-C80E-444F-A205-A77FA9B3D2FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FAEA5EFC-AD67-45EC-A222-8342FE8D6016}
+	EndGlobalSection
+EndGlobal
+>>>>>>> 32c9ad27d90b08d5cab34994d51f49f8fd4b81c3
