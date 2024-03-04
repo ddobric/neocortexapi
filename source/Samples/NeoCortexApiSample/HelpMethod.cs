@@ -112,11 +112,11 @@ namespace MultiSequenceLearning
 
 
 
-/// </summary>
-/// <param name="path">full path of the file</param>
-/// <returns>Object of list of Sequence</returns>
-/// 
-public static List<Sequence> ReadDataset(string path)
+    /// </summary>
+    /// <param name="path">full path of the file</param>
+    /// <returns>Object of list of Sequence</returns>
+    /// Reads dataset from the file
+    public static List<Sequence> ReadDataset(string path)
 {
     Console.WriteLine("Reading Sequence...");
     String lines = File.ReadAllText(path);
