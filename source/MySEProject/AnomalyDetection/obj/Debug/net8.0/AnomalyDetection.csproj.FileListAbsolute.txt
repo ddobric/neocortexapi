@@ -4,3 +4,9 @@ E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySE
 E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\Anomaly Detection\obj\Debug\net8.0\AnomalyDetection.AssemblyInfo.cs
 E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\Anomaly Detection\obj\Debug\net8.0\AnomalyDetection.csproj.CoreCompileInputs.cache
 E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\Anomaly Detection\obj\Debug\net8.0\AnomalyDetection.sourcelink.json
+E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\AnomalyDetection\obj\Debug\net8.0\AnomalyDetection.csproj.AssemblyReference.cache
+E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\AnomalyDetection\obj\Debug\net8.0\AnomalyDetection.GeneratedMSBuildEditorConfig.editorconfig
+E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\AnomalyDetection\obj\Debug\net8.0\AnomalyDetection.AssemblyInfoInputs.cache
+E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\AnomalyDetection\obj\Debug\net8.0\AnomalyDetection.AssemblyInfo.cs
+E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\AnomalyDetection\obj\Debug\net8.0\AnomalyDetection.csproj.CoreCompileInputs.cache
+E:\Fra-UAS\Winter 23-24\1 Winter 23 24\SE\neocortexapi_Simply-Coders\source\MySEProject\AnomalyDetection\obj\Debug\net8.0\AnomalyDetection.sourcelink.json

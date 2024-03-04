@@ -132,11 +132,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\AnomalyDetection.csproj",
+      "projectUniqueName": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\AnomalyDetection\\AnomalyDetection.csproj",
       "projectName": "AnomalyDetection",
-      "projectPath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\AnomalyDetection.csproj",
+      "projectPath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\AnomalyDetection\\AnomalyDetection.csproj",
       "packagesPath": "C:\\Users\\H Zaman Niloy\\.nuget\\packages\\",
-      "outputPath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\Anomaly Detection\\obj\\",
+      "outputPath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\AnomalyDetection\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\H Zaman Niloy\\AppData\\Roaming\\NuGet\\NuGet.Config",
