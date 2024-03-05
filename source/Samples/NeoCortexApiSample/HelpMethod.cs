@@ -129,5 +129,10 @@ namespace MultiSequenceLearning
 
     public static List<Sequence> CreateDataset()
     {
-        
+        int numberOfSequence = 30;
+        int size = 12;
+        int startVal = 0;
+        int endVal = 15;
+       
+        return sequence;
     }
