@@ -125,3 +125,9 @@ namespace MultiSequenceLearning
 
     return sequence;
 }
+
+
+    public static List<Sequence> CreateDataset()
+    {
+        
+    }
