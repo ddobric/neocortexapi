@@ -133,6 +133,8 @@ namespace MultiSequenceLearning
         int size = 12;
         int startVal = 0;
         int endVal = 15;
-       
+        Console.WriteLine("Creating Sequence...");
+        List<Sequence> sequence = HelperMethods.CreateSequences(numberOfSequence, size, startVal, endVal);
+
         return sequence;
     }
