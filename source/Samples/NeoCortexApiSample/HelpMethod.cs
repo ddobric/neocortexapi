@@ -120,7 +120,8 @@ namespace MultiSequenceLearning
 {
     Console.WriteLine("Reading Sequence...");
     String lines = File.ReadAllText(path);
-    List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
+    var sequence = JsonConvert.DeserializeObject(lines);
+        List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
 
     return sequence;
 }
