@@ -18,7 +18,7 @@ namespace MultiSequenceLearning
 
     public class HelpMethod
     {
-        public HelpMethod();
+        public HelpMethod()
 
         {
 
@@ -68,32 +68,32 @@ namespace MultiSequenceLearning
 
             return cfg;
         }
-    
-
-    /// <summary>
-    /// Takes in user input and return encoded SDR for prediction
-
-    /// <param name="userInput"></param>
-    /// <returns></returns>
-    public static int[] EncodeSingleInput(string userInput)
-    {
-        int[] sdr = new int[0];
 
 
+        /// <summary>
+        /// Takes in user input and return encoded SDR for prediction
 
-        return sdr;
-    }
+        /// <param name="userInput"></param>
+        /// <returns></returns>
+        public static int[] EncodeSingleInput(string userInput)
+        {
+            int[] sdr = new int[0];
 
 
-//// Get the encoder with settings
- 
+
+            return sdr;
+        }
+
+
+        //// Get the encoder with settings
+
         /// <param name="inputBits">input bits</param>
         /// <returns>Object of EncoderBase</returns>
         public static EncoderBase GetEncoder(int inputBits)
-{
-    double max = 20;
+        {
+            double max = 20;
 
-    Dictionary<string, object> settings = new Dictionary<string, object>()
+            Dictionary<string, object> settings = new Dictionary<string, object>()
             {
                 { "W", 15},
                 { "N", inputBits},
@@ -105,36 +105,39 @@ namespace MultiSequenceLearning
                 { "MaxVal", max}
             };
 
-    EncoderBase encoder = new ScalarEncoder(settings);
+            EncoderBase encoder = new ScalarEncoder(settings);
 
-    return encoder;
-}
-
-
-
-    /// </summary>
-    /// <param name="path">full path of the file</param>
-    /// <returns>Object of list of Sequence</returns>
-    /// Reads dataset from the file
-    public static List<Sequence> ReadDataset(string path)
-{
-    Console.WriteLine("Reading Sequence...");
-    String lines = File.ReadAllText(path);
-    var sequence = JsonConvert.DeserializeObject(lines);
-        List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
-
-    return sequence;
-}
+            return encoder;
+        }
 
 
-    public static List<Sequence> CreateDataset()
-    {
-        int numberOfSequence = 30;
-        int size = 12;
-        int startVal = 0;
-        int endVal = 15;
-        Console.WriteLine("Creating Sequence...");
-        List<Sequence> sequence = HelperMethods.CreateSequences(numberOfSequence, size, startVal, endVal);
 
-        return sequence;
+        /// </summary>
+        /// <param name="path">full path of the file</param>
+        /// <returns>Object of list of Sequence</returns>
+        /// Reads dataset from the file
+        public static List<Sequence> ReadDataset(string path)
+        {
+            Console.WriteLine("Reading Sequence...");
+            String lines = File.ReadAllText(path);
+            var sequence = JsonConvert.DeserializeObject(lines);
+            List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
+
+            return sequence;
+        }
+
+
+        public static List<Sequence> CreateDataset()
+        {
+            int numberOfSequence = 30;
+            int size = 12;
+            int startVal = 0;
+            int endVal = 15;
+            Console.WriteLine("Creating Sequence...");
+            List<Sequence> sequence = HelperMethods.CreateSequences(numberOfSequence, size, startVal, endVal);
+
+            return sequence;
+        }
+
     }
+}
