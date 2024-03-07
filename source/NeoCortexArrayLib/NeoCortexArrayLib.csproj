@@ -15,4 +15,8 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NuGet.Frameworks" Version="6.9.1" />
+  </ItemGroup>
+
 </Project>
