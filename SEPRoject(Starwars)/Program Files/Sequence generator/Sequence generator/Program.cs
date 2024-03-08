@@ -47,6 +47,6 @@ class Program
 
         string[] dataset = GenerateMultiSequenceDataset(numSequences, minSequenceLength, maxSequenceLength);
 
-        SaveDatasetToFile(dataset, "multisequence_dataset.txt");
+        SaveDatasetToFile(dataset, "multisequence_dataset_2.txt");
     }
 }
