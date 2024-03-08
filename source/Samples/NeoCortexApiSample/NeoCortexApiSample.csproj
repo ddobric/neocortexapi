@@ -22,4 +22,7 @@
     <ProjectReference Include="..\..\NeoCortexUtils\NeoCortexUtils.csproj" />
     <ProjectReference Include="..\..\GridCell\GridCell.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
 </Project>
