@@ -148,4 +148,4 @@ namespace MultiSequenceLearning
             Debug.WriteLine("------------------------------");
         }
     }
-}
+
