@@ -1,0 +1,128 @@
+<h1>
+    Sample Transmitter Clinet
+</h1>
+
+<div class="container">
+    <div class="form-row ">
+        <div class="form-group col-md-2">
+            <button type="submit" class="btn btn-success" (click)="sendModel()">Send Sample Model</button>
+        </div>
+    </div>
+
+    <form #overlapForm="ngForm">
+        <div class="form-inline">
+            <input maxlength="2" [(ngModel)]="updateNeuralColumn.areaID" class="form-control" id="areaid" name="areaid"
+                placeholder="Area ID" required>
+            <input maxlength="1" [(ngModel)]="updateNeuralColumn.miniColXDim" class="form-control" id="xDim" name="xDim"
+                placeholder="MiniColumn X Dim." required>
+            <input maxlength="1" [(ngModel)]="updateNeuralColumn.miniColZDim" class="form-control" id="zDim" name="zDim"
+                placeholder="MiniColumn Z Dim." required>
+            <input [(ngModel)]="updateNeuralColumn.updateOverlap" class="form-control" id="updateOverlap"
+                name="updateOverlap" placeholder="Overlap, ranging 0 to 1" required>
+            <button (click)="updateOverlapInNeuralColumn();"
+                [disabled]="!updateNeuralColumn.areaID || !updateNeuralColumn.miniColXDim ||!updateNeuralColumn.updateOverlap ||!updateNeuralColumn.updateOverlap"
+                type="submit" class="btn btn-danger">Update Overlap</button>
+        </div>
+    </form>
+    <br>
+    <form #synapseForm="ngForm">
+        <div class="form-inline">
+            <input maxlength="2" [(ngModel)]="updateSynaspse.preCellAreaID" class="form-control" id="preCellAreaId"
+                name="preCellAreaId" placeholder="PreCell AreaID" required>
+            <input maxlength="2" [(ngModel)]="updateSynaspse.postCellAreaID" class="form-control" id="postCellAreaId"
+                name="postCellAreaId" placeholder="PostCell AreaID" required>
+            <input maxlength="5" [(ngModel)]="updateSynaspse.preCell" class="form-control" id="preCell" name="preCell"
+                placeholder="PreCell=> X,Y,Z" required>
+            <input maxlength="5" [(ngModel)]="updateSynaspse.postCell" class="form-control" id="postCell"
+                name="postCell" placeholder="PostCell=> X,Y,Z" required>
+            <input [(ngModel)]="updateSynaspse.updatePermanence" class="form-control" id="updatePermanence"
+                name="updatePermanence" placeholder="Perm., ranging 0 to 1" required>
+            <button (click)="updateOrAddSynapse();"
+                [disabled]="!updateSynaspse.preCellAreaID || !updateSynaspse.postCellAreaID || !updateSynaspse.preCell || !updateSynaspse.postCell || !updateSynaspse.updatePermanence"
+                type="submit" class="btn btn-warning">Update or Add Synapse</button>
+        </div>
+    </form>
+</div>
+
+<!-- 
+<div class="form-row ">
+    <div class="form-group col-md-2">
+        <button type="submit" class="btn btn-success" (click)="sendModel()">Send Sample Model</button>
+    </div>
+</div>
+
+<form #formCtrl="ngForm">
+    <div class="container">
+
+
+        <div class="form-row ">
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional Miicolumn">
+                    <input class="form-control input-sm" type="number" placeholder="Area ID" #areaID>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="Minicolumn X Dimension, starts from 0">
+                    <input class="form-control" type="number" placeholder="MiniColumn X Dimension"
+                        #miniColumnXDimension>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="Minicolumn Z Dimension, starts from 0">
+                    <input class="form-control" type="number" placeholder="MiniColumn Z Dimension"
+                        #miniColumnZDimension>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="Overlap value, ranging from 0 to 1">
+                    <input class="form-control" type="number" min="0" max="1" placeholder="Overlap value"
+                        #newOverlapValue>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <button class="btn btn-danger"
+                    (click)='updateOverlap(areaID.value, miniColumnXDimension.value,miniColumnZDimension.value,newOverlapValue.value)'>Update
+                    Overlap</button>
+            </div>
+        </div>
+
+
+
+        <div class="form-row">
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional Precell of Synapse">
+                    <input class="form-control" type="number" placeholder="PreCell AreaID" #preCellAreaID required>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="AreaId of third dimensional PostCell of Synapse">
+                    <input class="form-control" type="number" placeholder="PostCell AreaID" #postCellAreaID required>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="Three dimensional preSynaptic cell">
+                    <input class="form-control" type="text" placeholder="PreCell" #pre_Cell required>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="Three dimensional postSynaptic cell">
+                    <input class="form-control" type="text" placeholder="PostCell" #post_Cell required>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div data-toggle="tooltip" data-placement="top" title="Permanance of the Synapse, ranging from 0 to 1">
+                    <input class="form-control" type="number" placeholder="Permanence" #permanence required>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <button class="btn btn-warning"
+                    (click)='updateOrAddSynapse(preCellAreaID.value, postCellAreaID.value, pre_Cell.value, post_Cell.value, permanence.value )'>
+                    update Synapses
+                </button>
+            </div>
+        </div>
+
+
+
+    </div>
+</form> -->
