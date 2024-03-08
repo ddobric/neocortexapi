@@ -1,0 +1,71 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Git\\se-cloud-2023-2024\\AnamolyDetection\\neocortexapi_Simply-Coders\\source\\Samples\\NeoCortexApiAnomaly\\AnomalyDetectionSample.csproj": {}
+  },
+  "projects": {
+    "C:\\Git\\se-cloud-2023-2024\\AnamolyDetection\\neocortexapi_Simply-Coders\\source\\Samples\\NeoCortexApiAnomaly\\AnomalyDetectionSample.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Git\\se-cloud-2023-2024\\AnamolyDetection\\neocortexapi_Simply-Coders\\source\\Samples\\NeoCortexApiAnomaly\\AnomalyDetectionSample.csproj",
+        "projectName": "AnomalyDetectionSample",
+        "projectPath": "C:\\Git\\se-cloud-2023-2024\\AnamolyDetection\\neocortexapi_Simply-Coders\\source\\Samples\\NeoCortexApiAnomaly\\AnomalyDetectionSample.csproj",
+        "packagesPath": "C:\\Users\\shova\\.nuget\\packages\\",
+        "outputPath": "C:\\Git\\se-cloud-2023-2024\\AnamolyDetection\\neocortexapi_Simply-Coders\\source\\Samples\\NeoCortexApiAnomaly\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Git\\se-cloud-2023-2024\\AnamolyDetection\\neocortexapi_Simply-Coders\\source\\NuGet.Config",
+          "C:\\Users\\shova\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Git\\se-cloud-2023-2024\\AnamolyDetection\\neocortexapi_Simply-Coders\\source\\nuget": {},
+          "C:\\Git\\se-cloud-2023-2024\\MyWork\\E10\\nuggetpackages": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "NeoCortexApi": {
+              "target": "Package",
+              "version": "[1.1.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

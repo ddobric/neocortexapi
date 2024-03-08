@@ -1,0 +1,60 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "MultiSequence/1.0.0": {
+        "dependencies": {
+          "NeoCortexApi": "1.1.4"
+        },
+        "runtime": {
+          "MultiSequence.dll": {}
+        }
+      },
+      "Microsoft.CSharp/4.7.0": {},
+      "NeoCortexApi/1.1.4": {
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        },
+        "runtime": {
+          "lib/netstandard2.1/NeoCortexApi.dll": {
+            "assemblyVersion": "1.1.4.0",
+            "fileVersion": "1.1.4.0"
+          },
+          "lib/netstandard2.1/NeoCortexArrayLib.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.1/NeoCortexEntities.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MultiSequence/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.CSharp/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA==",
+      "path": "microsoft.csharp/4.7.0",
+      "hashPath": "microsoft.csharp.4.7.0.nupkg.sha512"
+    },
+    "NeoCortexApi/1.1.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+QX69/cILE3iUCwc39M7wna2acAH1Dq/QWQMybDv3EcCBU8SjvCxVD2cKLusa39ewK6VrnoxJKUkZ36IT/Ds2g==",
+      "path": "neocortexapi/1.1.4",
+      "hashPath": "neocortexapi.1.1.4.nupkg.sha512"
+    }
+  }
+}
