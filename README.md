@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/ddobric/htmdotnet/blob/master/LICENSE)
 [![buildStatus](https://github.com/ddobric/neocortexapi/workflows/.NET%20Core/badge.svg)](https://github.com/ddobric/neocortexapi/actions?query=workflow%3A%22.NET+Core%22)
 
@@ -64,3 +65,16 @@ On the Importance of the Newborn Stage When Learning Patterns with the Spatial P
 If your want to contribute on this project please contact us by opening an issue. 
 
 
+=======
+## Project Title: ML 23/24-08 Implement Anomaly Detection Sample, (Team: Simply-Coders)
+----------------------------------------------------------------------------
+
+### Abstract
+========================
+
+Will be added soon.
+
+### Link to [Project Code]()
+
+### Link to [Documentation]()
+>>>>>>> Hasibuzzaman
