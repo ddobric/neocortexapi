@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "aDjXW/CoKQ5cKTblJckCX8skjSHHCxt2Zo6xI0Rcep63bqYthQAFdSWFwZZ1X13GBXdNLDqamkBx6ENlLKjXhw==",
+  "success": true,
+  "projectFilePath": "C:\\Git\\se-cloud-2023-2024\\AnamolyDetection\\neocortexapi_Simply-Coders\\source\\Samples\\NeoCortexApiAnomaly\\AnomalyDetectionSample.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\shova\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\shova\\.nuget\\packages\\neocortexapi\\1.1.4\\neocortexapi.1.1.4.nupkg.sha512"
+  ],
+  "logs": []
+}

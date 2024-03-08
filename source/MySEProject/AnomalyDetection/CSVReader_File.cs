@@ -92,4 +92,8 @@ namespace AnomalyDetectionSample
             return trimmedSequences;
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> f56d0e34438e73b24b594bdfd7e089631f0e7095

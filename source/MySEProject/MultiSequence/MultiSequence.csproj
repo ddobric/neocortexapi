@@ -3,10 +3,6 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-<<<<<<< HEAD
-=======
-    <RootNamespace>Anomaly_Detection</RootNamespace>
->>>>>>> f56d0e34438e73b24b594bdfd7e089631f0e7095
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -15,11 +11,4 @@
     <PackageReference Include="NeoCortexApi" Version="1.1.4" />
   </ItemGroup>
 
-<<<<<<< HEAD
-=======
-  <ItemGroup>
-    <Folder Include="predicting\" />
-  </ItemGroup>
-
->>>>>>> f56d0e34438e73b24b594bdfd7e089631f0e7095
 </Project>

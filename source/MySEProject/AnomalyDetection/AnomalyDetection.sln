@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
+<<<<<<< HEAD
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnomalyDetection", "AnomalyDetection.csproj", "{29D34DA8-6D1B-4BB4-8495-C9173D3EEA1C}"
+=======
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnomalyDetection", "AnomalyDetection.csproj", "{769F26AF-B496-4646-89D6-697A2E3E8A0E}"
+>>>>>>> f56d0e34438e73b24b594bdfd7e089631f0e7095
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +17,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+<<<<<<< HEAD
 		{29D34DA8-6D1B-4BB4-8495-C9173D3EEA1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{29D34DA8-6D1B-4BB4-8495-C9173D3EEA1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29D34DA8-6D1B-4BB4-8495-C9173D3EEA1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29D34DA8-6D1B-4BB4-8495-C9173D3EEA1C}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
+		{769F26AF-B496-4646-89D6-697A2E3E8A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{769F26AF-B496-4646-89D6-697A2E3E8A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{769F26AF-B496-4646-89D6-697A2E3E8A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{769F26AF-B496-4646-89D6-697A2E3E8A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+>>>>>>> f56d0e34438e73b24b594bdfd7e089631f0e7095
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+<<<<<<< HEAD
 		SolutionGuid = {329868EA-F40B-4EA5-976E-18AC25D1DE4B}
+=======
+		SolutionGuid = {4D01B865-F3AF-43C5-9A66-4F16B609C003}
+>>>>>>> f56d0e34438e73b24b594bdfd7e089631f0e7095
 	EndGlobalSection
 EndGlobal
