@@ -126,7 +126,9 @@ namespace MultiSequenceLearning
             return sequence;
         }
 
-
+        /// <summary>
+        /// Creates list of Sequence as per configuration
+        /// <returns>Object of list of Sequence</returns>
         public static List<Sequence> CreateDataset()
         {
             int numberOfSequence = 30;
