@@ -140,9 +140,9 @@ namespace MultiSequenceLearning
         }
 
     }
-}
-public static string SaveDataset(List<Sequence> sequences)
-{
+    public static string SaveDataset(List<Sequence> sequences)
+    {
 
-    return reportPath;
+        return reportPath;
+    }
 }
