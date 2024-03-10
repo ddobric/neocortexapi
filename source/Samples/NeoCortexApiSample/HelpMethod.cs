@@ -141,3 +141,8 @@ namespace MultiSequenceLearning
 
     }
 }
+public static string SaveDataset()
+{
+
+    return reportPath;
+}
