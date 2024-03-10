@@ -140,6 +140,10 @@ namespace MultiSequenceLearning
         }
 
     }
+    /// </summary>
+    /// Save the dataset in 'dataset' folder in BasePath of application
+    /// <param name="sequences">Object of list of Sequence</param>
+    /// <returns>Full path of the dataset</returns>
     public static string SaveDataset(List<Sequence> sequences)
     {
 
