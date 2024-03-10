@@ -14,9 +14,7 @@ namespace MultiSequenceLearning
     class Program
     {
         /// <summary>
-        /// This sample shows a typical experiment code for SP and TM.
-        /// You must start this code in debugger to follow the trace.
-        /// and TM.
+        /// This sample shows a typical experiment code for SP and TM
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
@@ -28,6 +26,7 @@ namespace MultiSequenceLearning
             //to creating synthetic dataset
             string path = HelperMethods.SaveDataset(HelperMethods.CreateDataset());
             Console.WriteLine($"Dataset saved: {path}");
+
             //to read dataset
             string BasePath = AppDomain.CurrentDomain.BaseDirectory;
             string datasetPath = Path.Combine(BasePath, "dataset", "dataset_03.json");
