@@ -159,8 +159,8 @@ namespace MultiSequenceLearning
                 {
                     sw.WriteLine($"{sequence.name}, {string.Join(",", sequence.data)}");
                 }
-                
-                sw.WriteLine(JsonConvert.SerializeObject(sequences));
+                sw.WriteLine(System.Text.Json.JsonSerializer.Serialize<List<Sequence>>(sequences));
+                //sw.WriteLine(JsonConvert.SerializeObject(sequences));
             }
         }
         return reportPath;
