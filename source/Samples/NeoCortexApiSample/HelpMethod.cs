@@ -150,7 +150,20 @@ namespace MultiSequenceLearning
     {
         string BasePath = AppDomain.CurrentDomain.BaseDirectory;
         string reportFolder = Path.Combine(BasePath, "dataset");
-    
+        if (!File.Exists(reportPath))
+        {
+            using (StreamWriter sw = File.CreateText(reportPath))
+            {
+                sw.WriteLine("name, data");
+                foreach (Sequence sequence in sequences)
+                {
+                    sw.WriteLine($"{sequence.name}, {string.Join(",", sequence.data)}");
+                }
+                
+                sw.WriteLine(JsonConvert.SerializeObject(sequences));
+            }
+        }
         return reportPath;
     }
+
 }
