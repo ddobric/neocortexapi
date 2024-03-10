@@ -148,7 +148,9 @@ namespace MultiSequenceLearning
     /// <returns>Full path of the dataset</returns>
     public static string SaveDataset(List<Sequence> sequences)
     {
-
+        string BasePath = AppDomain.CurrentDomain.BaseDirectory;
+        string reportFolder = Path.Combine(BasePath, "dataset");
+    
         return reportPath;
     }
 }
