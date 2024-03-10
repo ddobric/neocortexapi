@@ -154,13 +154,13 @@ namespace MultiSequenceLearning
         {
             using (StreamWriter sw = File.CreateText(reportPath))
             {
-                sw.WriteLine("name, data");
+                /*sw.WriteLine("name, data");
                 foreach (Sequence sequence in sequences)
                 {
                     sw.WriteLine($"{sequence.name}, {string.Join(",", sequence.data)}");
-                }
-                sw.WriteLine(System.Text.Json.JsonSerializer.Serialize<List<Sequence>>(sequences));
-                //sw.WriteLine(JsonConvert.SerializeObject(sequences));
+                }*/
+                //sw.WriteLine(System.Text.Json.JsonSerializer.Serialize<List<Sequence>>(sequences));
+                sw.WriteLine(JsonConvert.SerializeObject(sequences));
             }
         }
         return reportPath;
