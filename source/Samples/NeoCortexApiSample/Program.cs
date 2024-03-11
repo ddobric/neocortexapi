@@ -40,10 +40,6 @@ namespace MultiSequenceLearning
 
 
 
-            // RunMultiSimpleSequenceLearningExperiment();
-
-
-            //RunMultiSequenceLearningExperiment();
         }
 
         private static void RunMultiSimpleSequenceLearningExperiment()
