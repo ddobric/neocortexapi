@@ -20,7 +20,7 @@ using System.Linq;
 namespace MultiSequenceLearning
 {
     /// <summary
-    /// Implements an experiment that demonstrates how to learn sequences...
+    /// Implements an experiment that demonstrates how to learn sequences....
     /// </summary>
     public class MultiSequenceLearning
     {
