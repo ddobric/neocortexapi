@@ -165,5 +165,11 @@ namespace MultiSequenceLearning
         }
         return reportPath;
     }
+    ///summary
+    /// Creating  multiple sequences for the parameters
+    /// <param name="count">Number of sequences to be created</param>
+    /// <param name="size">Size of each sequence</param>
+    /// <param name="startVal">Minimum value of item in a sequence</param>
+    /// <param name="stopVal">Maximum value of item in a sequence</param>
 
 }
