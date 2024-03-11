@@ -174,6 +174,21 @@ namespace MultiSequenceLearning
     public static List<Sequence> CreateSequences(int count, int size, int startVal, int stopVal)
     {
         List<Sequence> dataset = new List<Sequence>();
+
+        Random random = new Random();
+
+        for (int i = 0; i < count; i++)
+        {
+            Sequence sequence = new Sequence();
+
+            {
+                int value = random.Next(startVal, stopVal + 1);
+                sequence.Add(value);
+            }
+
+            dataset.Add(sequence);
+        }
+
         return dataset;
     }
 
