@@ -181,6 +181,7 @@ namespace MultiSequenceLearning
         {
             Sequence sequence = new Sequence();
 
+            for (int j = 0; j < size; j++)
             {
                 int value = random.Next(startVal, stopVal + 1);
                 sequence.Add(value);
