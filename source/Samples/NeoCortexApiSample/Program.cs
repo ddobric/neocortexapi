@@ -24,26 +24,26 @@ namespace NeoCortexApiSample
             // Starts experiment that demonstrates how to learn spatial patterns.
 
             //to creating synthetic dataset
-            string path = HelperMethod.SaveDataset(HelperMethod.CreateDataset());
+            string path = HelpMethod.SaveDataset(HelpMethod.CreateDataset());
             Console.WriteLine($"Dataset saved: {path}");
 
             //to read dataset
             string BasePath = AppDomain.CurrentDomain.BaseDirectory;
             string datasetPath = Path.Combine(BasePath, "dataset", "dataset_03.json");
             Console.WriteLine($"Reading Dataset: {datasetPath}");
-            List<Sequence> sequences = HelperMethods.ReadDataset(datasetPath);
+            List<Sequence> sequences = HelpMethod.ReadDataset(datasetPath);
 
             //to read test dataset
             string testsetPath = Path.Combine(BasePath, "dataset", "test_01.json");
             Console.WriteLine($"Reading Testset: {testsetPath}");
-            List<Sequence> sequencesTest = HelperMethods.ReadDataset(testsetPath);
+            List<Sequence> sequencesTest = HelpMethod.ReadDataset(testsetPath);
 
 
 
         }
 
         //private static void RunMultiSimpleSequenceLearningExperiment()
-        {
+        
             //Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
             //sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
