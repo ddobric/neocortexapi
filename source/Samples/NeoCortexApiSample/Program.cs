@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 
 using static MultiSequenceLearning.MultiSequenceLearning;
+using System.IO;
 
 namespace NeoCortexApiSample
 {
@@ -39,18 +40,6 @@ namespace NeoCortexApiSample
             List<Sequence> sequencesTest = HelpMethod.ReadDataset(testsetPath);
 
 
-
-        }
-
-        //private static void RunMultiSimpleSequenceLearningExperiment()
-        
-            //Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
-
-            //sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
-            //sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
-
-
-
             //run learing  part only
             //RunSimpleMultiSequenceLearningExperiment(sequences);
 
@@ -74,13 +63,11 @@ namespace NeoCortexApiSample
             if (!Directory.Exists(reportFolder))
                 Directory.CreateDirectory(reportFolder);
             string reportPath = Path.Combine(reportFolder, $"report_{DateTime.Now.Ticks}.txt");
-
-
-
         }
-        //
-        // Prototype for building the prediction engine.
-        MultiSequenceLearning experiment = new MultiSequenceLearning();
+        private static void RunSimpleMultiSequenceLearningExperiment(List<Sequence> sequences)
+        {
+            // Prototype for building the prediction engine.
+            MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
         }
 
@@ -91,9 +78,12 @@ namespace NeoCortexApiSample
         /// Second, three short sequences with three elements each are created und used for prediction. The predictor used by experiment privides to the HTM every element of every predicting sequence.
         /// The predictor tries to predict the next element.
         /// </summary>
+
+
+
         private static void RunMultiSequenceLearningExperiment()
         {
-            
+
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
@@ -143,4 +133,5 @@ namespace NeoCortexApiSample
             Debug.WriteLine("------------------------------");
         }
     }
+
 
