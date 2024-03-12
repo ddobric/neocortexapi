@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 using static MultiSequenceLearning.MultiSequenceLearning;
 
-namespace MultiSequenceLearning
+namespace NeoCortexApiSample
 {
     class Program
     {
@@ -24,7 +24,7 @@ namespace MultiSequenceLearning
             // Starts experiment that demonstrates how to learn spatial patterns.
 
             //to creating synthetic dataset
-            string path = HelperMethods.SaveDataset(HelperMethods.CreateDataset());
+            string path = HelperMethod.SaveDataset(HelperMethod.CreateDataset());
             Console.WriteLine($"Dataset saved: {path}");
 
             //to read dataset
