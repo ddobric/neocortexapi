@@ -150,6 +150,9 @@ namespace MultiSequenceLearning
     {
         string BasePath = AppDomain.CurrentDomain.BaseDirectory;
         string reportFolder = Path.Combine(BasePath, "dataset");
+        if (!Directory.Exists(reportFolder))
+            Directory.CreateDirectory();
+        string reportPath = Path.Combine();
         if (!File.Exists(reportPath))
         {
             using (StreamWriter sw = File.CreateText(reportPath))
