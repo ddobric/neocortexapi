@@ -2,25 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
 
 using NeoCortexApi;
-using NeoCortexApi.Encoders;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Newtonsoft.Json;
-
-
-using static MultiSequenceLearning.MultiSequenceLearning;
-using System.IO;
-using MultiSequenceLearning;
 
 namespace NeoCortexApiSample
 {
     class Program
     {
+        private static object sequences;
+
         /// <summary>
         /// This sample shows a typical experiment code for SP and TM
         /// </summary>
@@ -37,7 +28,7 @@ namespace NeoCortexApiSample
 
             //to read dataset
             string BasePath = AppDomain.CurrentDomain.BaseDirectory;
-            string datasetPath = Path.Combine(BasePath, "dataset", "dataset_03.json");
+            string datasetPath = Path.Combine(BasePath, "dataset", "dataset_01.json");
             Console.WriteLine($"Reading Dataset: {datasetPath}");
             List<Sequence> sequences = HelpMethod.ReadDataset(datasetPath);
 
@@ -58,6 +49,12 @@ namespace NeoCortexApiSample
             Console.WriteLine("Done...");
 
         }
+
+        private static List<Report> RunMultiSequenceLearningExperiment(List<Sequence> sequences, List<Sequence> sequencesTest)
+        {
+            throw new NotImplementedException();
+        }
+
         // <summary>
         /// write and formats data in report object to a file
         /// </summary>
