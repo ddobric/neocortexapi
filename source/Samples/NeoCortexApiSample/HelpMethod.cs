@@ -11,9 +11,9 @@ using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using MultiSequenceLearning;
 using Newtonsoft.Json;
+using NeoCortexApiSample;
 
-
-namespace NeoCortexApiSample
+namespace MultiSequenceLearning
 {
 
     public class HelpMethod
@@ -136,11 +136,20 @@ namespace NeoCortexApiSample
             int startVal = 0;
             int endVal = 15;
             Console.WriteLine("Creating Sequence...");
-            List<Sequence> sequence = HelperMethods.CreateSequences(numberOfSequence, size, startVal, endVal);
+            List<Sequence> sequence = HelpMethod.CreateSequences(numberOfSequence, size, startVal, endVal);
 
             return sequence;
         }
 
+        private static List<Sequence> CreateSequences(int numberOfSequence, int size, int startVal, int endVal)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static string SaveDataset(List<Sequence> sequences)
+        {
+            throw new NotImplementedException();
+        }
     }
     /// </summary>
     /// Save the dataset in 'dataset' folder in BasePath of application
