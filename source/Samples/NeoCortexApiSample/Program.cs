@@ -1,4 +1,10 @@
-﻿using NeoCortexApi;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Net.Http;
+
+uusing NeoCortexApi;
 using NeoCortexApi.Encoders;
 using System;
 using System.Collections.Generic;
@@ -133,5 +139,6 @@ namespace NeoCortexApiSample
             Debug.WriteLine("------------------------------");
         }
     }
+}
 
 
