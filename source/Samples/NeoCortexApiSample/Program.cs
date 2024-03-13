@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 
-uusing NeoCortexApi;
+using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 
 using static MultiSequenceLearning.MultiSequenceLearning;
 using System.IO;
+using MultiSequenceLearning;
 
 namespace NeoCortexApiSample
 {
