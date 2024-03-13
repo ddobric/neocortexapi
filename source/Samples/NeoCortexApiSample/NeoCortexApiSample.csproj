@@ -21,8 +21,20 @@
     <ProjectReference Include="..\..\NeoCortexEntities\NeoCortexEntities.csproj" />
     <ProjectReference Include="..\..\NeoCortexUtils\NeoCortexUtils.csproj" />
     <ProjectReference Include="..\..\GridCell\GridCell.csproj" />
+    <ProjectReference Include="..\..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NeoCortexApi">
+      <HintPath>..\..\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexApi.dll</HintPath>
+    </Reference>
+    <Reference Include="NeoCortexArrayLib">
+      <HintPath>..\..\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexArrayLib.dll</HintPath>
+    </Reference>
+    <Reference Include="NeoCortexEntities">
+      <HintPath>..\..\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexEntities.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
