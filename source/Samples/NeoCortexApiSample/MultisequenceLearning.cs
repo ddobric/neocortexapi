@@ -17,7 +17,7 @@ using System.Diagnostics;
 using System.Linq;
 using NeoCortexApiSample;
 
-namespace MultiSequenceLearning
+namespace NeoCortexApiSample
 {
     /// <summary>
     /// Implements an experiment that demonstrates how to learn sequences.
@@ -35,8 +35,8 @@ namespace MultiSequenceLearning
             int inputBits = 100;
             int numColumns = 1024;
 
-            HtmConfig cfg = HelperMethods.FetchHTMConfig(inputBits, numColumns);
-            EncoderBase encoder = HelperMethods.GetEncoder(inputBits);
+            HtmConfig cfg = HelpMethod.FetchHTMConfig(inputBits, numColumns);
+            EncoderBase encoder = HelpMethod.GetEncoder(inputBits);
 
             return RunExperiment(inputBits, cfg, encoder, sequences);
         }
@@ -117,9 +117,9 @@ namespace MultiSequenceLearning
 
                 foreach (var inputs in sequences)
                 {
-                    foreach (var input in inputs.Value)
+                    foreach (var input in inputs.data)
                     {
-                        Debug.WriteLine($" -- {inputs.Key} - {input} --");
+                        Debug.WriteLine($" -- {inputs.name} - {input} --");
 
                         var lyrOut = layer1.Compute(input, true);
 
@@ -142,7 +142,7 @@ namespace MultiSequenceLearning
             // Loop over all sequences.
             foreach (var sequenceKeyPair in sequences)
             {
-                Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
+                Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.name} ---------------");
 
                 int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
 
@@ -273,6 +273,16 @@ namespace MultiSequenceLearning
             Debug.WriteLine("------------ END ------------");
 
             return new Predictor(layer1, mem, cls);
+        }
+
+        private string GetKey(List<string> previousInputs, object input, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        private int GetNumberOfInputs(List<Sequence> sequences)
+        {
+            throw new NotImplementedException();
         }
 
 
