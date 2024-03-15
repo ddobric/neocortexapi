@@ -10,7 +10,7 @@ namespace NeoCortexApiSample
 {
     class Program
     {
-        private static object sequences;
+       
 
         /// <summary>
         /// This sample shows a typical experiment code for SP and TM
@@ -28,7 +28,7 @@ namespace NeoCortexApiSample
 
             //to read dataset
             string BasePath = AppDomain.CurrentDomain.BaseDirectory;
-            string datasetPath = Path.Combine(BasePath, "dataset", "dataset_01.json");
+            string datasetPath = Path.Combine(BasePath, "dataset", "dataset_03.json");
             Console.WriteLine($"Reading Dataset: {datasetPath}");
             List<Sequence> sequences = HelpMethod.ReadDataset(datasetPath);
 
@@ -50,10 +50,10 @@ namespace NeoCortexApiSample
 
         }
 
-        private static List<Report> RunMultiSequenceLearningExperiment(List<Sequence> sequences, List<Sequence> sequencesTest)
+        /*private static List<Report> RunMultiSequenceLearningExperiment(List<Sequence> sequences, List<Sequence> sequencesTest)
         {
             throw new NotImplementedException();
-        }
+        }*/
 
         // <summary>
         /// write and formats data in report object to a file
@@ -71,7 +71,7 @@ namespace NeoCortexApiSample
         private static void RunSimpleMultiSequenceLearningExperiment(List<Sequence> sequences)
         {
             // Prototype for building the prediction engine.
-            List<Report> reports = new List<Report>();
+            //List<Report> reports = new List<Report>();
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
         }
@@ -91,6 +91,7 @@ namespace NeoCortexApiSample
 
             //
             // Prototype for building the prediction engine.
+            List<Report> reports = new List<Report>();
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
@@ -98,7 +99,7 @@ namespace NeoCortexApiSample
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
-            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
+            /*var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
@@ -109,7 +110,7 @@ namespace NeoCortexApiSample
             PredictNextElement(predictor, list2);
 
             predictor.Reset();
-            PredictNextElement(predictor, list3);
+            PredictNextElement(predictor, list3);*/
         }
 
         private static void PredictNextElement(Predictor predictor, double[] list)

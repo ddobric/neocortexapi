@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Globalization;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Classifiers;
 using NeoCortexApi.Network;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using NeoCortexApiSample;
 
 namespace NeoCortexApiSample
 {
@@ -117,7 +108,11 @@ namespace NeoCortexApiSample
 
                 cycle++;
 
-                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
+                Debug.WriteLine($"-------------- Newborn SP Cycle {cycle} ---------------");
+
+                // Getting Newborn Cycle in output
+                Console.WriteLine($"-------------- Newborn SP Cycle {cycle} ---------------");
+
 
                 foreach (var inputs in sequences)
                 {
