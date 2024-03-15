@@ -62,6 +62,10 @@ namespace NeoCortexApiSample
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
             TemporalMemory tm = new TemporalMemory();
+            
+            // Cycle get started from here
+            Console.WriteLine("------------ START ------------");
+
 
             // For more information see following paper: https://www.scitepress.org/Papers/2021/103142/103142.pdf
             HomeostaticPlasticityController hpc = new HomeostaticPlasticityController(mem, numUniqueInputs * 150, (isStable, numPatterns, actColAvg, seenInputs) =>
