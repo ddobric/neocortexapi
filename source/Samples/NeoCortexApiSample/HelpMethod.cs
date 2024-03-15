@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using MultiSequenceLearning;
+using static NeoCortexApiSample.MultiSequenceLearning;
 using Newtonsoft.Json;
 using NeoCortexApiSample;
 
-namespace MultiSequenceLearning
+namespace NeoCortexApiSample
 {
 
     public class HelpMethod
@@ -120,7 +120,7 @@ namespace MultiSequenceLearning
         {
             Console.WriteLine("Reading Sequence...");
             String lines = File.ReadAllText(path);
-            var sequence = JsonConvert.DeserializeObject(lines);
+            //var sequence = JsonConvert.DeserializeObject(lines);
             List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
 
             return sequence;
@@ -142,11 +142,6 @@ namespace MultiSequenceLearning
         }
 
         private static List<Sequence> CreateSequences(int numberOfSequence, int size, int startVal, int endVal)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static string SaveDataset(List<Sequence> sequences)
         {
             throw new NotImplementedException();
         }
