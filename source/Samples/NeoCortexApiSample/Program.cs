@@ -23,8 +23,8 @@ namespace NeoCortexApiSample
             // Starts experiment that demonstrates how to learn spatial patterns.
 
             //to creating synthetic dataset
-            string path = HelpMethod.SaveDataset(HelpMethod.CreateDataset());
-            Console.WriteLine($"Dataset saved: {path}");
+            //string path = HelpMethod.SaveDataset(HelpMethod.CreateDataset());
+            //Console.WriteLine($"Dataset saved: {path}");
 
             //to read dataset
             string BasePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -71,6 +71,7 @@ namespace NeoCortexApiSample
         private static void RunSimpleMultiSequenceLearningExperiment(List<Sequence> sequences)
         {
             // Prototype for building the prediction engine.
+            List<Report> reports = new List<Report>();
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
         }
