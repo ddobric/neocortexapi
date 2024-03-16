@@ -14,7 +14,7 @@ namespace NeoCortexApiSample
         public HelpMethod()
 
         {
-
+            // Method implementation
         }
 
 
@@ -191,6 +191,14 @@ namespace NeoCortexApiSample
         }
 
         return dataset;
+    }
+    private static int[] getSyntheticData(int size, int startVal, int stopVal)
+    {
+        int[] data = new int[size];
+
+        data = randomRemoveDouble(randomDouble(size, startVal, stopVal), 3);
+
+        return data;
     }
 
 }
