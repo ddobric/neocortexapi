@@ -9,6 +9,9 @@ namespace NeoCortexApiSample
         public int[] data { get; set; }
         public int[] Data { get; internal set; }
 
-
+        internal void Add(int value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
