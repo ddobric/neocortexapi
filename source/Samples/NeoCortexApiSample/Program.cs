@@ -50,11 +50,7 @@ namespace NeoCortexApiSample
 
         }
 
-        /*private static List<Report> RunMultiSequenceLearningExperiment(List<Sequence> sequences, List<Sequence> sequencesTest)
-        {
-            throw new NotImplementedException();
-        }*/
-
+     
         // <summary>
         /// write and formats data in report object to a file
         /// </summary>
@@ -68,6 +64,7 @@ namespace NeoCortexApiSample
                 Directory.CreateDirectory(reportFolder);
             string reportPath = Path.Combine(reportFolder, $"report_{DateTime.Now.Ticks}.txt");
         }
+
         private static void RunSimpleMultiSequenceLearningExperiment(List<Sequence> sequences)
         {
             // Prototype for building the prediction engine.
@@ -94,6 +91,22 @@ namespace NeoCortexApiSample
             List<Report> reports = new List<Report>();
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
+
+            foreach (Sequence item in sequencesTest)
+            {
+                Report report = new Report();
+                report.SequenceName = (string)item.Name;
+                Debug.WriteLine($"Using test sequence: {item.Name}");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine($"Using test sequence: {item.Name}");
+                predictor.Reset();
+                report.SequenceData = item.Data;
+                var accuracy = PredictNextElement(predictor, item.Data, report);
+                reports.Add(report);
+                Console.WriteLine($"Accuracy for {item.Name} sequence: {accuracy}%");
+            }
+
+            return reports;
 
             //
             // These list are used to see how the prediction works.
