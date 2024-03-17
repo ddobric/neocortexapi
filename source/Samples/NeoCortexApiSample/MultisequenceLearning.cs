@@ -108,9 +108,9 @@ namespace NeoCortexApiSample
 
                 cycle++;
 
-                Debug.WriteLine($"-------------- Newborn SP Cycle {cycle} ---------------");
+                Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
-                // Getting Newborn Cycle in output
+                // Getting Newborn Cycle in the Output
                 Console.WriteLine($"-------------- Newborn SP Cycle {cycle} ---------------");
 
 
