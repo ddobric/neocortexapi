@@ -4,14 +4,11 @@ This document addressed the need to visualize Sparse Distributed Representations
 
 The Bitmap Representation of SDRs is to provide a visual representation of the generated SDRs. This visualization helps in analyzing the encoded information, debugging the models, and communicating the results effectively.
 
-For generating bitmaps we have used a common method ```DrawBitmap()``` for all the encoders and spatial pooler.
-
-
 ## DrawBitmap Method
 
 ### void DrawBitmap(int[,], int, int, String, Color, Color, string)
 
-   Draws the bitmap from arrays of active columns.
+The method involves generating bitmap images from arrays of active columns using a common method '''DrawBitmap()'''  for all the encoders and spatial pooler. This method takes several parameters such as the array of active columns, output width and height, file path for saving the bitmap, colors for inactive and active cells, and optional text to be written with the bitmap.
 
 C#
 ```DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)```
