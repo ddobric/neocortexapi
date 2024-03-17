@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "+dj8qYdO0nG6rcPBE8F5IIAG2CUzb9L5My+PCEdH1n8u0fnXMmyRt/amI8M8uzGCGmaZ6D7IoYAMwMJGrTpvAQ==",
+  "success": true,
+  "projectFilePath": "E:\\Fra-UAS\\Winter 23-24\\1 Winter 23 24\\SE\\neocortexapi_Simply-Coders\\source\\MySEProject\\AnomalyDetection\\AnomalyDetection.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\H Zaman Niloy\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\H Zaman Niloy\\.nuget\\packages\\neocortexapi\\1.1.4\\neocortexapi.1.1.4.nupkg.sha512"
+  ],
+  "logs": []
+}
