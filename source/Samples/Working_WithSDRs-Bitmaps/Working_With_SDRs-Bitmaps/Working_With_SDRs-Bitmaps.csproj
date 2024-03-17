@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Working_With_SDRs_Bitmaps</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -24,7 +24,7 @@
       <HintPath>..\..\..\..\..\neocortexapi_Team_PY\source\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexApi.dll</HintPath>
     </Reference>
     <Reference Include="NeoCortexUtils">
-      <HintPath>..\..\..\..\..\neocortexapi_Team_PY\source\NeoCortexUtils\bin\Debug\net5.0\NeoCortexUtils.dll</HintPath>
+      <HintPath>..\..\..\NeoCortexUtils\bin\Debug\net8.0\NeoCortexUtils.dll</HintPath>
     </Reference>
   </ItemGroup>
 

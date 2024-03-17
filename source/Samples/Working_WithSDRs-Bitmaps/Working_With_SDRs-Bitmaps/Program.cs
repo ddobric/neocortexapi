@@ -30,7 +30,7 @@ namespace WorkingWithSDR
 
             int[] d = new int[] { ch1, ch2 };
             ScalarEncoderTest(d, ch1, ch2);
-
+            outFolder = @"NEWTestFiles";
             Directory.CreateDirectory(outFolder);
 
             Console.WriteLine("SDR Representation using ScalarEncoder");
@@ -71,10 +71,10 @@ namespace WorkingWithSDR
         private static void ScalarEncoderTest(int[] inputs, int a, int b)
         {
             var outFolder1 = @"NEWTestFiles\NEWScalarEncoderResults";
-            var outFolder2 = @"Overlap_Union";
+            //var outFolder2 = @"Overlap_Union";
 
             Directory.CreateDirectory(outFolder1);
-            Directory.CreateDirectory(outFolder2);
+           // Directory.CreateDirectory(outFolder2);
             ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
             {
                 { "W", 3},       // 2% Approx 
