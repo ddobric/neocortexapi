@@ -5,6 +5,7 @@ using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NeoCortexApiSample
 {
@@ -148,8 +149,8 @@ namespace NeoCortexApiSample
         string BasePath = AppDomain.CurrentDomain.BaseDirectory;
         string reportFolder = Path.Combine(BasePath, "dataset");
         if (!Directory.Exists(reportFolder))
-            Directory.CreateDirectory();
-        string reportPath = Path.Combine();
+            Directory.CreateDirectory(reportFolder);
+        string reportPath = Path.Combine(reportFolder);
         if (!File.Exists(reportPath))
         {
             using (StreamWriter sw = File.CreateText(reportPath))
@@ -206,5 +207,27 @@ namespace NeoCortexApiSample
 
         return data;
     }
+    private static int[] randomDouble(int size, int startVal, int stopVal)
+    {
+        int[] array = new int[size];
+        List<int> list = new List<int>();
+        int number = 0;
+        Random r = new Random(Guid.NewGuid().GetHashCode());
+        while (list.Count < size)
+        {
+            number = r.Next(startVal, stopVal);
+            if (!list.Contains(number))
+            {
+                if (number >= startVal && number <= stopVal)
+                    list.Add(number);
+            }
+        }
+
+        array = list.ToArray();
+        Array.Sort(array);
+
+        return array;
+    }
+
 
 }
