@@ -6,23 +6,28 @@ The Bitmap Representation of SDRs is to provide a visual representation of the g
 
 ## DrawBitmap Method
 
-### void DrawBitmap(int[,], int, int, String, Color, Color, string)
+The method involves generating bitmap images from arrays of active columns using a common method ```DrawBitmap()```  for all the encoders and spatial pooler. This method takes several parameters such as the array of active columns, output width and height, file path for saving the bitmap, colors for inactive and active cells, and optional text to be written with the bitmap.
 
-The method involves generating bitmap images from arrays of active columns using a common method '''DrawBitmap()'''  for all the encoders and spatial pooler. This method takes several parameters such as the array of active columns, output width and height, file path for saving the bitmap, colors for inactive and active cells, and optional text to be written with the bitmap.
+```C#
+void DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null);
+```
+The key steps in the ```DrawBitmap()``` method are as follows:
 
-C#
-```DrawBitmap(int[,] twoDimArray, int width, int height, String filePath, Color inactiveCellColor, Color activeCellColor, string text = null)```
+- The size of the bitmap is determined based on the specified width and height parameters.
+- The active and inactive colors for the bitmap are set.
+- For each index in the two-dimensional array, if the corresponding value is 1, the active cell color is set; otherwise, the inactive cell color is set.
+- The bitmap is generated and saved in the specified file path.
 
 
 ## Parameters:
 
-- int [] twoDimArray: array of active columns
-- int width: Output width
-- int height: Output height
-- string filePath: the bitmap PNG filename
-- Color inactiveCellColor: Color for the inactive cells
-- activeCellColor: Color for the active cells
-- string text: text to be written with the bitmap.
+- **twoDimArray:** Array of active columns.
+- **width:** Output width of the bitmap.
+- **height:** Output height of the bitmap.
+- **filePath:** The file path to save the bitmap and bitmap filename.
+- **inactiveCellColor:** Color for the inactive cells.
+- **activeCellColor:** Color for the active cells.
+- **text:** Text to be written with the bitmap.
 
 
 ### Description
@@ -52,7 +57,8 @@ This 1-D array is converted to a 2-D array by:
 
 and then the transpose of the 2-D array (twoDimArray) is passed to the DrawBitmap method.
 
-```var twoDimArray2 = ArrayUtils.Transpose(twoDimenArray2);
+```C#
+var twoDimArray2 = ArrayUtils.Transpose(twoDimenArray2);
 NeoCortexUtils.DrawBitmap(twoDimArray2, 1024, 1024, $"{prefix}_out_{input.ToString().Replace("/", "-").Replace(":", "-")}_32x32-N-{encoderSettings2["DayOfWeekEncoder"]["N"]}-W-{encoderSettings2["DayOfWeekEncoder"]["W"]}.png", Color.Yellow, Color.Black);
 var twoDimArray2 = ArrayUtils.Transpose(twoDimenArray2);
 NeoCortexUtils.DrawBitmap(twoDimArray2, 1024, 1024, $"{prefix}_out_{input.ToString().Replace("/", "-").Replace(":", "-")}_32x32-N-{encoderSettings2["DayOfWeekEncoder"]["N"]}-W-{encoderSettings2["DayOfWeekEncoder"]["W"]}.png", Color.Yellow, Color.Black);
@@ -64,7 +70,7 @@ Color for inactive cell is set to Yellow and for active cell is set to Black.
 
 The generated SDR for TestMethod8 with input “05/27/2017 21:58:07” is:
 
-```
+```C#
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
