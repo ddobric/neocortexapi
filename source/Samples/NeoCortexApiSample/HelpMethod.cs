@@ -228,7 +228,7 @@ namespace NeoCortexApiSample
 
         return array;
     }
-    private static int[] randomRemoveDouble(int[] array, int less)
+    private static int[] RandomRemoveDouble(int[] array, int less)
     {
         int[] temp = new int[array.Length - less];
         Random random = new Random(Guid.NewGuid().GetHashCode());
