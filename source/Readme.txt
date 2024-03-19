@@ -56,3 +56,7 @@ create a report path for a JSON file within a directory
 Date- 15/03/2024
 
 Adding test data to run the program
+
+Date- 18/03/2024
+
+Testing and deleting Json file and Getting Sequence 
