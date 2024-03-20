@@ -10,7 +10,8 @@ namespace NeoCortexApiSample
 {
     class Program
     {
-       
+        private static List<Sequence> sequences;
+
 
         /// <summary>
         /// This sample shows a typical experiment code for SP and TM
@@ -50,7 +51,13 @@ namespace NeoCortexApiSample
 
         }
 
-     
+
+
+        /*private static List<Report> RunMultiSequenceLearningExperiment(List<Sequence> sequences, List<Sequence> sequencesTest)
+        {
+            throw new NotImplementedException();
+        }*/
+
         // <summary>
         /// write and formats data in report object to a file
         /// </summary>
@@ -63,9 +70,30 @@ namespace NeoCortexApiSample
             if (!Directory.Exists(reportFolder))
                 Directory.CreateDirectory(reportFolder);
             string reportPath = Path.Combine(reportFolder, $"report_{DateTime.Now.Ticks}.txt");
+            if (!File.Exists(reportPath))
+            {
+                using (StreamWriter sw = File.CreateText(reportPath))
+                {
+                    sw.WriteLine("------------------------------");
+                    foreach (Sequence sequence in sequences)
+                    {
+                        sw.WriteLine($"Sequence: {sequence.Name} -> {string.Join("-", sequence.Data)}");
+                    }
+                    sw.WriteLine("------------------------------");
+                    foreach (Report report in reports)
+                    {
+                        sw.WriteLine($"Using test sequence: {report.SequenceName} -> {string.Join("-", report.SequenceData)}");
+                        foreach (string log in report.PredictionLog)
+                        {
+                            sw.WriteLine($"\t{log}");
+                        }
+                        sw.WriteLine($"\tAccuracy: {report.Accuracy}%");
+                        sw.WriteLine("------------------------------");
+                    }
+                }
+            }
         }
-
-        private static void RunSimpleMultiSequenceLearningExperiment(List<Sequence> sequences)
+            private static void RunSimpleMultiSequenceLearningExperiment(List<Sequence> sequences)
         {
             // Prototype for building the prediction engine.
             //List<Report> reports = new List<Report>();
