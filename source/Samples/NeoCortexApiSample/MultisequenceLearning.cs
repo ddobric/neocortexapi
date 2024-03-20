@@ -110,7 +110,7 @@ namespace NeoCortexApiSample
 
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
-                // Getting Newborn Cycle in the Output
+                // Getting Newborn Cycle in 
                 Console.WriteLine($"-------------- Newborn SP Cycle {cycle} ---------------");
 
 
@@ -143,7 +143,7 @@ namespace NeoCortexApiSample
             {
                 Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.name} ---------------");
 
-                int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
+                int maxPrevInputs = sequenceKeyPair.data.Length - 1;
 
                 List<string> previousInputs = new List<string>();
 
@@ -165,7 +165,7 @@ namespace NeoCortexApiSample
                     Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
                     Debug.WriteLine("");
 
-                    foreach (var input in sequenceKeyPair.Value)
+                    foreach (var input in sequenceKeyPair.data)
                     {
                         Debug.WriteLine($"-------------- {input} ---------------");
 
@@ -234,11 +234,11 @@ namespace NeoCortexApiSample
                     }
 
                     // The first element (a single element) in the sequence cannot be predicted
-                    double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.Value.Count - 1) / (double)sequenceKeyPair.Value.Count * 100.0;
+                    double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.data.Length - 1) / (double)sequenceKeyPair.data.Length * 100.0;
 
-                    double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
+                    double accuracy = (double)matches / (double)sequenceKeyPair.data.Length * 100.0;
 
-                    Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
+                    Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.data.Length}\t {accuracy}%");
 
                     if (accuracy >= maxPossibleAccuraccy)
                     {
@@ -326,6 +326,11 @@ namespace NeoCortexApiSample
             }
 
             return $"{sequence}_{key}";
+        }
+
+        internal object Run(object sequences)
+        {
+            throw new NotImplementedException();
         }
     }
 }
