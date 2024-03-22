@@ -10,7 +10,7 @@ namespace NeoCortexApiSample
 {
     class Program
     {
-        private static List<Sequence> sequences;
+
 
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace NeoCortexApiSample
                 }
             }
         }
-            private static void RunSimpleMultiSequenceLearningExperiment(List<Sequence> sequences)
+        private static void RunSimpleMultiSequenceLearningExperiment(List<Sequence> sequences)
         {
             // Prototype for building the prediction engine.
             //List<Report> reports = new List<Report>();
@@ -116,7 +116,7 @@ namespace NeoCortexApiSample
 
             //
             // Prototype for building the prediction engine.
-            List<Report> reports = new List<Report>();
+            //List<Report> reports = new List<Report>();
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
@@ -156,28 +156,47 @@ namespace NeoCortexApiSample
 
         private static void PredictNextElement(Predictor predictor, double[] list)
         {
+
+            int matchCount = 0;
+            int predictions = 0;
+            double accuracy = 0.0;
+            List<string> logs = new List<string>();
             Debug.WriteLine("------------------------------");
+
+
+            int prev = -1;
+            bool first = true;
 
             foreach (var item in list)
             {
-                var res = predictor.Predict(item);
-
-                if (res.Count > 0)
+                //var res = predictor.Predict(item);
+                if (first)
                 {
-                    foreach (var pred in res)
-                    {
-                        Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
-                    }
-
-                    var tokens = res.First().PredictedInput.Split('_');
-                    var tokens2 = res.First().PredictedInput.Split('-');
-                    Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                    first = false;
                 }
                 else
-                    Debug.WriteLine("Nothing predicted :(");
-            }
+                {
+                    Console.WriteLine($"Input: {prev}");
+                    var res = predictor.Predict(prev);
+                    string log = "";
 
-            Debug.WriteLine("------------------------------");
+                    if (res.Count > 0)
+                    {
+                        foreach (var pred in res)
+                        {
+                            Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                        }
+
+                        var tokens = res.First().PredictedInput.Split('_');
+                        var tokens2 = res.First().PredictedInput.Split('-');
+                        Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                    }
+                    else
+                        Debug.WriteLine("Nothing predicted :(");
+                }
+
+                Debug.WriteLine("------------------------------");
+            }
         }
     }
 }
