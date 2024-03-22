@@ -111,12 +111,12 @@ namespace NeoCortexApiSample
 
 
 
-        private static void RunMultiSequenceLearningExperiment()
+        private static List<Report> RunMultiSequenceLearningExperiment(List<Sequence> sequences, List<Sequence> sequencesTest)
         {
 
             //
             // Prototype for building the prediction engine.
-            //List<Report> reports = new List<Report>();
+            List<Report> reports = new List<Report>();
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
@@ -154,7 +154,7 @@ namespace NeoCortexApiSample
             PredictNextElement(predictor, list3);*/
         }
 
-        private static void PredictNextElement(Predictor predictor, double[] list)
+        private static double PredictNextElement(Predictor predictor, int[] list, Report report)
         {
 
             int matchCount = 0;
@@ -187,18 +187,20 @@ namespace NeoCortexApiSample
                             Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
                         }
 
-                        var tokens = res.First().PredictedInput.Split('_');
-                        var tokens2 = res.First().PredictedInput.Split('-');
-                        Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                        var sequence = res.First().PredictedInput.Split('_');
+                        var prediction = res.First().PredictedInput.Split('-');
+                        Debug.WriteLine($"Predicted Sequence: {sequence[0]}, predicted next element {prediction.Last()}");
                     }
                     else
                         Debug.WriteLine("Nothing predicted :(");
                 }
+            }
 
                 Debug.WriteLine("------------------------------");
-            }
+                return accuracy;
         }
+
+
     }
 }
-
 
