@@ -48,6 +48,35 @@ The below method is used to generate a bitmap image.
 NeoCortexUtils.DrawBitmap(twoDimArray, 1024,1024, $"{outFolder}\\{input}.png", Color.Yellow,Color.Black, text: input.ToString());
 ```
 
+## 1-D array and 2-D array
+
+1-D array is one-dimensional array, also known as a **vector or list**, is a linear collection of elements stored in contiguous memory locations.
+Each element in a one-dimensional array is accessed using a **single index**.
+
+For example, consider an array representing the temperatures of a week:
+```c#
+int[] temperatures = { 70, 72, 68, 74, 75, 71, 73 };
+```
+Here, temperatures is a one-dimensional array (int[]) containing temperature values for each day of the week. Accessing a specific temperature, such as the temperature on Tuesday (72), is done using an index (temperatures[1]).
+
+2-D array is two-dimensional array, also known as a **matrix**, is a collection of elements organized in rows and columns.
+Each element in a two-dimensional array is accessed using **two indices**: one for the row and one for the column.
+
+For example, consider a two-dimensional array representing a grid of pixels in an image:
+```c#
+int[,] pixels = {
+    { 255, 255, 255 },
+    { 0, 0, 0 },
+    { 255, 255, 255 }
+};
+```
+Here, pixels is a two-dimensional array (int[,]) containing pixel values. Each element represents the color intensity at a specific row and column in the image. Accessing a specific pixel, such as the pixel at row 1, column 1 (0), is done using two indices (pixels[1, 1]).
+
+In this document, ```Encode()``` method processes the input and a one-dimensional array (**1-D array**) is generated, and stored in ```result2``` which are SDRs. ```twoDimenArray2``` is then generated from **result2** by converting it into a two-dimensional array(**2-D array**), possibly for visualization or further processing.
+```C#
+int[,] twoDimenArray2 = ArrayUtils.Make2DArray<int>(result2, (int)Math.Sqrt(result2.Length), (int)Math.Sqrt(result2.Length));
+```
+
 ## Examples
 
 ### DrawBitmap sample for DateTime Encoder
@@ -61,7 +90,7 @@ The resulting SDR can be represented both as text and as a bitmap.
 
 In bitmap representation, the SDR is converted into a **2-D array** (twoDimArray), and then the SDRs can be further visualized using tools like DrawBitmap(), which generates bitmap images from the SDRs.
 
-In our TestMethod 8, ```result2``` contains the 1-D array.
+In our example, ```result2``` contains the 1-D array.
 This 1-D array is converted to a 2-D array by:
 
 ```C#
@@ -94,9 +123,15 @@ For this example, The scale is calculated as
 
 **scale = width /w = 1024/156 = 6**
 
-So for each SDR bit (active cell) at index [Xcount,Ycount] in the two-dimensional array, the **color is set for a block of 6x6 pixels** in the 1024x1024-pixel bitmap.
+So for each SDR bit (active cell) at index **[Xcount,Ycount]** in the two-dimensional array, the **color is set for a block of 6x6 pixels** in the 1024x1024-pixel bitmap.
 
 ### DrawBitmap sample for Scalar Encoder
+
+Scalar Encoder is a type of encoder is used to **encode numbers** into SDRs. 
+
+First, scalar encoders are initialized with predefined settings using their constructors. These settings are stored in a dictionary, specifying parameters such as **"W"** (width of each encoding), **"N"** (total number of bits in the encoding), **"MinVal"** (minimum value of the input), **"MaxVal"** (maximum value of the input), and others.
+
+Once the encoder is initialized, the ```Encode()``` method is invoked with the input values to start the encoding process. This method returns binary arrays representing the encoded values.
 
 To generate Bit Maps in Scalar Encoder the printBitMap function is called in the Test Method. Here we take ***TestMethod9*** in our Unit Test into account.
 In case of Scalar Encoder numbers are encoded.
@@ -188,20 +223,23 @@ For input value 450: 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 For input value 497: 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 
 
-## The generated Bit Maps are as follows
+## The generated bitmaps are as follows
 
 <img src="https://user-images.githubusercontent.com/74201238/114312695-de2aa800-9af3-11eb-926f-a0f7dbe20c41.png" width="450"><br />
 
-In this example, ***scale = width / w***.  We have width = 1024 and w =20.
-So scale =  1024 / 20 = 51
+In this example, We have width = 1024 and w =20.
+
+***scale = width / w***. So, scale =  1024 / 20 = 51
 
 For the SDR bit at index ***[Xcount, Ycount]*** in ***twoDimArray***, the colour is set for scale * scale (51 x 51 = 2601) pixels out of 1024 x 1024 pixels.
 
 
 ### DrawBitmap sample for Geospatial Encoder
 
+The Geospatial Encoder facilitates the conversion of geospatial data into binary arrays and enables the visualization of this data as bitmap images.
+
  ***TestMethod5***
- To generate SDRs and and create bitmap, the values of W, N, MinVal and MaxVal are set as below.
+ To generate SDRs and and create bitmap, the values of W, N, MinVal and MaxVal are set as below. These settings define how the geospatial data will be encoded into binary arrays.
 
                 ```encoderSettings.Add("W", 103);
                    encoderSettings.Add("N", 238);
@@ -221,13 +259,13 @@ initialises j with minimum value 48 and iterates the loop for bitmap until j les
 var result2 = encoder.Encode(j);
 ```
 
-***result2*** array of size 238 in 1D.
+***result2*** generates 1-D array of size 238.
 
 ```C#
 int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result2,  (int)Math.Sqrt(result2.Length), (int)Math.Sqrt(result2.Length));
 ```
 
-***twoDimenArray*** array in 2D (size 15*15 since Square root of 238 =15)
+***twoDimenArray*** generates 2-D array with the size 15*15 since Square root of 238 =15.
 
 ```C#
 var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
@@ -235,7 +273,7 @@ var twoDimArray = ArrayUtils.Transpose(twoDimenArray);
 
 ***twoDimArray*** transpose of twoDimenArray (rows becomes the columns)
 
-This ***twoDimArray*** is then passed to ***Drawbitmap*** method.
+This ***twoDimArray*** is then passed to ```Drawbitmap``` method.
 Bitmap of Height and the width 1024
 Inactive cell are represted by red color and active cells black color.
 
@@ -248,12 +286,10 @@ public static void DrawBitmap(int[,] twoDimArray, int width, int height, String 
 NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{folderName}\\{j}.png", Color.Red, Color.Green, text: j.ToString());
 ```
 
-For the 2D array w=15 and h=15
+For the 2D array, w=15 and h=15.
 The w(15) and h(15) of array must be always lesser than the width(1024) and height(1024) of bitmap.
 
-```scale = width / w (1024/15 = 68)```
-
-If (twoDimArray[Xcount, Ycount] == 1) then Pixel is set to active cell color else it is set to inactive cell color.
+If twoDimArray[Xcount, Ycount] == 1, then Pixel is set to active cell color else it is set to inactive cell color.
 
 
 The SDR’s generated with input ***48.4*** is
@@ -275,20 +311,24 @@ SDR bit at index ***[Xcount, Ycount]*** in ***twoDimArray***, the colour is set 
 
 ## Change in size and color of Bitmap
 
-Ghange the above parameter as:
+Modifing the parameters of the encoder and bitmap, leades to change in the resulting SDRs and their bitmap representations.
 
-```W= 21, N=40  MinVal=48.75  MaxVal=51.86```
+- By modifing the following parameters as:
 
- 1D array is of size 40 and 2D is of size 6*6.
-The height and the width of the bitmap is 1024
-W and h of 2D array is 6.
+  ```W= 21, N=40  MinVal=48.75  MaxVal=51.86```
 
-   ```Scale 1024/6 = 170```
+  The resulting 1-D array size is 40 and is converted to a 2-D array with dimensions 6×6 (w and h of 2D array is 6.).
 
-The color of the bitmap is changed to Red for inactive cells and green for active cells.
+- Now, The **height and the width** of the bitmap are both set to **1024 pixels**.
 
-   ```C#
-   NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{folderName}\\{j}.png", Color.Red, Color.Green, text: j.ToString());
+   **Scale = width / w** = 1024/6 = 170
+   
+  Therefore, each cell in the 2-D array corresponds to 170 pixels in the bitmap.
+
+- The color of the bitmap is changed to **Red for inactive cells** and **green for active cells**.
+
+```C#
+NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{folderName}\\{j}.png", Color.Red, Color.Green, text: j.ToString());
 ```
 
 The SDR’s generated for input 51.85 is
@@ -300,10 +340,7 @@ The bitmaps generated in this case are:
 
 <img src="https://user-images.githubusercontent.com/74201238/114312899-a2441280-9af4-11eb-8a29-c3379d280fe0.png" width="450"><br />
 
-The bitmap generated for the same values 48, 49 and 50 when W and N is changed
-W=103  - 21
-N=238  - 41
-
+The bitmaps are generated for the same values 48, 49 and 50 when W and N are changed from 103 to 21 and 238 to 41 respectively.
 
 ## Bitmap representation of Image using Spatial Pooler
 
