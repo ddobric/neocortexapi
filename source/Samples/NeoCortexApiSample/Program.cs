@@ -161,7 +161,7 @@ namespace NeoCortexApiSample
             int predictions = 0;
             double accuracy = 0.0;
             List<string> logs = new List<string>();
-            Debug.WriteLine("------------------------------");
+            Console.WriteLine("------------------------------");
 
 
             int prev = -1;
@@ -184,20 +184,49 @@ namespace NeoCortexApiSample
                     {
                         foreach (var pred in res)
                         {
-                            Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                            Debug.WriteLine($"Predicted Input: {pred.PredictedInput} - Similarity: {pred.Similarity}");
                         }
 
                         var sequence = res.First().PredictedInput.Split('_');
                         var prediction = res.First().PredictedInput.Split('-');
-                        Debug.WriteLine($"Predicted Sequence: {sequence[0]}, predicted next element {prediction.Last()}");
+                        Console.WriteLine($"Predicted Sequence: {sequence.First()} - Predicted next element: {prediction.Last()}");
+                        log = $"Input: {prev}, Predicted Sequence: {sequence.First()}, Predicted next element: {prediction.Last()}";
+                        //compare current element with prediction of previous element
+                        if (next == Int32.Parse(prediction.Last()))
+                        {
+                            matchCount++;
+                        }
                     }
                     else
-                        Debug.WriteLine("Nothing predicted :(");
-                }
-            }
+                    {
 
-                Debug.WriteLine("------------------------------");
-                return accuracy;
+                        Console.WriteLine("Nothing predicted :(");
+                        log = $"Input: {prev}, Nothing predicted";
+
+
+
+                    }
+                    logs.Add(log);
+                    predictions++;
+                }
+
+                //save previous element to compare with upcoming element
+                prev = next;
+
+            }
+            report.PredictionLog = logs;
+
+            /*
+             * Accuracy is calculated as number of matching predictions made 
+             * divided by total number of prediction made for an element in subsequence
+             * 
+             * accuracy = number of matching predictions/total number of prediction * 100
+             */
+            accuracy = (double)matchCount / predictions * 100;
+            report.Accuracy = accuracy;
+
+            Console.WriteLine("------------------------------");
+            return accuracy;
         }
 
 
