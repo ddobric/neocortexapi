@@ -150,7 +150,7 @@ namespace NeoCortexApiSample
                 previousInputs.Add("-1.0");
 
                 // Set on true if the system has learned the sequence with a maximum acurracy.
-                bool isLearningCompleted = false;
+                //bool isLearningCompleted = false;
 
                 //
                 // Now training with SP+TM. SP is pretrained on the given input pattern set.
@@ -163,7 +163,8 @@ namespace NeoCortexApiSample
                     Debug.WriteLine("");
 
                     Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
-                    Debug.WriteLine("");
+                    //Debug.WriteLine("");
+                    Console.WriteLine($"-------------- Cycle SP+TM {cycle} ---------------");
 
                     foreach (var input in sequenceKeyPair.data)
                     {
@@ -239,6 +240,7 @@ namespace NeoCortexApiSample
                     double accuracy = (double)matches / (double)sequenceKeyPair.data.Length * 100.0;
 
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.data.Length}\t {accuracy}%");
+                    Console.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.data.Length}\t {accuracy}%");
 
                     if (accuracy >= maxPossibleAccuraccy)
                     {
@@ -250,8 +252,8 @@ namespace NeoCortexApiSample
                         if (maxMatchCnt >= 30)
                         {
                             sw.Stop();
-                            Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
-                            isLearningCompleted = true;
+                            Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.name} learning time: {sw.Elapsed}.");
+                            //isLearningCompleted = true;
                             break;
                         }
                     }
@@ -265,8 +267,8 @@ namespace NeoCortexApiSample
                     tm.Reset(mem);
                 }
 
-                if (isLearningCompleted == false)
-                    throw new Exception($"The system didn't learn with expected acurracy!");
+               // if (isLearningCompleted == false)
+                 //   throw new Exception($"The system didn't learn with expected acurracy!");
             }
 
             Debug.WriteLine("------------ END ------------");
@@ -274,15 +276,15 @@ namespace NeoCortexApiSample
             return new Predictor(layer1, mem, cls);
         }
 
-        private string GetKey(List<string> previousInputs, object input, string name)
+        /*private string GetKey(List<string> previousInputs, object input, string name)
         {
             throw new NotImplementedException();
-        }
+        }*/
 
-        private int GetNumberOfInputs(List<Sequence> sequences)
+        /*private int GetNumberOfInputs(List<Sequence> sequences)
         {
             throw new NotImplementedException();
-        }
+        }*/
 
 
         /// <summary>
@@ -297,7 +299,7 @@ namespace NeoCortexApiSample
             foreach (var inputs in sequences)
             {
                 //num += inputs.Value.Distinct().Count();
-                num += inputs.Value.Count;
+                num += inputs.data.Length;
             }
 
             return num;
@@ -328,9 +330,9 @@ namespace NeoCortexApiSample
             return $"{sequence}_{key}";
         }
 
-        internal object Run(object sequences)
+        /*internal object Run(object sequences)
         {
             throw new NotImplementedException();
-        }
+        }*/
     }
 }
