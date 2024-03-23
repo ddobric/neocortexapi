@@ -113,7 +113,7 @@ namespace NeoCortexApiSample
         public static List<Sequence> ReadDataset(string path)
         {
             Console.WriteLine("Reading Sequence...");
-            System.String lines = File.ReadAllText(path);
+            String lines = File.ReadAllText(path);
             //var sequence = JsonConvert.DeserializeObject(lines);
             List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
 
@@ -143,9 +143,15 @@ namespace NeoCortexApiSample
         {
             string BasePath = AppDomain.CurrentDomain.BaseDirectory;
             string reportFolder = Path.Combine(BasePath, "dataset");
+            Console.WriteLine("Saving dataset...");
+
+
             if (!Directory.Exists(reportFolder))
                 Directory.CreateDirectory(reportFolder);
-            string reportPath = Path.Combine(reportFolder);
+            string reportPath = Path.Combine(reportFolder, $"dataset_{DateTime.Now.Ticks}.json");
+
+            Console.WriteLine("Saving dataset...");
+
             if (!File.Exists(reportPath))
             {
                 using (StreamWriter sw = File.CreateText(reportPath))
@@ -176,7 +182,7 @@ namespace NeoCortexApiSample
 
             Random random = new Random();
 
-            for (int i = 0; i < count; i++)
+            /*for (int i = 0; i < count; i++)
             {
                 Sequence sequence = new Sequence();
 
@@ -186,6 +192,13 @@ namespace NeoCortexApiSample
                     sequence.Add(value);
                 }
 
+                dataset.Add(sequence);
+            }*/
+            for (int i = 0; i < count; i++)
+            {
+                Sequence sequence = new Sequence();
+                sequence.name = $"S{i + 1}";
+                sequence.data = getSyntheticData(size, startVal, stopVal);
                 dataset.Add(sequence);
             }
 
@@ -232,6 +245,13 @@ namespace NeoCortexApiSample
 
             return array;
         }
+
+
+        /// <summary>
+        /// Randomly remove less number of items from array
+        /// <param name="array">array to processed</param>
+        /// <param name="less">number of removals to be done</param>
+        /// <returns>array with less numbers</returns>
         private static int[] randomRemoveDouble(int[] array, int less)
         {
             int[] temp = new int[array.Length - less];
