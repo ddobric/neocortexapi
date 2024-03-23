@@ -344,10 +344,38 @@ The bitmaps are generated for the same values 48, 49 and 50 when W and N are cha
 
 ## Bitmap representation of Image using Spatial Pooler
 
+HTM (Hierarchical Temporal Memory) principles are used to train a Spatial Pooler (SP) using a set of input images and generate Sparse Distributed Representations (SDRs) for each input image. The SP is trained to recognize patterns in the input images and generate corresponding SDRs that represent those patterns. These SDRs are then visualized as bitmaps to observe the activation patterns of the SP columns.
 
-   The activeArray computed by the spatial pooler is converted to a 2-dimentional array with the help of “ArrayUtils”.
-   In this case the dimensions are set to be 64x64. The 2D array can be further transposed and used as an input parameter for Bitmap function.
-   SDRs generated can be represented in graphical presentation with the help of bitmaps.
+- The SP is initialized with parameters such as potential radius, potential percentage, global inhibition, local area density, etc., defined in the `HtmConfig` object.
+- Training images are loaded from the specified directory (`trainingFolder`).
+  ```C#
+  string trainingFolder = @"..\..\..\TestFiles\Sdr";
+  var trainingImages = Directory.GetFiles(trainingFolder, "*.jpeg");
+  ```
+- For each image, the input vector is computed using `NeoCortexUtils.BinarizeImage()` and then read into an array using `NeoCortexUtils.ReadCsvIntegers`.
+  
+  ```C#
+  string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{trainingImage}", imgSize, testName);
+  int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
+  ```
+- The input vector is fed into the SP using the `sp.compute()` method, which calculates the active columns based on the input.
+  ```C#
+  sp.compute(inputVector, activeArray, true);
+  ```
+- The active columns are determined by finding the indices where the value is equal to 1 in the output array of the SP.
+  ```C#
+  var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+  ```
+- Once the system is in a stable state (indicating convergence), the results are calculated and stored.  
+- The active columns obtained from the SP represent the SDR for the input image.
+- The SDR is stored in a dictionary (`sdrs`) with the image file name as the key.
+
+The activeArray computed by the spatial pooler is converted to a 2-dimentional array with the help of `ArrayUtils.Make2DArray`.
+```C#
+int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(activeArray, colDims[0], colDims[1]);
+```
+In this case the dimensions are set to be 64x64. The 2-D array can be further transposed and used as an input parameter for Bitmap function.
+SDRs generated can be represented in graphical presentation with the help of bitmaps.
 
 ```C#
 System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(bmpWidth, bmpHeight);
@@ -362,20 +390,20 @@ NeoCortexUtils.DrawBitmaps(arrays, outputImage, Color.Yellow, Color.Gray, OutImg
 The DrawBitmaps function of the NeoCortexUtils helps to build the SDR represention. It takes 6 parameters to process the final bitmap.
 
 ## Parameter Info
-- arrays:  The 2D array which contains the SDRs.
--	outputImage: The filepath where the output bitmap is to be stored.
--	Color.Yellow: Color of the inactive bit
--	Color:Grey:  Color of the active bit
--	OutImgSize: The width of the output Bitmap
--	OutImgSize: The height of the output Bitmap
+-   **arrays:**  The 2D array which contains the SDRs.
+-	**outputImage:** The filepath where the output bitmap is to be stored.
+-	**Color.Yellow:** Color of the inactive bit
+-	**Color:Grey:**  Color of the active bit
+-	**OutImgSize:** The width of the output Bitmap
+-	**OutImgSize:** The height of the output Bitmap
 
 The pixel values in the output bitmap are set to the respective color according to the active and inactive bits. Depending on the desired size of Bitmap to be presented,
 the width and height can be chosen.
 
 ### Example representing an Alphabet L in Bitmap after computing in spatial pooler
-2D array with dimension 64x64 containing the SDRs, generated from spatial pooler has to be represented in Bitmap. The dimensions of the bitmap are chosen to be 1024x1024.
-Since the 2D array is of a smaller dimension to that of Bitmap, a scale is considered here so that the bitmap with dimension 1024x1024 can be fully utilized to represent
-the 64x64 2D array.
+2-D array with dimension 64x64 containing the SDRs, generated from spatial pooler has to be represented in Bitmap. The dimensions of the bitmap are chosen to be 1024x1024.
+Since the 2-D array is of a smaller dimension to that of Bitmap, a scale is considered here so that the bitmap with dimension 1024x1024 can be fully utilized to represent
+the 64x64 2-D array.
 
 ```C#
 var scale = ((bmpWidth) / twoDimArrays.Count) / (w+1) ;
