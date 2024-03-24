@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Working_With_SDRs_Bitmaps</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GemBox.Spreadsheet" Version="49.0.1612" />
+    <PackageReference Include="ImageBinarizer" Version="1.5.6" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.VisualStudio.UnitTesting" Version="11.0.50727.1" />
+    <PackageReference Include="NeoCortexApi" Version="1.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NeoCortexApi">
+      <HintPath>..\..\..\..\..\neocortexapi_Team_PY\source\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexApi.dll</HintPath>
+    </Reference>
+    <Reference Include="NeoCortexUtils">
+      <HintPath>..\..\..\NeoCortexUtils\bin\Debug\net8.0\NeoCortexUtils.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+
+</Project>
