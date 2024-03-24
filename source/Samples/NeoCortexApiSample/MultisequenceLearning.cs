@@ -292,7 +292,7 @@ namespace NeoCortexApiSample
         /// </summary>
         /// <param name="sequences">Alle sequences.</param>
         /// <returns></returns>
-        private int GetNumberOfInputs(Dictionary<string, List<double>> sequences)
+        private int GetNumberOfInputs(List<Sequence> sequences)
         {
             int num = 0;
 

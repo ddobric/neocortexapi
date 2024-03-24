@@ -113,7 +113,7 @@ namespace NeoCortexApiSample
         public static List<Sequence> ReadDataset(string path)
         {
             Console.WriteLine("Reading Sequence...");
-            String lines = File.ReadAllText(path);
+            System.String lines = File.ReadAllText(path);
             //var sequence = JsonConvert.DeserializeObject(lines);
             List<Sequence> sequence = System.Text.Json.JsonSerializer.Deserialize<List<Sequence>>(lines);
 
@@ -143,7 +143,7 @@ namespace NeoCortexApiSample
         {
             string BasePath = AppDomain.CurrentDomain.BaseDirectory;
             string reportFolder = Path.Combine(BasePath, "dataset");
-            Console.WriteLine("Saving dataset...");
+            ///Console.WriteLine("Saving dataset...");
 
 
             if (!Directory.Exists(reportFolder))

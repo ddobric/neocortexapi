@@ -10,8 +10,7 @@ namespace NeoCortexApiSample
 {
     class Program
     {
-
-
+        private static int next;
 
         /// <summary>
         /// This sample shows a typical experiment code for SP and TM
