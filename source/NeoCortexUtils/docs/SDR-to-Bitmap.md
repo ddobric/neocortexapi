@@ -462,5 +462,5 @@ Below are the represenatation for Overlap, Difference and Union:
 
 On comaprison between two SDRs, the overlap.png shows more  overlaps/intersections in comparison to the above example. SDRs are simlar to each other.
 
-
+The full code for this example can be found [here](https://github.com/Yatish0/neocortexapi_Team_PY/blob/3a7871d3ce160d31ec0eac763a759d52f633d58f/source/UnitTestsProject/SdrRepresentation/SpatialPoolerColumnActivityTest.cs#L16).
 
