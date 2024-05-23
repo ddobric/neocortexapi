@@ -23,6 +23,11 @@ namespace NeoCortexApiSample
             SpatialPatternLearning experiment = new SpatialPatternLearning();
             experiment.Run();
 
+            // Starts experiment For the Image Inputs how to learn spatial patterns.
+            // ImageBinarizerSpatialPattern experiment = new ImageBinarizerSpatialPattern();
+            // experiment.Run();
+
+
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
             //SequenceLearning experiment = new SequenceLearning();

@@ -581,5 +581,60 @@ namespace NeoCortexApi
 
             return connectedCells;
         }
+
+
+
+        public static string StringifyDictionarybykeys(Dictionary<int, double> dictionary)
+        {
+            if (dictionary == null)
+            {
+                return "null";
+            }
+
+            StringBuilder result = new StringBuilder();
+            foreach (var key in dictionary.Keys)
+            {
+                // Access the value using the key and append it to the result
+                result.Append($"{dictionary[key]},");
+            }
+
+            // Remove the trailing separator
+            if (result.Length > 0)
+            {
+                result.Length--; // Remove the last character
+            }
+
+            return result.ToString();
+        }
+
+
+
+        /// <summary>
+        /// Thresholds a collection of Reconstruced Permanence values based on a given threshold.
+        /// </summary>
+        /// <param name="values">The collection of probability values to be thresholded.</param>
+        /// <param name="threshold">The threshold value used for thresholding.</param>
+        /// <returns>A list of binary values (0 or 1) representing the thresholded probabilities.</returns>
+
+
+        public static List<int> ThresholdingProbabilities(IEnumerable<double> values, double threshold)
+        {
+            if (values == null)
+            {
+                return null;
+            }
+
+            List<int> resultList = new List<int>();
+
+            foreach (var numericValue in values)
+            {
+                int thresholdedValue = (numericValue >= threshold) ? 1 : 0;
+
+                resultList.Add(thresholdedValue);
+            }
+
+            return resultList;
+        }
+
     }
 }
