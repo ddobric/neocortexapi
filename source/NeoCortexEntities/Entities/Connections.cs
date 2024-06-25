@@ -880,7 +880,7 @@ namespace NeoCortexApi.Entities
         /// <summary>
         /// Get permanences of all columns.
         /// </summary>
-        public List<List<double>> GetColumnPermanences()
+        public List<List<double>> GetProximalDendritePermanences()
         {
             List<List<double>> allColPerms = new List<List<double>>();
 

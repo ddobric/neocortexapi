@@ -154,7 +154,7 @@ namespace NeoCortexApi
 
         public List<List<double>> GetColumnPermenances()
         {
-            return this.connections.GetColumnPermanences();
+            return this.connections.GetProximalDendritePermanences();
         }
 
         /// <summary>
