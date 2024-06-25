@@ -169,6 +169,40 @@ namespace NeoCortexApi.Utility
 
             return fact;
         }
+
+        /// <summary>
+        /// Calculates the Jaccard similarity coefficient between two binary arrays. This Function is used to measure
+        /// the similarity between the Encoded array and Reconstruced Normalize Array.
+        /// </summary>
+        /// <param name="arr1">The first binary array.</param>
+        /// <param name="arr2">The second binary array.</param>
+        /// <returns>The Jaccard similarity coefficient between the two binary arrays.</returns>
+        /// <exception cref="ArgumentException">Thrown when the input arrays have different lengths.</exception>
+
+        public static double JaccardSimilarityofBinaryArrays(int[] arr1, int[] arr2)
+        {
+            if (arr1.Length != arr2.Length)
+            {
+                throw new ArgumentException("Arrays must have the same length.");
+            }
+
+            int intersectionCount = 0;
+            int unionCount = 0;
+
+            for (int i = 0; i < arr1.Length; i++)
+            {
+                if (arr1[i] == 1 && arr2[i] == 1)
+                {
+                    intersectionCount++;
+                }
+                if (arr1[i] == 1 || arr2[i] == 1)
+                {
+                    unionCount++;
+                }
+            }
+
+            return (double)intersectionCount / unionCount;
+        }
     }
 }
 

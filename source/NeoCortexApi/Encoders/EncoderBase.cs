@@ -5,6 +5,8 @@ using NeoCortexApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace NeoCortexApi.Encoders
@@ -33,9 +35,9 @@ namespace NeoCortexApi.Encoders
         protected int nInternal;
 
         protected double rangeInternal;
-        
+
         protected bool encLearningEnabled;
-        
+
         protected List<FieldMetaType> flattenedFieldTypeList;
 
         protected Dictionary<Dictionary<string, int>, List<FieldMetaType>> decoderFieldTypes;
@@ -50,6 +52,7 @@ namespace NeoCortexApi.Encoders
         // Moved to MultiEncoder.
         //protected Dictionary<EncoderTuple, List<EncoderTuple>> encoders;
         protected List<String> scalarNames;
+        private object[] encoders;
 
         /// <summary>
         /// Default constructor.
@@ -87,6 +90,11 @@ namespace NeoCortexApi.Encoders
                 Radius = -1.0;
                 Periodic = false;
                 ClipInput = false;
+                NumBits = 0;
+                PeriodicRadius = 0;
+                BucketWidth = 0;
+                NumBuckets = 0;
+
 
                 foreach (var item in encoderSettings)
                 {
@@ -132,7 +140,7 @@ namespace NeoCortexApi.Encoders
             }
         }
 
-   
+
 
         /// <summary>
         /// In real cortex mode, W must be >= 21. Empirical value.
@@ -146,12 +154,29 @@ namespace NeoCortexApi.Encoders
 
         public int N { get => (int)this["N"]; set => this["N"] = (int)value; }
 
+        public int Verbosity { get => (int)this["Verbosity"]; set => this["Verbosity"] = (int)value; }
+
+        public int startIdx { get => (int)this["startIdx"]; set => this["startIdx"] = (int)value; }
+        public int runLength { get => (int)this["runLength"]; set => this["runLength"] = (int)value; }
+        public bool[] tmpOutput { get => (bool[])this["tmpOutput"]; set => this["tmpOutput"] = (bool[])value; }
+
+
+        public double run { get => (double)this["run"]; set => this["run"] = (double)value; }
+        /// <summary>
+        /// public double nz { get => (double)this["nz"]; set => this["nz"] = (double)value; }
+        /// </summary>
+        public double runs { get => (double)this["runs"]; set => this["runs"] = (double)value; }
+
+
+
         public int NInternal { get => (int)this["NInternal"]; set => this["NInternal"] = (int)value; }
 
         /// <summary>
         /// Number of bits set on one, which represents single encoded value.
         /// </summary>
         public int W { get => (int)this["W"]; set => this["W"] = (int)value; }
+
+
 
         public double MinVal { get => (double)this["MinVal"]; set => this["MinVal"] = (double)value; }
 
@@ -174,6 +199,12 @@ namespace NeoCortexApi.Encoders
         /// This happens only if Periodic is set on false.
         /// </summary>
         public bool ClipInput { get => (bool)this["ClipInput"]; set => this["ClipInput"] = (bool)value; }
+
+        public int NumBits { get; private set; }
+        public double PeriodicRadius { get; private set; }
+        public double BucketWidth { get; private set; }
+        public int NumBuckets { get; private set; }
+        public double[] Centers { get; private set; }
 
         public int Padding { get => (int)this["Padding"]; set => this["Padding"] = value; }
 
@@ -203,6 +234,7 @@ namespace NeoCortexApi.Encoders
         /// Returns true if the underlying encoder works on deltas
         /// </summary>
         public abstract bool IsDelta { get; }
+        public (object name, object enc, object offset) encoder { get; private set; }
         #endregion
 
         /// <summary>
@@ -260,6 +292,47 @@ namespace NeoCortexApi.Encoders
         }
 
 
+
+        /// <summary>
+        /// This method maps a value from one range to another range.
+        ///It takes in the value, the minimum and maximum of the input range, and the minimum and maximum of the output range as parameters.
+        ///The method then returns the corresponding value in the output range based on the input value and input-output range relationship.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <param name="fromMin"></param>
+        /// <param name="fromMax"></param>
+        /// <param name="toMin"></param>
+        /// <param name="toMax"></param>
+        /// <returns></returns>
+        public static double map(double val, double fromMin, double fromMax, double toMin, double toMax)
+        {
+            return (val - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin;
+        }
+
+
+        /// <summary>
+        ///This method wraps an input value within a specified range, so that it always falls within the range.
+        /// If the input value is outside the range, it is wrapped around to the other side of the range until it falls within the range.
+        /// The range is defined by a minimum and maximum value.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <param name="minVal"></param>
+        /// <param name="maxVal"></param>
+        /// <returns></returns>
+        public static int wrap(int val, int minVal, int maxVal)
+        {
+            int range = maxVal - minVal + 1;
+            while (val < minVal)
+            {
+                val += range;
+            }
+            while (val > maxVal)
+            {
+                val -= range;
+            }
+            return val;
+        }
+
         /// <summary>
         /// Returns the rendered similarity matrix for the whole rage of values between min and max.
         /// </summary>
@@ -270,7 +343,7 @@ namespace NeoCortexApi.Encoders
             Dictionary<string, int[]> sdrMap = new Dictionary<string, int[]>();
             List<string> inpVals = new List<string>();
             StringBuilder sb = new StringBuilder();
-            
+
             for (double i = this.MinVal; i < this.MaxVal; i += 1.0)
             {
                 var sdr = this.Encode(i);
@@ -280,7 +353,7 @@ namespace NeoCortexApi.Encoders
                 if (traceValues)
                 {
                     sb.AppendLine($"{i.ToString("000")} - {Helpers.StringifyVector(sdr, separator: null)}");
-                }                
+                }
             }
 
             sb.AppendLine();
@@ -319,8 +392,8 @@ namespace NeoCortexApi.Encoders
 
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            var excludeMembers = new List<string> 
-            { 
+            var excludeMembers = new List<string>
+            {
                 nameof(EncoderBase.Properties),
                 nameof(EncoderBase.halfWidth),
                 nameof(EncoderBase.rangeInternal),

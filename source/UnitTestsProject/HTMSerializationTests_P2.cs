@@ -581,7 +581,7 @@ namespace UnitTestsProject
         }
 
         [TestMethod]
-        [TestCategory("Prod")]
+        
         public void SerializationScalarEncoderTest()
         {
             int inputBits = 100;

@@ -30,13 +30,13 @@ namespace NeoCortexApi
         /// <exception cref="ArgumentNullException"></exception>
         public Dictionary<int, double> Reconstruct(int[] activeMiniColumns)
         {
-            if(activeMiniColumns == null)
+            if (activeMiniColumns == null)
             {
                 throw new ArgumentNullException(nameof(activeMiniColumns));
             }
 
             var cols = _mem.GetColumnList(activeMiniColumns);
-           
+
             Dictionary<int, double> result = new Dictionary<int, double>();
 
             //
