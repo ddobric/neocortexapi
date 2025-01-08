@@ -1,0 +1,1 @@
+This repository demonstrates anomaly detection using the NeoCortexAPI. The application trains a predictive model on normal sequences and detects anomalies in new sequences. It reads training and inferring data from files, logs the results, and outputs visual representations of the data and detected anomalies.
