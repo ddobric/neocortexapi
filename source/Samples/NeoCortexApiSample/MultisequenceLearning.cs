@@ -47,7 +47,7 @@ namespace NeoCortexApiSample
                 ActivationThreshold = 15,
                 ConnectedPermanence = 0.5,
 
-                // Learning is slower than forgetting in this case.
+                // Learning is slower than forgetting in this case..
                 PermanenceDecrement = 0.25,
                 PermanenceIncrement = 0.15,
 
