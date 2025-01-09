@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 using Daenet.ImageBinarizerLib;
 using Daenet.ImageBinarizerLib.Entities;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -204,6 +205,153 @@ namespace NeoCortex
             myBitmap.Save(filePath, ImageFormat.Png);
         }
 
+        /// <summary>
+        /// Combines heatmap and normalized permanence representations into a single image with title.
+        /// This Drwaitng Function is used to Visulalization of the Permanence Values.
+        /// </summary>
+        /// <param name="heatmapData">List of arrays representing the heatmap data.</param>
+        /// <param name="normalizedData">List of arrays representing normalized data below the heatmap.</param>
+        /// <param name="encodedData">List of arrays of original Encoded data encoded by the scaler encoder.</param>
+        /// <param name="filePath">Output image path for saving the combined image.</param>
+        /// <param name="bmpWidth">Width of the heatmap bitmap (default is 1024).</param>
+        /// <param name="bmpHeight">Height of the heatmap bitmap (default is 1024).</param>
+        /// <param name="redStart">Threshold for values above which pixels are red (default is 200).</param>
+        /// <param name="yellowMiddle">Threshold for values between which pixels are yellow (default is 127).</param>
+        /// <param name="greenStart">Threshold for values below which pixels are green (default is 20).</param>
+        /// <param name="enlargementFactor">Factor by which the image is enlarged for better visualization (default is 4).</param>
+        public static void Draw1dHeatmap(List<double[]> heatmapData, List<int[]> normalizedData, List<int[]> encodedData, String filePath,
+        int bmpWidth = 1024,
+        int bmpHeight = 1024,
+        decimal redStart = 200, decimal yellowMiddle = 127, decimal greenStart = 20,
+        int enlargementFactor = 4)
+        {
+            int height = heatmapData.Count;
+            int maxLength = heatmapData.Max(arr => arr.Length);
+
+            if (maxLength > bmpWidth || height > bmpHeight)
+                throw new ArgumentException("Size of all included arrays must be less than specified 'bmpWidth' and 'bmpHeight'");
+
+            // Calculate target width and height based on the enlargement factor
+            int targetWidth = bmpWidth * enlargementFactor;
+            // Include space for the title and labels
+            int targetHeight = bmpHeight * enlargementFactor + 40;
+
+            // Create a new bitmap for the heatmap and text row with background
+            System.Drawing.Bitmap myBitmap = new System.Drawing.Bitmap(targetWidth, targetHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (Graphics g = Graphics.FromImage(myBitmap))
+            {
+                // Set the background color to LightSkyBlue
+                g.Clear(Color.LightSkyBlue);
+
+                // Draw title
+                string title = "HeatMap Image";
+                Font titleFont = new Font("Arial", 12);
+                SizeF titleSize = g.MeasureString(title, titleFont);
+                float titleX = (targetWidth - titleSize.Width) / 2;
+                // Move the title further up (adjust the value as needed)
+                float titleY = 0;
+                g.DrawString(title, titleFont, Brushes.Black, new PointF(titleX, titleY));
+
+                // Calculate scale factors for width and height based on the target dimensions
+                var scaleX = (double)targetWidth / bmpWidth;
+                // Exclude the space for the title and labels from scaleY
+                var scaleY = (double)(targetHeight - 40) / bmpHeight;
+
+                // Leave a gap between sections
+                float labelY = 30;
+
+                // Draw heatmap
+                for (int i = 0; i < height; i++)
+                {
+                    var heatmapArr = heatmapData[i];
+
+                    int w = heatmapArr.Length;
+
+                    for (int Xcount = 0; Xcount < w; Xcount++)
+                    {
+                        for (int padX = 0; padX < scaleX; padX++)
+                        {
+                            for (int padY = 0; padY < scaleY; padY++)
+                            {
+                                myBitmap.SetPixel((int)(i * scaleX) + (int)(Xcount * scaleX) + padX, (int)(padY) + (int)labelY, GetColor(redStart, yellowMiddle, greenStart, (Decimal)heatmapArr[Xcount]));
+                            }
+                        }
+                    }
+                    // Draw normalized representation below the heatmap
+                    using (var font = new Font("Arial", 12))
+                    {
+                        string normalizedLabel = "Normalized Permanence (Reconstructed Inputs)";
+                        Font normalizedLabelFont = new Font("Arial", 10);
+                        SizeF normalizedLabelSize = g.MeasureString(normalizedLabel, normalizedLabelFont);
+                        float normalizedLabelX = (targetWidth - normalizedLabelSize.Width) / 2;
+                        // Leave a gap before drawing the label
+                        labelY += 130;
+                        // Adjust the vertical position down by 10 units (you can modify this value)
+                        labelY += 70;
+                        g.DrawString(normalizedLabel, normalizedLabelFont, Brushes.Black, new PointF(normalizedLabelX, labelY));
+
+                        var normalizedArr = normalizedData[i];
+                        for (int Xcount = 0; Xcount < normalizedArr.Length; Xcount++)
+                        {
+                            // Format the integer as string
+                            string formattedNumber = normalizedArr[Xcount].ToString();
+                            // Adjusted position for top middle
+                            float textX = (float)(i * scaleX) + (float)(Xcount * scaleX) + (float)(scaleX / 2) - 5;
+                            // Adjusted vertical position for label
+                            float textY = (float)(bmpHeight * scaleY) + 25;
+                            g.DrawString(formattedNumber, font, Brushes.Black, new PointF(textX, textY));
+
+                            // Draw a line from the top middle of the number to the corresponding heatmap pixel
+                            // Adjusted starting point for the line
+                            float lineStartX = textX + 5;
+                            // Adjusted starting point for the line
+                            float lineStartY = textY - 20;
+                            float lineEndX = (float)(i * scaleX) + (float)(Xcount * scaleX) + (float)(scaleX / 2);
+                            float lineEndY = 300;
+                            g.DrawLine(Pens.Black, lineStartX, lineStartY, lineEndX, lineEndY);
+
+                        }
+                        // Draw the label for encoded values
+                        string encodedLabel = "Encoded Inputs";
+                        Font encodedLabelFont = new Font("Arial", 10);
+                        SizeF encodedLabelSize = g.MeasureString(encodedLabel, encodedLabelFont);
+                        float encodedLabelX = (targetWidth - encodedLabelSize.Width) / 2;
+                        // Leave a gap before drawing the label
+                        labelY = 120;
+                        // Adjust the vertical position down by 10 units (you can modify this value)
+                        labelY += -50;
+                        g.DrawString(encodedLabel, encodedLabelFont, Brushes.Black, new PointF(encodedLabelX, labelY));
+
+                        // Draw encoded values
+                        var encodedArr = encodedData[i];
+                        for (int Xcount = 0; Xcount < encodedArr.Length; Xcount++)
+                        {
+                            // Format the integer as string
+                            string formattedNumber = encodedArr[Xcount].ToString();
+                            // Adjusted position for top middle
+                            float textX = (float)(i * scaleX) + (float)(Xcount * scaleX) + (float)(scaleX / 2) - 5;
+                            float textY = 175; // Adjusted vertical position for label
+                            g.DrawString(formattedNumber, font, Brushes.Black, new PointF(textX, textY));
+                            // Draw a line from the top middle of the number to the corresponding heatmap pixel
+                            // Adjusted starting point for the line
+                            float lineStartX = textX + 5;
+                            // Adjusted starting point for the line
+                            float lineStartY = textY - 20;
+                            float lineEndX = (float)(i * scaleX) + (float)(Xcount * scaleX) + (float)(scaleX / 2);
+                            // Adjusted ending point for the line
+                            float lineEndY = 100;
+                            g.DrawLine(Pens.Black, lineStartX, lineStartY, lineEndX, lineEndY);
+                        }
+                    }
+                }
+            }
+
+            // Save the combined image with heatmap and text row
+            myBitmap.Save(filePath, ImageFormat.Png);
+        }
+
+
+
 
         /// <summary>
         /// Drawas bitmaps from list of arrays.
@@ -264,7 +412,154 @@ namespace NeoCortex
             myBitmap.Save(filePath, ImageFormat.Png);
         }
 
+        /// <summary>
+        /// Draws a combined similarity plot based on the given list of similarity values.
+        /// This graph can Visulaze the Similarity Bar graph of multiple inputs between the Encoded inputs
+        /// and the Reconsturced Inputs using Reconstruct Method.
+        /// </summary>
+        /// <param name="similarities">The list of similarity values to be plotted.</param>
+        /// <param name="filePath">The file path where the plot image will be saved.</param>
+        /// <param name="imageWidth">Width of the graph.</param>
+        /// <param name="imageHeight">Height of the graph.</param>
+        /// <remarks>
+        /// The plot includes bars representing similarity values, indexed from left to right. Each bar's height corresponds to its similarity value.
+        /// Axis labels, a title, a scale indicating similarity values, and text indicating the similarity range are added to the plot.
+        /// </remarks>
 
+        public static void DrawCombinedSimilarityPlot(List<double> similarities, string filePath, int imageWidth, int imageHeight)
+        {
+            // Create a new bitmap
+            Bitmap bitmap = new Bitmap(imageWidth, imageHeight);
+
+            // Create a graphics object from the bitmap
+            using (Graphics graphics = Graphics.FromImage(bitmap))
+            {
+                // Clear the bitmap with a white background
+                graphics.Clear(Color.White);
+
+                // Define the maximum similarity value
+                double maxSimilarity = similarities.Max();
+
+                // Calculate the maximum bar height based on the plot height and scale
+                // Adjusted for title position
+                int maxBarHeight = imageHeight - 200;
+
+                // Determine the number of bars
+                int barCount = similarities.Count;
+
+                // Calculate the total width occupied by bars and spacing
+                // minimum bar width is 10 pixels
+                int totalBarWidth = barCount * 10;
+                //20 pixels of spacing between bars
+                int totalSpacing = 20 * (barCount + 1);
+
+                // Calculate the maximum available width for bars (excluding margins)
+                // Adjusted for margins
+                int maxAvailableWidth = imageWidth - totalSpacing - 200;
+
+                // Calculate the bar width based on the available space and number of bars
+                // Minimum width for each bar
+                int minBarWidth = 20;
+                int barWidth = Math.Max(minBarWidth, maxAvailableWidth / barCount);
+
+                // Define the width of the scale
+                int scaleWidth = 100;
+
+                // Draw each bar
+                for (int i = 0; i < barCount; i++)
+                {
+                    // Calculate the height of the bar based on the similarity value
+                    int barHeight = (int)(similarities[i] / maxSimilarity * maxBarHeight);
+
+                    // Determine the position and size of the bar
+                    // Adjusted x position and spacing between bars
+                    int x = scaleWidth + (i + 1) * 20 + i * barWidth;
+                    // Adjusted for title position and space at the bottom for labels
+                    int y = imageHeight - barHeight - 100;
+
+                    // Draw the bar with a minimum width of 1 pixel to avoid disappearance
+                    // Subtracting 1 to leave a small gap between bars
+                    int w = Math.Max(1, barWidth - 1);
+
+                    // Determine the color based on the similarity level
+                    Color color = GetColorForSimilarity(similarities[i]);
+
+                    // Create a solid brush with the determined color
+                    Brush brush = new SolidBrush(color);
+
+                    // Draw the bar
+                    graphics.FillRectangle(brush, x, y, w, barHeight);
+
+                    // Add labels for each bar
+                    // Format the similarity value
+                    string label = similarities[i].ToString("0.0");
+                    Font font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold);
+                    SizeF labelSize = graphics.MeasureString(label, font);
+                    // Draw the label above the bar
+                    graphics.DrawString(label, font, Brushes.Black, x + (barWidth - labelSize.Width) / 2, y - 20);
+                    // Draw input label below the bar
+                    graphics.DrawString($"{i + 1}", font, Brushes.Black, x + (barWidth - labelSize.Width) / 2, imageHeight - 50);
+                }
+                // Add axis labels
+                Font axisFont = new Font(FontFamily.GenericSansSerif, 14, FontStyle.Bold);
+                graphics.DrawString("X - Axis (Input) Index", axisFont, Brushes.Black, scaleWidth + (imageWidth - scaleWidth) / 2, imageHeight - 20);
+                // Add a title
+                string title = "Similarity Graph";
+                Font titleFont = new Font(FontFamily.GenericSansSerif, 18, FontStyle.Bold);
+                SizeF titleSize = graphics.MeasureString(title, titleFont);
+                // Adjusted title position
+                graphics.DrawString(title, titleFont, Brushes.Black, (imageWidth - titleSize.Width) / 2, 20);
+
+                // Add a scale indicating values from 0 to 1
+                Font scaleFont = new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold);
+                // Draw 11 tick marks
+                for (int i = 0; i <= 10; i++)
+                {
+                    double value = i / 10.0;
+                    // Invert value and map to plot height
+                    int y = (int)((1 - value) * maxBarHeight) + 100;
+                    // Draw tick mark
+                    graphics.DrawLine(Pens.Black, scaleWidth - 10, y, scaleWidth, y);
+                    // Draw value label
+                    graphics.DrawString(value.ToString("0.0"), scaleFont, Brushes.Black, 0, y - 8);
+                }
+
+                // Add text indicating the similarity test
+                string similarityText = "Y axis-Similarity Range";
+                // Larger and bold font for similarity text
+                Font similarityFont = new Font(FontFamily.GenericSansSerif, 14, FontStyle.Bold);
+                SizeF similaritySize = graphics.MeasureString(similarityText, similarityFont);
+                graphics.DrawString(similarityText, similarityFont, Brushes.Black, 50, imageHeight / 2 - similaritySize.Height / 2, new StringFormat { FormatFlags = StringFormatFlags.DirectionVertical });
+            }
+
+            // Save the bitmap to a file as PNG format
+            bitmap.Save(filePath, ImageFormat.Png);
+        }
+
+        /// <summary>
+        /// Determines the color based on the given similarity level.
+        /// </summary>
+        /// <param name="similarity">The similarity level to determine the color for (range: 0 to 1).</param>
+        /// <returns>The color corresponding to the similarity level, ranging from light gray to dark orange.</returns>
+
+        private static Color GetColorForSimilarity(double similarity)
+        {
+            // Define the color range
+            // Light gray
+            int minColorValue = 100;
+            // Dark orange
+            int maxColorValue = 255;
+
+            // Map the similarity value to the color range
+            int colorValue = (int)(minColorValue + (maxColorValue - minColorValue) * similarity);
+
+            // Ensure the color value is within the valid range
+            colorValue = Math.Max(minColorValue, Math.Min(maxColorValue, colorValue));
+
+            // Create a color with the determined value
+            // Orange gradient
+            return Color.FromArgb(colorValue, colorValue / 2, 0);
+        }
 
         private static Color GetColor(decimal redStartVal, decimal yellowStartVal, decimal greenStartVal, decimal val)
         {
@@ -355,6 +650,29 @@ namespace NeoCortex
                 rgb[i] = (int)Math.Round((decimal)diff * ratio) + baseVal;
             }
             return rgb;
+        }
+
+        /// <summary>
+        /// Determines the color of a bar based on the given similarity level.
+        /// </summary>
+        /// <param name="similarity">The similarity level to determine the color for.</param>
+        /// <returns>The color corresponding to the similarity level.</returns>
+
+        private static Color GetBarColor(double similarity)
+        {
+            // Assign color based on similarity level
+            // High similarity (90% or higher)
+            if (similarity >= 0.9)
+                return Color.DarkOrange;
+            // Medium similarity (70% or higher)
+            else if (similarity >= 0.7)
+                return Color.Orange;
+            // Low similarity (50% or higher)
+            else if (similarity >= 0.5)
+                return Color.LightSalmon;
+            // Very low similarity (below 50%)
+            else
+                return Color.LightGray;
         }
 
         /// <summary>

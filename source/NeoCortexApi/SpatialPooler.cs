@@ -131,13 +131,8 @@ namespace NeoCortexApi
                 colList.Add(new KeyPair() { Key = i, Value = new Column(numCells, i, conn.HtmConfig.SynPermConnected, conn.HtmConfig.NumInputs) });
             }
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
             conn.Memory.set(colList);
-
-            sw.Stop();
-
+                        
             //Initialize state meta-management statistics
             conn.HtmConfig.OverlapDutyCycles = new double[numColumns];
             conn.HtmConfig.ActiveDutyCycles = new double[numColumns];
@@ -159,7 +154,7 @@ namespace NeoCortexApi
 
         public List<List<double>> GetColumnPermenances()
         {
-            return this.connections.GetColumnPermanences();
+            return this.connections.GetProximalDendritePermanences();
         }
 
         /// <summary>

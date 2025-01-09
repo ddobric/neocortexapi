@@ -23,6 +23,11 @@ namespace NeoCortexApiSample
             SpatialPatternLearning experiment = new SpatialPatternLearning();
             experiment.Run();
 
+            // Starts experiment For the Image Inputs how to learn spatial patterns.
+            // ImageBinarizerSpatialPattern experiment = new ImageBinarizerSpatialPattern();
+            // experiment.Run();
+
+
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
             //SequenceLearning experiment = new SequenceLearning();
@@ -64,8 +69,21 @@ namespace NeoCortexApiSample
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
-            sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
+            // sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
+            // sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
+
+            //            string poem = @"First Citizen:
+            //Before we proceed any further, hear me speak.
+            //All:
+            //Speak, speak.";
+
+            //            List<double> poemSeq = new List<double>();
+            //            foreach (var chr in poem)
+            //            {
+            //                poemSeq.Add((double)chr);
+            //            }
+
+            //            sequences.Add("Poem", poemSeq);
 
             //
             // Prototype for building the prediction engine.
