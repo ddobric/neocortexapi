@@ -22,7 +22,7 @@ In the HTM system, classifiers play a critical role in decoding the predictions 
 INPUT -> ENCODER -> SP -> SDR -> CLASSIFIER -> INPUT
 The encoder converts raw input data (such as images) into a binary SDR format. The Spatial Pooler and Temporal Memory process the SDRs to identify patterns and make predictions. The classifier then takes the predicted SDRs and attempts to reconstruct the original input data.
 In this project, we will utilize the IClassifier<TIN, TOUT> interface, which defines methods for learning and predicting input values from SDRs. Key methods include:
-Learn(key, actCells.ToArray()): Learns the association between input values and active cells.
+Learn(key, actCells.ToArray()): Learns the association between input values and active cells.HTM's capacity to forecast future patterns based on previously trained data patterns. After a few cycles, HTM receives a unique pattern that compares the prior patterns to the current pattern. Input patterns should not repeat, and the uniqueness should be maintained.
 GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3): Retrieves the predicted input values based on the SDR.
 
 #Steps to be Implemented
