@@ -24,7 +24,8 @@ The encoder converts raw input data (such as images) into a binary SDR format. T
 In this project, we will utilize the IClassifier<TIN, TOUT> interface, which defines methods for learning and predicting input values from SDRs. Key methods include:
 Learn(key, actCells.ToArray()): Learns the association between input values and active cells.HTM's capacity to forecast future patterns based on previously trained data patterns. After a few cycles, HTM receives a unique pattern that compares the prior patterns to the current pattern. Input patterns should not repeat, and the uniqueness should be maintained.
 GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3): Retrieves the predicted input values based on the SDR.
-HTM's capacity to forecast future patterns based on previously trained data patterns.
+HTM's capacity to forecast future patterns based on previously trained data patterns.HTM's capacity to forecast future patterns based on previously trained data patterns. After a few 
+cycles, HTM receives a unique pattern that compares the prior patterns to the current pattern.
 
 #Steps to be Implemented
             •	The project will follow these steps to achieve the desired image reconstruction:
