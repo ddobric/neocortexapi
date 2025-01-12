@@ -14,5 +14,18 @@ The experiment aims to extend the existing **SpatialLearning** experiment by add
 ### B. HTM Processing:
 1. Passing the encoded SDRs through the Spatial Pooler (SP) to generate stable SDRs that represent the essential spatial patterns in the input, which represents the learning phase.
 
+### C. Classification:
+1. Utilizing the HtmClassifier and KNN implementations to learn the mappings from SDRs to input data during the learning phase.
+2. During the prediction phase, using these classifiers to reconstruct the input images from the SDRs.
 
+### D. Evaluation:
+1. Comparing the reconstructed inputs with the original images using similarity metrics provided in the acceptance.
+2. Visualizing the differences between input and reconstructed images to assess the effectiveness of the classifiers.
 
+![Project Workflow](https://github.com/user-attachments/assets/d0396964-08bc-436f-b3f5-f54e20a4c5f6)
+# Expected Outcomes:
+
+This project will provide insights into the effectiveness of classifiers in the HTM framework, particularly in reverse encoding scenarios. By reconstructing input images from SDRs and comparing reconstructed images with original images, we aim to:
+
+- Understand how well HTM can generalize and reconstruct input data.
+- Assess the strengths and weaknesses of classifier implementations.
