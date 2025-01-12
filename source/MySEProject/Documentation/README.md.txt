@@ -4,7 +4,7 @@ Project Overview
 The project titled "Investigate Image Reconstruction by Using Classifiers" focuses on exploring the role of machine learning classifiers within the framework of Hierarchical Temporal Memory (HTM) for reconstructing images from Sparse Distributed Representations (SDRs). The implementation is carried out using the C# programming language. The objective is to understand how classifiers can be effectively used to reverse the HTM encoding process and regenerate input images with minimal loss of information. The project involves working with two existing classifiers, HtmClassifier and K-Nearest Neighbors (KNN), both of which were previously implemented in the HTM system by students.
 
 #Background and Motivation
-Hierarchical Temporal Memory (HTM) is a computational framework inspired by the structure and function of the human neocortex. HTM systems encode input data into Sparse Distributed Representations (SDRs), which are highly efficient and resilient to noise. While SDRs are excellent for learning and making predictions, the ability to reverse-engineer these SDRs back into their original input form is equally valuable. This project investigates how classifiers can assist in reconstructing input images from SDRs, effectively acting as a reverse encoder.
+Hierarchical Temporal Memory (HTM) is a computational framework inspired by the structure and function of the human neocortex. HTM has been used for anomaly detection, prediction, and classification tasks. HTM systems encode input data into Sparse Distributed Representations (SDRs), which are highly efficient and resilient to noise. While SDRs are excellent for learning and making predictions, the ability to reverse-engineer these SDRs back into their original input form is equally valuable. This project investigates how classifiers can assist in reconstructing input images from SDRs, effectively acting as a reverse encoder.
 The need for accurate image reconstruction arises in various domains, such as:
 Computer Vision: Reconstructing images from compressed representations.
 Data Compression: Developing efficient encoding and decoding techniques.
@@ -24,6 +24,8 @@ The encoder converts raw input data (such as images) into a binary SDR format. T
 In this project, we will utilize the IClassifier<TIN, TOUT> interface, which defines methods for learning and predicting input values from SDRs. Key methods include:
 Learn(key, actCells.ToArray()): Learns the association between input values and active cells.HTM's capacity to forecast future patterns based on previously trained data patterns. After a few cycles, HTM receives a unique pattern that compares the prior patterns to the current pattern. Input patterns should not repeat, and the uniqueness should be maintained.
 GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3): Retrieves the predicted input values based on the SDR.
+HTM's capacity to forecast future patterns based on previously trained data patterns.HTM's capacity to forecast future patterns based on previously trained data patterns. After a few 
+cycles, HTM receives a unique pattern that compares the prior patterns to the current pattern.
 
 #Steps to be Implemented
             •	The project will follow these steps to achieve the desired image reconstruction:
