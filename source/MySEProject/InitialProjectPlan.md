@@ -21,9 +21,10 @@ The experiment aims to extend the existing **SpatialLearning** experiment by add
 ### D. Evaluation:
 1. Comparing the reconstructed inputs with the original images using similarity metrics provided in the acceptance.
 2. Visualizing the differences between input and reconstructed images to assess the effectiveness of the classifiers.
+![Project Workflow](https://github.com/user-attachments/assets/ac9ab830-e9d1-4a6f-9ef1-912b37018e68)
 
-![Project Workflow](https://github.com/user-attachments/assets/d0396964-08bc-436f-b3f5-f54e20a4c5f6)
 # Expected Outcomes:
+
 
 This project will provide insights into the effectiveness of classifiers in the HTM framework, particularly in reverse encoding scenarios. By reconstructing input images from SDRs and comparing reconstructed images with original images, we aim to:
 
