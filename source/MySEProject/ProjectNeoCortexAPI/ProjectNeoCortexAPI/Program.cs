@@ -18,6 +18,11 @@
                 // Specifying the folder path containing images to load for the experiment
                 string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Project_Pictures");
 
+                // Call the method to process multiple images and get their binarized data as a single array
+                int[] binarizedImage = ImgBinarizer.ProcessImagesAsSingleArray(folderPath);
+
+                Console.WriteLine("Binarized Data:");
+                Console.WriteLine(string.Join(", ", binarizedImage));
             }
             catch (Exception ex)
             {
