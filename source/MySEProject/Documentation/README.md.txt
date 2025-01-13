@@ -1,19 +1,19 @@
 #ML 24/25-01 Investigate Image Reconstruction by using Classifiers
 
-Project Overview
+Project Overview:
 The project titled "Investigate Image Reconstruction by Using Classifiers" focuses on exploring the role of machine learning classifiers within the framework of Hierarchical Temporal Memory (HTM) for reconstructing images from Sparse Distributed Representations (SDRs). The implementation is carried out using the C# programming language. The objective is to understand how classifiers can be effectively used to reverse the HTM encoding process and regenerate input images with minimal loss of information. The project involves working with two existing classifiers, HtmClassifier and K-Nearest Neighbors (KNN), both of which were previously implemented in the HTM system by students.
 
-#Background and Motivation
+#Background and Motivation:
 Hierarchical Temporal Memory (HTM) is a computational framework inspired by the structure and function of the human neocortex. HTM has been used for anomaly detection, prediction, and classification tasks. HTM systems encode input data into Sparse Distributed Representations (SDRs), which are highly efficient and resilient to noise. While SDRs are excellent for learning and making predictions, the ability to reverse-engineer these SDRs back into their original input form is equally valuable. This project investigates how classifiers can assist in reconstructing input images from SDRs, effectively acting as a reverse encoder.
 The need for accurate image reconstruction arises in various domains, such as:
 Computer Vision: Reconstructing images from compressed representations.
 Data Compression: Developing efficient encoding and decoding techniques.
 Pattern Recognition: Enhancing the interpretability of machine learning models by visualizing learned representations.
 
-#Project Objectives
+#Project Objectives:
 The primary objectives of this project are:
 Understand the Role of Classifiers in HTM: Explore how classifiers work within the HTM framework to decode SDRs.
-Investigate Existing Classifiers: Analyze the performance of two existing classifiers, HtmClassifier and KNN, in the context of image reconstruction.
+Investigate Existing Classifiers: Analyze the performance of two existing classifiers, HtmClassifier and KNN, in the context of image reconstruction. Hierarchical Temporal Memory (HTM) classifiers and K-Nearest Neighbor (KNN) classifiers are distinct machine learning techniques with different approaches, strengths, and use cases. 
 Implement an Image Reconstruction Experiment: Create a new experiment inspired by the SpatialLearning experiment to reconstruct input images from SDRs using classifiers.
 Evaluate the Accuracy of Reconstruction: Measure the similarity between the original images and the reconstructed images using various similarity metrics.
 
@@ -26,6 +26,7 @@ Learn(key, actCells.ToArray()): Learns the association between input values and 
 GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3): Retrieves the predicted input values based on the SDR.HTM's capacity to forecast future patterns based on previously trained data patterns.HTM's capacity to forecast future patterns based on previously trained data patterns. After a few 
 cycles, HTM receives a unique pattern that compares the prior patterns to the current patter.Through a process known as spatial pooling, HTM models simulate the activation of dendritic segments based on the input data, resulting in Sparse Distributed Representations (SDRs) that
 capture the underlying patterns within the data.
+
 
 #Sparse Distributed representations (SDRs)
 Sparse Distributed representations (SDRs) of input patterns are used in HTM's language. With a set amount of active bits,it produces SDRs internally.These bits have semantic value.As a result, two inputs with equivalent semantic meaning must have equal active bit representation in SDR, which plays
