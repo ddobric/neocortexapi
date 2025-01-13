@@ -45,4 +45,8 @@ By the end of this project, we expect to:
             •	Gain a deeper understanding of how classifiers can be used within HTM to reverse the encoding process.
             •	Evaluate and compare the performance of HtmClassifier and KNN in reconstructing images.
             •	Provide insights into the strengths and weaknesses of each classifier for image reconstruction tasks.
+<<<<<<< HEAD
+The project will contribute to the broader understanding of how HTM and KNN can be applied in areas such as image processing, pattern recognition, and data reconstruction, offering practical insights for future applications in machine learning and artificial intelligence.
+=======
 In conclusion, we have explored the utilization of the Neocortex API for image and scalar data processing, employing techniques inspired by the biological principles of the neocortex.The project will contribute to the broader understanding of how HTM can be applied in areas such as image processing, pattern recognition, and data reconstruction, offering practical insights for future applications in machine learning and artificial intelligence.
+>>>>>>> 95c7db2a6487560d573a271c145669dacb67e18d
