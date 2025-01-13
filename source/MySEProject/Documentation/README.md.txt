@@ -13,7 +13,7 @@ Pattern Recognition: Enhancing the interpretability of machine learning models b
 #Project Objectives:
 The primary objectives of this project are:
 Understand the Role of Classifiers in HTM: Explore how classifiers work within the HTM framework to decode SDRs.
-Investigate Existing Classifiers: Analyze the performance of two existing classifiers, HtmClassifier and KNN, in the context of image reconstruction. Hierarchical Temporal Memory (HTM) classifiers and K-Nearest Neighbor (KNN) classifiers are distinct machine learning techniques with different approaches, strengths, and use cases. 
+Investigate Existing Classifiers: Analyze the performance of two existing classifiers, HtmClassifier and KNN, in the context of image reconstruction. Hierarchical Temporal Memory (HTM) classifiers and K-Nearest Neighbor (KNN) classifiers are distinct machine learning techniques with different approaches, strengths, and use cases. HTM is best for Problems where data is sequential or temporal, such as time-series forecasting, anomaly detection, and pattern recognition.
 Implement an Image Reconstruction Experiment: Create a new experiment inspired by the SpatialLearning experiment to reconstruct input images from SDRs using classifiers.
 Evaluate the Accuracy of Reconstruction: Measure the similarity between the original images and the reconstructed images using various similarity metrics.
 
