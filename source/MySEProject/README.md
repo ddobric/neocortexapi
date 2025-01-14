@@ -1,6 +1,13 @@
 # Project Title: ML 24/25-01 Investigate Image Reconstruction by using Classifiers
 
-## Problem Statement:
+## Table of Contents
+
+- [Problem Statement](#problem-statement)
+- [Introduction](#introduction)
+- [Image Encoder](#image-encoder)
+- [Sparse Distributed Representations (SDR)](#sparse-distributed-representations-sdr)
+
+### Problem Statement:
 This project aims to explore the role of classifiers in Hierarchical Temporal Memory (HTM) systems,
 focusing on their ability to associate input patterns with meaningful predictions and reconstruct
 original inputs from Sparse Distributed Representations (SDRs). By investigating and comparing two
@@ -13,31 +20,21 @@ similarity measures. Results will be illustrated with diagrams, analysed quantit
 providing insights into the reconstruction capabilities of classifiers in HTM systems and their
 practical implications.
 
-## Introduction:
-This project aims to explore the role of classifiers in Hierarchical Temporal Memory (HTM) systems,
-focusing on their ability to associate input patterns with meaningful predictions and reconstruct
-original inputs from Sparse Distributed Representations (SDRs). By investigating and comparing two
-existing classifiers, HtmClassifier and KNN, the project seeks to evaluate their functionality,
-performance, and differences. Inspired by the SpatialLearning experiment, a new experiment will be
-implemented to regenerate input images from SDRs produced by the Spatial Pooler (SP), leveraging
-the IClassifier interface for learning and prediction. The experiment will use the ImageEncoder to
-process images, reconstruct inputs via classifiers, and compare them with the originals using
-similarity measures. Results will be illustrated with diagrams, analysed quantitatively, and discussed,
-providing insights into the reconstruction capabilities of classifiers in HTM systems and their
-practical implications.
+### Introduction:
+This project explores the integration and application of classifiers within the Hierarchical Temporal Memory (HTM) framework to regenerate input data from Sparse Distributed Representations (SDRs). The core goal is to understand the role of classifiers in reverse encoding, where the learned SDR representations are used to reconstruct the original input. Through this process, we aim to analyse the behaviour and performance of two existing classifiers—HtmClassifier and KNN—and implement a new experiment that leverages their capabilities. The two classifiers under study in this project—HtmClassifier and KNN—serve as foundational implementations. The HtmClassifier leverages the principles of temporal memory within HTM, while the KNN classifier employs a distance-based approach to classify SDRs based on nearest neighbours. Through this investigation, the project bridges the gap between abstract HTM theories and practical applications, contributing to advancements in intelligent systems and neural computation.
 
-## Image Encoder:
+### Image Encoder:
 The ImageEncoder plays a crucial role in preparing image data for processing within Hierarchical
 Temporal Memory (HTM) systems by converting raw image inputs into binary representations
-compatible with HTM&#39;s Sparse Distributed Representations (SDRs). Based on the ImageBinarizer
+compatible with HTM's Sparse Distributed Representations (SDRs). Based on the ImageBinarizer
 NuGet package, the ImageEncoder encodes pixel intensity or feature information into a format that
 preserves essential patterns while reducing redundancy. This encoding ensures that similar images
 produce similar SDRs, a key characteristic that enables effective learning and pattern recognition in
 HTM systems. By preprocessing images into this sparse binary format, the ImageEncoder bridges the
-gap between raw image data and the HTM&#39;s Spatial Pooler, making it a foundational component for
+gap between raw image data and the HTM's Spatial Pooler, making it a foundational component for
 image-based experiments, such as learning spatial patterns or regenerating inputs from SDRs.
 
-## Sparse Distributed Representations (SDR):
+### Sparse Distributed Representations (SDR):
 Sparse Distributed Representations (SDRs) are analogous to how the human brain encodes
 information. Just as neurons in the brain fire in sparse patterns, with only a small fraction of neurons
 active at any time, SDRs use binary vectors where a small percentage of bits are active (1s) while the
