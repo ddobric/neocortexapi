@@ -1,7 +1,7 @@
 # Problem Statement:
 The project aims to implement the concept of classifiers and their application within the Hierarchical Temporal Memory (HTM) framework. Building on the Spatial Learning experiment, which demonstrates learning, this project will introduce a new experiment focused on reconstructing input from the generated Sparse Distributed Representations (SDRs) using HTM/KNN classifiers and comparing the output with the original input.
 
-![ProjectPipeline](https://github.com/user-attachments/assets/ddb45df5-5408-47b4-a976-169ac8ebe429)
+![SprintPlan](https://github.com/user-attachments/assets/cfecfff9-f1c3-4248-b684-3c4e5db0c5a8)
 
 # Project Workflow:
 
