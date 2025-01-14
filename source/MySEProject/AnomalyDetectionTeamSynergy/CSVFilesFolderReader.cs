@@ -7,7 +7,7 @@ namespace CSVFileHandling
     /// <summary>
     /// A class for reading and processing CSV files.
     /// </summary>
-    public class CSVFileReader
+    public class CSVFilesFolderReader
     {
         /// <summary>
         /// Reads a CSV file and returns its content as a list of rows, where each row is a list of column values.
@@ -51,7 +51,7 @@ namespace CSVFileHandling
         {
             for (int i = 0; i < csvData.Count; i++)
             {
-                Console.WriteLine($"Row {i + 1}: {string.Join(" | ", csvData[i])}");
+                Console.WriteLine($"Row {i + 1}: {string.Join("   |   ", csvData[i])}");
             }
         }
     }

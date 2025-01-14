@@ -30,8 +30,8 @@ namespace AnomalyDetectionTeamSynergy
                     throw new FileNotFoundException("No CSV files found in the specified folder.");
                 }
 
-                // Create an instance of the CSVFileReader class
-                var csvReader = new CSVFileReader();
+                // Create an instance of the CSVFilesFolderReader class
+                var csvReader = new CSVFilesFolderReader();
 
                 foreach (var filePath in csvFiles)
                 {
