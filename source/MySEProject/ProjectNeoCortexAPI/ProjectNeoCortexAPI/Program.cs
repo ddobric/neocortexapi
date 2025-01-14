@@ -15,23 +15,44 @@ namespace ProjectNeoCortexAPI
             Console.WriteLine("     Somava Ganguly[1566916]\n\n");
 
             Run();
-
         }
+
         public static void Run()
         {
-            Console.WriteLine("Create the image binary with custom width and height and save it to a text file.");
+            Console.WriteLine("Processing all images in the input folder.");
 
-            //Taking the Input Image and adding the Image Binarizer Parameters
-            var config = new BinarizerParams
+            // Specify the input folder and output folder
+            string inputFolder = "CommonFiles"; // Path to the folder containing input image
+
+            // Get all image files from the input folder
+            string[] imageFiles = Directory.GetFiles(inputFolder, "*.jpeg");
+
+            if (imageFiles.Length == 0)
             {
-                InputImagePath = "CommonFiles\\IMG.jpeg",
-                OutputImagePath = ".\\BinarizedImage.txt",
-                ImageWidth = 40,
-                ImageHeight = 20
-            };
+                Console.WriteLine("No images found in the input folder.");
+                return;
+            }
 
-            var img = new CustomImageBinarizer(config);
-            img.Run();
+            foreach (var imagePath in imageFiles)
+            {
+                // Construct the output file name based on the input file name
+                string outputFileName = Path.GetFileNameWithoutExtension(imagePath) + "_Binarized.txt";
+
+                // Define binarizer configuration for each image
+                var config = new BinarizerParams
+                {
+                    InputImagePath = imagePath,
+                    OutputImagePath = outputFileName,
+                    ImageWidth = 40,
+                    ImageHeight = 20
+                };
+
+                // Run the binarizer
+                var img = new CustomImageBinarizer(config);
+                img.Run();
+            }
+
+            Console.WriteLine("All images have been processed.");
         }
     }
 }
