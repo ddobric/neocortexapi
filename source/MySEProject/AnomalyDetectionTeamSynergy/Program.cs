@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CSVFileHandling;
 
 
@@ -9,20 +11,36 @@ namespace AnomalyDetectionTeamSynergy
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            Console.WriteLine("Enter the full path to the CSV file:");
-            string filePath = Console.ReadLine();
+            Console.WriteLine("Enter the full path to the folder containing CSV files:");
+            string folderPath = Console.ReadLine();
 
             try
             {
+                // Check if folder exists
+                if (!Directory.Exists(folderPath))
+                {
+                    throw new DirectoryNotFoundException("The specified folder does not exist.");
+                }
+
+                // Get all CSV files in the folder
+                string[] csvFiles = Directory.GetFiles(folderPath, "*.csv");
+
+                if (csvFiles.Length == 0)
+                {
+                    throw new FileNotFoundException("No CSV files found in the specified folder.");
+                }
+
                 // Create an instance of the CSVFileReader class
                 var csvReader = new CSVFileReader();
 
-                // Read the CSV file and get its content
-                var csvData = csvReader.ReadCSVFile(filePath);
+                foreach (var filePath in csvFiles)
+                {
+                    Console.WriteLine($"\n--- Reading File: {Path.GetFileName(filePath)} ---");
 
-                // Display the content of the CSV file
-                Console.WriteLine("\n--- CSV File Data ---");
-                csvReader.DisplayCSVData(csvData);
+                    // Read and display the CSV data
+                    var csvData = csvReader.ReadCSVFile(filePath);
+                    csvReader.DisplayCSVData(csvData);
+                }
             }
             catch (Exception ex)
             {
