@@ -22,7 +22,8 @@ The experiment aims to extend the existing **SpatialLearning** experiment by add
 2. Visualizing the differences between input and reconstructed images to assess the effectiveness of the classifiers.
 3. Create similarity graphs to compare original input with outputs from HTM and KNN classifiers using visualization tools like Matplotlib or OxyPlot.
    
-![Project Workflow](https://github.com/user-attachments/assets/ac9ab830-e9d1-4a6f-9ef1-912b37018e68)
+
+![Project Workflow](https://github.com/user-attachments/assets/35623693-68ac-4d79-a5be-af802846bdd4)
 
 ## Expected Outcomes:
 
