@@ -47,6 +47,8 @@ namespace AnomalyDetectionTeamSynergy
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
+            RunMultiSequenceLearningExperiment.Run();
+
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();
         }
