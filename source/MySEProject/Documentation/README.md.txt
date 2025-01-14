@@ -32,6 +32,9 @@ capture the underlying patterns within the data.
 Sparse Distributed representations (SDRs) of input patterns are used in HTM's language. With a set amount of active bits,it produces SDRs internally.These bits have semantic value.As a result, two inputs with equivalent semantic meaning must have equal active bit representation in SDR, which plays
 an important role in HTM learning.
 
+#Difference between HTM & KNN
+HTM: Focused on temporal learning and is ideal for applications involving time-series data and sequences. It is biologically inspired and mimics brain-like structures.
+
 #Steps to be Implemented
             •	The project will follow these steps to achieve the desired image reconstruction:
             •	Load Images from a Folder: Use a dataset of images to serve as input for the experiment.
