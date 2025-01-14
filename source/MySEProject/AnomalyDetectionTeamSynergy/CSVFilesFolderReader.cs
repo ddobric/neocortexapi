@@ -1,107 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
-namespace AnomalyDetectionSample
+namespace CSVFileHandling
 {
     /// <summary>
-    /// Reads the CSV files inside a folder and returns its contents as a list of sequences.
+    /// A class for reading and processing CSV files.
     /// </summary>
-    public class CSVFolderReader
+    public class CSVFileReader
     {
-        private string _folderPathToCSV;
-
         /// <summary>
-        /// Creates a new instance of the CSVFolderReader class with the provided file path to the constructor.
+        /// Reads a CSV file and returns its content as a list of rows, where each row is a list of column values.
         /// </summary>
-        /// <param name="folderPathToCSV">The path to the folder containing the CSV files.</param>
-        public CSVFolderReader(string folderPathToCSV)
+        /// <param name="filePath">The path to the CSV file.</param>
+        /// <returns>A list of rows, where each row is a list of string values.</returns>
+        public List<List<string>> ReadCSVFile(string filePath)
         {
-            _folderPathToCSV = folderPathToCSV;
-        }
+            var csvData = new List<List<string>>();
 
-        /// <summary>
-        /// Reads all CSV files in the folder, path to the folder is specified in the constructor,
-        /// and returns its contents as a list of sequences.
-        /// </summary>
-        /// <returns>A list of sequences contained in the CSV files present in the folder.</returns>
-        public List<List<double>> ReadFolder()
-        {
-            List<List<double>> folderSequences = new List<List<double>>();
-
-            // All the CSV files present inside the folder are taken
-            string[] fileEntries = Directory.GetFiles(_folderPathToCSV, "*.csv");
-
-            // Iterating through each CSV file inside the folder
-            foreach (string fileName in fileEntries)
+            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
             {
-                string[] csvLines = File.ReadAllLines(fileName);
-                List<List<double>> sequencesInFile = new List<List<double>>();
+                throw new FileNotFoundException("The specified CSV file does not exist.");
+            }
 
-                // Looping through each line in the current CSV file
-                for (int i = 0; i < csvLines.Length; i++)
+            try
+            {
+                // Read all lines from the file
+                string[] lines = File.ReadAllLines(filePath);
+
+                foreach (string line in lines)
                 {
-                    string[] columns = csvLines[i].Split(new char[] { ',' });
-                    List<double> sequence = new List<double>();
-
-                    // Loop through each column in the current line
-                    for (int j = 0; j < columns.Length; j++)
-                    {
-                        // Value of column is parsed as double and added to sequence
-                        // if it fails then exception is thrown
-                        if (double.TryParse(columns[j], out double value))
-                        {
-                            sequence.Add(value);
-                        }
-                        else
-                        {
-                            throw new ArgumentException($"Non-numeric value found! Please check file: {fileName}.");
-                        }
-                    }
-                    sequencesInFile.Add(sequence);
+                    // Split the line into columns based on commas
+                    var columns = new List<string>(line.Split(','));
+                    csvData.Add(columns);
                 }
-                folderSequences.AddRange(sequencesInFile);
             }
-            return folderSequences;
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while reading the file: {ex.Message}");
+            }
+
+            return csvData;
         }
 
         /// <summary>
-        /// This method reads all CSV files in the folder path passed on to the constructor,
-        /// and outputs its contents to the console.
+        /// Displays the content of a CSV file on the console.
         /// </summary>
-        public void CSVSequencesConsoleOutput()
+        /// <param name="csvData">The list of rows containing CSV data.</param>
+        public void DisplayCSVData(List<List<string>> csvData)
         {
-            List<List<double>> sequences = ReadFolder();
-            // Looping through each sequence and displaying it in the console
-            for (int i = 0; i < sequences.Count; i++)
+            for (int i = 0; i < csvData.Count; i++)
             {
-                Console.Write("Sequence " + (i + 1) + ": ");
-                foreach (double number in sequences[i])
-                {
-                    Console.Write(number + " ");
-                }
-                Console.WriteLine("");
+                Console.WriteLine($"Row {i + 1}: {string.Join(" | ", csvData[i])}");
             }
         }
-
-        /// <summary>
-        /// Trims a random number of elements (between 1 and 4) from the beginning of each sequence in a list of sequences.
-        /// </summary>
-        /// <param name="sequences">The list of sequences to trim.</param>
-        /// <returns>A new list of trimmed sequences.</returns>
-        public static List<List<double>> TrimSequences(List<List<double>> sequences)
-        {
-            Random rnd = new Random();
-            List<List<double>> trimmedSequences = new List<List<double>>();
-
-            foreach (List<double> sequence in sequences)
-            {
-                // Generate a random number between 1 and 4
-                int numElementsToRemove = rnd.Next(1, 5);
-                List<double> trimmedSequence = sequence.Skip(numElementsToRemove).ToList();
-                trimmedSequences.Add(trimmedSequence);
-            }
-
-            return trimmedSequences;
-        }
-
     }
 }
