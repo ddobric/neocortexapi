@@ -35,6 +35,7 @@ an important role in HTM learning.
 #Difference between HTM & KNN
 HTM: Focused on temporal learning and is ideal for applications involving time-series data and sequences. It is biologically inspired and mimics brain-like structures.
 KNN: A simple, distance-based algorithm used for classification and regression in static datasets. It’s a straightforward, non-parametric method without temporal capabilities.
+Both approaches are suited to different problem domains and should be chosen based on the data type and application requirements.
 
 #Steps to be Implemented
             •	The project will follow these steps to achieve the desired image reconstruction:
