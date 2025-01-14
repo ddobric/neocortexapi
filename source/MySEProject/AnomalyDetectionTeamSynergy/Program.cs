@@ -1,4 +1,5 @@
 ﻿using NeoCortexApi;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace AnomalyDetectionTeamSynergy
@@ -27,8 +28,57 @@ namespace AnomalyDetectionTeamSynergy
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             var predictor = experiment.Run(sequences);
 
+            // These list are used to see how the prediction works.
+            // Predictor is traversing the list element by element. 
+            // By providing more elements to the prediction, the predictor delivers more precise result.
+
             var list1 = new double[] { 1, 3, 5, 7, 9 };
 
+            foreach (var item in list1)
+            {
+                var res = predictor.Predict(item);
+
+                if (res.Count > 0)
+                {
+                    foreach (var pred in res)
+                    {
+                        Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                    }
+
+                    var tokens = res.First().PredictedInput.Split('_');
+                    var tokens2 = res.First().PredictedInput.Split('-');
+                    Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                }
+                else
+                    Debug.WriteLine("Nothing predicted :(");
+            }
+
+        }
+
+        private static void PredictNextElement(Predictor predictor, double[] list)
+        {
+            Debug.WriteLine("------------------------------");
+
+            foreach (var item in list)
+            {
+                var res = predictor.Predict(item);
+
+                if (res.Count > 0)
+                {
+                    foreach (var pred in res)
+                    {
+                        Debug.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
+                    }
+
+                    var tokens = res.First().PredictedInput.Split('_');
+                    var tokens2 = res.First().PredictedInput.Split('-');
+                    Debug.WriteLine($"Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                }
+                else
+                    Debug.WriteLine("Nothing predicted :(");
+            }
+
+            Debug.WriteLine("------------------------------");
         }
     }
 }
