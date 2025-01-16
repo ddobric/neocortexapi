@@ -236,6 +236,7 @@ namespace NeoCortexApiSample
                         Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
                         //
+                        //
                         // If the list of predicted values from the previous step contains the currently presenting value,
                         // we have a match.
                         if (lastPredictedValues.Contains(key))
