@@ -88,7 +88,7 @@ namespace AnomalyDetectionSample
         }
         private List<string> DetectAnomaly(Predictor predictor, double[] sequence, double tolerance = 0.2)
         {
-            if (sequence.Length < 3)
+            if (sequence.Length < 2)
             {
                 throw new ArgumentException($"Sequence must contain at least two values. Actual count: {sequence.Length}. Sequence: [{string.Join(",", sequence)}]");
             }
@@ -109,7 +109,7 @@ namespace AnomalyDetectionSample
                 ""
             };
 
-            double currentAccuracy = 0.0;
+            double currentAccuracy = 0.1;
 
             for (int i = 0; i < sequence.Length; i++)
             {
@@ -159,10 +159,6 @@ namespace AnomalyDetectionSample
 
             var averageSequenceAccuracy = currentAccuracy / sequence.Length;
 
-            resultOutputLines.Add("");
-            resultOutputLines.Add($"Average accuracy for this sequence: {averageSequenceAccuracy}%.");
-            resultOutputLines.Add("");
-            resultOutputLines.Add("------------------------------");
 
             _totalAccuracy += averageSequenceAccuracy;
             _iterationCount++;

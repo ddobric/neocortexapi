@@ -5,9 +5,7 @@ using System.Collections.Generic;
 
 namespace AnomalyDetectionSample
 {
-    /// <summary>
-    /// Executes the HTM model training experiment using sequence to return the trained model
-    /// </summary>
+
     public class HTMTrainingManager
     {
         /// <summary>
@@ -19,10 +17,8 @@ namespace AnomalyDetectionSample
         public void ExecuteHTMModelTraining(string trainingFolderPath, string predictionFolderPath, out Predictor trainedPredictor)
         {
 
-            // Using Stopwatch to measure the total training time
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            // Read numerical sequences from CSV files in the specified training folder
             CsvSequenceFolder trainingReader = new CsvSequenceFolder(trainingFolderPath);
             var trainingSequences = trainingReader.ExtractSequencesFromFolder();
 
