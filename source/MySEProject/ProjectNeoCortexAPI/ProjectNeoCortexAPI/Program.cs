@@ -18,11 +18,15 @@ namespace ProjectNeoCortexAPI
             Console.WriteLine("     Somava Ganguly[1566916]\n\n");
 
             Run();
+
+            // Calling the Binary to Double Converter Class
+            BinaryToDoubleConverter.PrintDoubleValuesFromBinarizedFiles();
+
         }
 
         public static void Run()
         {
-            Console.WriteLine("Processing all images in the input folder.");
+            Console.WriteLine("Processing all images in the input folder.\n");
 
             // Specify the input folder and output folder
             string inputFolder = "CommonFiles"; // Path to the folder containing input images
@@ -75,7 +79,7 @@ namespace ProjectNeoCortexAPI
                 }
             }
 
-            Console.WriteLine("All images have been processed.");
+            Console.WriteLine("All images have been processed.\n");
         }
     }
 }
