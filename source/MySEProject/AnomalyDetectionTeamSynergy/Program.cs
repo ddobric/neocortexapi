@@ -10,20 +10,23 @@ namespace AnomalyDetectionTeamSynergy
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
-            Console.WriteLine("Enter the full path to the folder containing CSV files:");
-            string folderPath = Console.ReadLine();
+            string projectbaseDirectory = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.FullName;
+            string defaultTrainingFolder = Path.Combine(projectbaseDirectory, "TrainingData");
+            string defaultInferringFolder = Path.Combine(projectbaseDirectory, "InferringData");
+
+            Console.WriteLine("Training Data Path: " + defaultTrainingFolder);
+            Console.WriteLine("Inferring Data Path: " + defaultInferringFolder);
 
             try
             {
                 // Check if folder exists
-                if (!Directory.Exists(folderPath))
+                if (!Directory.Exists(defaultTrainingFolder))
                 {
                     throw new DirectoryNotFoundException("The specified folder does not exist.");
                 }
 
                 // Get all CSV files in the folder
-                string[] csvFiles = Directory.GetFiles(folderPath, "*.csv");
+                string[] csvFiles = Directory.GetFiles(defaultTrainingFolder, "*.csv");
 
                 if (csvFiles.Length == 0)
                 {
@@ -31,7 +34,7 @@ namespace AnomalyDetectionTeamSynergy
                 }
 
                 // Create an instance of the CSVFilesFolderReader class
-                var csvReader = new CSVFilesFolderReader();
+                var csvReader = new CSVFileReader();
 
                 foreach (var filePath in csvFiles)
                 {
