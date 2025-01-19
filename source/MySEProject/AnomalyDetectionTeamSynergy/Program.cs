@@ -1,8 +1,8 @@
-﻿using System;
+﻿using AnomalyDetectionSample;
+using CSVFileHandling;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using CSVFileHandling;
-
 
 namespace AnomalyDetectionTeamSynergy
 {
@@ -30,8 +30,9 @@ namespace AnomalyDetectionTeamSynergy
                     throw new FileNotFoundException("No CSV files found in the specified folder.");
                 }
 
-                // Create an instance of the CSVFilesFolderReader class
-                var csvReader = new CSVFilesFolderReader();
+                // Create an instance of the CSVFileReader class
+                var csvReader = new CSVFileReader();
+                var sequences = new Dictionary<string, List<double>>();
 
                 foreach (var filePath in csvFiles)
                 {
@@ -40,17 +41,29 @@ namespace AnomalyDetectionTeamSynergy
                     // Read and display the CSV data
                     var csvData = csvReader.ReadCSVFile(filePath);
                     csvReader.DisplayCSVData(csvData);
+
+                    // Parse sequences from CSV
+                    var parsedSequences = csvReader.ParseSequencesFromCSV(csvData);
+                    foreach (var seq in parsedSequences)
+                    {
+                        if (!sequences.ContainsKey(seq.Key))
+                            sequences.Add(seq.Key, seq.Value);
+                    }
                 }
+
+                // Now run the learning experiment with anomaly detection
+                var experiment = new MultiSequenceLearning();
+                experiment.Run(sequences);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
             }
 
-            RunMultiSequenceLearningExperiment.Run();
-
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();
+            RunMultiSequenceLearningExperiment.Run();
         }
+       
     }
 }
