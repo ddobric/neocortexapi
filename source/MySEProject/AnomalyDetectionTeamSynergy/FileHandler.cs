@@ -19,5 +19,34 @@ namespace AnomalyDetectionTeamSynergy
             this.defaultTrainingFolder = defaultTrainingFolder;
             this.defaultInferringFolder = defaultInferringFolder;
         }
-    }
+
+        public void ProcessArguments(string[] args)
+        {
+            string trainingFile;
+            string inferringFile;
+            string trainingFolder;
+            string inferringFolder;
+
+            // Parse console arguments
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i])
+                {
+                    case "--training-file":
+                        trainingFile = i + 1 < args.Length ? args[i + 1] : null;
+                        break;
+                    case "--inferring-file":
+                        inferringFile = i + 1 < args.Length ? args[i + 1] : null;
+                        break;
+                    case "--training-folder":
+                        trainingFolder = i + 1 < args.Length ? args[i + 1] : null;
+                        break;
+                    case "--inferring-folder":
+                        inferringFolder = i + 1 < args.Length ? args[i + 1] : null;
+                        break;
+                }
+            }
+        }
+
+        }
 }
