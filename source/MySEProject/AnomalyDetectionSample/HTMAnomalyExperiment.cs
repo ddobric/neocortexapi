@@ -83,8 +83,6 @@ namespace AnomalyDetectionSample
 
             StoredOutputValues.totalAvgAccuracy = _totalAccuracy / _iterationCount;
 
-            Console.WriteLine("Experiment results have been written to the text file.");
-            Console.WriteLine("Anomaly detection experiment completed.");
         }
         private List<string> DetectAnomaly(Predictor predictor, double[] sequence, double tolerance = 0.2)
         {
@@ -109,7 +107,7 @@ namespace AnomalyDetectionSample
                 ""
             };
 
-            double currentAccuracy = 0.1;
+            double currentAccuracy = 0.2;
 
             for (int i = 0; i < sequence.Length; i++)
             {
