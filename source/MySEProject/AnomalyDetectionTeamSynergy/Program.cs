@@ -10,29 +10,37 @@ namespace AnomalyDetectionTeamSynergy
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
-            Console.WriteLine("Enter the full path to the folder containing CSV files:");
-            string folderPath = Console.ReadLine();
+            string projectbaseDirectory = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.FullName;
+            string defaultTrainingFolder = Path.Combine(projectbaseDirectory, "TrainingData");
+            string defaultInferringFolder = Path.Combine(projectbaseDirectory, "InferringData");
+
+            Console.WriteLine("Training Data Path: " + defaultTrainingFolder);
+            Console.WriteLine("Inferring Data Path: " + defaultInferringFolder);
 
             try
             {
                 // Check if folder exists
-                if (!Directory.Exists(folderPath))
+                if (!Directory.Exists(defaultTrainingFolder))
                 {
                     throw new DirectoryNotFoundException("The specified folder does not exist.");
                 }
 
                 // Get all CSV files in the folder
-                string[] csvFiles = Directory.GetFiles(folderPath, "*.csv");
+                string[] csvFiles = Directory.GetFiles(defaultTrainingFolder, "*.csv");
 
                 if (csvFiles.Length == 0)
                 {
                     throw new FileNotFoundException("No CSV files found in the specified folder.");
                 }
 
+<<<<<<< HEAD
                 // Create an instance of the CSVFileReader class
                 var csvReader = new CSVFileReader();
                 var sequences = new Dictionary<string, List<double>>();
+=======
+                // Create an instance of the CSVFilesFolderReader class
+                var csvReader = new CSVFileReader();
+>>>>>>> 614b50c74689a14c08876f478f9b5a67eda89b39
 
                 foreach (var filePath in csvFiles)
                 {
