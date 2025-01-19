@@ -58,6 +58,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeocortexApiLLMSample", "Ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApproveMultiSequenceLearning", "Samples\ApproveMultiSequenceLearning\ApproveMultiSequenceLearning.csproj", "{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeocortexApiSamplePerformance", "Samples\NeocortexApiSamplePerformance\NeocortexApiSamplePerformance.csproj", "{7275990D-1AC9-42C6-B25E-3956641733F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +130,10 @@ Global
 		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7275990D-1AC9-42C6-B25E-3956641733F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7275990D-1AC9-42C6-B25E-3956641733F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7275990D-1AC9-42C6-B25E-3956641733F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7275990D-1AC9-42C6-B25E-3956641733F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,6 +145,7 @@ Global
 		{7F272910-3A59-4BBB-8888-9A7F695CA754} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 		{8D1F778F-AF73-44CF-965E-C061C07B99A7} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 		{D56D5B70-0094-41F0-9FFD-BCAB50BA7737} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
+		{7275990D-1AC9-42C6-B25E-3956641733F2} = {99AE2313-7D07-4905-A0BB-52D304FCC2F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71185BAD-1342-4836-BCDA-6EC97118F92D}
