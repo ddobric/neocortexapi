@@ -6,10 +6,17 @@ using System.Text;
 
 namespace AnomalyDetectionSample
 {
+    private readonly string _trainingCSVFolderPath;
+    private readonly string _predictingCSVFolderPath;
+    private static double _totalAccuracy = 0.0;
+    private static int _iterationCount = 0;
+    private readonly double _tolerance = 0.1;
+
     /// <summary>
-    /// This class is responsible for testing an HTM model.
-    /// CSV files from both training(learning) and predicting folders will be used for training our HTM Model.
+    /// Initializes a new instance of the HTMAnomalyExperiment class with default folder paths.
     /// </summary>
+    /// <param name="trainingFolderPath">The path to the training folder containing CSV files.</param>
+    /// <param name="predictingFolderPath">The path to the predicting folder containing CSV files.</param>
     public class HTMAnomalyExperiment
     {
 
