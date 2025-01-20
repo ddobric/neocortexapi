@@ -47,3 +47,7 @@ inputs. This allows HTM systems to efficiently encode, recognize, and generalize
 brain does when processing sensory input. SDRs form the foundation for all processing stages in
 HTM, including spatial pooling and temporal memory, providing a biologically plausible and
 computationally robust framework for learning and prediction.
+
+
+### Spatial Pooler (SP):
+The Spatial Pooler is a fundamental component of Hierarchical Temporal Memory (HTM) systems, transforming raw input data into Sparse Distributed Representations (SDRs). Its primary function is to encode the input while ensuring key properties such as sparsity and similarity preservation. Sparsity ensures that only a small percentage of bits in the SDR are active, which improves computational efficiency and reduces noise sensitivity. Similarity preservation means that inputs with similar patterns produce SDRs with overlapping active bits, enabling the system to recognize related patterns effectively. The Spatial Pooler achieves this through competition among columns of cells, where each column competes to represent specific input features, guided by synaptic connections that adapt over time. This adaptation allows the Spatial Pooler to learn the statistical structure of the input space, making it robust to noise and capable of generalizing from limited data. As a result, the Spatial Pooler provides the foundation for further processing, such as temporal learning and classification, in HTM systems.
