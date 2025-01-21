@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace CSVFileHandling
+﻿namespace AnomalyDetectionTeamSynergy
 {
     public class CSVFileReader
     {

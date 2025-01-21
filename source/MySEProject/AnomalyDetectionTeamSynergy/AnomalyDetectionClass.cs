@@ -1,9 +1,4 @@
-﻿using NeoCortexApi.Classifiers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AnomalyDetectionSample
+﻿namespace AnomalyDetectionTeamSynergy
 {
     public class AnomalyDetection
     {

@@ -5,7 +5,7 @@ using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
 using System.Diagnostics;
 
-namespace AnomalyDetectionSample
+namespace AnomalyDetectionTeamSynergy
 {
     /// <summary>
     /// Implements an experiment that demonstrates how to learn sequences.

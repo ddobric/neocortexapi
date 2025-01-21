@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AnomalyDetectionSample
+﻿namespace AnomalyDetectionTeamSynergy
 {
     /// <summary>
     /// Converts a list of sequences to a dictionary of sequences for facilitating HTM Engine training.

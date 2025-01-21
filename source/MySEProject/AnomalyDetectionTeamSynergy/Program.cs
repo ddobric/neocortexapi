@@ -1,10 +1,4 @@
-﻿using AnomalyDetectionSample;
-using CSVFileHandling;
-using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace AnomalyDetectionTeamSynergy
+﻿namespace AnomalyDetectionTeamSynergy
 {
     internal class Program
     {
