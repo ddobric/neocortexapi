@@ -74,11 +74,16 @@ namespace NeoCortexApiSample
             //Accessing the Image Folder form the Cureent Directory
             string trainingFolder = "Sample\\TestFiles";
             //Accessing the Image Folder form the Cureent Directory Foldfer
-            var trainingImages = Directory.GetFiles(trainingFolder, $"{inputPrefix}*.jpeg");
+            var trainingImages = Directory.EnumerateFiles(trainingFolder).Where(file => file.StartsWith($"{trainingFolder}\\{inputPrefix}") &&
+            (file.EndsWith(".jpeg") || file.EndsWith(".jpg") || file.EndsWith(".png"))).ToArray();
             //Image Size
             int imageSize = 28;
-            //Folder Name in the Directorty 
-            string testName = "test_image";
+            // Path to the folder where results will be saved
+            String outputFolder = ".\\BinarizedImages";
+            // Ensure the output folder exists
+            Directory.CreateDirectory(outputFolder);
+            ////Folder Name in the Directorty 
+            //string testName = "test_image";
 
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, trainingImages.Length * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
@@ -116,9 +121,12 @@ namespace NeoCortexApiSample
             {
                 foreach (var Image in trainingImages)
                 {
+                    // Construct the output file name based on the input file name
+                    string outputFileName = Path.GetFileNameWithoutExtension(Image) + "_Binarized.txt";
+                    string outputPath = Path.Combine(outputFolder, outputFileName);
                     //Binarizing the Images before taking Inputs for the Sp
-                    string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{Image}", imgSize, testName);
-
+                    string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{Image}", imgSize, outputPath);
+ 
                     // Read Binarized and Encoded input csv file into array
                     int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
 
