@@ -3,7 +3,11 @@ using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+
 
 namespace AnomalyDetectionTeamSynergy
 {
@@ -15,12 +19,13 @@ namespace AnomalyDetectionTeamSynergy
         /// <summary>
         /// Runs the learning of sequences.
         /// </summary>
-        /// <param name="sequences">Dictionary of sequences. KEY is the sequence name, the VALUE is the list of element of the sequence.</param>
+        /// <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
         public Predictor Run(Dictionary<string, List<double>> sequences)
         {
+            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
 
-            int inputBits = 121;
-            int numColumns = 1210;
+            int inputBits = 100;
+            int numColumns = 1024;
 
             HtmConfig cfg = new HtmConfig(new int[] { inputBits }, new int[] { numColumns })
             {
@@ -49,16 +54,16 @@ namespace AnomalyDetectionTeamSynergy
                 PredictedSegmentDecrement = 0.1
             };
 
-            double max = 100;
+            double max = 20;
 
             Dictionary<string, object> settings = new Dictionary<string, object>()
             {
-                { "W", 21},
+                { "W", 15},
                 { "N", inputBits},
                 { "Radius", -1.0},
                 { "MinVal", 0.0},
                 { "Periodic", false},
-                { "Name", "integer"},
+                { "Name", "scalar"},
                 { "ClipInput", false},
                 { "MaxVal", max}
             };
@@ -69,7 +74,7 @@ namespace AnomalyDetectionTeamSynergy
         }
 
         /// <summary>
-        /// Multisequence learning experiment started
+        ///
         /// </summary>
         private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences)
         {
@@ -104,7 +109,7 @@ namespace AnomalyDetectionTeamSynergy
                 isInStableState = isStable;
 
                 // Clear active and predictive cells.
-                // tm.Reset(mem);
+                //tm.Reset(mem);
             }, numOfCyclesToWaitOnChange: 50);
 
 
@@ -264,7 +269,6 @@ namespace AnomalyDetectionTeamSynergy
                     double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
 
                     Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
-
 
                     if (accuracy >= maxPossibleAccuraccy)
                     {
