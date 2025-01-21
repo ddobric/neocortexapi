@@ -34,8 +34,8 @@ namespace NeoCortexApiSample
         {
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
-            //SpatialPatternLearning experiment = new SpatialPatternLearning();
-            //experiment.Run();
+            ImageBinarizerSpatialPattern experiment = new ImageBinarizerSpatialPattern();
+            experiment.Run();
 
             //
             // Starts experiment that demonstrates how to learn spatial patterns.
@@ -43,7 +43,7 @@ namespace NeoCortexApiSample
             //experiment.Run();
 
             // This method is developed by Team_MSL to read arbitrary data from single txt file and improve CPU utilization*/
-            RunPredictionMultiSequenceExperiment();
+            //RunPredictionMultiSequenceExperiment();
         }
 
 
