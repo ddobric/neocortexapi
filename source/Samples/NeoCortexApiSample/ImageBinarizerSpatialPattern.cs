@@ -53,7 +53,7 @@ namespace NeoCortexApiSample
             //Runnig the Experiment
             var sp = RunExperiment(cfg, inputPrefix);
             //Runing the Reconstruction Method Experiment
-            RunRustructuringExperiment(sp);
+            //RunRustructuringExperiment(sp);
 
         }
 
@@ -74,7 +74,7 @@ namespace NeoCortexApiSample
             //Accessing the Image Folder form the Cureent Directory
             string trainingFolder = "Sample\\TestFiles";
             //Accessing the Image Folder form the Cureent Directory Foldfer
-            var trainingImages = Directory.GetFiles(trainingFolder, $"{inputPrefix}*.png");
+            var trainingImages = Directory.GetFiles(trainingFolder, $"{inputPrefix}*.jpeg");
             //Image Size
             int imageSize = 28;
             //Folder Name in the Directorty 
