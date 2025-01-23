@@ -78,7 +78,7 @@ namespace AnomalyDetectionTeamSynergy
                 var numericValues = new List<double>();
 
                 // Parse all numeric columns
-                for (int j = 1; j < row.Count; j++) // Assuming columns after the first one contain numeric data
+                for (int j = 0; j < row.Count; j++) // Include all columns
                 {
                     if (double.TryParse(row[j], out double value))
                     {
