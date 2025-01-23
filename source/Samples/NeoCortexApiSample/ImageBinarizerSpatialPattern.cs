@@ -84,6 +84,20 @@ namespace NeoCortexApiSample
             Directory.CreateDirectory(outputFolder);
             ////Folder Name in the Directorty 
             //string testName = "test_image";
+            // Pre-binarize all images and store their paths
+            var binarizedImagePaths = new List<string>();
+            foreach (var image in trainingImages)
+            {
+                // Construct the output file name based on the input file name
+                string outputFileName = Path.GetFileNameWithoutExtension(image) + "_Binarized.txt";
+                string outputPath = Path.Combine(outputFolder, outputFileName);
+
+                // Binarizing the images
+                string binarizedImagePath = NeoCortexUtils.BinarizeImage(image, imageSize, outputPath);
+                binarizedImagePaths.Add(binarizedImagePath);
+            }
+            Debug.WriteLine("All images are binarized");
+
 
             HomeostaticPlasticityController hpa = new HomeostaticPlasticityController(mem, trainingImages.Length * 50, (isStable, numPatterns, actColAvg, seenInputs) =>
             {
@@ -109,36 +123,30 @@ namespace NeoCortexApiSample
             sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
 
             //Image Size
-            int imgSize = 28;
+            //int imgSize = 28;
             int[] activeArray = new int[numColumns];
 
             int numStableCycles = 0;
-            // Runnig the Traning Cycle for 5 times
-            int maxCycles = 5;
+            // Runnig the Traning Cycle for 500 times
+            int maxCycles = 500;
             int currentCycle = 0;
 
             while (!isInStableState && currentCycle < maxCycles)
             {
-                foreach (var Image in trainingImages)
+                foreach (var binarizedImagePath in binarizedImagePaths)
                 {
-                    // Construct the output file name based on the input file name
-                    string outputFileName = Path.GetFileNameWithoutExtension(Image) + "_Binarized.txt";
-                    string outputPath = Path.Combine(outputFolder, outputFileName);
-                    //Binarizing the Images before taking Inputs for the Sp
-                    string inputBinaryImageFile = NeoCortexUtils.BinarizeImage($"{Image}", imgSize, outputPath);
- 
                     // Read Binarized and Encoded input csv file into array
-                    int[] inputVector = NeoCortexUtils.ReadCsvIntegers(inputBinaryImageFile).ToArray();
+                    int[] inputVector = NeoCortexUtils.ReadCsvIntegers(binarizedImagePath).ToArray();
 
                     int[] oldArray = new int[activeArray.Length];
                     List<double[,]> overlapArrays = new List<double[,]>();
                     List<double[,]> bostArrays = new List<double[,]>();
 
                     sp.compute(inputVector, activeArray, true);
-                    //Getting the Active Columns
+                    // Getting the Active Columns
                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                    Debug.WriteLine($"'Cycle: {currentCycle} - Image-Input: {Image}'");
+                    Debug.WriteLine($"'Cycle: {currentCycle} - Image-Input: {binarizedImagePath}'");
                     Debug.WriteLine($"INPUT :{Helpers.StringifyVector(inputVector)}");
                     Debug.WriteLine($"SDR:{Helpers.StringifyVector(activeCols)}\n");
                 }
