@@ -73,18 +73,21 @@ namespace NeoCortexApiSample
             int numColumns = 64 * 64;
             //Accessing the Image Folder form the Cureent Directory
             string trainingFolder = "Sample\\TestFiles";
-            //Accessing the Image Folder form the Cureent Directory Foldfer
+            //Accessing the Image Folder form the Cureent Directory Folder
             var trainingImages = Directory.EnumerateFiles(trainingFolder).Where(file => file.StartsWith($"{trainingFolder}\\{inputPrefix}") &&
             (file.EndsWith(".jpeg") || file.EndsWith(".jpg") || file.EndsWith(".png"))).ToArray();
             //Image Size
             int imageSize = 28;
             // Path to the folder where results will be saved
             String outputFolder = ".\\BinarizedImages";
-            // Ensure the output folder exists
+            // Delete the folder if it exists
+            if (Directory.Exists(outputFolder))
+            {
+                Directory.Delete(outputFolder, true);
+            }
+            // Recreate the folder
             Directory.CreateDirectory(outputFolder);
-            ////Folder Name in the Directorty 
-            //string testName = "test_image";
-            // Pre-binarize all images and store their paths
+            // Taking all the binarized image path in a list
             var binarizedImagePaths = new List<string>();
             foreach (var image in trainingImages)
             {
@@ -116,19 +119,17 @@ namespace NeoCortexApiSample
                 Debug.WriteLine($"Entered STABLE state: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
             }, requiredSimilarityThreshold: 0.975);
 
-            // It creates the instance of Spatial Pooler Multithreaded version.
+            // It creates the instance of Spatial Pooler.
             SpatialPooler sp = new SpatialPooler(hpa);
 
             //Initializing the Spatial Pooler Algorithm
             sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
 
-            //Image Size
-            //int imgSize = 28;
             int[] activeArray = new int[numColumns];
 
             int numStableCycles = 0;
-            // Runnig the Traning Cycle for 500 times
-            int maxCycles = 500;
+            // Runnig the Traning Cycle for maximun 200 times untill Stability is True
+            int maxCycles = 200;
             int currentCycle = 0;
 
             while (!isInStableState && currentCycle < maxCycles)
