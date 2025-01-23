@@ -37,7 +37,12 @@ namespace AnomalyDetectionTeamSynergy
 
             return csvData;
         }
-        // display csv data is readable format
+
+        /// <summary>
+        /// Displays the CSV data in a readable format in the console.
+        /// </summary>
+        /// <param name="csvData">The CSV data as a list of lists of strings.</param>
+
         public void DisplayCSVData(List<List<string>> csvData)
         {
             for (int i = 0; i < csvData.Count; i++)
@@ -45,6 +50,12 @@ namespace AnomalyDetectionTeamSynergy
                 Console.WriteLine($"Row {i + 1}: {string.Join(" | ", csvData[i])}");
             }
         }
+        /// <summary>
+        /// Parses sequences of numeric data from CSV data.
+        /// Each row in the CSV is converted to a key-value pair, where the key is "Row_<row_number>" and the value is a list of numeric values.
+        /// </summary>
+        /// <param name="csvData">The CSV data as a list of lists of strings.</param>
+        /// <returns>A dictionary where each key is a row identifier and each value is a list of numeric values.</returns>
 
 
         public Dictionary<string, List<double>> ParseSequencesFromCSV(List<List<string>> csvData)
@@ -67,7 +78,7 @@ namespace AnomalyDetectionTeamSynergy
                 var numericValues = new List<double>();
 
                 // Parse all numeric columns
-                for (int j = 1; j < row.Count; j++)
+                for (int j = 1; j < row.Count; j++) // Assuming columns after the first one contain numeric data
                 {
                     if (double.TryParse(row[j], out double value))
                     {
