@@ -27,7 +27,7 @@ namespace NeoCortexApiSample
             // We will build a slice of the cortex with the given number of mini-columns
             int numColumns = 64 * 64;
             // The Size of the Image Height and width is 28 pixel
-            int imageSize = 28;
+            int imageSize = 25;
             var colDims = new int[] { 64, 64 };
 
             // This is a set of configuration parameters used in the experiment.
@@ -77,7 +77,7 @@ namespace NeoCortexApiSample
             var trainingImages = Directory.EnumerateFiles(trainingFolder).Where(file => file.StartsWith($"{trainingFolder}\\{inputPrefix}") &&
             (file.EndsWith(".jpeg") || file.EndsWith(".jpg") || file.EndsWith(".png"))).ToArray();
             //Image Size
-            int imageSize = 28;
+            int imageSize = 25;
             // Path to the folder where results will be saved
             String outputFolder = ".\\BinarizedImages";
             // Delete the folder if it exists
@@ -185,7 +185,7 @@ namespace NeoCortexApiSample
             // Get all image files matching the specified prefix
             var trainingImages = Directory.GetFiles(trainingFolder, $"{inputPrefix}*.png");
             // Size of the images
-            int imgSize = 28;
+            int imgSize = 25;
             // Name for the test image
             string testName = "test_image";
             // Array to hold active columns
