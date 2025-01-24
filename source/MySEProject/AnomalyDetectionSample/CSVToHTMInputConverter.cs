@@ -20,13 +20,10 @@ namespace AnomalyDetectionSample
 
             for (int index = 0; index < inputSequences.Count; index++)
             {
-                // Generate a unique identifier for the sequence
+            
                 string sequenceKey = "Sequence" + (index + 1);
 
-                // Retrieve the sequence data
-                List<double> sequenceData = inputSequences[index];
 
-                // Add the sequence to the dictionary
                 sequenceDictionary.Add(sequenceKey, sequenceData);
             }
 
