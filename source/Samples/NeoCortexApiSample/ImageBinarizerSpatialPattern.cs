@@ -92,11 +92,11 @@ namespace NeoCortexApiSample
             foreach (var image in trainingImages)
             {
                 // Construct the output file name based on the input file name
-                string outputFileName = Path.GetFileNameWithoutExtension(image) + "_Binarized.txt";
+                string outputFileName = Path.GetFileNameWithoutExtension(image) + "_Binarized";
                 string outputPath = Path.Combine(outputFolder, outputFileName);
 
                 // Binarizing the images
-                string binarizedImagePath = NeoCortexUtils.BinarizeImage(image, imageSize, outputPath);
+                string binarizedImagePath = NeoCortexUtils.BinarizeImage($"{image}", imageSize, outputPath);
                 binarizedImagePaths.Add(binarizedImagePath);
             }
             Debug.WriteLine("All images are binarized");
@@ -132,7 +132,7 @@ namespace NeoCortexApiSample
             int maxCycles = 200;
             int currentCycle = 0;
 
-            while (!isInStableState && currentCycle < maxCycles)
+            while (currentCycle < maxCycles)
             {
                 foreach (var binarizedImagePath in binarizedImagePaths)
                 {
@@ -147,11 +147,13 @@ namespace NeoCortexApiSample
                     // Getting the Active Columns
                     var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                    Debug.WriteLine($"'Cycle: {currentCycle} - Image-Input: {binarizedImagePath}'");
+                    string Image = Path.GetFileNameWithoutExtension(binarizedImagePath);
+
+                    Debug.WriteLine($"'Cycle: {currentCycle} - Image-Input: {Image}'");
                     Debug.WriteLine($"INPUT :{Helpers.StringifyVector(inputVector)}");
                     Debug.WriteLine($"SDR:{Helpers.StringifyVector(activeCols)}\n");
                 }
-
+                Debug.WriteLine($"Completed Cycle ** {currentCycle} ** Stability: {isInStableState}\n");
                 currentCycle++;
 
                 // Check if the desired number of cycles is reached
@@ -160,9 +162,14 @@ namespace NeoCortexApiSample
 
                 // Increment numStableCycles only when it's in a stable state
                 if (isInStableState)
+                {
                     numStableCycles++;
-            }
+                }
 
+                if (numStableCycles > 5)
+                    break;
+            }
+            Debug.WriteLine("It has reached the stable stage");
             return sp;
         }
         /// <summary>
