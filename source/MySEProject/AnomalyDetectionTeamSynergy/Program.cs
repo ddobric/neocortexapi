@@ -8,24 +8,13 @@
             string defaultTrainingFolder = Path.Combine(projectbaseDirectory, "TrainingData");
             string defaultInferringFolder = Path.Combine(projectbaseDirectory, "InferringData");
 
-            Console.WriteLine("Training Data Path: " + defaultTrainingFolder);
-            Console.WriteLine("Inferring Data Path: " + defaultInferringFolder);
+            var fileHandler = new FileHandler(defaultTrainingFolder, defaultInferringFolder);
 
             try
             {
-                // Check if folder exists
-                if (!Directory.Exists(defaultTrainingFolder))
-                {
-                    throw new DirectoryNotFoundException("The specified folder does not exist.");
-                }
-
-                // Get all CSV files in the folder
-                string[] csvFiles = Directory.GetFiles(defaultTrainingFolder, "*.csv");
-
-                if (csvFiles.Length == 0)
-                {
-                    throw new FileNotFoundException("No CSV files found in the specified folder.");
-                }
+                fileHandler.ProcessArguments(args);
+                var training_files = fileHandler.TrainingDataFiles;
+                var inferring_files = fileHandler.InferringDataFiles;
 
                 // Create an instance of the CSVFileReader class and CSVToHTMInput
                 var csvReader = new CSVFileReader();
@@ -36,7 +25,7 @@
                 //var csvReader = new CSVFileReader();
 
 
-                foreach (var filePath in csvFiles)
+                foreach (var filePath in fileHandler.TrainingDataFiles)
                 {
                     Console.WriteLine($"\n--- Reading File: {Path.GetFileName(filePath)} ---");
 
