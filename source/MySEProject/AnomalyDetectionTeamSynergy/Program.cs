@@ -28,7 +28,7 @@
                 }
 
                 // Create an instance of the CSVFileReader class and CSVToHTMInput
-                var csvReader = new CSVFileReader();
+                var csvReader = new CSVReader();
                 var htmInputConverter = new CSVToHTMInput();
                 var sequences = new Dictionary<string, List<double>>();
 
