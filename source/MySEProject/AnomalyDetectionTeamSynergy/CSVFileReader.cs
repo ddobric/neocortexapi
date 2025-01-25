@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace AnomalyDetectionTeamSynergy
+﻿namespace AnomalyDetectionTeamSynergy
 {
     public class CSVFileReader
     {
@@ -16,9 +11,6 @@ namespace AnomalyDetectionTeamSynergy
         /// <returns>A list of lists of strings representing the CSV data.</returns>
         public List<List<string>> ReadCSVFile(string filePath, char delimiter = ',', bool skipHeader = true)
         {
-            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
-                throw new FileNotFoundException("The specified CSV file does not exist.");
-
             var csvData = new List<List<string>>();
 
             try
@@ -43,11 +35,11 @@ namespace AnomalyDetectionTeamSynergy
         /// </summary>
         /// <param name="csvData">The CSV data as a list of lists of strings.</param>
 
-        public void DisplayCSVData(List<List<string>> csvData)
+        public void DisplaySequenceData(List<List<double>> sequences)
         {
-            for (int i = 0; i < csvData.Count; i++)
+            for (int i = 0; i < sequences.Count; i++)
             {
-                Console.WriteLine($"Row {i + 1}: {string.Join(" | ", csvData[i])}");
+                Console.WriteLine($"Sequence {i + 1}: {string.Join(", ", sequences[i])}");
             }
         }
         /// <summary>
