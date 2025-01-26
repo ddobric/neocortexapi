@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using GemBox.Spreadsheet.Drawing;
 
 namespace NeoCortexApiSample
 {
@@ -131,43 +132,69 @@ namespace NeoCortexApiSample
             // Runnig the Traning Cycle for maximun 200 times untill Stability is True
             int maxCycles = 200;
             int currentCycle = 0;
-
-            while (currentCycle < maxCycles)
+            // Create the "SDROutput" folder if it doesn't exist
+            string sdrOutputFolder = ".\\SDROutput";
+            // Delete the folder if it exists
+            if (Directory.Exists(sdrOutputFolder))
             {
-                foreach (var binarizedImagePath in binarizedImagePaths)
+                Directory.Delete(sdrOutputFolder, true);
+            }
+            // Recreate the folder
+            Directory.CreateDirectory(sdrOutputFolder);
+
+            // Create a text file to store the SDRs
+            string sdrFilePath = Path.Combine(sdrOutputFolder, "SDRs.txt");
+
+            // Open a StreamWriter to write to the file
+            using (StreamWriter writer = new StreamWriter(sdrFilePath, append: true))
+            {
+                // Redirect console output to the file
+                Console.SetOut(writer);
+
+                while (currentCycle < maxCycles)
                 {
-                    // Read Binarized and Encoded input csv file into array
-                    int[] inputVector = NeoCortexUtils.ReadCsvIntegers(binarizedImagePath).ToArray();
+                    foreach (var binarizedImagePath in binarizedImagePaths)
+                    {
+                        // Read Binarized and Encoded input csv file into array
+                        int[] inputVector = NeoCortexUtils.ReadCsvIntegers(binarizedImagePath).ToArray();
 
-                    int[] oldArray = new int[activeArray.Length];
-                    List<double[,]> overlapArrays = new List<double[,]>();
-                    List<double[,]> bostArrays = new List<double[,]>();
+                        int[] oldArray = new int[activeArray.Length];
+                        List<double[,]> overlapArrays = new List<double[,]>();
+                        List<double[,]> bostArrays = new List<double[,]>();
 
-                    sp.compute(inputVector, activeArray, true);
-                    // Getting the Active Columns
-                    var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
+                        sp.compute(inputVector, activeArray, true);
+                        // Getting the Active Columns
+                        var activeCols = ArrayUtils.IndexWhere(activeArray, (el) => el == 1);
 
-                    string Image = Path.GetFileNameWithoutExtension(binarizedImagePath);
 
-                    Debug.WriteLine($"'Cycle: {currentCycle} - Image-Input: {Image}'");
-                    Debug.WriteLine($"INPUT :{Helpers.StringifyVector(inputVector)}");
-                    Debug.WriteLine($"SDR:{Helpers.StringifyVector(activeCols)}\n");
+                        string Image = Path.GetFileNameWithoutExtension(binarizedImagePath);
+
+                        Console.WriteLine($"'Cycle: {currentCycle} - Image-Input: {Image}'");
+                        Debug.WriteLine($"'Cycle: {currentCycle} - Image-Input: {Image}'");
+                        Debug.WriteLine($"INPUT :{Helpers.StringifyVector(inputVector)}");
+                        Debug.WriteLine($"SDR:{Helpers.StringifyVector(activeCols)}\n");
+                        // Print the SDR (active columns) to the file (console output is redirected to the file)
+                        Console.WriteLine($"SDR:{Helpers.StringifyVector(activeCols)}\n");
+                        //Ensure content is written to the file immediately
+                        writer.Flush();
+
+                    }
+                    Debug.WriteLine($"Completed Cycle ** {currentCycle} ** Stability: {isInStableState}\n");
+                    currentCycle++;
+
+                    // Check if the desired number of cycles is reached
+                    if (currentCycle >= maxCycles)
+                        break;
+
+                    // Increment numStableCycles only when it's in a stable state
+                    if (isInStableState)
+                    {
+                        numStableCycles++;
+                    }
+
+                    if (numStableCycles > 5)
+                        break;
                 }
-                Debug.WriteLine($"Completed Cycle ** {currentCycle} ** Stability: {isInStableState}\n");
-                currentCycle++;
-
-                // Check if the desired number of cycles is reached
-                if (currentCycle >= maxCycles)
-                    break;
-
-                // Increment numStableCycles only when it's in a stable state
-                if (isInStableState)
-                {
-                    numStableCycles++;
-                }
-
-                if (numStableCycles > 5)
-                    break;
             }
             Debug.WriteLine("It has reached the stable stage");
             return sp;
