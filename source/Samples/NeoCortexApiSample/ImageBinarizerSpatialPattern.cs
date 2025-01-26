@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using GemBox.Spreadsheet.Drawing;
+using NeoCortexApi.Classifiers;
 
 namespace NeoCortexApiSample
 {
@@ -127,6 +128,9 @@ namespace NeoCortexApiSample
             sp.Init(mem, new DistributedMemory() { ColumnDictionary = new InMemoryDistributedDictionary<int, NeoCortexApi.Entities.Column>(1) });
 
             int[] activeArray = new int[numColumns];
+
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            var clk = new KNeighborsClassifier<string, ComputeCycle>();
 
             int numStableCycles = 0;
             // Runnig the Traning Cycle for maximun 200 times untill Stability is True
