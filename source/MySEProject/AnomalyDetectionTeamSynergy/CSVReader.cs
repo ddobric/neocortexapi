@@ -18,7 +18,7 @@ namespace AnomalyDetectionTeamSynergy
                 var line = lines[i];
 
                 // Split the line by tab or whitespace
-                var values = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
+                var values = line.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 // Try to convert all values to double
                 if (values.All(v => double.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out _)))

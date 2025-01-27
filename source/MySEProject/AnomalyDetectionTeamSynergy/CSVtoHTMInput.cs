@@ -11,19 +11,6 @@
         /// </summary>
         /// <param name="sequences">A list of sequences read from CSV file/files in a folder.</param>
         /// <returns>A dictionary of sequences required for HTM Engine training.</returns>
-        //public Dictionary<string, List<double>> BuildHTMInput(List<List<double>> sequences)
-        //{
-        //   // Dictionary<string, List<double>> dictionary = new Dictionary<string, List<double>>();
-        //    Dictionary<string, List<double>> dictionary = new Dictionary<string, List<double>>(sequences.Count);
-
-        //    for (int i = 0; i < sequences.Count; i++)
-        //    {
-        //        // Unique key created and added to dictionary for HTM Input                
-        //        string key = "S" + (i + 1);
-        //        List<double> value = sequences[i];
-        //        dictionary.Add(key, value);
-        //    }
-        //    return dictionary;
         public Dictionary<string, List<double>> BuildHTMInput(List<List<double>> sequences, string keyPrefix = "S")
         {
             if (sequences == null)
@@ -41,6 +28,6 @@
             }
 
             return dictionary;
-        } }
+        }
     }
-    
+}
